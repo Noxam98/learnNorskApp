@@ -16,9 +16,7 @@ export const interfaceTranslate = {
         fetching: 'Загрузка слов..',
         newDict: 'Имя нового словаря..',
         addWordsHere: 'Пока что здесь пусто.. Попробуйте ввести в поле ввода слово или несколько. :)',
-        inputPlaceholder: 'Вводите здесь',
-        delete: 'Удалить',
-        
+        inputPlaceholder: 'Вводите здесь',       
         navBar: {
           words: 'Словарь',
           game: 'Игра'      
