@@ -24,7 +24,7 @@ const LoaderWrapper = styled.div`
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    position: sticky;
+    position: fixed;
     z-index: 10;
     width: 300px;
     height: 150px;
