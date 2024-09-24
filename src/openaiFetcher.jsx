@@ -21,19 +21,19 @@ export const fetchWord = async (languageTranslate, prompt) => {
       const textAnswerPrompt = promptAnswer.choices[0].message.content;
       const cuttedAnswer = textAnswerPrompt.substring(textAnswerPrompt.indexOf('['), textAnswerPrompt.lastIndexOf(']')+1) 
       if ((!cuttedAnswer.includes('[') && !cuttedAnswer.includes[']'])){
-        return {error: 'Bad json from GPT. its returned mnot array. Try again or remake your request.'}
+        return {error: 'Bad json from GPT. Try again or remake your request.', content: JSON.stringify(textAnswerPrompt)}
       }
       else
       try {
         const json = JSON.parse(cuttedAnswer)
             if(json.every(item => item.original === 'no' && item.translate.ru)){
-              return({words: json})
+              return {words: json}
           }
           else{
-            return {error: 'Bad json from GPT. Try again or remake your request.'}
+            return {error: 'Bad json from GPT. Try again or remake your request.', content: JSON.stringify(textAnswerPrompt)}
           }
       }
       catch(error){
-        return{error: error.message + '/n/n' + JSON.stringify(cuttedAnswer) }
+        return{error: error.message + '/n/n' + JSON.stringify(textAnswerPrompt) }
       }    
   }

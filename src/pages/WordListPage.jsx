@@ -70,7 +70,7 @@ export const WordListPage = ()=>{
             <DictChooser/>
             <WordTools/>
           </ToolsWrapper>
-          {error}
+          {JSON.stringify(error)}
           <CardsWrapper>
             {
               wordList.length
@@ -103,6 +103,8 @@ export const WordListPage = ()=>{
                 prompt,
                 );
                 if (fetchingResult.error){
+                  console.log('error: --------------------------');
+                  
                     setError(error)
                 } else{
                     addWords(dictName, fetchingResult.words)
