@@ -7,7 +7,8 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
-export const fetchWord = async (languageTranslate, prompt) => {
+
+const OpenAiTryingFetch = async (languageTranslate, prompt) => {
     const promptAnswer = await openai.chat.completions.create({
         messages: [
           {
@@ -19,6 +20,8 @@ export const fetchWord = async (languageTranslate, prompt) => {
       });       
 
       const textAnswerPrompt = promptAnswer.choices[0].message.content;
+      console.log(textAnswerPrompt);
+      
       const cuttedAnswer = textAnswerPrompt.substring(textAnswerPrompt.indexOf('['), textAnswerPrompt.lastIndexOf(']')+1) 
       if ((!cuttedAnswer.includes('[') && !cuttedAnswer.includes[']'])){
         return {error: 'Bad json from GPT. Try again or remake your request.', content: JSON.stringify(textAnswerPrompt)}
@@ -36,4 +39,24 @@ export const fetchWord = async (languageTranslate, prompt) => {
       catch(error){
         return{error: error.message + '/n/n' + JSON.stringify(textAnswerPrompt) }
       }    
+  }
+
+  export const fetchWord = async (languageTranslate, prompt) =>{
+    let resultFetch = {}
+    console.log(1);
+    
+    for (let i = 0;  i <= 3; i++){
+      
+    console.log(2);
+      resultFetch = await OpenAiTryingFetch(languageTranslate, prompt);
+     
+      
+      if (!resultFetch.error){
+        break
+      }
+    }
+    console.log(3);
+
+    return resultFetch
+
   }

@@ -70,7 +70,7 @@ export const WordListPage = ()=>{
             <DictChooser/>
             <WordTools/>
           </ToolsWrapper>
-          {JSON.stringify(error)}
+          {/* {JSON.stringify(error)} */}
           <CardsWrapper>
             {
               wordList.length
@@ -91,9 +91,6 @@ export const WordListPage = ()=>{
             onInput={(e) => {
               setPrompt(e.currentTarget.textContent);
             }}
-            onKeyDown={(e) => {
-              console.log(e);
-            }}
           ></TextArea>
           <FetchButton
             onClick={async () => {
@@ -102,6 +99,8 @@ export const WordListPage = ()=>{
                 languageTranslate,
                 prompt,
                 );
+                console.log(fetchingResult);
+                
                 if (fetchingResult.error){
                   console.log('error: --------------------------');
                   
