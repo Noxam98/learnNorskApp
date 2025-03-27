@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import {Link, useLocation} from "react-router-dom"
 import styled from "styled-components"
 import { interfaceTranslate } from "../interface/interfaceTranslation"
 
@@ -16,6 +16,7 @@ const BarWrapper = styled.section`
 const NavbarLink = styled(Link)`
  font-size: x-large;
  color: #f5f5f5fa;
+ background-color: ${({isActive}) => isActive ? '#628eaf' : 'transparent'};
  padding: 0 10px;
  border-radius: 6px 6px 0 0 ;
  font-family: Arial, Helvetica, sans-serif;
@@ -32,25 +33,24 @@ const NavbarLink = styled(Link)`
     height: 3px;
     width: 100%;
  }
- /* border-bottom: 3px solid white; */
+
 &:hover,
 &:focus{
     background-color: #00b3ff65;
-
 }
 &:active{
     color: #9e9e9e;  
 };
-
 `
 
 export const NavigationBar = ()=>{
+    const location = useLocation()
     return(
         <BarWrapper>
-            <NavbarLink to={'words'}>
+            <NavbarLink isActive={location.pathname === '/words'} to={'words'}>
                 {interfaceTranslate.ru.navBar.words}
             </NavbarLink>
-            <NavbarLink to={'game'}>
+            < NavbarLink isActive={location.pathname === '/game'} to={'game'}>
                 {interfaceTranslate.ru.navBar.game}
             </NavbarLink>
         </BarWrapper>

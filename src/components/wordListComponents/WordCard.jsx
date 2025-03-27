@@ -30,46 +30,49 @@ export const PartOfSpeech = styled.div`
 `;
 
 export const WordCard = styled.div`
-  display: flex;
-  color: #ffffff;
-  background-color: gray;
-  flex-direction: row;
-  white-space: nowrap;
-  gap: 5px;
-  border-radius: 4px;
-  width: max-content;
-  padding: 3px 8px 14px 10px;
-  user-select: none;
-  position: relative;
-  cursor: pointer;
-  &::before {
-    position: absolute;
-    right: 0px;
-    bottom: 0px;
-    border-radius: 0 0 4px 4px;
-    width: 50px;
-    background-color: #eaa340;
-    width: 100%;
-    height: 8px;
-    ${({ isSelected }) => isSelected && 'content: "";'}
-  }
-  &:hover {
-    &::after {
-      position: absolute;
-      right: 0px;
-      bottom: 0px;
-      border-radius: 0 0 4px 4px;
-      width: 50px;
-      background-color: #eaa34026;
-      width: 100%;
-      height: 8px;
-      content: "";
+    display: flex;
+    color: #ffffff;
+    background-color: #628eaf;
+    flex-direction: row;
+    white-space: nowrap;
+    gap: 5px;
+    border-radius: 4px;
+    width: max-content;
+    padding: 3px 8px 14px 10px;
+    user-select: none;
+    position: relative;
+    cursor: pointer;
+
+    &::before {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        border-radius: 0 0 4px 4px;
+        width: 50px;
+        background-color: #eaa340;
+        width: 100%;
+        height: 8px;
+        ${({isSelected}) => isSelected && 'content: "";'}
     }
-  }
-  @media (max-width: 730px) {
-    font-size: 12px;
-    white-space: normal;
-  }
+
+    &:hover {
+        &::after {
+            position: absolute;
+            right: 0px;
+            bottom: 0px;
+            border-radius: 0 0 4px 4px;
+            width: 50px;
+            background-color: #eaa34026;
+            width: 100%;
+            height: 8px;
+            content: "";
+        }
+    }
+
+    @media (max-width: 730px) {
+        font-size: 12px;
+        white-space: normal;
+    }
 `;
 
 const EditButton = styled.button`
@@ -103,6 +106,7 @@ const EditButton = styled.button`
 
 
 export const Card = ({ wordItem, languageTranslate }) => {
+    // console.log(wordItem);
   // const [copyWordItem, setCopyWordItem] = useState(_.cloneDeep(wordItem));
   const choseWord = useWordsStore((state) => state.choseWord);
   const [isHovered, setIsHovered] = useState(false);

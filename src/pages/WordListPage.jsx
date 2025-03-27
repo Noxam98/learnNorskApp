@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 
 import { TextArea, FetchButton } from "../styled";
 import { interfaceTranslate } from "../interface/interfaceTranslation";
-import { fetchWord } from "../openaiFetcher";
+import { fetchWord } from "../freegptFetcher.jsx";
 import { Card } from "../components/wordListComponents/WordCard";
 import styled from "styled-components";
 import { DictChooser } from "../components/wordListComponents/DictChooser";
@@ -11,13 +11,13 @@ import exportFromJSON from 'export-from-json'
 import { Loader } from "../components/loadingComponent";
 import { useWordsStore } from "../store/wordStore";
 import { WordTools } from "../components/wordListComponents/wordTools";
+import Error from "../components/error.jsx";
 
 const CardsWrapper = styled.div`
     width: 100%;
     display: flex;
     flex-direction: row;
     gap: 5px;
-    
     flex-wrap: wrap;
     border: 3px solid #cacaca;
     padding: 6px;
@@ -29,8 +29,6 @@ const CardsWrapper = styled.div`
 const ToolsWrapper = styled(CardsWrapper)`
   justify-content: space-between;
   align-items: center;
-  
-
 `
 
 const FlexWrapper = styled.div`
@@ -95,29 +93,33 @@ export const WordListPage = ()=>{
           <FetchButton
             onClick={async () => {
                 setIsLoading(true)
-                const fetchingResult = await fetchWord(
-                languageTranslate,
-                prompt,
-                );
-                console.log(fetchingResult);
-                
-                if (fetchingResult.error){
-                  console.log('error: --------------------------');
-                  
-                    setError(error)
-                } else{
-                    addWords(dictName, fetchingResult.words)
-                    setPrompt('')
-                    inputRef.current.innerText=''
-                    inputRef.current.focus()
+                try {
+                    const fetchingResult = await fetchWord(prompt);
+                    console.log(fetchingResult)
+
+                    if (fetchingResult.response.error){
+                        console.log('error: --------------------------');
+                        setError(fetchingResult.response.error)
+                    } else{
+                        addWords(dictName, fetchingResult.response)
+                        setPrompt('')
+                        inputRef.current.innerText=''
+                        inputRef.current.focus()
+
+                    }
 
                 }
-                console.log(fetchingResult);
+                catch {
+
+                }
                 setIsLoading(false)
+
             }}
           >
             {interfaceTranslate[languageTranslate].addWord}
           </FetchButton>
+            <Error text={error} setText={setError} />
+
         </>
       );
 }

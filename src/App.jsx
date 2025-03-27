@@ -5,8 +5,8 @@ import styled from "styled-components";
 
 const PageWrapper = styled.section`
     margin-top: 10px;
-        padding: 10px;
-    background-color: #babcbe;
+    padding: 10px;
+    background-color: #afb9bf;
     border-radius: 6px;
 `
 

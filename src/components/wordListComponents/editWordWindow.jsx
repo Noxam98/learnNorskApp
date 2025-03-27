@@ -15,6 +15,8 @@ const WordEditWindowWrapper = styled.form`
   box-sizing: border-box;
   padding: 10px;
   top: 50%;
+  max-height: 600px;
+  overflow: scroll;
   left: 50%;
   transform: translate(-50%, -50%);
   max-width: 400px;
