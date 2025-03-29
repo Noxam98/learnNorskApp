@@ -24,28 +24,31 @@ const NavigationLinksWrapper = styled.div`
 `
 
 const NavbarLink = styled(Link)`
- font-size: x-large;
- color: #f5f5f5fa;
- background-color: ${({isActive}) => isActive ? '#628eaf' : 'transparent'};
- padding: 0 10px;
- //border-radius: 6px 6px 0 0 ;
- font-family: Arial, Helvetica, sans-serif;
- text-decoration: none;
- position: relative;
- transition: .3s;
-display: flex;
-align-items: center;
+    font-size: x-large;
+    color: #f5f5f5fa;
+    background-color: ${({isActive}) => isActive ? '#37a5ef' : '#9aa3a6'};
+    color: ${({isActive}) => isActive ? '#f9f9fa' : '#d6d6d6'};
+    padding: 0 7px;
+    //border-radius: 6px 6px 0 0 ;
+    font-family: Arial, Helvetica, sans-serif;
+    text-decoration: none;
+    position: relative;
+    transition: .3s;
+    display: flex;
+    align-items: center;
 
-&:nth-child(2){
-    border-radius: 0 8px 8px 0;
-}
-&:hover,
-&:focus{
-    background-color: #628eaf;
-}
-&:active{
-    color: #9e9e9e;  
-};
+    &:nth-child(2) {
+        border-radius: 0 8px 8px 0;
+    }
+
+    &:hover {
+        background-color: #2d9eea;
+    }
+
+    &:active {
+        color: #f6f5f5;
+    }
+;
 `
 
 export const NavigationBar = ()=>{
