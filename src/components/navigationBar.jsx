@@ -44,11 +44,6 @@ const NavbarLink = styled(Link)`
     &:hover {
         background-color: #2d9eea;
     }
-
-    &:active {
-        color: #f6f5f5;
-    }
-;
 `
 
 export const NavigationBar = ()=>{
