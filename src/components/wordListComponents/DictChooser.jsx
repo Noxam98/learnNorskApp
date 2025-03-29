@@ -4,6 +4,7 @@ import { useState } from "react";
 import { WordTools } from "./wordTools";
 import { useWordsStore } from "../../store/wordStore";
 import exportFromJSON from 'export-from-json'
+import {useSystemStore} from "../../store/systemStore.jsx";
 const ComponentWrapper = styled.div`
   display: flex;
   flex-direction: row;
@@ -116,7 +117,7 @@ const Input = styled.input`
 const ButtonSave = styled.button`
     width: 100%;
     border-radius: 6px;
-    border: 1 px solid white;
+    border: 1px solid white;
     cursor: pointer;
 
 `
@@ -127,7 +128,8 @@ export const DictChooser = () => {
   const addNewDict = useWordsStore((state) => state.addNewDict);
   const setCurrentDict = useWordsStore((state) => state.setCurrentDict);
   const removeDict = useWordsStore((state) => state.removeDict);
-  
+  const [setCurrentLanguage, currentLanguage] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
+
   const [newDictInput, setNewDictInput] = useState("");
   const [error, setError] = useState("");
   const [dictListOpened, setDictListOpened] = useState(false);
@@ -136,9 +138,9 @@ export const DictChooser = () => {
       expand={dictListOpened ? 1 : 0}
       onClick={() => setDictListOpened((prev) => !prev)}
     >
-      {interfaceTranslate.ru.currentDict}:
+      {interfaceTranslate[currentLanguage].currentDict}:
       <CurrentDictItemWrapper>
-        {currentDictName === "default" ? "Общий словарь" : currentDictName}
+        {currentDictName === "default" ? interfaceTranslate[currentLanguage].defaultDict : currentDictName}
         {dictListOpened && (
           <DictVariantsWrapper onClick={(e) => e.stopPropagation()}>
             {dictNames.map((dictName) => (

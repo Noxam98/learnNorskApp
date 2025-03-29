@@ -128,7 +128,7 @@ export const Card = ({ wordItem, languageTranslate }) => {
           {wordItem?.part_of_speech}
         </PartOfSpeech>
         <div>{wordItem?.word?.toLowerCase()}</div>-
-        <div>{wordItem?.translate[languageTranslate].join(", ")}</div>
+        <div>{wordItem?.translate[languageTranslate]?.join(", ")}</div>
         {isHovered && (
           <EditButton
             onClick={(e) => {

@@ -12,6 +12,7 @@ import { Loader } from "../components/loadingComponent";
 import { useWordsStore } from "../store/wordStore";
 import { WordTools } from "../components/wordListComponents/wordTools";
 import Error from "../components/error.jsx";
+import {useSystemStore} from "../store/systemStore.jsx";
 
 const CardsWrapper = styled.div`
     width: 100%;
@@ -54,10 +55,10 @@ export const WordListPage = ()=>{
     const dictName = useWordsStore((state) => state.currentDictName)
     const wordList = useWordsStore((state)=> state.dictList.filter(dict => dict.dictName === dictName)[0].words)
     const addWords = useWordsStore((state) => state.addWords)
+    const [setLanguageTranslate, languageTranslate] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
 
     const [prompt, setPrompt] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [languageTranslate, setLanguageTranslate] = useState("ru");
     const [error, setError] = useState("");
     const inputRef = useRef();
     return (

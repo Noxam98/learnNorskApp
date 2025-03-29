@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { WordItem } from "./wordToChoose";
 import { useWordsStore } from "../../store/wordStore";
+import {useSystemStore} from "../../store/systemStore.jsx";
+import {interfaceTranslate} from "../../interface/interfaceTranslation.jsx";
 
 
 const DictTitle = styled.div`
@@ -56,6 +58,7 @@ const ToolsButton = styled.button`
 export const DictItem = ({ dictName, wordList }) => {
   const [IsOpened, setIsOpened] = useState(false);
   const selectFullDictToGame = useWordsStore(state => state.selectFullDictToGame)
+  const [setCurrentLanguage, currentLanguage] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
 
   return (
     <ItemWrapper>
@@ -66,8 +69,8 @@ export const DictItem = ({ dictName, wordList }) => {
       {IsOpened && (
         <WordsWrapper>
           <ToolsWrapper>
-            <ToolsButton onClick={()=>{selectFullDictToGame(dictName, true)}}>Выделить всё</ToolsButton>
-            <ToolsButton onClick={()=>{selectFullDictToGame(dictName, false)}}>Снять выделение</ToolsButton>
+            <ToolsButton onClick={()=>{selectFullDictToGame(dictName, true)}}>{interfaceTranslate[currentLanguage].chooseAll}</ToolsButton>
+            <ToolsButton onClick={()=>{selectFullDictToGame(dictName, false)}}>{interfaceTranslate[currentLanguage].cancelChoosingAll}</ToolsButton>
           </ToolsWrapper>
           {wordList.map((wordItem) => (
             <WordItem key={wordItem.id} wordItem={wordItem} />

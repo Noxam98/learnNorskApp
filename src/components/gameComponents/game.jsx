@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useWordsStore } from "../../store/wordStore";
 import styled from "styled-components";
+import {useSystemStore} from "../../store/systemStore.jsx";
+import {interfaceTranslate} from "../../interface/interfaceTranslation.jsx";
 
 const filterChoosetWords = (dictList) => {
     const filteredList = []
@@ -73,6 +75,8 @@ const GameBoutton = styled.button`
 `
 
 export const Game = ({setGameState}) =>{
+    const [setCurrentLanguage, currentLanguage] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
+
     const [tryBadCount, setTryBadCount] = useState(0)
     const wordsToGame = filterChoosetWords(useWordsStore((state) => state.dictList));
     const ToggleChooseToGame = useWordsStore(state => state.ToggleChooseToGame)
@@ -80,8 +84,7 @@ export const Game = ({setGameState}) =>{
     const [wordState, setWordState] = useState('firstTry'); // firstTry, failTry, finished, trueTry
     const [currentWord, setCurrentWord] = useState(getRandomWord(wordsToGame, guessedWords));
     const [wordInputText, setWordInputText] = useState('');
-    const [helpText, setHelpText] = useState('Впиши ниже перевод для: ');
-    const [cc, scc] = useState('код')
+    const [helpText, setHelpText] = useState(interfaceTranslate[currentLanguage].enterTranslationBelow);
   return (
   <GameWrapper wordState={wordState}>
     {
@@ -91,7 +94,7 @@ export const Game = ({setGameState}) =>{
         {helpText}
     </HelperTextWrapper>
     <CurrentWordTranslate>
-        {currentWord.translate.ru.join(', ').charAt(0).toUpperCase() + currentWord.translate.ru.join(', ').slice(1)}
+        {currentWord.translate[currentLanguage]?.join(', ').charAt(0).toUpperCase() + currentWord.translate[currentLanguage]?.join(', ').slice(1)}
     </CurrentWordTranslate>
  
     <WordInput type="text" inputMode="text" onKeyDown={e=>{
@@ -106,14 +109,14 @@ export const Game = ({setGameState}) =>{
                     if (guessedWords.length === wordsToGame.length){
                         setWordState('finished')
                     }else{
-                        setHelpText(`Правильно!`)
+                        setHelpText(interfaceTranslate[currentLanguage].correctly)
                         setWordState('trueTry')
                         
                         setTimeout(()=>{
                             setWordState('firstTry')
                             setCurrentWord(getRandomWord(wordsToGame, guessedWords, currentWord));
                             setWordInputText('');
-                            setHelpText(`Впиши ниже перевод для:`)
+                            setHelpText(interfaceTranslate[currentLanguage].enterTranslationBelow)
                         }, 1000)
                        
                     
@@ -121,13 +124,13 @@ export const Game = ({setGameState}) =>{
                     
                     
                 }else{
-                    setHelpText(`Правильно!`)
+                    setHelpText(interfaceTranslate[currentLanguage].correctly)
                     setWordState('firstTry')
                     setTimeout(()=>{
                         setCurrentWord(getRandomWord(wordsToGame, guessedWords, currentWord));
                         setWordInputText('');
                         
-                        setHelpText(`Впиши ниже перевод для:`)
+                        setHelpText(interfaceTranslate[currentLanguage].enterTranslationBelow)
                     }, 1000)
                     
                 }
@@ -136,20 +139,19 @@ export const Game = ({setGameState}) =>{
                     setWordState('failTry')
                     setTryBadCount(prev => prev+1)
 
-                    setHelpText(`Ошибка. Правильное слово: ${currentWord.word}`)
+                    setHelpText(`${interfaceTranslate[currentLanguage].mistake} ${currentWord.word}`)
                     setWordInputText('');
                 }
             }   
         }
     }} value={wordInputText} onChange={(e)=> setWordInputText(e.target.value)}/>
     <div>
-        {cc}
         </div>
         <div>
-        {`отгадано ${guessedWords.length} из ${wordsToGame.length}`}
+        {`${interfaceTranslate[currentLanguage].guessedStats[0]} ${guessedWords.length} ${interfaceTranslate[currentLanguage].guessedStats[1]} ${wordsToGame.length}`}
         </div>
         <div>
-        {`Ошибок допущено: ${tryBadCount}.`}
+        {`${interfaceTranslate[currentLanguage].mistakesMade} ${tryBadCount}.`}
         </div>
    
   </>
@@ -163,14 +165,14 @@ export const Game = ({setGameState}) =>{
             setWordState('firstTry')
             setCurrentWord(getRandomWord(wordsToGame, []))
             setWordInputText('')
-            }}>Играть снова</GameBoutton>
+            }}>${interfaceTranslate[currentLanguage].playAgain}</GameBoutton>
         <GameBoutton onClick={()=>{
             setTryBadCount(0)
             setGameState('chooseWords')
             for(const word of wordsToGame){
                 ToggleChooseToGame(word.id)
             }
-        }}>Вернутся к выбору слов</GameBoutton>
+        }}>${interfaceTranslate[currentLanguage].backToWordSelection}</GameBoutton>
     </>
   }
   </GameWrapper>

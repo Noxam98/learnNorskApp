@@ -2,6 +2,8 @@ import { useState } from "react";
 import { GameWordChooser } from "../components/gameComponents/wordChooser";
 import { Game } from "../components/gameComponents/game";
 import styled from "styled-components";
+import {useWordsStore} from "../store/wordStore.jsx";
+import {useSystemStore} from "../store/systemStore.jsx";
 
 const GamePageWrapper = styled.section`
   
@@ -22,6 +24,8 @@ const GamePageContent = styled.section`
 `
 
 export const GamePage = ({}) => {
+
+
   const [GameState, setGameState] = useState('chooseWords') // chooseWords || playing
   return (
     <GamePageWrapper>

@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useWordsStore } from "../../store/wordStore"; 
 import { DictItem } from "./dictItem";
 import styled, { keyframes } from "styled-components";
+import {useSystemStore} from "../../store/systemStore.jsx";
+import {interfaceTranslate} from "../../interface/interfaceTranslation.jsx";
 
 const Wrapper = styled.section`
   display: flex;
@@ -68,11 +70,12 @@ const filterChoosetWords = (dictList) => {
 export const GameWordChooser = ({setGameState}) => {
   const dictList = useWordsStore((state) => state.dictList);
   const choosedToGameWords = filterChoosetWords(dictList)
+  const [setCurrentLanguage, currentLanguage] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
 
   return (
     <Wrapper>
-      <StartGameButton onClick={()=>setGameState('playing')} disabled={(choosedToGameWords.length < 10)}>Начать играть</StartGameButton>
-      {`Выберите минимум 10 слов. Выбрано сейчас: ${choosedToGameWords.length}. `}
+      <StartGameButton onClick={()=>setGameState('playing')} disabled={(choosedToGameWords.length < 10)}>{interfaceTranslate[currentLanguage].startGame}</StartGameButton>
+      {`${interfaceTranslate[currentLanguage].chooseMinWords} ${choosedToGameWords.length}. `}
       {dictList.map((dictItem) =>(
           <>
             <DictItem dictName={dictItem.dictName} wordList={dictItem.words}/>

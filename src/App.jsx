@@ -2,6 +2,7 @@ import { WordListPage } from "./pages/WordListPage";
 import { NavigationBar } from "./components/navigationBar";
 import { Outlet } from "react-router";
 import styled from "styled-components";
+import {useState} from "react";
 
 const PageWrapper = styled.section`
     margin-top: 10px;
@@ -12,12 +13,13 @@ const PageWrapper = styled.section`
 
 
 function App() {
+    const [languageTranslate, setLanguageTranslate] = useState("ukr");
 
 
   return (
     <>
 
-        <NavigationBar></NavigationBar>
+        <NavigationBar ></NavigationBar>
         <PageWrapper>
           <Outlet/>
         </PageWrapper>

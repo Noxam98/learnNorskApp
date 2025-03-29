@@ -1,16 +1,26 @@
 import {Link, useLocation} from "react-router-dom"
 import styled from "styled-components"
 import { interfaceTranslate } from "../interface/interfaceTranslation"
+import LanguageChooser from "./languageChooser.jsx";
+import {useSystemStore} from "../store/systemStore.jsx";
 
 const BarWrapper = styled.section`
-    min-height: 30px;
+    height: 50px;
+    position: relative;
     border-radius: 6px;
     width: 100%;
     background-color: #afb9bf;
     display: flex;
-    align-items: center;
-    justify-content: center;
-  
+    align-items: stretch;
+    justify-content: space-between;
+`
+
+
+const NavigationLinksWrapper = styled.div`
+    display: flex;
+    margin: 0;
+    padding: 0;
+    height: 100%;
 `
 
 const NavbarLink = styled(Link)`
@@ -18,25 +28,20 @@ const NavbarLink = styled(Link)`
  color: #f5f5f5fa;
  background-color: ${({isActive}) => isActive ? '#628eaf' : 'transparent'};
  padding: 0 10px;
- border-radius: 6px 6px 0 0 ;
+ //border-radius: 6px 6px 0 0 ;
  font-family: Arial, Helvetica, sans-serif;
  text-decoration: none;
  position: relative;
  transition: .3s;
- margin: 10px;
- &::after{
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -3px;
-    background-color: #9e9e9e;
-    height: 3px;
-    width: 100%;
- }
+display: flex;
+align-items: center;
 
+&:nth-child(2){
+    border-radius: 0 8px 8px 0;
+}
 &:hover,
 &:focus{
-    background-color: #00b3ff65;
+    background-color: #628eaf;
 }
 &:active{
     color: #9e9e9e;  
@@ -44,15 +49,20 @@ const NavbarLink = styled(Link)`
 `
 
 export const NavigationBar = ()=>{
+    const [setCurrentLanguage, currentLanguage] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
+
     const location = useLocation()
     return(
         <BarWrapper>
-            <NavbarLink isActive={location.pathname === '/words'} to={'words'}>
-                {interfaceTranslate.ru.navBar.words}
-            </NavbarLink>
-            < NavbarLink isActive={location.pathname === '/game'} to={'game'}>
-                {interfaceTranslate.ru.navBar.game}
-            </NavbarLink>
+            <LanguageChooser/>
+            <NavigationLinksWrapper>
+                <NavbarLink isActive={location.pathname === '/words'} to={'words'}>
+                    {interfaceTranslate[currentLanguage].navBar.words}
+                </NavbarLink>
+                < NavbarLink isActive={location.pathname === '/game'} to={'game'}>
+                    {interfaceTranslate[currentLanguage].navBar.game}
+                </NavbarLink>
+            </NavigationLinksWrapper>
         </BarWrapper>
     )
 }

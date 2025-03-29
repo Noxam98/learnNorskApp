@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useWordsStore } from "../../store/wordStore";
+import {useSystemStore} from "../../store/systemStore.jsx";
 const WordWrapper = styled.div`
   width: max-content;
   background-color: #5a889b;
@@ -26,6 +27,7 @@ const TranslateWrapper = styled.span`
 
 export const WordItem = ({ wordItem }) => {
   const ToggleChooseToGame = useWordsStore((state) => state.ToggleChooseToGame);
+    const [setCurrentLanguage, currentLanguage] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
 
   
   return (
@@ -33,7 +35,7 @@ export const WordItem = ({ wordItem }) => {
       {wordItem.word}
       {" - "}
       <TranslateWrapper>
-        {wordItem.translate.ru.join(', ')}.
+        {wordItem.translate[currentLanguage]?.join(', ')}.
       </TranslateWrapper>
     </WordWrapper>
   );
