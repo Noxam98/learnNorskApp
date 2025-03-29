@@ -12,6 +12,11 @@ const DictTitle = styled.div`
     color: white;
     transition: 0.1s;
   }
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 20px;
   background-color: #cdcdcd;
   border-radius: 10px;
   padding: 5px;
@@ -40,11 +45,15 @@ const WordsWrapper = styled.div`
 `;
 
 const ToolsWrapper = styled.div`
-  gap: 5px;
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  justify-content: end;
+    gap: 5px;
+    display: flex;
+    flex-direction: row;
+    background-color: #c6c6c6;
+    width: max-content;
+    padding: 4px 5px 4px 20px;
+    border-radius: 6px;
+
+    justify-content: end;
 `
 const ToolsButton = styled.button`
     font-size: 14px;
@@ -54,6 +63,10 @@ const ToolsButton = styled.button`
     border: none;
     cursor: pointer;
     border-radius: 8px;
+
+    &:hover {
+        background-color: #9aa3a6;
+    }
 `
 export const DictItem = ({ dictName, wordList }) => {
   const [IsOpened, setIsOpened] = useState(false);
@@ -64,14 +77,19 @@ export const DictItem = ({ dictName, wordList }) => {
     <ItemWrapper>
       <DictTitle onClick={() => setIsOpened((prev) => !prev)}>
         {dictName}
+          {
+              IsOpened &&
+              <ToolsWrapper>
+                  <ToolsButton onClick={(e)=>{ e.stopPropagation(); selectFullDictToGame(dictName, true)}}>{interfaceTranslate[currentLanguage].chooseAll}</ToolsButton>
+                  <ToolsButton onClick={(e)=>{e.stopPropagation(); selectFullDictToGame(dictName, false)}}>{interfaceTranslate[currentLanguage].cancelChoosingAll}</ToolsButton>
+              </ToolsWrapper>
+          }
+
       </DictTitle>
 
       {IsOpened && (
         <WordsWrapper>
-          <ToolsWrapper>
-            <ToolsButton onClick={()=>{selectFullDictToGame(dictName, true)}}>{interfaceTranslate[currentLanguage].chooseAll}</ToolsButton>
-            <ToolsButton onClick={()=>{selectFullDictToGame(dictName, false)}}>{interfaceTranslate[currentLanguage].cancelChoosingAll}</ToolsButton>
-          </ToolsWrapper>
+
           {wordList.map((wordItem) => (
             <WordItem key={wordItem.id} wordItem={wordItem} />
           ))}

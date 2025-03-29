@@ -74,7 +74,10 @@ export const GameWordChooser = ({setGameState}) => {
 
   return (
     <Wrapper>
-      <StartGameButton onClick={()=>setGameState('playing')} disabled={(choosedToGameWords.length < 10)}>{interfaceTranslate[currentLanguage].startGame}</StartGameButton>
+      <StartGameButton onClick={()=>setGameState('playing')}
+                       disabled={(choosedToGameWords.length < 10)}>
+        {interfaceTranslate[currentLanguage].startGame}
+      </StartGameButton>
       {`${interfaceTranslate[currentLanguage].chooseMinWords} ${choosedToGameWords.length}. `}
       {dictList.map((dictItem) =>(
           <>
