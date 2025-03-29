@@ -3,11 +3,11 @@ import styled from "styled-components";
 import LANG_ICON from "../assets/language_icon.svg"
 import {useSystemStore} from "../store/systemStore.jsx";
 const languages = {
-    ru: "Русский",
-    en: "English",
     ukr: "Українська",
+    ru: "Русский",
     pl: "Polski",
     lt: "Lietuvių",
+    en: "English",
 }
 
 const LanguagesBlock = styled.div`
