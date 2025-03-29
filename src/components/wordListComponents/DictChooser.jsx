@@ -1,9 +1,7 @@
 import styled from "styled-components";
 import { interfaceTranslate } from "../../interface/interfaceTranslation";
 import { useState } from "react";
-import { WordTools } from "./wordTools";
 import { useWordsStore } from "../../store/wordStore";
-import exportFromJSON from 'export-from-json'
 import {useSystemStore} from "../../store/systemStore.jsx";
 const ComponentWrapper = styled.div`
   display: flex;

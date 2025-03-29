@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { interfaceTranslate } from "../../interface/interfaceTranslation";
 import { useWordsStore } from "../../store/wordStore";
 import exportFromJSON from "export-from-json";
+import {useSystemStore} from "../../store/systemStore.jsx";
 
 const ToolsWrapper = styled.div`
   display: flex;
@@ -60,6 +61,8 @@ export const WordTools = () => {
   const currentDict = useWordsStore((state) =>
     state.dictList.filter((dict) => dict.dictName === state.currentDictName)
   )[0];
+  const [setCurrentLanguage, currentLanguage] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
+
   const deleteChoseWords = useWordsStore((state) => state.deleteChosedWords);
   const importDict = useWordsStore((state) => state.importDict);
   const isSomeSelected = currentDict.words.some(
@@ -70,7 +73,7 @@ export const WordTools = () => {
       <ToolsWrapper onClick={(e) => e.stopPropagation()}>
         <ToolsButton onClick={deleteChoseWords} disabled={!isSomeSelected}>
           {" "}
-          {interfaceTranslate.ru.delete}
+          {interfaceTranslate[currentLanguage].delete}
         </ToolsButton>
         <ToolsButton
           onClick={() => {
@@ -81,10 +84,11 @@ export const WordTools = () => {
             });
           }}
         >
-          Экспорт
+          {interfaceTranslate[currentLanguage].export}
         </ToolsButton>
         <FileInputContainer>
-          <FileInputLabel htmlFor="file-upload">Импорт</FileInputLabel>
+          <FileInputLabel htmlFor="file-upload">{interfaceTranslate[currentLanguage].import}
+          </FileInputLabel>
           <HiddenFileInput onChange={(e) => {
             const fileReader = new FileReader();
             fileReader.readAsText(e.target.files[0], "UTF-8");
