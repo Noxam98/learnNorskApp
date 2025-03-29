@@ -145,7 +145,7 @@ export const DictChooser = () => {
           <DictVariantsWrapper onClick={(e) => e.stopPropagation()}>
             {dictNames.map((dictName) => (
               <DictItemWrapper key={dictName} onClick={()=>setCurrentDict(dictName)}>
-                {dictName === "default" ? "Общий словарь" : dictName}
+                {dictName === "default" ? interfaceTranslate[currentLanguage].defaultDict : dictName}
                 <DeleteButton onClick={e => e.stopPropagation()} onDoubleClick={()=>removeDict(dictName)}/>
               </DictItemWrapper>
             ))}
@@ -164,7 +164,7 @@ export const DictChooser = () => {
                 }
               }}
               onChange={(e) => setNewDictInput(e.target.value)}
-              placeholder={interfaceTranslate.ru.newDict}
+              placeholder={interfaceTranslate[currentLanguage].newDict}
               />
               <ButtonSave onClick={
                 (e) => {
@@ -174,7 +174,7 @@ export const DictChooser = () => {
                     setNewDictInput("");
                   }
                 }
-              }>Добавить</ButtonSave>
+              }>{interfaceTranslate[currentLanguage].add}</ButtonSave>
               </Relative>
           </DictVariantsWrapper>
         )}

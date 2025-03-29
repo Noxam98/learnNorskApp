@@ -76,7 +76,7 @@ export const WordListPage = ()=>{
                 ? wordList?.map((wordItem) => {
                     return <Card key={wordItem.id} languageTranslate={languageTranslate} wordItem={wordItem}></Card>;
                   })
-                : interfaceTranslate.ru.addWordsHere
+                : interfaceTranslate[languageTranslate].addWordsHere
             }
             
           </CardsWrapper>
