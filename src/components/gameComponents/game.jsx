@@ -165,14 +165,14 @@ export const Game = ({setGameState}) =>{
             setWordState('firstTry')
             setCurrentWord(getRandomWord(wordsToGame, []))
             setWordInputText('')
-            }}>${interfaceTranslate[currentLanguage].playAgain}</GameBoutton>
+            }}>{interfaceTranslate[currentLanguage].playAgain}</GameBoutton>
         <GameBoutton onClick={()=>{
             setTryBadCount(0)
             setGameState('chooseWords')
             for(const word of wordsToGame){
                 ToggleChooseToGame(word.id)
             }
-        }}>${interfaceTranslate[currentLanguage].backToWordSelection}</GameBoutton>
+        }}>{interfaceTranslate[currentLanguage].backToWordSelection}</GameBoutton>
     </>
   }
   </GameWrapper>
