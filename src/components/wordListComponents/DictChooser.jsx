@@ -3,6 +3,7 @@ import { interfaceTranslate } from "../../interface/interfaceTranslation";
 import { useState } from "react";
 import { useWordsStore } from "../../store/wordStore";
 import {useSystemStore} from "../../store/systemStore.jsx";
+import ModalWindow from "../tools/modalWindow.jsx";
 const ComponentWrapper = styled.div`
   display: flex;
   flex-direction: row;
@@ -127,15 +128,37 @@ export const DictChooser = () => {
   const setCurrentDict = useWordsStore((state) => state.setCurrentDict);
   const removeDict = useWordsStore((state) => state.removeDict);
   const [setCurrentLanguage, currentLanguage] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [newDictInput, setNewDictInput] = useState("");
   const [error, setError] = useState("");
+
   const [dictListOpened, setDictListOpened] = useState(false);
   return (
     <ComponentWrapper
       expand={dictListOpened ? 1 : 0}
-      onClick={() => setDictListOpened((prev) => !prev)}
+      onClick={() => !isModalOpen && setDictListOpened((prev) => !prev)}
     >
+
+      { isModalOpen &&
+        <ModalWindow
+            isOpen={isModalOpen}
+            onConfirm={()=> {
+              removeDict(isModalOpen)
+              setIsModalOpen(false);
+            }}
+            onCancel={()=> {
+              setIsModalOpen(false);
+            }}
+        >
+          <>
+            <h2>Подтвердите действие</h2>
+            <p>Вы действительно хотите выполнить это действие?</p>
+          </>
+        </ModalWindow>
+      }
+
+
       {interfaceTranslate[currentLanguage].currentDict}:
       <CurrentDictItemWrapper>
         {currentDictName === "default" ? interfaceTranslate[currentLanguage].defaultDict : currentDictName}
@@ -144,7 +167,7 @@ export const DictChooser = () => {
             {dictNames.map((dictName) => (
               <DictItemWrapper key={dictName} onClick={()=>setCurrentDict(dictName)}>
                 {dictName === "default" ? interfaceTranslate[currentLanguage].defaultDict : dictName}
-                <DeleteButton onClick={e => e.stopPropagation()} onDoubleClick={()=>removeDict(dictName)}/>
+                <DeleteButton onClick={e => setIsModalOpen(dictName)}/>
               </DictItemWrapper>
             ))}
             <Relative>

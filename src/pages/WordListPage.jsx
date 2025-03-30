@@ -8,10 +8,10 @@ import styled from "styled-components";
 import { DictChooser } from "../components/wordListComponents/DictChooser";
 import exportFromJSON from 'export-from-json'
 
-import { Loader } from "../components/loadingComponent";
+import { Loader } from "../components/tools/loadingComponent.jsx";
 import { useWordsStore } from "../store/wordStore";
 import { WordTools } from "../components/wordListComponents/wordTools";
-import Error from "../components/error.jsx";
+import Error from "../components/tools/error.jsx";
 import {useSystemStore} from "../store/systemStore.jsx";
 
 const CardsWrapper = styled.div`
