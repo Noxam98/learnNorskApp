@@ -27,8 +27,8 @@ const CurrentLanguage = styled(LanguageItem)`
     gap: 3px;
     justify-content: center;
     align-items: center;
-    border-radius: ${({isOpen}) => isOpen ? '8px 0 0 0' : "8px 0 0 8px"};
-    border-right: 2px solid #cacaca;
+    border-radius: ${({isOpen}) => isOpen ? '16px 0 0 0' : "16px 0 0 16px"};
+    border-right: 3px solid #cacaca;
     color: white;
     padding: 4px 6px;
     height: 100%;

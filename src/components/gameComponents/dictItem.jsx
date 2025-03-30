@@ -12,6 +12,8 @@ const DictTitle = styled.div`
     color: white;
     transition: 0.1s;
   }
+    box-sizing: border-box;
+    
     display: flex; 
     justify-content: space-between;
     align-items: center;
@@ -29,19 +31,22 @@ const ItemWrapper = styled.div`
   display: flex;
   flex-direction: column;
   /* padding: 5px; */
+    box-sizing: border-box;
+    
   border-radius: 11px;
   gap: 5px;
   justify-content: center;
 `;
 
 const WordsWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 6px;
-  flex-wrap: wrap;
-  border-radius: 6px;
-  background-color: aliceblue;
-  padding: 6px 4px;
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    flex-wrap: wrap;
+    border-radius: 6px;
+    background-color: aliceblue;
+    padding: 6px 4px;
+    box-sizing: border-box;
 `;
 
 const ToolsWrapper = styled.div`
@@ -50,8 +55,9 @@ const ToolsWrapper = styled.div`
     flex-direction: row;
     background-color: #c6c6c6;
     width: max-content;
-    padding: 4px 5px 4px 20px;
-    border-radius: 6px;
+    padding: 4px 5px 4px 5px;
+    border-radius: 16px;
+    box-sizing: border-box;
 
     justify-content: end;
 `
@@ -63,6 +69,7 @@ const ToolsButton = styled.button`
     border: none;
     cursor: pointer;
     border-radius: 8px;
+    box-sizing: border-box;
 
     &:hover {
         background-color: #9aa3a6;
@@ -72,7 +79,7 @@ export const DictItem = ({ dictName, wordList }) => {
   const [IsOpened, setIsOpened] = useState(false);
   const selectFullDictToGame = useWordsStore(state => state.selectFullDictToGame)
   const [setCurrentLanguage, currentLanguage] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
-
+  if (wordList.length == 0) return <></>
   return (
     <ItemWrapper>
       <DictTitle onClick={() => setIsOpened((prev) => !prev)}>
@@ -87,12 +94,13 @@ export const DictItem = ({ dictName, wordList }) => {
 
       </DictTitle>
 
-      {IsOpened && (
+      {IsOpened && wordList.length > 0 &&(
         <WordsWrapper>
 
-          {wordList.map((wordItem) => (
+          {
+              wordList.map((wordItem) => (
             <WordItem key={wordItem.id} wordItem={wordItem} />
-          ))}
+          ))  }
         </WordsWrapper>
       )}
     </ItemWrapper>

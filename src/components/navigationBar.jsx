@@ -7,7 +7,7 @@ import {useSystemStore} from "../store/systemStore.jsx";
 const BarWrapper = styled.section`
     height: 50px;
     position: relative;
-    border-radius: 6px;
+    border-radius: 16px;
     width: 100%;
     background-color: #afb9bf;
     display: flex;
@@ -38,7 +38,7 @@ const NavbarLink = styled(Link)`
     align-items: center;
 
     &:nth-child(2) {
-        border-radius: 0 8px 8px 0;
+        border-radius: 0 16px 16px 0;
     }
 
     &:hover {
