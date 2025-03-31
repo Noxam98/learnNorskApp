@@ -59,29 +59,24 @@ const LanguageChooser = () => {
     return (
         <LanguagesBlock>
         {
-            isOpen?
+            isOpen &&
                 <>
-                    <CurrentLanguage isOpen={isOpen} onClick={() => setIsOpen(prevState => !prevState)}>
-                        <img src={LANG_ICON} style={{padding:'2px'}} width={'20px'}/>
 
-                        {languages[currentLanguage]}
-                    </CurrentLanguage>
                     <LanguagesWrapper onClick={() => setIsOpen(prevState => !prevState)}>
 
                         {Object.entries(languages).map((i, langEntry)=>{
-                            return <LanguageItem onClick={()=>{setCurrentLanguage(i[0])}} key={i[0]}>{i[1]}</LanguageItem>
+                            return <LanguageItem onClick={()=>{setCurrentLanguage(i[0])}} key={i[0]}>{i[0].toUpperCase()} | {i[1]}</LanguageItem>
                         })}
 
                     </LanguagesWrapper>
                 </>
-
-                :
-                <CurrentLanguage onClick={() => setIsOpen(prevState => !prevState)}>
-                    <img src={LANG_ICON} style={{padding:'2px'}} width={'20px'}/>
-                    {languages[currentLanguage]}
-                </CurrentLanguage>
         }
-
+            {
+                <CurrentLanguage isOpen={isOpen} onClick={() => setIsOpen(prevState => !prevState)}>
+                    <img src={LANG_ICON} style={{padding:'2px'}} width={'20px'}/>
+                    {currentLanguage.toUpperCase()} | {languages[currentLanguage]}
+                </CurrentLanguage>
+            }
         </LanguagesBlock>
 
     );
