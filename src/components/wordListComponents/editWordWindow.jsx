@@ -144,8 +144,8 @@ export const WordEditWindow = ({ wordItem, languageTranslate, setIsWordEdititng 
 
       ))}
 
-        <SaveButton type="submit" >Сохранить</SaveButton>
-        <CancelButton onClick={()=>setIsWordEdititng(false)}>Отмена</CancelButton>
+        <SaveButton type="submit" >{interfaceTranslate[currentLanguage].save}</SaveButton>
+        <CancelButton onClick={()=>setIsWordEdititng(false)}>{interfaceTranslate[currentLanguage].cancel}</CancelButton>
 
       
     </WordEditWindowWrapper>

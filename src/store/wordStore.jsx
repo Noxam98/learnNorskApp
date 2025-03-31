@@ -198,6 +198,5 @@ export const useWordsStore = create(persist(
 ));
 
 
-
 useWordsStore.getState().initializeIds();
 useWordsStore.getState().initializeGameData();

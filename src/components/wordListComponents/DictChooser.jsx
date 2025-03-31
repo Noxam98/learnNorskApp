@@ -14,7 +14,7 @@ const ComponentWrapper = styled.div`
   padding: 2px;
   border-radius: 6px;
   width: max-content;
-
+    position: relative;
   align-items: center;
   ${({ expand }) =>
     expand &&
@@ -46,7 +46,9 @@ const CurrentDictItemWrapper = styled.div`
 
 const DictItemWrapper = styled.div`
   padding: 4px;
+
   background-color: #899495;
+  
   cursor: pointer;
   border-radius: 6px;
   position: relative;
@@ -56,20 +58,26 @@ const DictItemWrapper = styled.div`
 const DeleteButton = styled.div`
     &::after{
         content: '+';
-        width: 20px;
-        height: 20px;
+        width: ${({ toDelete }) => toDelete ? "100%" : '20px'};
+        height: ${({ toDelete }) => toDelete ? "100%" : '20px'};
         border-radius: 6px;
-        background-color: #a45454;
-        color: white;
+        background-color: ${({ toDelete }) => toDelete ? "rgba(164,84,84,0.58)" : '#a45454'}; 
+        color: ${({ toDelete }) => toDelete ? "transparent" : 'white'};
+        
         display: flex;
         justify-content: center;
         align-items: center;
-        rotate: 45deg;
-        top: 50%;
-        right: -5px;
-        transform: translate(-75%);
+        rotate: ${({ toDelete }) => toDelete ? "0" : '45deg'};
+        top: ${({ toDelete }) => toDelete ? "0" : '50%'};
+        right: ${({ toDelete }) => toDelete ? "0" : '-5px'};
+        transform:  ${({ toDelete }) => toDelete ? "0" : 'translate(-75%)'};
         font-size: 20px;
         position: absolute;
+        
+                    ${({ toDelete }) => toDelete && `transition: width 0.5s ease-in-out, 
+                                                     right 0.5s ease-in-out, 
+                                                      transform 0.5s ease-in-out;`}
+                     
     }
 `
 
@@ -83,8 +91,8 @@ const DictVariantsWrapper = styled.div`
   min-width: 250px;
   gap: 3px;
   position: absolute;
-  left: 50%;
-  transform: translateX(-70%);
+  left: 0;
+  //transform: translateX(-70%);
   max-height: 200px;
   overflow-y: auto;
   cursor: auto;
@@ -139,7 +147,48 @@ export const DictChooser = () => {
       expand={dictListOpened ? 1 : 0}
       onClick={() => !isModalOpen && setDictListOpened((prev) => !prev)}
     >
+      {dictListOpened && (
+          <DictVariantsWrapper onClick={(e) => e.stopPropagation()}>
+            {dictNames.map((dictName) => (
+                <DictItemWrapper key={dictName} toDelete={dictName === isModalOpen} onClick={()=>setCurrentDict(dictName)}>
+                  {dictName === "default" ? interfaceTranslate[currentLanguage].defaultDict : dictName}
+                  <DeleteButton toDelete={dictName === isModalOpen} onClick={e => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    return setIsModalOpen(dictName)
+                  }}/>
+                </DictItemWrapper>
+            ))}
+            <Relative>
 
+              <Input
+                  type="text"
+                  value={newDictInput}
+                  onKeyDown={(e) => {
+                    if (e.code === "Enter") {
+                      if(newDictInput.trim()){
+                        addNewDict(newDictInput.trim());
+                        setDictListOpened(false);
+                        setNewDictInput("");
+                      }
+                    }
+                  }}
+                  onChange={(e) => setNewDictInput(e.target.value)}
+                  placeholder={interfaceTranslate[currentLanguage].newDict}
+              />
+              <ButtonSave onClick={
+                (e) => {
+                  if(newDictInput.trim()){
+                    addNewDict(newDictInput.trim());
+                    setDictListOpened(false);
+                    setNewDictInput("");
+                  }
+                }
+              }>{interfaceTranslate[currentLanguage].add}
+              </ButtonSave>
+            </Relative>
+          </DictVariantsWrapper>
+      )}
       { isModalOpen &&
         <ModalWindow
             isOpen={isModalOpen}
@@ -161,44 +210,9 @@ export const DictChooser = () => {
 
       {interfaceTranslate[currentLanguage].currentDict}:
       <CurrentDictItemWrapper>
-        {currentDictName === "default" ? interfaceTranslate[currentLanguage].defaultDict : currentDictName}
-        {dictListOpened && (
-          <DictVariantsWrapper onClick={(e) => e.stopPropagation()}>
-            {dictNames.map((dictName) => (
-              <DictItemWrapper key={dictName} onClick={()=>setCurrentDict(dictName)}>
-                {dictName === "default" ? interfaceTranslate[currentLanguage].defaultDict : dictName}
-                <DeleteButton onClick={e => setIsModalOpen(dictName)}/>
-              </DictItemWrapper>
-            ))}
-            <Relative>
 
-            <Input
-              type="text"
-              value={newDictInput}
-              onKeyDown={(e) => {
-                if (e.code === "Enter") {
-                  if(newDictInput.trim()){
-                    addNewDict(newDictInput.trim());
-                    setDictListOpened(false);
-                    setNewDictInput("");
-                  }
-                }
-              }}
-              onChange={(e) => setNewDictInput(e.target.value)}
-              placeholder={interfaceTranslate[currentLanguage].newDict}
-              />
-              <ButtonSave onClick={
-                (e) => {
-                  if(newDictInput.trim()){
-                    addNewDict(newDictInput.trim());
-                    setDictListOpened(false);
-                    setNewDictInput("");
-                  }
-                }
-              }>{interfaceTranslate[currentLanguage].add}</ButtonSave>
-              </Relative>
-          </DictVariantsWrapper>
-        )}
+        {currentDictName === "default" ? interfaceTranslate[currentLanguage].defaultDict : currentDictName}
+
       </CurrentDictItemWrapper>
 
     </ComponentWrapper>
