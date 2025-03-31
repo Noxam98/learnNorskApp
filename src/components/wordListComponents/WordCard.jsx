@@ -120,9 +120,9 @@ export const Card = ({ wordItem, languageTranslate }) => {
         onMouseLeave={() => {
           setIsHovered(false);
         }}
-        isSelected={wordItem.techData.isSelected ? 1 : 0}
+        isSelected={wordItem?.techData?.isSelected ? 1 : 0}
         key={wordItem?.id}
-        onClick={() => choseWord(wordItem.id)}
+        onClick={() => choseWord(wordItem?.id)}
       >
         <PartOfSpeech pos={wordItem?.part_of_speech}>
           {wordItem?.part_of_speech}

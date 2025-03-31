@@ -27,11 +27,11 @@ const TranslateWrapper = styled.span`
 
 export const WordItem = ({ wordItem }) => {
   const ToggleChooseToGame = useWordsStore((state) => state.ToggleChooseToGame);
-    const [setCurrentLanguage, currentLanguage] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
+    const currentLanguage = useSystemStore((state) => state.currentLanguage);
 
   
   return (
-    <WordWrapper onClick={()=>ToggleChooseToGame(wordItem.id)} isChoosed={wordItem.gameData.isChoosedToGame}>
+    <WordWrapper onClick={()=>ToggleChooseToGame(wordItem.id)} isChoosed={wordItem?.gameData?.isChoosedToGame}>
       {wordItem.word}
       {" - "}
       <TranslateWrapper>

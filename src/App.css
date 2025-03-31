@@ -11,6 +11,7 @@ body {
     box-sizing: border-box;
     min-height: 100vh;
     /*min-height: calc(100vh - 18px);*/
+
     display: flex;
     padding: 0;
 }
@@ -20,6 +21,8 @@ body {
     flex-direction: column;
     box-sizing: border-box;
     width: 100%;
+    align-items: center;
+
 }
 
 @media only screen and (max-width : 480px) {
@@ -30,4 +33,46 @@ body {
         padding: 0;
         box-sizing: border-box;
     }
+}
+
+/* Для всей страницы (html) или конкретного контейнера */
+html {
+    scrollbar-width: thin; /* "auto" | "thin" | "none" */
+    scrollbar-color: #888 transparent; /* ползунок и трек */
+}
+
+/* Для WebKit-браузеров (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 8px; /* Ширина вертикального скролла */
+    height: 8px; /* Высота горизонтального скролла */
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Цвет трека */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888; /* Цвет ползунка */
+    border-radius: 4px; /* Закругление углов */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Цвет при наведении */
+}
+
+::-webkit-scrollbar {
+    width: 8px; /* Ширина скроллбара (обязательно!) */
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; /* Прозрачный трек */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888; /* Видимый ползунок */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

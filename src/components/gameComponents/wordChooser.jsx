@@ -59,7 +59,7 @@ const filterChoosetWords = (dictList) => {
   const filteredList = []
   for (const dictItem of dictList){
     for (const word of dictItem.words){
-      if (word.gameData.isChoosedToGame){
+      if (word?.gameData?.isChoosedToGame){
         filteredList.push(word)
       }
     }

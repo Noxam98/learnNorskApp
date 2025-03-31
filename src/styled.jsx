@@ -21,8 +21,10 @@ export const FetchButton = styled.button`
     border: 4px solid #7bb6ea ;
     margin-left: 10px;
     height: 45px;
-    border-radius: 10px;
+    max-width: 260px;
+    border-radius: 16px;
     color: #43423f;
+    transition: .3s;
     font-weight: 700;
     cursor: pointer;
     font-size: 16px;

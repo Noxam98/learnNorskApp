@@ -3,6 +3,8 @@ import { useState } from "react";
 import _, { entries, isBoolean } from "lodash";
 import { useForm } from "react-hook-form"
 import { useWordsStore } from "../../store/wordStore";
+import {interfaceTranslate} from "../../interface/interfaceTranslation.jsx";
+import {useSystemStore} from "../../store/systemStore.jsx";
 
 
 const WordEditWindowWrapper = styled.form`
@@ -16,10 +18,10 @@ const WordEditWindowWrapper = styled.form`
   padding: 10px;
   top: 50%;
   max-height: 600px;
-  overflow: scroll;
-  left: 50%;
+  overflow: auto;
   transform: translate(-50%, -50%);
   max-width: 400px;
+  
 `;
 
 const CancelButton = styled.button`
@@ -30,6 +32,7 @@ const CancelButton = styled.button`
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  
 `
 const SaveButton = styled.button`
   padding: 6px;
@@ -39,6 +42,7 @@ const SaveButton = styled.button`
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  margin-right: 5px;
 `;
 
 const EditItem = styled.input`
@@ -53,12 +57,15 @@ const EditItem = styled.input`
 const Flex = styled.div`
   display: flex;
   align-items: center;
-  justify-content: start;
+  //justify-content: start;
   margin-bottom: 10px;
-  gap: 5px;
+  //gap: 5px;
   background-color: #e0e2e4;
   padding: 5px 6px;
+  //justify-content: flex-end;
   border-radius: 6px;
+  align-items: start;
+  flex-direction: column;
 `;
 
 const DarkBackground = styled.div`
@@ -90,6 +97,9 @@ const flattenObject = (obj, parentKey = "", result = {}) => {
   });
   return result;
 };
+
+
+
 export const WordEditWindow = ({ wordItem, languageTranslate, setIsWordEdititng }) => {
   const [listToEdit, setListToEdit] = useState(flattenObject(_.cloneDeep(wordItem)));
   const setNewWord = useWordsStore(store => store.editWord)
@@ -97,6 +107,7 @@ export const WordEditWindow = ({ wordItem, languageTranslate, setIsWordEdititng 
     register,
     handleSubmit,
   } = useForm()
+  const currentLanguage = useSystemStore((state) => state.currentLanguage);
 
 
   const onSubmit = (data) => {
@@ -111,17 +122,31 @@ export const WordEditWindow = ({ wordItem, languageTranslate, setIsWordEdititng 
     <WordEditWindowWrapper onSubmit={handleSubmit(onSubmit)}>
       
       {Object.entries(listToEdit).map((entry) => (
+
+
+        typeof entry[1] !== "boolean" && typeof entry[1] !== "number" && entry[0] !== "id" &&
           <Flex key={entry[0]}>
-          <EditItem type={`${_.isBoolean(entry[1]) ? 'checkbox': ''}`} 
-          defaultValue={entry[1]} 
-          {...register(entry[0])}
-          />
-        </Flex>
+            <span>{entry[0].includes("translate.ru") && interfaceTranslate[currentLanguage].russian }</span>
+            <span>{entry[0].includes("translate.ukr") && interfaceTranslate[currentLanguage].ukrainian}</span>
+            <span>{entry[0].includes("translate.en") && interfaceTranslate[currentLanguage].english}</span>
+            <span>{entry[0].includes("part_of_speech") && interfaceTranslate[currentLanguage].partOfSpeech}</span>
+            <span>{entry[0].includes("translate.lt") && interfaceTranslate[currentLanguage].lithuanian}</span>
+            <span>{entry[0].includes("translate.pl") && interfaceTranslate[currentLanguage].polish}</span>
+            <span>{entry[0].includes("word") && interfaceTranslate[currentLanguage].word}</span>
+            {/*<div>{entry[0]}</div>*/}
+            <EditItem type={`${_.isBoolean(entry[1]) ? 'checkbox': ''}`}
+              defaultValue={entry[1]}
+              {...register(entry[0])}
+            />
+          </Flex>
+
+
+
       ))}
-      <Flex>
+
         <SaveButton type="submit" >Сохранить</SaveButton>
         <CancelButton onClick={()=>setIsWordEdititng(false)}>Отмена</CancelButton>
-      </Flex>
+
       
     </WordEditWindowWrapper>
     </>

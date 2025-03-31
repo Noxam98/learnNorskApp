@@ -66,7 +66,7 @@ export const WordTools = () => {
   const deleteChoseWords = useWordsStore((state) => state.deleteChosedWords);
   const importDict = useWordsStore((state) => state.importDict);
   const isSomeSelected = currentDict.words.some(
-    (word) => word.techData.isSelected
+    (word) => word?.techData?.isSelected
   );
   return (
     <>

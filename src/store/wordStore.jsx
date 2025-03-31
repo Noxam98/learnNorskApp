@@ -127,7 +127,7 @@ export const useWordsStore = create(persist(
       if (currentDictItem) {
         let wordIndex = currentDictItem.words.findIndex(wordItem => wordItem.id === wordId);
         if (wordIndex !== -1) {
-          currentDictItem.words[wordIndex] = { ...newWordItem, id: wordId }; // сохраняем тот же ID
+          currentDictItem.words[wordIndex] = {...currentDictItem.words[wordIndex], ...newWordItem, id: wordId }; // сохраняем тот же ID
         }
       }
     })),
