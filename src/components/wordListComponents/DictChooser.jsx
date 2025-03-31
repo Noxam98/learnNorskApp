@@ -152,11 +152,16 @@ export const DictChooser = () => {
             {dictNames.map((dictName) => (
                 <DictItemWrapper key={dictName} toDelete={dictName === isModalOpen} onClick={()=>setCurrentDict(dictName)}>
                   {dictName === "default" ? interfaceTranslate[currentLanguage].defaultDict : dictName}
-                  <DeleteButton toDelete={dictName === isModalOpen} onClick={e => {
-                    e.stopPropagation()
-                    e.preventDefault()
-                    return setIsModalOpen(dictName)
-                  }}/>
+                  {
+                    dictNames.length > 1 &&
+                      <DeleteButton toDelete={dictName === isModalOpen} onClick={e => {
+                        e.stopPropagation()
+                        e.preventDefault()
+                        return setIsModalOpen(dictName)
+                      }}/>
+
+                  }
+
                 </DictItemWrapper>
             ))}
             <Relative>
