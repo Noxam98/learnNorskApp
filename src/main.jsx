@@ -10,6 +10,9 @@ import {
 } from "react-router-dom";
 import { WordListPage } from './pages/WordListPage.jsx';
 import { GamePage } from './pages/GamePage.jsx';
+import LoginPage from "./pages/LoginPage.jsx";
+import RegisterPage from "./pages/RegisterPage.jsx";
+import MyPage from "./pages/MyPage.jsx";
 
 const router = createHashRouter([
   {
@@ -27,6 +30,18 @@ const router = createHashRouter([
       {
         path: 'game',
         element: <GamePage/>, 
+      },
+      {
+        path: 'authorization',
+        element: <LoginPage/>,
+      },
+      {
+        path: 'registration',
+        element: <RegisterPage/>,
+      },
+      {
+        path: 'mypage',
+        element: <MyPage/>,
       }
     ]
   },

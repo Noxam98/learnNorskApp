@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from "styled-components";
+import {useSystemStore} from "../../store/systemStore.jsx";
+import {interfaceTranslate} from "../../interface/interfaceTranslation.jsx";
 
 const ModalWindowWrapper = styled.div`
     width: min(400px, 100%);
@@ -45,17 +47,25 @@ const ButtonsWrapper = styled.div`
     padding: 10px;
 `
 
-const ModalWindow = ({ onConfirm, onCancel, children }) => {
+const ModalWindow = ({ onConfirm, onCancel, children, confirmation = true }) => {
+    const currentLanguage = useSystemStore((state) => state.currentLanguage);
+
     return (
 
         <ModalWindowWrapper>
             <ContentWrapper>
                 {children || "Вы уверены?"}
             </ContentWrapper>
-            <ButtonsWrapper>
-                <Button onClick={onCancel}>Нет</Button>
-                <Button onClick={onConfirm}>Да</Button>
-            </ButtonsWrapper>
+            {
+                confirmation ?
+                    <ButtonsWrapper>
+                        <Button onClick={onCancel}>{interfaceTranslate[currentLanguage].no}</Button>
+                        <Button onClick={onConfirm}>{interfaceTranslate[currentLanguage].yes}</Button>
+                    </ButtonsWrapper>
+                    :
+                    <Button onClick={onCancel}>{interfaceTranslate[currentLanguage].cancel}</Button>
+            }
+
         </ModalWindowWrapper>
     );
 };

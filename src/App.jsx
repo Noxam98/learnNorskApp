@@ -2,6 +2,9 @@ import { NavigationBar } from "./components/navigationBar";
 import { Outlet } from "react-router";
 import styled from "styled-components";
 import Footer from "./components/footer.jsx";
+import {useAuthStore} from "./store/AuthStore.jsx";
+import {useEffect} from "react";
+
 
 const PageWrapper = styled.section`
     margin-top: 10px;
@@ -23,6 +26,14 @@ const AppWrapper = styled.section`
 `
 
 function App() {
+    const {isAuthorized, refreshAuthToken} = useAuthStore();
+    useEffect(() => {
+        if (!isAuthorized){
+            refreshAuthToken();
+        } else {
+
+        }
+    }, [isAuthorized]);
     return (
     <>
         <AppWrapper>
@@ -30,6 +41,7 @@ function App() {
             <PageWrapper>
                 <Outlet/>
             </PageWrapper>
+
         </AppWrapper>
         <Footer/>
     </>

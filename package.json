@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "crypto-js": "^4.2.0",
     "export-from-json": "^1.7.4",
     "immer": "^10.1.1",
     "ky": "^1.7.5",

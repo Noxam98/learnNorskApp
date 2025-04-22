@@ -98,14 +98,21 @@ export const WordListPage = ()=>{
                     const fetchingResult = await fetchWord(prompt);
                     console.log(fetchingResult)
 
-                    if (fetchingResult.response.error){
-                        console.log('error: --------------------------');
-                        setError(fetchingResult.response.error)
+                    if (fetchingResult.response){
+                        // setError(fetchingResult.response.error)
+                        const errors = fetchingResult.response.filter(item => item.error)
+                        if (errors.length > 0){
+                            console.log(errors)
+                            setError(errors.map(error => error.error).join('\n'));
+                        }
+                        if (fetchingResult.response.filter(item => !item.error).length > 0){
+                            addWords(dictName, fetchingResult.response.filter(item => !item.error))
+                            inputRef.current.innerText=''
+                        }
+
                     } else{
-                        addWords(dictName, fetchingResult.response)
                         setPrompt('')
-                        inputRef.current.innerText=''
-                        inputRef.current.focus()
+
 
                     }
 
@@ -113,6 +120,8 @@ export const WordListPage = ()=>{
                 catch {
 
                 }
+                inputRef.current.focus()
+
                 setIsLoading(false)
 
             }}

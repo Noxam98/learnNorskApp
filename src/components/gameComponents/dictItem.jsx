@@ -61,6 +61,7 @@ const ToolsWrapper = styled.div`
 
     justify-content: end;
 `
+
 const ToolsButton = styled.button`
     font-size: 14px;
     background-color: #ffc880;
