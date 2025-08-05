@@ -62,7 +62,7 @@ export const WordListPage = ()=>{
     const [error, setError] = useState("");
     const inputRef = useRef();
     return (
-        <>
+        <div>
           
           {isLoading && <Loader text={interfaceTranslate[languageTranslate].fetching}/>}
           <ToolsWrapper>
@@ -130,6 +130,6 @@ export const WordListPage = ()=>{
           </FetchButton>
             <Error text={error} setText={setError} />
 
-        </>
+        </div>
       );
 }

@@ -5,6 +5,7 @@ import LanguageChooser from "./languageChooser.jsx";
 import {useSystemStore} from "../store/systemStore.jsx";
 import {useAuth} from "../hooks/useAuth.js";
 import AuthIcon from "../assets/AuthIcon.jsx";
+import {device} from "../interface/screenSizes.js";
 const BarWrapper = styled.section`
     height: 50px;
     position: relative;
@@ -14,6 +15,8 @@ const BarWrapper = styled.section`
     display: flex;
     align-items: stretch;
     justify-content: space-between;
+ 
+    
 `
 
 

@@ -12,6 +12,7 @@
   "dependencies": {
     "crypto-js": "^4.2.0",
     "export-from-json": "^1.7.4",
+    "framer-motion": "^12.8.2",
     "immer": "^10.1.1",
     "ky": "^1.7.5",
     "lodash": "^4.17.21",
