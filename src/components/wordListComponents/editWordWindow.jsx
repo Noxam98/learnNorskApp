@@ -99,7 +99,7 @@ const BaseButton = styled.button`
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
-  
+
   &:hover {
     opacity: 0.9;
   }
@@ -121,40 +121,40 @@ const CancelButton = styled(BaseButton)`
 `;
 
 const AddButton = styled(BaseButton)`
-    color: #007bff;
-    background-color: transparent;
-    border: 1px dashed #007bff;
-    padding: 6px 12px;
-    font-size: 14px;
-    margin-top: 5px;
+  color: #007bff;
+  background-color: transparent;
+  border: 1px dashed #007bff;
+  padding: 6px 12px;
+  font-size: 14px;
+  margin-top: 5px;
 
-    &:hover {
-        background-color: #e7f3ff;
-    }
+  &:hover {
+    background-color: #e7f3ff;
+  }
 `;
 
 const DeleteButton = styled.button`
-    background: transparent;
-    border: none;
-    color: #dc3545;
-    cursor: pointer;
-    font-size: 24px;
-    padding: 0 5px;
-    line-height: 1;
+  background: transparent;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 0 5px;
+  line-height: 1;
 
-    &:hover {
-        color: #a71d2a;
-    }
+  &:hover {
+    color: #a71d2a;
+  }
 `;
 
 const DarkBackground = styled.div`
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: 3;
-    background-color: #000000aa;
-    top: 0;
-    right: 0;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  background-color: #000000aa;
+  top: 0;
+  right: 0;
 `;
 
 
@@ -172,6 +172,9 @@ const unflattenObject = (data) => {
     for(const lang in result.translate) {
       if (!result.translate[lang]) {
         result.translate[lang] = [];
+      } else {
+        // Убираем пустые строки, которые могут появиться, если пользователь удалил текст из инпута
+        result.translate[lang] = result.translate[lang].filter(t => t.trim() !== "");
       }
     }
   }
@@ -192,12 +195,10 @@ const TranslationGroup = ({ lang, control, register, translations }) => {
         <GroupTitle>{lang.name}</GroupTitle>
         {fields.map((field, index) => (
             <Field key={field.id}>
-              <Label>{`${translations.translate} #${index + 1}`}</Label>
+              <Label>{`${lang.code === 'no' ? 'Слово' : translations.translate} #${index + 1}`}</Label>
               <InputWithButton>
                 <Input
-                    {...register(`translate.${lang.code}[${index}]`)}
-                    // `defaultValue` важен для `useFieldArray` для отображения начальных значений
-                    defaultValue={field.value}
+                    {...register(`translate.${lang.code}.${index}`, { required: lang.code === 'no' ? 'Основное слово не может быть пустым' : false })}
                 />
                 <DeleteButton type="button" onClick={() => remove(index)}>
                   &times;
@@ -228,6 +229,11 @@ export const WordEditWindow = ({ wordItem, setIsWordEdititng }) => {
   // Логика отправки формы
   const onSubmit = (data) => {
     const structuredData = unflattenObject(data);
+    // Убедимся, что норвежский перевод не пустой
+    if (!structuredData.translate.no || structuredData.translate.no.length === 0) {
+      alert("Норвежское слово не может быть пустым.");
+      return;
+    }
     setNewWord(wordItem.id, structuredData);
     setIsWordEdititng(false);
   };
@@ -237,8 +243,9 @@ export const WordEditWindow = ({ wordItem, setIsWordEdititng }) => {
     wordItem.translate = {};
   }
 
-  // Список языков для рендеринга групп переводов
+  // ИЗМЕНЕНО: Добавляем норвежский в список языков для редактирования
   const translationLanguages = [
+    { code: 'no', name: 'Norwegian' }, // Основное слово
     { code: 'ru', name: translations.russian },
     { code: 'ukr', name: translations.ukrainian },
     { code: 'en', name: translations.english },
@@ -252,21 +259,16 @@ export const WordEditWindow = ({ wordItem, setIsWordEdititng }) => {
         <WordEditWindowWrapper onSubmit={handleSubmit(onSubmit)}>
           <Title>{translations.editWord || "Edit Word"}</Title>
 
-          {/* --- Основная информация --- */}
+          {/* ИЗМЕНЕНО: Убрано отдельное поле для слова, теперь все в группах */}
           <FieldGroup>
             <GroupTitle>{translations.mainInfo || "Main Information"}</GroupTitle>
-            <Field>
-              <Label>{translations.word || "Word"}</Label>
-              <Input {...register("word", { required: "This field is required" })} />
-              {errors.word && <span style={{color: 'red', fontSize: '12px'}}>{errors.word.message}</span>}
-            </Field>
             <Field>
               <Label>{translations.partOfSpeech || "Part of speech"}</Label>
               <Input {...register("part_of_speech")} />
             </Field>
           </FieldGroup>
 
-          {/* --- Группы переводов --- */}
+          {/* --- Группы переводов (включая норвежский) --- */}
           {translationLanguages.map(lang => (
               <TranslationGroup
                   key={lang.code}

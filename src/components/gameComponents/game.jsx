@@ -7,21 +7,21 @@ import {interfaceTranslate} from "../../interface/interfaceTranslation.jsx";
 const filterChoosetWords = (dictList) => {
     const filteredList = []
     for (const dictItem of dictList){
-      for (const word of dictItem.words){
-        if (word?.gameData?.isChoosedToGame){
-          filteredList.push(word)
+        for (const word of dictItem.words){
+            if (word?.gameData?.isChoosedToGame){
+                filteredList.push(word)
+            }
         }
-      }
     }
     return filteredList
-  }
+}
 
 const getRandomWord = (wordsToGame, guessedWords, currentWord) =>{
     console.log(wordsToGame, guessedWords);
-    
-  const unguessedWords = wordsToGame.filter(word => ![...guessedWords, currentWord].includes(word));
-  const randomWord = unguessedWords[Math.floor(Math.random()*unguessedWords.length)];
-  return randomWord || wordsToGame[0]
+
+    const unguessedWords = wordsToGame.filter(word => ![...guessedWords, currentWord].includes(word));
+    const randomWord = unguessedWords[Math.floor(Math.random()*unguessedWords.length)];
+    return randomWord || wordsToGame[0]
 }
 
 const CurrentWordTranslate = styled.span`
@@ -29,9 +29,9 @@ const CurrentWordTranslate = styled.span`
     border-radius: 20px;
     font-size: 34px;
     display: block;
-     background-color: cadetblue;
-     color: #f2ff00;
-     font-weight: 500;
+    background-color: cadetblue;
+    color: #f2ff00;
+    font-weight: 500;
 
 `
 
@@ -85,97 +85,99 @@ export const Game = ({setGameState}) =>{
     const [currentWord, setCurrentWord] = useState(getRandomWord(wordsToGame, guessedWords));
     const [wordInputText, setWordInputText] = useState('');
     const [helpText, setHelpText] = useState(interfaceTranslate[currentLanguage].enterTranslationBelow);
-  return (
-  <GameWrapper wordState={wordState}>
-    {
-     wordState !== 'finished' &&
-        <>
-    <HelperTextWrapper wordState={wordState}>
-        {helpText}
-    </HelperTextWrapper>
-    <CurrentWordTranslate>
-        {currentWord.translate[currentLanguage]?.join(', ').charAt(0).toUpperCase() + currentWord.translate[currentLanguage]?.join(', ').slice(1)}
-    </CurrentWordTranslate>
- 
-    <WordInput type="text" inputMode="text" onKeyDown={e=>{
-        
-        if(e.key === 'Enter'){
-            if(wordInputText.toLowerCase().trim() === currentWord.word.toLowerCase().trim()){
-                if(wordState === 'firstTry'){
-                    setGuessedWords(prev => {
-                        return [...prev, currentWord]
-                    })
-                    
-                    if (guessedWords.length === wordsToGame.length){
-                        setWordState('finished')
-                    }else{
-                        setHelpText(interfaceTranslate[currentLanguage].correctly)
-                        setWordState('trueTry')
-                        
-                        setTimeout(()=>{
-                            setWordState('firstTry')
-                            setCurrentWord(getRandomWord(wordsToGame, guessedWords, currentWord));
-                            setWordInputText('');
-                            setHelpText(interfaceTranslate[currentLanguage].enterTranslationBelow)
-                        }, 1000)
-                       
-                    
-                    }
-                    
-                    
-                }else{
-                    setHelpText(interfaceTranslate[currentLanguage].correctly)
-                    setWordState('firstTry')
-                    setTimeout(()=>{
-                        setCurrentWord(getRandomWord(wordsToGame, guessedWords, currentWord));
-                        setWordInputText('');
-                        
-                        setHelpText(interfaceTranslate[currentLanguage].enterTranslationBelow)
-                    }, 1000)
-                    
-                }
-            } else{
-                if(wordState === 'firstTry'){
-                    setWordState('failTry')
-                    setTryBadCount(prev => prev+1)
+    return (
+        <GameWrapper wordState={wordState}>
+            {
+                wordState !== 'finished' &&
+                <>
+                    <HelperTextWrapper wordState={wordState}>
+                        {helpText}
+                    </HelperTextWrapper>
+                    <CurrentWordTranslate>
+                        {currentWord.translate[currentLanguage]?.join(', ').charAt(0).toUpperCase() + currentWord.translate[currentLanguage]?.join(', ').slice(1)}
+                    </CurrentWordTranslate>
 
-                    setHelpText(`${interfaceTranslate[currentLanguage].mistake} ${currentWord.word}`)
-                    setWordInputText('');
-                }
-            }   
-        }
-    }} value={wordInputText} onChange={(e)=> setWordInputText(e.target.value)}/>
-    <div>
-        </div>
-        <div>
-        {`${interfaceTranslate[currentLanguage].guessedStats[0]} ${guessedWords.length} ${interfaceTranslate[currentLanguage].guessedStats[1]} ${wordsToGame.length}`}
-        </div>
-        <div>
-        {`${interfaceTranslate[currentLanguage].mistakesMade} ${tryBadCount}.`}
-        </div>
-   
-  </>
-}
-  {
-    wordState === 'finished' && 
-    <>
-        <GameBoutton onClick={()=>{
-            setGuessedWords([])
-            setTryBadCount(0)
-            setWordState('firstTry')
-            setCurrentWord(getRandomWord(wordsToGame, []))
-            setWordInputText('')
-            }}>{interfaceTranslate[currentLanguage].playAgain}</GameBoutton>
-        <GameBoutton onClick={()=>{
-            setTryBadCount(0)
-            setGameState('chooseWords')
-            for(const word of wordsToGame){
-                ToggleChooseToGame(word.id)
+                    <WordInput type="text" inputMode="text" onKeyDown={e=>{
+
+                        if(e.key === 'Enter'){
+                            // ИЗМЕНЕНО: Сравниваем с норвежским переводом
+                            if(wordInputText.toLowerCase().trim() === currentWord.translate?.no?.[0]?.toLowerCase().trim()){
+                                if(wordState === 'firstTry'){
+                                    setGuessedWords(prev => {
+                                        return [...prev, currentWord]
+                                    })
+
+                                    if (guessedWords.length === wordsToGame.length){
+                                        setWordState('finished')
+                                    }else{
+                                        setHelpText(interfaceTranslate[currentLanguage].correctly)
+                                        setWordState('trueTry')
+
+                                        setTimeout(()=>{
+                                            setWordState('firstTry')
+                                            setCurrentWord(getRandomWord(wordsToGame, guessedWords, currentWord));
+                                            setWordInputText('');
+                                            setHelpText(interfaceTranslate[currentLanguage].enterTranslationBelow)
+                                        }, 1000)
+
+
+                                    }
+
+
+                                }else{
+                                    setHelpText(interfaceTranslate[currentLanguage].correctly)
+                                    setWordState('firstTry')
+                                    setTimeout(()=>{
+                                        setCurrentWord(getRandomWord(wordsToGame, guessedWords, currentWord));
+                                        setWordInputText('');
+
+                                        setHelpText(interfaceTranslate[currentLanguage].enterTranslationBelow)
+                                    }, 1000)
+
+                                }
+                            } else{
+                                if(wordState === 'firstTry'){
+                                    setWordState('failTry')
+                                    setTryBadCount(prev => prev+1)
+
+                                    // ИЗМЕНЕНО: В подсказке показываем норвежский перевод
+                                    setHelpText(`${interfaceTranslate[currentLanguage].mistake} ${currentWord.translate?.no?.[0]}`)
+                                    setWordInputText('');
+                                }
+                            }
+                        }
+                    }} value={wordInputText} onChange={(e)=> setWordInputText(e.target.value)}/>
+                    <div>
+                    </div>
+                    <div>
+                        {`${interfaceTranslate[currentLanguage].guessedStats[0]} ${guessedWords.length} ${interfaceTranslate[currentLanguage].guessedStats[1]} ${wordsToGame.length}`}
+                    </div>
+                    <div>
+                        {`${interfaceTranslate[currentLanguage].mistakesMade} ${tryBadCount}.`}
+                    </div>
+
+                </>
             }
-        }}>{interfaceTranslate[currentLanguage].backToWordSelection}</GameBoutton>
-    </>
-  }
-  </GameWrapper>
+            {
+                wordState === 'finished' &&
+                <>
+                    <GameBoutton onClick={()=>{
+                        setGuessedWords([])
+                        setTryBadCount(0)
+                        setWordState('firstTry')
+                        setCurrentWord(getRandomWord(wordsToGame, []))
+                        setWordInputText('')
+                    }}>{interfaceTranslate[currentLanguage].playAgain}</GameBoutton>
+                    <GameBoutton onClick={()=>{
+                        setTryBadCount(0)
+                        setGameState('chooseWords')
+                        for(const word of wordsToGame){
+                            ToggleChooseToGame(word.id)
+                        }
+                    }}>{interfaceTranslate[currentLanguage].backToWordSelection}</GameBoutton>
+                </>
+            }
+        </GameWrapper>
 
-  )
+    )
 }
