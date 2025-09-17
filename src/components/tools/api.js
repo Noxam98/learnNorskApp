@@ -166,7 +166,7 @@ class ApiService {
     async getWordDescription(wordText) {
         // Кодируем слово для безопасной передачи в URL
         const encodedWord = encodeURIComponent(wordText);
-        const response = await this.apiRequest(`/word_description/?word=${encodedWord}`);
+        const response = await this.apiRequest(`word_description/?word=${encodedWord}`);
         return response.json();
     }
 
