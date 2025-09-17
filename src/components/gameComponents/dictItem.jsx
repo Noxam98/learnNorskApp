@@ -26,7 +26,7 @@ const DictTitle = styled.div`
 `;
 
 const ItemWrapper = styled.div`
-  border: 1px solid black;
+  border: 1px solid #b0c4de;
   /* border-width: 0 0 1px; */
   display: flex;
   flex-direction: column;

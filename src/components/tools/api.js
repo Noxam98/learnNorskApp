@@ -73,43 +73,54 @@ class ApiService {
     }
 
     async apiRequest(endpoint, options = {}) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 сек таймаут
-
-        try {
-            const response = await ky(`${this.baseUrl}${endpoint}`, {
-                ...options,
-                throwHttpErrors: false,
-                headers: {
-                    'Authorization': `Bearer ${this.accessToken}`,
-                    'Content-Type': 'application/json',
-                    ...options.headers,
-                },
-                signal: controller.signal,
-            });
-
-            clearTimeout(timeoutId);
-            return response;
-        } catch (error) {
-            clearTimeout(timeoutId);
-
-            // Обновляем токен при 401 ошибке
-            if (error.response?.status === 401 && !options._retry) {
-                const newToken = await this.refreshAccessToken();
-                return this.apiRequest(endpoint, {
-                    ...options,
-                    headers: {
-                        ...options.headers,
-                        'Authorization': `Bearer ${newToken}`,
-                    },
-                    _retry: true, // Предотвращаем бесконечный цикл
-                });
+        const mergedOptions = {
+            ...options,
+            timeout: 500000,
+            retry: {
+                limit: 5,
+                methods: ['get', 'post', 'put', 'delete'],
+                statusCodes: [408, 429, 500, 502, 503, 504],
+                afterResponse: (request, options, response) => {
+                    // Этот хук позволяет сбросить счетчик retry после успешного обновления токена
+                    if (response.status === 401) {
+                        options.retryCount = 0;
+                    }
+                }
+            },
+            headers: {
+                'Authorization': `Bearer ${this.accessToken}`,
+                'Content-Type': 'application/json',
+                ...options.headers,
+            },
+            hooks: {
+                beforeRequest: [
+                    request => {
+                        request.headers.set('Authorization', `Bearer ${this.accessToken}`);
+                    }
+                ],
+                afterResponse: [
+                    async (request, options, response) => {
+                        if (response.status === 401) {
+                            try {
+                                const newToken = await this.refreshAccessToken();
+                                // Важно: устанавливаем новый токен для следующего запроса
+                                this.accessToken = newToken;
+                                // ky автоматически повторит исходный запрос благодаря `return ky(request)`
+                                return ky(request);
+                            } catch (refreshError) {
+                                // Если обновление токена не удалось, прекращаем попытки
+                                return response;
+                            }
+                        }
+                        return response;
+                    }
+                ]
             }
+        };
 
-            throw error;
-        }
+        // Теперь мы просто вызываем ky и позволяем ему делать всю работу
+        return ky(`${this.baseUrl}${endpoint}`, mergedOptions);
     }
-
     // --- Публичные методы ---
     async register(username, password) {
 
@@ -149,6 +160,13 @@ class ApiService {
 
     async getProtectedData() {
         const response = await this.apiRequest('/protected');
+        return response.json();
+    }
+
+    async getWordDescription(wordText) {
+        // Кодируем слово для безопасной передачи в URL
+        const encodedWord = encodeURIComponent(wordText);
+        const response = await this.apiRequest(`/word_description/?word=${encodedWord}`);
         return response.json();
     }
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GameWordChooser } from "../components/gameComponents/wordChooser";
+import { GameWordChooser } from "../components/gameComponents/GameWordChooser.jsx";
 import { Game } from "../components/gameComponents/game";
 import styled from "styled-components";
 import {useWordsStore} from "../store/wordStore.jsx";

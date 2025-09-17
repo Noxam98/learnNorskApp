@@ -6,6 +6,7 @@ import {useSystemStore} from "../store/systemStore.jsx";
 import {useAuth} from "../hooks/useAuth.js";
 import AuthIcon from "../assets/AuthIcon.jsx";
 import {device} from "../interface/screenSizes.js";
+import MyDebugComponent from "./tools/debug.jsx";
 const BarWrapper = styled.section`
     height: 50px;
     position: relative;
@@ -73,20 +74,21 @@ export const NavigationBar = ()=>{
         <BarWrapper>
             <LanguageChooser/>
             <NavigationLinksWrapper>
-                <LoggedIndicator to={'/authorization'}
-                                 isActive={
-                    location.pathname === '/authorization' ||
-                    location.pathname === '/registration' ||
-                    location.pathname === '/mypage'
-                }>
-                    <AuthIcon color={isAuthenticated ? '#37ef3a' : '#000000'} />
-                </LoggedIndicator>
+                {/*<LoggedIndicator to={'/authorization'}*/}
+                {/*                 isActive={*/}
+                {/*    location.pathname === '/authorization' ||*/}
+                {/*    location.pathname === '/registration' ||*/}
+                {/*    location.pathname === '/mypage'*/}
+                {/*}>*/}
+                {/*    <AuthIcon color={isAuthenticated ? '#37ef3a' : '#000000'} />*/}
+                {/*</LoggedIndicator>*/}
                 <NavbarLink isActive={location.pathname === '/words'} to={'words'}>
                     {interfaceTranslate[currentLanguage].navBar.words}
                 </NavbarLink>
                 <NavbarLink isActive={location.pathname === '/game'} to={'game'}>
                     {interfaceTranslate[currentLanguage].navBar.game}
                 </NavbarLink>
+                {/*<MyDebugComponent/>*/}
             </NavigationLinksWrapper>
         </BarWrapper>
     )
