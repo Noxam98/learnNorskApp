@@ -5,6 +5,7 @@ import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import api from "../tools/api.js";
+import { speakNorwegian } from "../ui/tts.js";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 
@@ -18,15 +19,6 @@ const pickWord = (pool, excludeIds) => {
 
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 const uniq = (arr) => { const s = new Set(); return arr.filter((x) => x && !s.has(x.toLowerCase()) && s.add(x.toLowerCase())); };
-
-const speak = (text) => {
-    try {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "nb-NO";
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(u);
-    } catch { /* нет TTS */ }
-};
 
 export const Game = ({ setGameState, mode = "no2int", quiz = false }) => {
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
@@ -186,7 +178,7 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false }) => {
                     <div className="qprompt">{t.translateTo} {promptTarget}</div>
                     <h1 className="qword">{question}
                         {isNo2Int && (
-                            <button className="qspeak" aria-label={t.tts} onClick={() => speak(no)}><Icon n="volume" lg /></button>
+                            <button className="qspeak" aria-label={t.tts} onClick={() => speakNorwegian(no)}><Icon n="volume" lg /></button>
                         )}
                     </h1>
                     {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}

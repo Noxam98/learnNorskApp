@@ -6,19 +6,12 @@ import { Icon } from "../ui/Icon.jsx";
 import { Modal } from "../ui/Modal.jsx";
 import { posMeta, posLabel } from "../ui/pos.js";
 import api from "../tools/api.js";
-
-const speak = (text) => {
-    try {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "nb-NO";
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(u);
-    } catch { /* TTS недоступен */ }
-};
+import { speakNorwegian } from "../ui/tts.js";
 
 export const Card = ({ wordItem, languageTranslate }) => {
     const choseWord = useWordsStore((state) => state.choseWord);
     const editWord = useWordsStore((state) => state.editWord);
+    const reportWord = useWordsStore((state) => state.reportWord);
     const loadDescription = useWordsStore((state) => state.loadDescription);
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
@@ -71,7 +64,7 @@ export const Card = ({ wordItem, languageTranslate }) => {
                     <span className="wcard__tr">{translation}</span>
                 </div>
                 <div className="wcard__actions" onClick={(e) => e.stopPropagation()}>
-                    <button className="iconbtn" aria-label="Озвучить" onClick={() => speak(no)}><Icon n="volume" /></button>
+                    <button className="iconbtn" aria-label={t.tts} onClick={() => speakNorwegian(no)}><Icon n="volume" /></button>
                     <button
                         className="iconbtn"
                         aria-label={t.description}
@@ -107,6 +100,10 @@ export const Card = ({ wordItem, languageTranslate }) => {
                 onClose={() => setEditOpen(false)}
                 title={`${t.translate}: ${no}`}
                 footer={<>
+                    <button className="btn btn--danger-ghost" style={{ marginRight: "auto" }}
+                        onClick={() => { setEditOpen(false); reportWord(wordItem.id).catch(() => {}); }}>
+                        {t.reportWrong}
+                    </button>
                     <button className="btn btn--ghost" onClick={() => setEditOpen(false)}>{t.cancel}</button>
                     <button className="btn btn--primary" onClick={saveEdit}>{t.save}</button>
                 </>}

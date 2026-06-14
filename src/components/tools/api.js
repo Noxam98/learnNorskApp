@@ -171,10 +171,12 @@ class ApiService {
     createDict(name) { return this._send('POST', '/dictionaries', { name }); }
     deleteDict(dictId) { return this._send('DELETE', `/dictionaries/${dictId}`); }
     addWords(dictId, prompt) { return this._send('POST', `/dictionaries/${dictId}/words`, { prompt }); }
+    addPoolWord(dictId, norwegian) { return this._send('POST', `/dictionaries/${dictId}/add_pool`, { norwegian }); }
     importDict(dict) { return this._send('POST', '/dictionaries/import', { name: dict.dictName, words: dict.words || [] }); }
     deleteWord(wordId) { return this._send('DELETE', `/words/${wordId}`); }
     editWord(wordId, override) { return this._send('PATCH', `/words/${wordId}`, override); }
     recordResult(wordId, correct) { return this._send('POST', `/words/${wordId}/result`, { correct }); }
+    reportWord(wordId) { return this._send('POST', `/words/${wordId}/report`); }
     getWordDescription(wordId) { return this._send('GET', `/words/${wordId}/description`); }
     getDistractors(wordId, { n = 3, mode = 'no2int', lang = 'ru' } = {}) {
         return this._send('GET', `/words/${wordId}/distractors?n=${n}&mode=${mode}&lang=${encodeURIComponent(lang)}`);

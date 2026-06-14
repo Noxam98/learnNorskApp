@@ -6,8 +6,9 @@ import { useWordsStore } from "../store/wordStore";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
-import { posMeta } from "../components/ui/pos.js";
+import { posMeta, posLabel } from "../components/ui/pos.js";
 import Error from "../components/tools/error.jsx";
+import api from "../components/tools/api.js";
 
 const POS_ORDER = ["noun", "verb", "adj", "phrase", "other"];
 const SORT_LABELS = {
@@ -29,6 +30,7 @@ export const WordListPage = () => {
     const importDict = useWordsStore((state) => state.importDict);
     const deleteChosedWords = useWordsStore((state) => state.deleteChosedWords);
     const choseWord = useWordsStore((state) => state.choseWord);
+    const addFromPool = useWordsStore((state) => state.addFromPool);
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
 
@@ -45,7 +47,28 @@ export const WordListPage = () => {
     const [pendingDelete, setPendingDelete] = useState(null);
     const [sort, setSort] = useState("added");
     const [sortOpen, setSortOpen] = useState(false);
+    const [suggestions, setSuggestions] = useState([]);
     const fileRef = useRef();
+    const searchTimer = useRef();
+
+    // Автокомплит из общего пула (по мере ввода).
+    const onPromptChange = (val) => {
+        setPrompt(val);
+        clearTimeout(searchTimer.current);
+        const q = val.trim();
+        if (q.length < 2) { setSuggestions([]); return; }
+        searchTimer.current = setTimeout(async () => {
+            try {
+                const res = await api.searchPool(q);
+                setSuggestions(res.results || []);
+            } catch { setSuggestions([]); }
+        }, 250);
+    };
+
+    const pickSuggestion = async (norwegian) => {
+        setSuggestions([]); setPrompt("");
+        try { await addFromPool(norwegian); } catch { setError(t.connectionError); }
+    };
 
     const dictLabel = dictName === "default" ? t.defaultDict : dictName;
     const sl = SORT_LABELS[currentLanguage] || SORT_LABELS.en;
@@ -172,16 +195,31 @@ export const WordListPage = () => {
                 </div>
             </div>
 
-            {/* Композер добавления слова */}
-            <div className="composer">
+            {/* Композер добавления слова + автокомплит из общего пула */}
+            <div className="composer" style={{ position: "relative" }}>
                 <span className="composer__spark"><Icon n="sparkles" /></span>
                 <input type="text" value={prompt} placeholder={t.inputPlaceholder}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") handleAdd(); }} />
+                    onChange={(e) => onPromptChange(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { setSuggestions([]); handleAdd(); } }} />
                 <span className="composer__hint">ru · ukr · en · pl · lt</span>
                 <button className="btn btn--accent" onClick={handleAdd} disabled={isLoading}>
                     {isLoading ? <Icon n="settings" sm className="spin" /> : <Icon n="plus" sm />} {isLoading ? t.fetching : t.add}
                 </button>
+
+                {suggestions.length > 0 && (
+                    <div className="card composer__suggest">
+                        {suggestions.map((s) => {
+                            const { cls } = posMeta(s.part_of_speech);
+                            return (
+                                <button key={s.word} className="suggest__item" onMouseDown={(e) => { e.preventDefault(); pickSuggestion(s.word); }}>
+                                    <span className="suggest__w">{s.word}</span>
+                                    <span className={`chip pos ${cls}`}>{posLabel(s.part_of_speech, t)}</span>
+                                    <span className="suggest__t">{s.translate?.[currentLanguage]?.join(", ")}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
 
             {/* Список слов */}

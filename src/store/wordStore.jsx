@@ -43,6 +43,14 @@ export const useWordsStore = create((set, get) => ({
         return res;
     },
 
+    // Добавить слово из общего пула (автокомплит) — мгновенно, без ИИ.
+    addFromPool: async (norwegian) => {
+        const dictId = get()._currentDictId();
+        if (!dictId) return;
+        await api.addPoolWord(dictId, norwegian);
+        await get().loadData();
+    },
+
     addNewDict: async (name) => {
         await api.createDict(name);
         await get().loadData();
@@ -73,6 +81,12 @@ export const useWordsStore = create((set, get) => ({
     editWord: async (wordId, override) => {
         // override: { translate?, part_of_speech? }
         await api.editWord(wordId, override);
+        await get().loadData();
+    },
+
+    // Пометить слово неправильным: удалить из общего пула и перегенерировать.
+    reportWord: async (wordId) => {
+        await api.reportWord(wordId);
         await get().loadData();
     },
 
