@@ -85,6 +85,7 @@
     gap: 9px;
     width: auto;
     max-width: 100%;
+    cursor: pointer;
 }
 .wcard__body { flex: 0 1 auto; min-width: 0; }
 .wcard__tr { flex: 0 1 auto; white-space: normal; overflow: visible; text-overflow: clip; }
@@ -106,6 +107,11 @@
     box-shadow: -14px 0 12px -6px var(--fjord-50);
 }
 .wcard:hover .wcard__actions { opacity: 1; }
+
+/* Неактивная кнопка озвучки (нет аудио) */
+.iconbtn:disabled { cursor: not-allowed; }
+.iconbtn:disabled:hover { background: transparent; }
+.qspeak:disabled { cursor: not-allowed; }
 
 /* Автокомплит в композере */
 .composer__suggest {

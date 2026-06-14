@@ -1,5 +1,4 @@
 import { useRef, useState, useMemo } from "react";
-import exportFromJSON from "export-from-json";
 import { interfaceTranslate } from "../interface/interfaceTranslation";
 import { Card } from "../components/wordListComponents/WordCard";
 import { useWordsStore } from "../store/wordStore";
@@ -27,7 +26,6 @@ export const WordListPage = () => {
     const addNewDict = useWordsStore((state) => state.addNewDict);
     const setCurrentDict = useWordsStore((state) => state.setCurrentDict);
     const removeDict = useWordsStore((state) => state.removeDict);
-    const importDict = useWordsStore((state) => state.importDict);
     const deleteChosedWords = useWordsStore((state) => state.deleteChosedWords);
     const choseWord = useWordsStore((state) => state.choseWord);
     const addFromPool = useWordsStore((state) => state.addFromPool);
@@ -48,7 +46,6 @@ export const WordListPage = () => {
     const [sort, setSort] = useState("added");
     const [sortOpen, setSortOpen] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
-    const fileRef = useRef();
     const searchTimer = useRef();
 
     // Автокомплит из общего пула (по мере ввода).
@@ -99,22 +96,6 @@ export const WordListPage = () => {
         wordList.forEach((w) => { if (allSelected || !w?.techData?.isSelected) choseWord(w.id); });
     };
 
-    const onImport = (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            try {
-                const parsed = JSON.parse(ev.target.result);
-                Promise.resolve(importDict(parsed)).catch(() => setError(t.importFailed));
-            } catch { setError(t.importFailed); }
-        };
-        reader.readAsText(file, "UTF-8");
-        e.target.value = "";
-    };
-
-    const onExport = () => exportFromJSON({ data: currentDict, fileName: currentDict.dictName, exportType: exportFromJSON.types.json });
-
     return (
         <main className="shell words-main">
             {/* Единая строка управления словарём */}
@@ -162,17 +143,11 @@ export const WordListPage = () => {
                 {selectedCount > 0 && <span className="toolbar__count">{selectedCount}</span>}
                 <button className="tool is-danger" onClick={deleteChosedWords} disabled={!selectedCount}><Icon n="trash" sm /> {t.delete}</button>
 
-                <span className="toolbar__sep" />
-
-                <button className="tool" onClick={() => fileRef.current?.click()}><Icon n="upload" sm /> {t.import}</button>
-                <button className="tool" onClick={onExport}><Icon n="download" sm /> {t.export}</button>
-                <input ref={fileRef} type="file" accept="application/json" style={{ display: "none" }} onChange={onImport} />
-
                 <div className="grow" />
 
                 <div style={{ position: "relative" }}>
                     <button className="select" onClick={() => setSortOpen((p) => !p)}>
-                        <Icon n="layers" sm />
+                        <Icon n="sort" sm />
                         <span>{sl[sort]}</span>
                         <Icon n="chevron-down" sm />
                     </button>
