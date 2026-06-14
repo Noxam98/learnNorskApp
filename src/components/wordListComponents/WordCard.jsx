@@ -1,263 +1,124 @@
-import styled, { keyframes } from "styled-components";
-import { interfaceTranslate } from "../../interface/interfaceTranslation";
 import { useState } from "react";
-import { WordEditWindow } from "./editWordWindow";
-// ИЗМЕНЕНО: Импортируем ваш универсальный ModalWindow
+import { interfaceTranslate } from "../../interface/interfaceTranslation";
 import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
-import ModalWindow from "../tools/modalWindow.jsx";
+import { Icon } from "../ui/Icon.jsx";
+import { Modal } from "../ui/Modal.jsx";
+import { posMeta, posLabel } from "../ui/pos.js";
+import api from "../tools/api.js";
 
-// --- Стили --- (PartOfSpeech, WordCard, StatusIndicator, Loader, ButtonsContainer, BaseButton, EditButton, DescriptionButton без изменений)
+const speak = (text) => {
+    try {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "nb-NO";
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
+    } catch { /* TTS недоступен */ }
+};
 
-export const PartOfSpeech = styled.div`
-    position: absolute;
-    bottom: 2px;
-    font-size: 10px;
-    left: 5px;
-    border-radius: 5px;
-    padding: 0px 5px;
-    color: black;
-    background-color: ${(
-            { pos }
-    ) =>
-            pos === "phrase"
-                    ? "#c0ebf2"
-                    : pos === "substantiv"
-                            ? "#c0f2ca"
-                            : pos === "verb"
-                                    ? "#eec97a"
-                                    : pos === "adjective"
-                                            ? "#a8aaf7"
-                                            : "#f7ffad"};
-`;
-
-export const WordCard = styled.div`
-    display: flex;
-    color: #ffffff;
-    background-color: #628eaf;
-    flex-direction: row;
-    white-space: nowrap;
-    gap: 5px;
-    border-radius: 4px;
-    width: max-content;
-    padding: 3px 25px 14px 10px;
-    user-select: none;
-    position: relative;
-    cursor: pointer;
-
-    &::before {
-        position: absolute;
-        right: 0px;
-        bottom: 0px;
-        border-radius: 0 0 4px 4px;
-        width: 100%;
-        height: 8px;
-        background-color: #eaa340;
-        ${({isSelected}) => isSelected && 'content: "";'}
-    }
-
-    &:hover {
-        &::after {
-            position: absolute;
-            right: 0px;
-            bottom: 0px;
-            border-radius: 0 0 4px 4px;
-            width: 100%;
-            height: 8px;
-            background-color: #eaa34026;
-            content: "";
-        }
-    }
-
-    @media (max-width: 730px) {
-        font-size: 12px;
-        white-space: normal;
-    }
-`;
-
-const StatusIndicator = styled.div`
-    position: absolute;
-    //top: 2px;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 2px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2;
-
-    ${({ status }) => status === 'error' && `
-    background-color: #e74c3c;
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: help;
-  `}
-`;
-
-const rotate = keyframes`
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-`;
-
-const Loader = styled.div`
-    border: 5px solid rgba(255, 255, 255, 0.3);
-    border-top: 5px solid #fff;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: ${rotate} 0.8s linear infinite;
-`;
-
-const ButtonsContainer = styled.div`
-    position: absolute;
-    display: flex;
-    gap: 4px;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
-`;
-
-const BaseButton = styled.button`
-    width: 25px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: none;
-    border-radius: 4px;
-    color: #979696;
-    cursor: pointer;
-    font-size: 15px;
-    
-    &:disabled {
-        background-color: #b0b8bf;
-        color: #7d8da1;
-        cursor: not-allowed;
-    }
-`;
-
-const EditButton = styled(BaseButton)`
-    background-color: #fbe288;
-    &:hover {
-        background-color: #f3b20d;
-        color: white;
-    }
-    &::after {
-        content: "✎";
-    }
-`;
-
-const DescriptionButton = styled(BaseButton)`
-    background-color: #a8d8ea;
-    &:hover:enabled {
-        background-color: #3d8f9e;
-        color: white;
-    }
-    &::after {
-        content: "📖";
-    }
-`;
-
-// --- НОВЫЕ СТИЛИ для содержимого модального окна ---
-const DescriptionWrapper = styled.div`
-    text-align: left;
-    color: #343a40;
-`;
-const DescriptionTitle = styled.h3`
-    text-align: center;
-    margin-top: 0;
-    margin-bottom: 20px;
-`;
-
-
-
-// --- Основной компонент ---
 export const Card = ({ wordItem, languageTranslate }) => {
     const choseWord = useWordsStore((state) => state.choseWord);
-    const [isHovered, setIsHovered] = useState(false);
-    const [isWordEditing, setIsWordEdititng] = useState(false);
-    const [isDescriptionVisible, setIsDescriptionVisible] = useState(false);
-
+    const editWord = useWordsStore((state) => state.editWord);
+    const loadDescription = useWordsStore((state) => state.loadDescription);
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
-    const translations = interfaceTranslate[currentLanguage];
+    const t = interfaceTranslate[currentLanguage];
 
-    const isDescriptionAvailable = wordItem.descriptionState === 'loaded';
+    const [descOpen, setDescOpen] = useState(false);
+    const [editOpen, setEditOpen] = useState(false);
+    const [draft, setDraft] = useState("");
+    const [synonyms, setSynonyms] = useState(null);
 
-    // НОВОЕ: Формируем JSX для описания, который передадим в модальное окно
-    const descriptionContent = (
-        <DescriptionWrapper>
-            <DescriptionTitle>{wordItem.translate?.no?.[0]}</DescriptionTitle>
+    const no = wordItem.translate?.no?.[0] || "";
+    const translation = wordItem.translate?.[languageTranslate]?.join(", ") || "";
+    const { cls } = posMeta(wordItem.part_of_speech);
+    const label = posLabel(wordItem.part_of_speech, t);
+    const isSelected = !!wordItem?.techData?.isSelected;
+    const isLoadingDesc = wordItem.descriptionState === "loading";
+    const descriptionText = wordItem.description?.description?.[currentLanguage] || "";
+    const hasDescription = descriptionText.trim() !== "";
 
-            {wordItem.description?.description && wordItem.description?.description[currentLanguage]}
-        </DescriptionWrapper>
-    );
+    const openEdit = (e) => {
+        e.stopPropagation();
+        setDraft(wordItem.translate?.[languageTranslate]?.join(", ") || "");
+        setEditOpen(true);
+    };
+
+    const saveEdit = () => {
+        const list = draft.split(",").map((s) => s.trim()).filter(Boolean);
+        editWord(wordItem.id, { translate: { [languageTranslate]: list } });
+        setEditOpen(false);
+    };
+
+    const openDescription = (e) => {
+        e.stopPropagation();
+        if (!hasDescription && !isLoadingDesc) loadDescription(wordItem.id);
+        setSynonyms(null);
+        api.getSynonyms(wordItem.id, { lang: currentLanguage })
+            .then((r) => setSynonyms(r.synonyms || []))
+            .catch(() => setSynonyms([]));
+        setDescOpen(true);
+    };
 
     return (
         <>
-            <WordCard
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                isSelected={wordItem?.techData?.isSelected ? 1 : 0}
-                key={wordItem?.id}
-                onClick={() => choseWord(wordItem?.id)}
+            <div className={`wcard${isSelected ? " is-selected" : ""}`} onClick={() => choseWord(wordItem.id)}>
+                <span className={`check wcard__check${isSelected ? " is-on" : ""}`}>
+                    {isSelected && <Icon n="check" />}
+                </span>
+                <div className="wcard__body">
+                    <span className="wcard__word">{no.toLowerCase()}</span>
+                    <span className={`chip pos ${cls}`}>{label}</span>
+                    <span className="wcard__tr">{translation}</span>
+                </div>
+                <div className="wcard__actions" onClick={(e) => e.stopPropagation()}>
+                    <button className="iconbtn" aria-label="Озвучить" onClick={() => speak(no)}><Icon n="volume" /></button>
+                    <button
+                        className="iconbtn"
+                        aria-label={t.description}
+                        title={t.description}
+                        onClick={openDescription}
+                    >
+                        {isLoadingDesc ? <Icon n="settings" className="spin" /> : <Icon n="book" />}
+                    </button>
+                    <button className="iconbtn" aria-label="Редактировать" onClick={openEdit}><Icon n="edit" /></button>
+                </div>
+            </div>
+
+            <Modal open={descOpen} onClose={() => setDescOpen(false)} title={no}>
+                <p className="muted" style={{ margin: 0, lineHeight: "var(--lh-normal)" }}>
+                    {hasDescription ? descriptionText : (isLoadingDesc ? t.descLoading : t.descUnavailable)}
+                </p>
+                {synonyms?.length > 0 && (
+                    <div style={{ marginTop: "var(--sp-5)" }}>
+                        <div className="label" style={{ marginBottom: "var(--sp-2)" }}>{t.similar}</div>
+                        <div className="row wrap" style={{ gap: "var(--sp-2)" }}>
+                            {synonyms.map((s) => (
+                                <span key={s.word} className="chip" style={{ background: "var(--surface-3)", color: "var(--ink)" }}>
+                                    <b>{s.word}</b>{s.translate?.[0] ? ` — ${s.translate[0]}` : ""}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </Modal>
+
+            <Modal
+                open={editOpen}
+                onClose={() => setEditOpen(false)}
+                title={`${t.translate}: ${no}`}
+                footer={<>
+                    <button className="btn btn--ghost" onClick={() => setEditOpen(false)}>{t.cancel}</button>
+                    <button className="btn btn--primary" onClick={saveEdit}>{t.save}</button>
+                </>}
             >
-                {/* ... индикаторы загрузки и ошибки без изменений ... */}
-                {wordItem.descriptionState === 'loading' && (
-                    <StatusIndicator>
-                        <Loader />
-                    </StatusIndicator>
-                )}
-
-
-                <PartOfSpeech pos={wordItem?.part_of_speech}>
-                    {wordItem?.part_of_speech}
-                </PartOfSpeech>
-
-                <div>{wordItem?.translate?.no?.[0]?.toLowerCase()}</div>-
-                <div>{wordItem?.translate[languageTranslate]?.join(", ")}</div>
-
-                {isHovered && (
-                    <ButtonsContainer>
-                        <DescriptionButton
-                            disabled={!isDescriptionAvailable}
-                            title={isDescriptionAvailable ? (translations.showDescription || "Show description") : (translations.noDescription || "No description")}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsDescriptionVisible(true);
-                            }}
-                        />
-                        <EditButton
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsWordEdititng(true);
-                            }}
-                        />
-                    </ButtonsContainer>
-                )}
-            </WordCard>
-
-            {isWordEditing && (
-                <WordEditWindow
-                    wordItem={wordItem}
-                    languageTranslate={languageTranslate}
-                    setIsWordEdititng={setIsWordEdititng}
-                />
-            )}
-
-            {/* ИЗМЕНЕНО: Используем ваш ModalWindow */}
-            {isDescriptionVisible && (
-                <ModalWindow
-                    onCancel={() => setIsDescriptionVisible(false)}
-                    confirmation={false} // Указываем, что нужна только одна кнопка "Отмена/Закрыть"
-                >
-                    {descriptionContent}
-                </ModalWindow>
-            )}
+                <div className="field">
+                    <label className="label">{t.translate} ({languageTranslate})</label>
+                    <input className="input" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={t.translate} />
+                    <span className="input-hint">{t.multipleVariantsHint}</span>
+                </div>
+            </Modal>
         </>
     );
 };
+
+export default Card;

@@ -1,95 +1,40 @@
-import {Link, useLocation} from "react-router-dom"
-import styled from "styled-components"
-import { interfaceTranslate } from "../interface/interfaceTranslation"
+import { Link, useLocation } from "react-router-dom";
+import { interfaceTranslate } from "../interface/interfaceTranslation";
+import { useSystemStore } from "../store/systemStore.jsx";
 import LanguageChooser from "./languageChooser.jsx";
-import {useSystemStore} from "../store/systemStore.jsx";
-import {useAuth} from "../hooks/useAuth.js";
-import AuthIcon from "../assets/AuthIcon.jsx";
-import {device} from "../interface/screenSizes.js";
-import MyDebugComponent from "./tools/debug.jsx";
-const BarWrapper = styled.section`
-    height: 50px;
-    position: relative;
-    border-radius: 16px;
-    width: 100%;
-    background-color: #afb9bf;
-    display: flex;
-    align-items: stretch;
-    justify-content: space-between;
- 
-    
-`
+import { BrandMark, BrandName } from "./ui/BrandMark.jsx";
+import { Icon } from "./ui/Icon.jsx";
 
-
-const NavigationLinksWrapper = styled.div`
-    display: flex;
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    align-items: stretch;
-`
-
-const NavbarLink = styled(Link)`
-    font-size: x-large;
-    background-color: ${({isActive}) => isActive ? '#37a5ef' : '#9aa3a6'};
-    color: ${({isActive}) => isActive ? '#f9f9fa' : '#d6d6d6'};
-    padding: 0 7px;
-    font-family: Arial, Helvetica, sans-serif;
-    text-decoration: none;
-    position: relative;
-    transition: .3s;
-    display: flex;
-    align-items: center;
-
-    &:last-child {
-        border-radius: 0 16px 16px 0;
-    }
-
-    &:hover {
-        background-color: #2d9eea;
-    }
-`
-
-const LoggedIndicator = styled(Link)`
-    width: 35px;
-    border-radius: 0 0 0 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: .3s;
-    background-color: ${({isActive}) => isActive ? '#37a5ef' : '#9aa3a6'};
-
-    &:hover {
-        background-color: #2d9eea;
-    }
-`
-
-export const NavigationBar = ()=>{
+export const NavigationBar = () => {
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
-    const { isAuthenticated } = useAuth();
+    const t = interfaceTranslate[currentLanguage];
+    const { pathname } = useLocation();
 
-    const location = useLocation()
-    return(
-        <BarWrapper>
-            <LanguageChooser/>
-            <NavigationLinksWrapper>
-                {/*<LoggedIndicator to={'/authorization'}*/}
-                {/*                 isActive={*/}
-                {/*    location.pathname === '/authorization' ||*/}
-                {/*    location.pathname === '/registration' ||*/}
-                {/*    location.pathname === '/mypage'*/}
-                {/*}>*/}
-                {/*    <AuthIcon color={isAuthenticated ? '#37ef3a' : '#000000'} />*/}
-                {/*</LoggedIndicator>*/}
-                <NavbarLink isActive={location.pathname === '/words'} to={'words'}>
-                    {interfaceTranslate[currentLanguage].navBar.words}
-                </NavbarLink>
-                <NavbarLink isActive={location.pathname === '/game'} to={'game'}>
-                    {interfaceTranslate[currentLanguage].navBar.game}
-                </NavbarLink>
-                {/*<MyDebugComponent/>*/}
-            </NavigationLinksWrapper>
-        </BarWrapper>
-    )
-}
+    return (
+        <header className="nav">
+            <div className="shell nav__row">
+                <Link className="brand" to="/words">
+                    <BrandMark />
+                    <BrandName />
+                </Link>
+                <nav className="nav__links">
+                    <Link className={`nav__link${pathname === "/words" ? " is-active" : ""}`} to="/words">
+                        <Icon n="book" sm /> {t.navBar.words}
+                    </Link>
+                    <Link className={`nav__link${pathname === "/game" ? " is-active" : ""}`} to="/game">
+                        <Icon n="play" sm /> {t.navBar.game}
+                    </Link>
+                </nav>
+                <div className="nav__spacer" />
+                <LanguageChooser />
+                <Link
+                    className={`nav__link${pathname === "/mypage" ? " is-active" : ""}`}
+                    to="/mypage"
+                    aria-label="Профиль"
+                >
+                    <Icon n="user" />
+                </Link>
+            </div>
+        </header>
+    );
+};

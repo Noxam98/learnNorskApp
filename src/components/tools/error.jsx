@@ -1,40 +1,35 @@
-import React, {useEffect, useState} from 'react';
-import styled from "styled-components";
+import { useEffect, useState } from 'react';
+import { Icon } from "../ui/Icon.jsx";
 
-const ErrorCard = styled.div`
-    max-width: 300px;
-    min-width: 100px;
-    background-color: maroon;
-    position: fixed;
-    bottom: 10px;
-    padding: 10px;
-    border-radius: 8px;
-    left: ${({isVisible}) =>  isVisible? "10px" : "-100%" };
-    font-size: 12px;
-    color: white;
-    font-weight: bold;
-    transition: 1s;
-`
-
-const Error = ({text, setText}) => {
+const Error = ({ text, setText }) => {
     const [isVisible, setIsVisible] = useState(false);
-    useEffect(()=>{
-        if (text){
-            setIsVisible(true)
-            setTimeout(()=>{
+    useEffect(() => {
+        if (text) {
+            setIsVisible(true);
+            const a = setTimeout(() => {
                 setIsVisible(false);
-                setTimeout(()=>{
-                    setText('')
-                },1000)
-
-            }, 5000)
+                const b = setTimeout(() => setText(''), 1000);
+                return () => clearTimeout(b);
+            }, 5000);
+            return () => clearTimeout(a);
         }
-    }, [text])
+    }, [text]);
 
     return (
-        <ErrorCard isVisible={isVisible}>
-            {text}
-        </ErrorCard>
+        <div
+            className="alert"
+            style={{
+                position: "fixed", left: "var(--sp-4)", bottom: "var(--sp-4)", zIndex: 120,
+                maxWidth: 360, boxShadow: "var(--shadow-lg)",
+                transform: isVisible ? "translateY(0)" : "translateY(160%)",
+                opacity: isVisible ? 1 : 0,
+                pointerEvents: isVisible ? "auto" : "none",
+                transition: "transform .35s var(--ease), opacity .35s var(--ease)",
+                whiteSpace: "pre-wrap",
+            }}
+        >
+            <Icon n="x" sm /> {text}
+        </div>
     );
 };
 

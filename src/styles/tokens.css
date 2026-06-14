@@ -1,0 +1,139 @@
+/* ============================================================
+   Lære Norsk — Design Tokens
+   Scandinavian minimal · warm fjord palette
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* ---- Type ---- */
+  --font-sans: 'Schibsted Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-15: 15px;
+  --fs-16: 16px;
+  --fs-18: 18px;
+  --fs-20: 20px;
+  --fs-24: 24px;
+  --fs-28: 28px;
+  --fs-34: 34px;
+  --fs-44: 44px;
+  --fs-56: 56px;
+  --fs-72: 72px;
+
+  --lh-tight: 1.1;
+  --lh-snug: 1.25;
+  --lh-normal: 1.5;
+
+  --ls-tight: -0.02em;
+  --ls-tighter: -0.03em;
+  --ls-wide: 0.04em;
+  --ls-wider: 0.12em;
+
+  /* ---- Neutrals (warm-cool Nordic stone) ---- */
+  --canvas:    #EEF0EC;   /* app background — pale birch/stone */
+  --surface:   #FFFFFF;
+  --surface-2: #F7F8F5;
+  --surface-3: #F0F2EE;
+  --border:    #E1E4DE;
+  --border-2:  #D2D6CF;
+
+  --ink:   #161A18;       /* near-black, faint green-cool */
+  --ink-2: #4F564F;       /* secondary text */
+  --ink-3: #858C84;       /* tertiary / placeholder */
+  --ink-on: #FFFFFF;
+
+  /* ---- Brand: Fjord (primary) ---- */
+  --fjord-900: #0E2C30;
+  --fjord-700: #143E45;
+  --fjord-600: #195059;   /* primary */
+  --fjord-500: #2A6A74;
+  --fjord-300: #8FBEC4;
+  --fjord-100: #DCEBED;
+  --fjord-50:  #EEF6F6;
+
+  /* ---- Accent: Ember (action / energy) ---- */
+  --ember-700: #B23F1C;
+  --ember-600: #CE4A21;   /* accent */
+  --ember-500: #E25A2E;
+  --ember-100: #FBE2D6;
+  --ember-50:  #FDF0E9;
+
+  /* ---- Semantic ---- */
+  --success:    #3C7A4E;
+  --success-bg: #E2F0E4;
+  --danger:     #B23A2E;
+  --danger-bg:  #F7E0DC;
+  --warning:    #B5821C;
+  --warning-bg: #F6EBCF;
+
+  /* ---- Part of speech (re-toned, soft) ---- */
+  --pos-phrase:    #1F7E8C;  --pos-phrase-bg:  #E1F0F2;
+  --pos-noun:      #3C7A4E;  --pos-noun-bg:    #E4F0E6;
+  --pos-verb:      #A9781A;  --pos-verb-bg:    #F6EBCE;
+  --pos-adj:       #5E54B8;  --pos-adj-bg:     #E8E5F6;
+  --pos-other:     #616A63;  --pos-other-bg:   #E9ECE8;
+
+  /* ---- Game · dark focus mode ---- */
+  --game-bg:        #102322;
+  --game-bg-2:      #0B1817;
+  --game-surface:   #1A302E;
+  --game-surface-2: #214039;
+  --game-border:    #2C463F;
+  --game-ink:       #EAF1EE;
+  --game-ink-2:     #9DB1AB;
+  --game-accent:    #F2A65A;
+  --game-correct:   #62C083;
+  --game-incorrect: #E67A52;
+
+  /* ---- Radii ---- */
+  --r-xs: 6px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+  --r-full: 999px;
+
+  /* ---- Spacing (4-base) ---- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* ---- Shadows ---- */
+  --shadow-xs: 0 1px 2px rgba(16,28,26,.05);
+  --shadow-sm: 0 1px 3px rgba(16,28,26,.07), 0 1px 2px rgba(16,28,26,.04);
+  --shadow-md: 0 6px 20px rgba(16,28,26,.08);
+  --shadow-lg: 0 18px 48px rgba(16,28,26,.14);
+  --shadow-focus: 0 0 0 4px var(--fjord-100);
+
+  /* ---- Motion ---- */
+  --ease: cubic-bezier(.2,.7,.2,1);
+  --dur: .22s;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button, input, select, textarea { font-family: inherit; }
+
+::selection { background: var(--ember-100); color: var(--ember-700); }

@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import styled from "styled-components";
-import { motion, AnimatePresence } from "framer-motion";
-import LANG_ICON from "../assets/language_icon.svg";
+import { useState, useRef, useEffect } from 'react';
+import { AnimatePresence, motion } from "framer-motion";
 import { useSystemStore } from "../store/systemStore.jsx";
-import { device } from "../interface/screenSizes.js";
+import { Icon } from "./ui/Icon.jsx";
 
 const languages = {
     ukr: "Українська",
@@ -13,80 +11,58 @@ const languages = {
     en: "English",
 };
 
-const LanguagesBlock = styled.div`
-    position: relative;
-    min-width: 60px;
-`;
-
-const LanguageItem = styled.div`
-    display: flex;
-    background-color: #95a3a6;
-    padding: 6px 6px;
-    min-width: max-content;
-    cursor: pointer;
-`;
-
-const CurrentLanguage = styled(LanguageItem)`
-    display: flex;
-    gap: 3px;
-    justify-content: center;
-    align-items: center;
-    border-radius: ${({ isOpen }) => isOpen ? '16px 0 0 0' : "16px 0 0 16px"};
-    border-right: 3px solid #cacaca;
-    transition: .3s;
-    color: white;
-    padding: 4px 6px;
-    height: 100%;
-    box-sizing: border-box;
-`;
-
-
-const LanguagesWrapper = styled(motion.div)`
-    min-width: 100%;
-    top: 100%;
-    box-sizing: border-box;
-    position: absolute;
-    left: 0;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 3px 2px;
-    background-color: #cacaca;
-    border-radius: 0 0 6px 6px;
-    border: 1px solid darkgray;
-`;
-
-const LanguageChooser = () => {
+const LanguageChooser = ({ className = "hide-mobile" }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [setCurrentLanguage, currentLanguage] = useSystemStore((state) => [state.setCurrentLanguage, state.currentLanguage]);
+    const ref = useRef(null);
+    const [setCurrentLanguage, currentLanguage] = useSystemStore(
+        (state) => [state.setCurrentLanguage, state.currentLanguage]
+    );
+
+    useEffect(() => {
+        const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setIsOpen(false); };
+        document.addEventListener("mousedown", onDoc);
+        return () => document.removeEventListener("mousedown", onDoc);
+    }, []);
 
     return (
-        <LanguagesBlock>
+        <div style={{ position: "relative" }} ref={ref}>
+            <button className={`select ${className}`} onClick={() => setIsOpen((p) => !p)} aria-label="Язык интерфейса">
+                <Icon n="globe" sm />
+                <span>{languages[currentLanguage] || currentLanguage}</span>
+                <Icon n="chevron-down" sm />
+            </button>
             <AnimatePresence>
                 {isOpen && (
-                    <LanguagesWrapper
-                        initial={{ opacity: 0, y: 10 }}
+                    <motion.div
+                        className="card"
+                        initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.2 }}
-                        onClick={() => setIsOpen(false)}
+                        exit={{ opacity: 0, y: 6 }}
+                        transition={{ duration: 0.16 }}
+                        style={{
+                            position: "absolute", right: 0, top: "calc(100% + 8px)", zIndex: 60,
+                            minWidth: 180, padding: 6, boxShadow: "var(--shadow-md)",
+                            display: "flex", flexDirection: "column", gap: 2,
+                        }}
                     >
                         {Object.entries(languages).map(([code, name]) => (
-                            <LanguageItem key={code} onClick={() => setCurrentLanguage(code)}>
-                                {code.toUpperCase()} | {name}
-                            </LanguageItem>
+                            <button
+                                key={code}
+                                className="nav__link"
+                                style={{
+                                    justifyContent: "flex-start", width: "100%", border: "none",
+                                    background: code === currentLanguage ? "var(--fjord-50)" : "transparent",
+                                    color: code === currentLanguage ? "var(--fjord-600)" : "var(--ink-2)",
+                                }}
+                                onClick={() => { setCurrentLanguage(code); setIsOpen(false); }}
+                            >
+                                {name}
+                            </button>
                         ))}
-                    </LanguagesWrapper>
+                    </motion.div>
                 )}
             </AnimatePresence>
-
-            <CurrentLanguage isOpen={isOpen} onClick={() => setIsOpen(prev => !prev)}>
-                <img src={LANG_ICON} style={{ padding: '2px' }} width={'20px'} />
-                {currentLanguage.toUpperCase()}
-            </CurrentLanguage>
-
-        </LanguagesBlock>
+        </div>
     );
 };
 

@@ -1,130 +1,106 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import api from "../components/tools/api.js";
-import {interfaceTranslate} from "../interface/interfaceTranslation.jsx";
-import {useSystemStore} from "./systemStore.jsx";
+import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
+import { useSystemStore } from "./systemStore.jsx";
 
 
-const getError = (error, currentLanguage)=>{
+const getError = (error, currentLanguage) => {
+    const t = interfaceTranslate[currentLanguage];
+    const msg = error?.message || '';
 
-    if (error.message.includes('NetworkError')) {
-        return interfaceTranslate[currentLanguage]['connectionError'];
+    if (msg.includes('NetworkError') || msg.includes('fetch') || msg.includes('refresh token')) {
+        return t['connectionError'];
     }
-    if (error.message.includes('credent')) {
-        return interfaceTranslate[currentLanguage]['invalidCredentials'];
+    if (msg.includes('credent')) {
+        return t['invalidCredentials'];
     }
-    if (error.message.includes('Username already exists')) {
-        return interfaceTranslate[currentLanguage]['usernameExists'];
+    if (msg.includes('Username already exists')) {
+        return t['usernameExists'];
     }
-    if (error.message.includes('Password must be at least 6 characters long')) {
-        return interfaceTranslate[currentLanguage]['passwordLengthError'];
+    if (msg.includes('Password must be at least 6 characters long')) {
+        return t['passwordLengthError'];
     }
-    if (error.message.includes('Username cannot be empty')) {
-        return interfaceTranslate[currentLanguage]['usernameEmptyError'];
+    if (msg.includes('Username cannot be empty')) {
+        return t['usernameEmptyError'];
     }
+    return (t['unexpectedError'] || '') + msg;
+};
 
-    return interfaceTranslate[currentLanguage]['unexpectedError'] + error.message;
+// Токенами владеет ApiService (единственный источник правды + localStorage).
+// Стор только зеркалит состояние для реактивности UI и НЕ персистит токены сам.
+export const useAuthStore = create((set, get) => ({
+    accessToken: api.accessToken || null,
+    user: null,
+    isLoading: false,
+    registrationError: null,
+    authorizationError: null,
 
-}
-
-
-export const useAuthStore = create(
-    persist(
-        (set, get) => ({
-            // Инициализируем состояние из ApiService
-            accessToken: api.accessToken || null,
-            refreshToken: api.refreshToken || null,
-            user: null,
-            isLoading: false,
-            registrationError: null,
-            authorizationError: null,
-
-            // Новый метод для проверки авторизации
-            checkAuth: async () => {
-                console.log(api.refreshToken)
-                // if (!api.accessToken) return false;
-
-                try {
-                    const userData = await api.getProtectedData();
-                    set({ user: { username: userData.username } });
-                    return true;
-                } catch {
-                    try {
-                        const newAccessToken = await api.refreshAccessToken();
-                        set({accessToken: newAccessToken});
-                        return false;
-                    } catch (e) {
-                        set({accessToken: null,  refreshToken: null, user: null});
-                    }
-                }
-            },
-
-            // Регистрация
-            register: async (username, password) => {
-                set({ isLoading: true, registrationError: null });
-                try {
-                    const result = await api.register( username, password);
-                    set({ isLoading: false });
-                    if (result.error) {
-                        const lang = useSystemStore.getState().currentLanguage;
-                        console.log(result.error)
-
-                        set({ registrationError: getError(result.error, lang), isLoading: false });
-
-                    }
-                    return result;
-                } catch (error) {
-                    const lang = useSystemStore.getState().currentLanguage;
-                    // console.log(error)
-                    set({ registrationError: getError(error, lang), isLoading: false });
-                    return false;
-                }
-            },
-
-            // Методы
-            login: async (username, password) => {
-                set({ isLoading: true, authorizationError: null });
-                try {
-                    const data = await api.login(username, password);
-                    console.log(data);
-                    set({
-                        user: { username },
-                        accessToken: data.access_token,
-                        refreshToken: data.refresh_token, // Обновляем поле
-                        isLoading: false,
-                    });
-                    return data;
-                } catch (error) {
-                    const lang = useSystemStore.getState().currentLanguage;
-                    console.log(lang)
-                    console.log(error)
-                    set({ authorizationError: getError(error, lang), isLoading: false });
-                    throw error;
-                }
-            },
-            refreshAuthToken: async () => {
-                try {
-                    const newToken = await api.refreshAccessToken();
-                    set({ accessToken: newToken });
-                    return newToken;
-                } catch (error) {
-                    get().logout();
-                    throw error;
-                }
-            },
-
-            // Остальные методы без изменений
-            logout: () => {
-                api.logout();
-                set({ user: null, accessToken: null, refreshToken: null });
-            },
-        }),
-        {
-            name: 'auth-storage',
-            partialize: (state) => ({
-                accessToken: state.accessToken,
-                refreshToken: state.refreshToken,
-            }),
+    // Проверка сессии при старте приложения. Возвращает true, если пользователь авторизован.
+    checkAuth: async () => {
+        if (!api.accessToken && !api.refreshToken) {
+            set({ user: null, accessToken: null });
+            return false;
         }
-    )
-);
+        try {
+            const userData = await api.getProtectedData();
+            set({ user: { username: userData.username }, accessToken: api.accessToken });
+            return true;
+        } catch {
+            // apiRequest сам пытается обновить токен по 401; сюда попадаем только если не вышло.
+            api.logout();
+            set({ user: null, accessToken: null });
+            return false;
+        }
+    },
+
+    register: async (username, password) => {
+        set({ isLoading: true, registrationError: null });
+        try {
+            const result = await api.register(username, password);
+            if (result?.error) {
+                const lang = useSystemStore.getState().currentLanguage;
+                set({ registrationError: getError({ message: result.error }, lang), isLoading: false });
+                return false;
+            }
+            set({ isLoading: false });
+            return result;
+        } catch (error) {
+            const lang = useSystemStore.getState().currentLanguage;
+            set({ registrationError: getError(error, lang), isLoading: false });
+            return false;
+        }
+    },
+
+    login: async (username, password) => {
+        set({ isLoading: true, authorizationError: null });
+        try {
+            const data = await api.login(username, password);
+            set({
+                user: { username },
+                accessToken: data.access_token,
+                isLoading: false,
+            });
+            return data;
+        } catch (error) {
+            const lang = useSystemStore.getState().currentLanguage;
+            set({ authorizationError: getError(error, lang), isLoading: false });
+            throw error;
+        }
+    },
+
+    refreshAuthToken: async () => {
+        try {
+            const newToken = await api.refreshAccessToken();
+            set({ accessToken: newToken });
+            return newToken;
+        } catch (error) {
+            get().logout();
+            throw error;
+        }
+    },
+
+    logout: () => {
+        api.logout();
+        set({ user: null, accessToken: null });
+    },
+}));

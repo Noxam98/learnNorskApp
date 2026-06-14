@@ -1,135 +1,84 @@
 import React from 'react';
-import api from "../components/tools/api.js";
-import {useAuth} from "../hooks/useAuth.js";
-import styled from "styled-components";
-import {useSystemStore} from "../store/systemStore.jsx";
-import {interfaceTranslate} from "../interface/interfaceTranslation.jsx";
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth.js";
+import { useSystemStore } from "../store/systemStore.jsx";
+import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
+import { BrandMark, BrandName } from "../components/ui/BrandMark.jsx";
+import { Icon } from "../components/ui/Icon.jsx";
 
-const Input = styled.input`
-    font-size: 16px;
-    width: 100%;
-    max-width: 300px;
-    padding: 10px;
-    border-radius: 16px;
-`
-const InputsWrapper = styled.form`
-    color: white;
-    max-width: 400px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: #e2f5ff;
-    border-radius: 16px;
-`
-
-const PageWrapper = styled.section`
-    display: flex;
-    width: 100%;
-    justify-content: center;
-`
-
-const SubmitButton = styled.button`
-    font-size: 24px;
-    padding: 3px 20px;
-    border-radius: 16px;
-    width: 100%;
-    //margin: 0 0px;
-    max-width: 200px;
-    background-color: #baf9ff;
-    color: #2d5bb6;
-
-    &:hover {
-        background-color: #65b5a8;
-        color: #c4e7ff;
-    }
-`
-
-const NavLink = styled(Link)`
-    font-size: ${({isActive}) => isActive? '28px' : '14px'};
-    text-decoration: none;
-    //color: #555555;
-    background-color: ${({isActive}) => isActive ? '#37a5ef' : 'transparent'};
-    color: ${({isActive}) => isActive ? '#eeeef1' : '#135e7e'};
-    padding: ${({isActive}) => isActive ? '10px' : '4px'};
-    
-    border-radius: 16px;
-    transition: .3s;
-    &:hover {
-        cursor: ${({isActive}) => isActive ? 'inherit' : 'pointer'};
-        
-        filter: ${({isActive}) => isActive ? 'none' : 'invert()'};
-        
-    }
-`
-
-const FlexWrapper = styled.div`
-    display: flex;
-    gap: 5px;
-    align-items: start;
-`
-
-const Error = styled.span`
-    color: brown;
-`
 const RegisterPage = () => {
-    const {register, login, isLoading, registrationError, isAuthenticated } = useAuth();
+    const { register, login, isLoading, registrationError } = useAuth();
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
-    const location = useLocation()
+    const t = interfaceTranslate[currentLanguage];
     const navigate = useNavigate();
 
-    const registrationSubmit = async (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const result = await register(username, password);
-
-            if (result.message === "User created successfully") {
-                login(username, password).then(()=>{
-                    navigate("/mypage");
-                });
-
-            }
-        }
-        catch (error) {
-            console.log(error)
+        const result = await register(username, password);
+        if (result && result.message === "User created successfully") {
+            await login(username, password);
+            navigate("/mypage");
         }
     };
 
     return (
+        <div className="auth">
+            <aside className="auth__brand">
+                <Link className="brand" to="/words" style={{ color: "#fff" }}>
+                    <BrandMark /> <BrandName />
+                </Link>
+                <div className="auth__pitch">
+                    <h2>{t.pitchRegTitle}</h2>
+                    <p>{t.pitchReg}</p>
+                    <div className="auth__deco">
+                        <div className="minicard"><span className="minicard__pos" style={{ background: "var(--pos-phrase)" }} /><span className="minicard__w">på den andre siden</span><span className="minicard__t">с другой стороны</span></div>
+                        <div className="minicard"><span className="minicard__pos" style={{ background: "var(--pos-noun)" }} /><span className="minicard__w">nøkkel</span><span className="minicard__t">ключ</span></div>
+                    </div>
+                </div>
+                <div className="auth__foot">© 2026 Lære Norsk · t.me/progtt</div>
+            </aside>
 
-        <PageWrapper>
+            <main className="auth__form">
+                <div className="auth__inner">
+                    <div className="auth__mobilebrand"><BrandMark /> <BrandName /></div>
 
-            <InputsWrapper onSubmit={registrationSubmit}>
-                <FlexWrapper>
-                    <NavLink to={'/registration'} isActive={location.pathname === '/registration'}>{interfaceTranslate[currentLanguage].registration}</NavLink>
-                    <NavLink to={'/authorization'} isActive={location.pathname === '/authorization'}>{interfaceTranslate[currentLanguage].authorization}</NavLink>
-                </FlexWrapper>
-                <Input
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder={interfaceTranslate[currentLanguage].username}
-                />
-                <Input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder={interfaceTranslate[currentLanguage].password}
+                    <span className="eyebrow">{t.createAccount}</span>
+                    <h1 className="auth__title">{t.registration}</h1>
+                    <p className="auth__lead">{t.regLead}</p>
 
-                />
-                <SubmitButton disabled={isLoading}>
-                    {isLoading ? interfaceTranslate[currentLanguage].registration+'...' : interfaceTranslate[currentLanguage].registration}
-                </SubmitButton>
-                {registrationError && <Error className="error">{registrationError}</Error>}
-            </InputsWrapper>
+                    <form className="auth__fields" onSubmit={onSubmit}>
+                        <div className="field">
+                            <label className="label" htmlFor="u">{t.username}</label>
+                            <div className="input-icon">
+                                <Icon n="user" sm />
+                                <input className="input" id="u" type="text" value={username}
+                                    onChange={(e) => setUsername(e.target.value)} placeholder={t.username} />
+                            </div>
+                        </div>
 
-        </PageWrapper>
+                        <div className="field">
+                            <label className="label" htmlFor="p">{t.password}</label>
+                            <div className="input-icon">
+                                <Icon n="lock" sm />
+                                <input className={`input${registrationError ? " is-error" : ""}`} id="p" type="password" value={password}
+                                    onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+                            </div>
+                            {registrationError
+                                ? <span className="alert"><Icon n="x" sm /> {registrationError}</span>
+                                : <span className="input-hint"><Icon n="check" sm style={{ verticalAlign: "-3px", color: "var(--success)" }} /> {t.passwordLengthError}</span>}
+                        </div>
 
+                        <button className="btn btn--accent btn--lg btn--block auth__submit" disabled={isLoading}>
+                            {isLoading ? `${t.registration}…` : t.register} <Icon n="arrow-right" sm />
+                        </button>
+                    </form>
+
+                    <p className="auth__switch">{t.haveAccount} <Link to="/authorization">{t.login}</Link></p>
+                </div>
+            </main>
+        </div>
     );
 };
 

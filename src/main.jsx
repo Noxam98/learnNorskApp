@@ -1,7 +1,12 @@
 import React from 'react'
-import "./App.css";
 import App from './App.jsx'
-import './index.css'
+// Дизайн-система: токены → компоненты → стили экранов. Порядок важен.
+import './styles/tokens.css'
+import './styles/components.css'
+import './styles/auth.css'
+import './styles/screens.css'
+import './styles/app.css'
+import './styles/icons.js' // инжектит SVG-спрайт иконок в DOM (side-effect)
 import * as ReactDOM from "react-dom/client";
 import {
   createHashRouter,

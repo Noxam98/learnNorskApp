@@ -1,306 +1,128 @@
-import {create} from "zustand";
-import {produce} from "immer";
-import {createJSONStorage, persist} from 'zustand/middleware'
-import {v4 as uuidv4} from 'uuid'
+import { create } from "zustand";
+import { produce } from "immer";
 import api from "../components/tools/api.js";
-import {useSystemStore} from "./systemStore.jsx"; // Убедитесь, что путь до вашего api.js верный
 
-const fetchDescriptionFromAPI = async (word) => {
-    const wordText = word.translate?.no?.[0];
-    if (!wordText) {
-        throw new Error("Слово для запроса отсутствует.");
-    }
-    console.log(`Запрашиваю описание для: "${wordText}"...`);
-    return await api.getWordDescription(wordText);
-};
+// Данные полностью серверные. Локально храним только текущую сессию (без persist).
+// Выбор слов для игры и выделение для удаления — клиентское эфемерное состояние.
+export const useWordsStore = create((set, get) => ({
+    dictList: [],
+    dictNames: [],
+    currentDictName: null,
+    isLoading: false,
+    loaded: false,
 
-export const useWordsStore = create(persist(
-    (set, get) => ({
-        // --- СОСТОЯНИЕ (State) ---
-        dictList: [{ dictName: "default", words: [] }],
-        currentDictName: "default",
-        dictNames: ["default"],
-        descriptionQueue: [],
-        isFetchingDescription: false,
+    // Загрузка всех словарей пользователя с сервера.
+    loadData: async () => {
+        set({ isLoading: true });
+        try {
+            const data = await api.getData();
+            const names = data.dictNames || [];
+            const current = names.includes(get().currentDictName) ? get().currentDictName : (names[0] || null);
+            set({ dictList: data.dictList || [], dictNames: names, currentDictName: current, loaded: true, isLoading: false });
+        } catch (e) {
+            set({ isLoading: false });
+            throw e;
+        }
+    },
 
-        // --- ДЕЙСТВИЯ (Actions) ---
+    reset: () => set({ dictList: [], dictNames: [], currentDictName: null, loaded: false }),
 
-        // --- Логика очереди загрузки описаний ---
-        _addWordsToQueueAndStart: (wordIds) => {
-            if (!wordIds || wordIds.length === 0) return;
-            set(state => ({
-                descriptionQueue: [...new Set([...state.descriptionQueue, ...wordIds])]
-            }));
-            get()._startQueueProcessor();
-        },
+    _currentDictId: () => {
+        const d = get().dictList.find((x) => x.dictName === get().currentDictName);
+        return d?.id;
+    },
 
-        _startQueueProcessor: async () => {
-            if (get().isFetchingDescription) return;
-            set({ isFetchingDescription: true });
+    setCurrentDict: (dictName) => set({ currentDictName: dictName }),
 
-            while (get().descriptionQueue.length > 0) {
-                const wordId = get().descriptionQueue[0];
-                await get()._processOneFromQueue(wordId);
-                set(state => ({
-                    descriptionQueue: state.descriptionQueue.slice(1)
-                }));
-            }
-            set({ isFetchingDescription: false });
-        },
+    // Добавление слов в текущий словарь через ИИ (генерация на сервере + общий пул).
+    addWords: async (prompt) => {
+        const dictId = get()._currentDictId();
+        if (!dictId) return { added: 0, errors: [] };
+        const res = await api.addWords(dictId, prompt);
+        await get().loadData();
+        return res;
+    },
 
-        _processOneFromQueue: async (wordId) => {
-            let wordToFetch = null;
-            for (const dict of get().dictList) {
-                wordToFetch = dict.words.find(w => w.id === wordId);
-                if (wordToFetch) break;
-            }
+    addNewDict: async (name) => {
+        await api.createDict(name);
+        await get().loadData();
+        set({ currentDictName: name });
+    },
 
-            if (wordToFetch) {
-                try {
-                    get().setWordDescriptionState(wordId, 'loading');
-                    const descriptionData = await fetchDescriptionFromAPI(wordToFetch);
-                    get().editWord(wordId, { description: descriptionData });
-                } catch (error) {
-                    console.error(`Ошибка загрузки описания для слова с ID ${wordId}:`, error.message);
-                    get().setWordDescriptionState(wordId, 'error');
-                }
-            }
-        },
+    removeDict: async (dictName) => {
+        const d = get().dictList.find((x) => x.dictName === dictName);
+        if (!d) return;
+        await api.deleteDict(d.id);
+        await get().loadData();
+    },
 
-        // --- Инициализация и проверка ---
-        initializeIds: () => set(
-            produce((state) => {
-                state.dictList.forEach(dict => {
-                    dict.words.forEach(word => {
-                        if (!word.id) {
-                            word.id = uuidv4();
-                        }
-                    });
-                });
-            })
-        ),
+    importDict: async (dictJson) => {
+        await api.importDict(dictJson);
+        await get().loadData();
+        if (dictJson?.dictName) set({ currentDictName: dictJson.dictName });
+    },
 
-        initializeGameData: () => set(
-            produce((state) => {
-                state.dictList.forEach(dict => {
-                    dict.words.forEach(word => {
-                        if (!word.gameData) {
-                            word.gameData = { correctFirstTry: 0, incorrectFirstTry: 0, isChoosedToGame: false };
-                        }
-                    });
-                });
-            })
-        ),
+    deleteChosedWords: async () => {
+        const dict = get().dictList.find((x) => x.dictName === get().currentDictName);
+        if (!dict) return;
+        const ids = dict.words.filter((w) => w?.techData?.isSelected).map((w) => w.id);
+        await Promise.all(ids.map((id) => api.deleteWord(id)));
+        await get().loadData();
+    },
 
-        initializeDescriptions: () => set(
-            produce((state) => {
-                state.dictList.forEach(dict => {
-                    dict.words.forEach(word => {
-                        if (!word.description) {
-                            word.description = { ru: "", lt: "", ukr: "", pl: "", en: "" };
-                        }
+    editWord: async (wordId, override) => {
+        // override: { translate?, part_of_speech? }
+        await api.editWord(wordId, override);
+        await get().loadData();
+    },
 
-                        // НОВОЕ: Сбрасываем статус 'loading' на 'empty' при инициализации
-                        if (word.descriptionState === 'loading') {
-                            console.log(`[INIT] Сброс статуса 'loading' для слова "${word.translate?.no?.[0]}" на 'empty'.`);
-                            word.descriptionState = 'empty';
-                        }
-                        // Если статус еще не установлен (т.е. 'undefined'), определяем его
-                        else if (!word.descriptionState) {
-                            const hasAnyDescription = Object.values(word.description).some(text => typeof text === 'string' && text.trim() !== "");
-                            word.descriptionState = hasAnyDescription ? 'loaded' : 'empty';
-                        }
-                    });
-                });
-            })
-        ),
-
-        checkAndLoadAllDescriptions: () => {
-            console.log("Проверка наличия описаний для всех слов...");
-            // Получаем текущий язык прямо из systemStore
-            const currentLanguage = useSystemStore.getState().currentLanguage;
-            console.log(currentLanguage)
-            console.log(`[CHECK] Проверка будет проводиться для языка: "${currentLanguage}"`);
-
-            const wordsToLoad = [];
-            const { dictList } = get();
-
-            for (const dict of dictList) {
-                for (const word of dict.words) {
-                    // Новое, более умное условие
-                    console.log(word.description[currentLanguage])
-                    const descriptionForLang = word.description.description ? word.description.description[currentLanguage] : undefined;
-                    const hasValidDescription = typeof descriptionForLang === 'string' && descriptionForLang.trim() !== '';
-                    // console.log(descriptionForLang, hasValidDescription);
-                    // Добавляем в очередь, если нет валидного описания И слово не находится в процессе загрузки
-                    if (!hasValidDescription && word.descriptionState !== 'loading') {
-                        wordsToLoad.push(word.id);
-                    }
-                }
-            }
-
-            if (wordsToLoad.length > 0) {
-                console.log(`[CHECK] Найдено ${wordsToLoad.length} слов без описания для языка "${currentLanguage}".`);
-            } else {
-                console.log(`[CHECK] Все слова уже имеют описание для языка "${currentLanguage}".`);
-            }
-
-            get()._addWordsToQueueAndStart(wordsToLoad);
-        },
-
-
-        // --- Основные действия со словами и словарями ---
-        addWords: (dictName, words) => {
-            const newWordIds = [];
-            set(produce(draft => {
-                const currentDictItem = draft.dictList.find((dict) => dict.dictName === dictName);
-                if (!currentDictItem) return;
-
-                for (const word of words) {
-                    if (!currentDictItem.words.some(w => w.translate?.no?.[0] === word.translate?.no?.[0])) {
-                        const newWord = {
-                            ...word,
-                            id: uuidv4(),
-                            description: { ru: "", lt: "", ukr: "", pl: "", en: "" },
-                            descriptionState: 'empty',
-                            techData: { isSelected: false },
-                            gameData: { correctFirstTry: 0, incorrectFirstTry: 0, isChoosedToGame: false }
-                        };
-                        currentDictItem.words.push(newWord);
-                        newWordIds.push(newWord.id);
-                    }
-                }
-            }));
-            get()._addWordsToQueueAndStart(newWordIds);
-        },
-
-        editWord: (wordId, newWordItem) => set(produce((state) => {
-            let currentDictItem = null;
-            for(const dict of state.dictList) {
-                const wordIndex = dict.words.findIndex(w => w.id === wordId);
-                if (wordIndex !== -1) {
-                    dict.words[wordIndex] = {...dict.words[wordIndex], ...newWordItem, id: wordId };
-                    if (newWordItem.description) {
-                        const hasText = Object.values(newWordItem.description).some(text => text && text.trim() !== "");
-                        dict.words[wordIndex].descriptionState = hasText ? 'loaded' : 'empty';
-                    }
-                    return; // Выходим из функции после обновления
-                }
-            }
-        })),
-
-        setWordDescriptionState: (wordId, newDescriptionState) => set(produce((state) => {
-            for (const dict of state.dictList) {
-                const word = dict.words.find(w => w.id === wordId);
-                if (word) {
-                    word.descriptionState = newDescriptionState;
-                    break;
-                }
-            }
-        })),
-
-        deleteChosedWords: () => set(produce((state) => {
-            const currentDictItem = state.dictList.find((dict) => dict.dictName === state.currentDictName);
-            if (currentDictItem) {
-                currentDictItem.words = currentDictItem.words.filter(word => !word.techData.isSelected);
-            }
-        })),
-
-        choseWord: (wordId) => set(produce((state) => {
-            const currentDictItem = state.dictList.find((dict) => dict.dictName === state.currentDictName);
-            const currentWord = currentDictItem?.words.find(word => word.id == wordId);
-            if (currentWord) {
-                currentWord.techData.isSelected = !currentWord.techData.isSelected;
-            }
-        })),
-
-        addNewDict: (dictName) => set(produce((state) => {
-            if (!state.dictNames.map((item) => item.toLowerCase()).includes(dictName.toLowerCase())) {
-                state.dictNames.push(dictName);
-                state.dictList.push({ dictName, words: [] });
-            }
-            state.currentDictName = dictName;
-        })),
-// НОВЫЙ МЕТОД
-        resetAllDescriptions: () => set(produce((state) => {
-            console.log('[RESET] Сброс всех описаний...');
-            state.dictList.forEach(dict => {
-                dict.words.forEach(word => {
-                    word.description = { ru: "", lt: "", ukr: "", pl: "", en: "" };
-                    word.descriptionState = 'empty';
-                });
+    // Ленивая загрузка описания (по требованию, не пакетно).
+    loadDescription: async (wordId) => {
+        get()._setWord(wordId, (w) => { w.descriptionState = "loading"; });
+        try {
+            const res = await api.getWordDescription(wordId);
+            get()._setWord(wordId, (w) => {
+                w.description = { description: res.description };
+                w.descriptionState = "loaded";
             });
-            console.log('[RESET] Все описания сброшены. Можно запускать checkAndLoadAllDescriptions для перезагрузки.');
-        })),
+        } catch {
+            get()._setWord(wordId, (w) => { w.descriptionState = "error"; });
+        }
+    },
 
-        importDict: (dictJson) => set(produce((state) => {
-            if (!state.dictNames.map((item) => item.toLowerCase()).includes(dictJson.dictName.toLowerCase())) {
-                state.dictNames.push(dictJson.dictName);
-                state.dictList.push(dictJson);
-            }
-            state.currentDictName = dictJson.dictName;
-        })),
+    // --- Клиентское эфемерное состояние ---
+    choseWord: (wordId) => set(produce((state) => {
+        const dict = state.dictList.find((x) => x.dictName === state.currentDictName);
+        const w = dict?.words.find((w) => w.id === wordId);
+        if (w) w.techData.isSelected = !w.techData.isSelected;
+    })),
 
-        setCurrentDict: (dictName) => set({ currentDictName: dictName }),
+    ToggleChooseToGame: (wordId) => set(produce((state) => {
+        for (const dict of state.dictList) {
+            const w = dict.words.find((w) => w.id === wordId);
+            if (w) { w.gameData.isChoosedToGame = !w.gameData.isChoosedToGame; break; }
+        }
+    })),
 
-        removeDict: (dictName) => set(produce((state) => {
-            if (state.dictNames.length <= 1) return; // Не удалять последний словарь
+    selectFullDictToGame: (dictName, isChoosed) => set(produce((state) => {
+        const dict = state.dictList.find((x) => x.dictName === dictName);
+        if (dict) dict.words.forEach((w) => { w.gameData.isChoosedToGame = isChoosed; });
+    })),
 
-            const dictExists = state.dictNames.includes(dictName);
-            if (!dictExists) return;
+    // Результат игры: пишем на сервер и сразу отражаем локально.
+    recordGameResult: (wordId, isCorrect) => {
+        get()._setWord(wordId, (w) => {
+            if (isCorrect) w.gameData.correctFirstTry = (w.gameData.correctFirstTry || 0) + 1;
+            else w.gameData.incorrectFirstTry = (w.gameData.incorrectFirstTry || 0) + 1;
+        });
+        api.recordResult(wordId, isCorrect).catch(() => { /* офлайн — не критично */ });
+    },
 
-            state.dictNames = state.dictNames.filter(name => name !== dictName);
-            state.dictList = state.dictList.filter(dict => dict.dictName !== dictName);
-
-            if (state.currentDictName === dictName) {
-                state.currentDictName = state.dictNames[0];
-            }
-        })),
-        // Действия, связанные с игрой
-        ToggleChooseToGame: (wordId) =>
-            set(
-                produce((state) => {
-                    for (const wordList of state.dictList){
-                        const currentWord = wordList.words.find(word => word.id == wordId);
-                        if (currentWord){
-                            console.log(currentWord.gameData.isChoosedToGame);
-
-                            if (currentWord.gameData.isChoosedToGame)
-                                currentWord.gameData.isChoosedToGame = false
-                            else
-                                currentWord.gameData.isChoosedToGame = true
-                        }
-                    }
-                })),
-        selectFullDictToGame: (dictName, isChoosed) =>
-            set(
-                produce((state) => {
-
-                    const currentDict = state.dictList.find(dict => dict.dictName === dictName)
-                    if(currentDict){
-                        for(let word of currentDict.words)
-                            word.gameData.isChoosedToGame = isChoosed
-                    }
-
-                })),
-
-
-    }),
-    {
-        name: 'words-storage',
-        storage: createJSONStorage(() => localStorage),
-        partialize: (state) =>
-            Object.fromEntries(
-                Object.entries(state).filter(([key]) => !['descriptionQueue', 'isFetchingDescription'].includes(key))
-            ),
-    }
-));
-
-// Инициализация и проверка при запуске приложения
-useWordsStore.getState().initializeIds();
-useWordsStore.getState().initializeGameData();
-useWordsStore.getState().initializeDescriptions();
-
-setTimeout(() => {
-    useWordsStore.getState().checkAndLoadAllDescriptions();
-}, 500);
+    // Точечное обновление слова по id во всех словарях.
+    _setWord: (wordId, mutator) => set(produce((state) => {
+        for (const dict of state.dictList) {
+            const w = dict.words.find((w) => w.id === wordId);
+            if (w) { mutator(w); break; }
+        }
+    })),
+}));
