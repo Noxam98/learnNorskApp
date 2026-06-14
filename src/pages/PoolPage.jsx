@@ -20,16 +20,6 @@ export const PoolPage = () => {
     const [offset, setOffset] = useState(0);
     const [loading, setLoading] = useState(false);
     const [added, setAdded] = useState({});
-    const [ttsBusy, setTtsBusy] = useState({});
-
-    const onSpeak = async (word) => {
-        setTtsBusy((b) => ({ ...b, [word]: true }));
-        try {
-            await speakNorwegian(word);
-            setItems((list) => list.map((it) => (it.word === word ? { ...it, hasTts: true } : it)));
-        } catch { /* нет звука */ }
-        setTtsBusy((b) => ({ ...b, [word]: false }));
-    };
 
     const load = async (reset) => {
         setLoading(true);
@@ -80,11 +70,11 @@ export const PoolPage = () => {
                                     <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
                                 </div>
                                 <div className="wcard__actions">
-                                    <button className="iconbtn" aria-label={t.tts} disabled={ttsBusy[w.word]}
+                                    <button className="iconbtn" aria-label={t.tts} disabled={!w.hasTts}
                                         title={w.hasTts ? t.tts : t.ttsPreparing}
-                                        style={w.hasTts ? undefined : { opacity: 0.45 }}
-                                        onClick={() => onSpeak(w.word)}>
-                                        {ttsBusy[w.word] ? <Icon n="settings" className="spin" /> : <Icon n="volume" />}
+                                        style={w.hasTts ? undefined : { opacity: 0.4 }}
+                                        onClick={() => speakNorwegian(w.word)}>
+                                        <Icon n="volume" />
                                     </button>
                                     <button className="iconbtn" aria-label={t.addToDict} title={t.addToDict}
                                         disabled={added[w.word]} onClick={() => onAdd(w.word)}>

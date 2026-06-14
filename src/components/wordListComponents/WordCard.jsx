@@ -20,13 +20,6 @@ export const Card = ({ wordItem, languageTranslate }) => {
     const [editOpen, setEditOpen] = useState(false);
     const [draft, setDraft] = useState("");
     const [synonyms, setSynonyms] = useState(null);
-    const [ttsBusy, setTtsBusy] = useState(false);
-
-    const onSpeak = async () => {
-        setTtsBusy(true);
-        try { await speakNorwegian(no); } catch { /* нет звука */ }
-        setTtsBusy(false);
-    };
 
     const no = wordItem.translate?.no?.[0] || "";
     const translation = wordItem.translate?.[languageTranslate]?.join(", ") || "";
@@ -71,11 +64,11 @@ export const Card = ({ wordItem, languageTranslate }) => {
                     <span className="wcard__tr">{translation}</span>
                 </div>
                 <div className="wcard__actions" onClick={(e) => e.stopPropagation()}>
-                    <button className="iconbtn" aria-label={t.tts} disabled={ttsBusy}
+                    <button className="iconbtn" aria-label={t.tts} disabled={!wordItem.hasTts}
                         title={wordItem.hasTts ? t.tts : t.ttsPreparing}
-                        style={wordItem.hasTts ? undefined : { opacity: 0.45 }}
-                        onClick={onSpeak}>
-                        {ttsBusy ? <Icon n="settings" className="spin" /> : <Icon n="volume" />}
+                        style={wordItem.hasTts ? undefined : { opacity: 0.4 }}
+                        onClick={() => speakNorwegian(no)}>
+                        <Icon n="volume" />
                     </button>
                     <button
                         className="iconbtn"
