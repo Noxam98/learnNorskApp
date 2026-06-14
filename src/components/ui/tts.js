@@ -5,6 +5,13 @@ import api from "../tools/api.js";
 
 let _audio = null;
 
+// Полностью останавливает любую текущую озвучку: серверное аудио и Web Speech.
+const stopAll = () => {
+    try { if (_audio) { _audio.pause(); _audio.src = ""; } } catch { /* */ }
+    _audio = null;
+    try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch { /* */ }
+};
+
 const webSpeech = (text) => {
     try {
         const synth = window.speechSynthesis;
@@ -22,16 +29,28 @@ const webSpeech = (text) => {
 export const speakNorwegian = (text) => new Promise((resolve, reject) => {
     const t = (text || "").trim();
     if (!t) { resolve(); return; }
-    try {
-        if (_audio) _audio.pause();
-        _audio = new Audio(api.ttsUrl(t));
-        _audio.onplaying = () => resolve();
-        _audio.onerror = () => { webSpeech(t); reject(new Error("audio")); };
-        _audio.play().catch(() => { webSpeech(t); reject(new Error("play")); });
-    } catch (e) {
+
+    // Глушим всё предыдущее (в т.ч. зависший Web Speech), прежде чем играть новое.
+    stopAll();
+
+    let settled = false; // исход решаем ровно один раз: либо сервер, либо фолбэк
+    const audio = new Audio(api.ttsUrl(t));
+    _audio = audio;
+
+    const fallback = (err) => {
+        if (settled) return;   // аудио уже заиграло — фолбэк не нужен
+        settled = true;
         webSpeech(t);
-        reject(e);
-    }
+        reject(err);
+    };
+
+    audio.onplaying = () => {
+        if (settled) return;
+        settled = true;        // успех зафиксирован: поздний onerror больше не даст женский голос
+        resolve();
+    };
+    audio.onerror = () => fallback(new Error("audio"));
+    audio.play().catch(() => fallback(new Error("play")));
 });
 
 export default speakNorwegian;
