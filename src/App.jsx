@@ -7,6 +7,7 @@ import { useWordsStore } from "./store/wordStore.jsx";
 import { useAuthStore } from "./store/AuthStore.jsx";
 
 import { WordListPage } from "./pages/WordListPage.jsx";
+import { PoolPage } from "./pages/PoolPage.jsx";
 import { GamePage } from "./pages/GamePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
@@ -31,6 +32,7 @@ function App() {
         <Routes location={location}>
             <Route path="/" element={<Navigate to="/words" />} />
             <Route path="/words" element={<WordListPage />} />
+            <Route path="/pool" element={<PoolPage />} />
             <Route path="/game" element={<GamePage />} />
             <Route path="/authorization" element={<LoginPage />} />
             <Route path="/registration" element={<RegisterPage />} />
@@ -46,7 +48,7 @@ function App() {
     // Всё остальное требует авторизации.
     if (!isAuthed) return <Navigate to="/authorization" replace />;
 
-    const showFooter = path === "/words" || path === "/mypage";
+    const showFooter = path === "/words" || path === "/mypage" || path === "/pool";
     return (
         <div className={`app${path === "/words" ? " app--fixed" : ""}`}>
             <NavigationBar />

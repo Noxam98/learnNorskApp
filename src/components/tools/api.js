@@ -185,6 +185,12 @@ class ApiService {
         return this._send('GET', `/words/${wordId}/synonyms?n=${n}&lang=${encodeURIComponent(lang)}`);
     }
     searchPool(q) { return this._send('GET', `/pool/search?q=${encodeURIComponent(q)}`); }
+    getPool({ q = "", limit = 60, offset = 0 } = {}) {
+        const qs = new URLSearchParams({ limit, offset });
+        if (q) qs.set("q", q);
+        return this._send('GET', `/pool?${qs.toString()}`);
+    }
+    ttsUrl(word) { return `${this.baseUrl}/tts?word=${encodeURIComponent(word)}`; }
 
     logout() {
         this.accessToken = null;

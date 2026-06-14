@@ -24,6 +24,9 @@ export const NavigationBar = () => {
                     <Link className={`nav__link${pathname === "/game" ? " is-active" : ""}`} to="/game">
                         <Icon n="play" sm /> {t.navBar.game}
                     </Link>
+                    <Link className={`nav__link${pathname === "/pool" ? " is-active" : ""}`} to="/pool">
+                        <Icon n="grid" sm /> {t.navBar.base}
+                    </Link>
                 </nav>
                 <div className="nav__spacer" />
                 <LanguageChooser />
