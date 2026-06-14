@@ -1,0 +1,72 @@
+/* Lære Norsk — Auth screens (login + registration)
+   depends on tokens.css + components.css */
+
+.auth { min-height: 100vh; display: grid; grid-template-columns: 1.05fr 1fr; }
+
+/* ---- brand panel ---- */
+.auth__brand {
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(700px 420px at 18% 12%, rgba(42,106,116,.55), transparent 60%),
+    radial-gradient(560px 400px at 100% 100%, rgba(206,74,33,.30), transparent 60%),
+    var(--fjord-900);
+  color: #EAF1EE; padding: var(--sp-12);
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.auth__brand .brand__name { color: #fff; }
+.auth__brand .brand__name b { color: var(--ember-500); }
+
+.auth__pitch { max-width: 440px; }
+.auth__pitch h2 {
+  font-size: var(--fs-44); font-weight: 800; letter-spacing: var(--ls-tight);
+  line-height: 1.08; margin: 0 0 var(--sp-4);
+}
+.auth__pitch p { font-size: var(--fs-18); line-height: var(--lh-normal); color: #B9CCC9; margin: 0; }
+
+/* floating sample word cards */
+.auth__deco { display: flex; flex-direction: column; gap: var(--sp-3); margin-top: var(--sp-10); max-width: 360px; }
+.minicard {
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+  border-radius: var(--r-md); padding: 12px 16px; backdrop-filter: blur(6px);
+  display: flex; align-items: center; gap: var(--sp-3);
+}
+.minicard__w { font-size: var(--fs-16); font-weight: 700; color: #fff; }
+.minicard__t { font-size: var(--fs-14); color: #9FB6B2; margin-left: auto; }
+.minicard__pos { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+
+.auth__foot { font-size: var(--fs-13); color: #7F9893; }
+
+/* ---- form panel ---- */
+.auth__form { display: flex; align-items: center; justify-content: center; padding: var(--sp-12); background: var(--surface); }
+.auth__inner { width: 100%; max-width: 380px; }
+.auth__inner .eyebrow { margin-bottom: var(--sp-2); }
+.auth__title { font-size: var(--fs-34); font-weight: 700; letter-spacing: var(--ls-tight); margin: 0 0 var(--sp-2); }
+.auth__lead { font-size: var(--fs-15); color: var(--ink-2); margin: 0 0 var(--sp-8); }
+
+.auth__fields { display: flex; flex-direction: column; gap: var(--sp-5); }
+
+/* inline error banner */
+.alert {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: 12px 15px; border-radius: var(--r-md);
+  background: var(--danger-bg); color: var(--danger);
+  font-size: var(--fs-14); font-weight: 600;
+  border: 1px solid color-mix(in srgb, var(--danger) 25%, transparent);
+}
+.alert .ic { flex: none; }
+
+.auth__submit { margin-top: var(--sp-2); }
+.auth__switch { margin-top: var(--sp-6); text-align: center; font-size: var(--fs-15); color: var(--ink-2); }
+.auth__switch a { color: var(--fjord-600); font-weight: 700; text-decoration: none; }
+.auth__switch a:hover { text-decoration: underline; }
+
+.auth__back { display: inline-flex; align-items: center; gap: 6px; color: #B9CCC9; text-decoration: none; font-size: var(--fs-14); font-weight: 600; }
+.auth__back:hover { color: #fff; }
+
+@media (max-width: 880px) {
+  .auth { grid-template-columns: 1fr; }
+  .auth__brand { display: none; }
+  .auth__form { padding: var(--sp-8) var(--sp-5); align-items: flex-start; padding-top: var(--sp-16); }
+  .auth__mobilebrand { display: flex !important; }
+}
+.auth__mobilebrand { display: none; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-10); }

@@ -1,14 +1,10 @@
-import {
-    Routes,
-    Route,
-    useLocation,
-    Navigate,
-} from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import styled from "styled-components";
+import { useEffect } from "react";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import { NavigationBar } from "./components/navigationBar";
 import Footer from "./components/footer.jsx";
+import { useWordsStore } from "./store/wordStore.jsx";
+import { useAuthStore } from "./store/AuthStore.jsx";
 
 import { WordListPage } from "./pages/WordListPage.jsx";
 import { GamePage } from "./pages/GamePage.jsx";
@@ -16,59 +12,47 @@ import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import MyPage from "./pages/MyPage.jsx";
 
-const PageWrapper = styled.section`
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #afb9bf;
-  border-radius: 16px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-`;
-
-const AppWrapper = styled.section`
-    padding: 20px;
-    max-width: 1200px;
-    width: 100%;
-    @media only screen and (max-width: 480px) {
-        padding: 10px;
-    }
-`;
-
-const Page = ({ children }) => (
-    <motion.div
-
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 1.02, overflow: 'hidden', y: -10 }}
-        transition={{ duration: 0.2 }}
-    >
-        <PageWrapper>{children}</PageWrapper>
-    </motion.div>
-);
-
 function App() {
     const location = useLocation();
+    const path = location.pathname;
+    const accessToken = useAuthStore((s) => s.accessToken);
+    const isAuthed = !!accessToken;
 
+    // Проверка сессии при старте.
+    useEffect(() => { useAuthStore.getState().checkAuth(); }, []);
+
+    // Данные полностью серверные: грузим при наличии сессии, чистим при выходе.
+    useEffect(() => {
+        if (isAuthed) useWordsStore.getState().loadData().catch(() => {});
+        else useWordsStore.getState().reset();
+    }, [isAuthed]);
+
+    const routes = (
+        <Routes location={location}>
+            <Route path="/" element={<Navigate to="/words" />} />
+            <Route path="/words" element={<WordListPage />} />
+            <Route path="/game" element={<GamePage />} />
+            <Route path="/authorization" element={<LoginPage />} />
+            <Route path="/registration" element={<RegisterPage />} />
+            <Route path="/mypage" element={<MyPage />} />
+        </Routes>
+    );
+
+    const isAuthScreen = path === "/authorization" || path === "/registration";
+
+    // Экраны входа/регистрации — полноэкранные.
+    if (isAuthScreen) return routes;
+
+    // Всё остальное требует авторизации.
+    if (!isAuthed) return <Navigate to="/authorization" replace />;
+
+    const showFooter = path === "/words" || path === "/mypage";
     return (
-        <>
-            <AppWrapper>
-                <NavigationBar />
-                <div style={{ position: "relative", minHeight: "400px" }}>
-                    <AnimatePresence mode="wait">
-                        <Routes location={location} key={location.pathname}>
-                            <Route path="/" element={<Navigate to="/words" />} />
-                            <Route path="/words" element={<Page><WordListPage /></Page>} />
-                            <Route path="/game" element={<Page><GamePage /></Page>} />
-                            <Route path="/authorization" element={<Page><LoginPage /></Page>} />
-                            <Route path="/registration" element={<Page><RegisterPage /></Page>} />
-                            <Route path="/mypage" element={<Page><MyPage /></Page>} />
-                        </Routes>
-                    </AnimatePresence>
-                </div>
-            </AppWrapper>
-            <Footer />
-        </>
+        <div className={`app${path === "/words" ? " app--fixed" : ""}`}>
+            <NavigationBar />
+            {routes}
+            {showFooter && <Footer />}
+        </div>
     );
 }
 
