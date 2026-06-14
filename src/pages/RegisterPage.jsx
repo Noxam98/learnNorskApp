@@ -5,6 +5,8 @@ import { useSystemStore } from "../store/systemStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { BrandMark, BrandName } from "../components/ui/BrandMark.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
+import LanguageChooser from "../components/languageChooser.jsx";
+import { SAMPLES, POS_DOT } from "../interface/samples.js";
 
 const RegisterPage = () => {
     const { register, login, isLoading, registrationError } = useAuth();
@@ -24,7 +26,8 @@ const RegisterPage = () => {
     };
 
     return (
-        <div className="auth">
+        <div className="auth" style={{ position: "relative" }}>
+            <div className="auth__lang"><LanguageChooser className="" /></div>
             <aside className="auth__brand">
                 <Link className="brand" to="/words" style={{ color: "#fff" }}>
                     <BrandMark /> <BrandName />
@@ -33,8 +36,13 @@ const RegisterPage = () => {
                     <h2>{t.pitchRegTitle}</h2>
                     <p>{t.pitchReg}</p>
                     <div className="auth__deco">
-                        <div className="minicard"><span className="minicard__pos" style={{ background: "var(--pos-phrase)" }} /><span className="minicard__w">på den andre siden</span><span className="minicard__t">с другой стороны</span></div>
-                        <div className="minicard"><span className="minicard__pos" style={{ background: "var(--pos-noun)" }} /><span className="minicard__w">nøkkel</span><span className="minicard__t">ключ</span></div>
+                        {[SAMPLES[4], SAMPLES[3]].map((s) => (
+                            <div className="minicard" key={s.no}>
+                                <span className="minicard__pos" style={{ background: POS_DOT[s.pos] }} />
+                                <span className="minicard__w">{s.no}</span>
+                                <span className="minicard__t">{s.tr[currentLanguage]}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
                 <div className="auth__foot">© 2026 Lære Norsk · t.me/progtt</div>

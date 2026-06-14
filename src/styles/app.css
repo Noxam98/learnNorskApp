@@ -107,6 +107,9 @@
 }
 .wcard:hover .wcard__actions { opacity: 1; }
 
+/* Переключатель языка на экранах входа/регистрации */
+.auth__lang { position: absolute; top: var(--sp-5); right: var(--sp-5); z-index: 20; }
+
 /* Настройки профиля: имя параметра и подпись — отдельными строками */
 .setrow__meta { display: flex; flex-direction: column; gap: 2px; }
 .setrow__t { display: block; }
