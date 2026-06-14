@@ -27,6 +27,14 @@ export const useWordsStore = create((set, get) => ({
 
     reset: () => set({ dictList: [], dictNames: [], currentDictName: null, loaded: false }),
 
+    // Тихое обновление (без мигания загрузки) — для фонового опроса (звук/эмбеддинги догружаются).
+    refresh: async () => {
+        try {
+            const data = await api.getData();
+            set({ dictList: data.dictList || [], dictNames: data.dictNames || [] });
+        } catch { /* офлайн — не критично */ }
+    },
+
     _currentDictId: () => {
         const d = get().dictList.find((x) => x.dictName === get().currentDictName);
         return d?.id;

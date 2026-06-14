@@ -19,37 +19,10 @@ import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import MyPage from "./pages/MyPage.jsx";
 
+// Единый catch-all: всеми маршрутами управляет App (его внутренние <Routes>),
+// иначе новый путь (например /pool) даёт 404 на уровне data-роутера.
 const router = createHashRouter([
-  {
-    path: "/",
-    element: <App/>,
-    children: [
-      {
-        path: "/",
-        element: <Navigate to="/words" />,
-      },
-      {
-        path: 'words',
-        element: <WordListPage/>,
-      },
-      {
-        path: 'game',
-        element: <GamePage/>, 
-      },
-      {
-        path: 'authorization',
-        element: <LoginPage/>,
-      },
-      {
-        path: 'registration',
-        element: <RegisterPage/>,
-      },
-      {
-        path: 'mypage',
-        element: <MyPage/>,
-      }
-    ]
-  },
+  { path: "*", element: <App /> },
 ]);
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>

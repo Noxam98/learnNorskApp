@@ -1,5 +1,6 @@
-// Озвучка норвежских слов через серверный Gemini TTS (натуральное произношение, кэш на сервере).
-// Фолбэк — Web Speech API, если серверное аудио недоступно.
+// Озвучка норвежских слов через серверный Gemini TTS (кэш на сервере).
+// Возвращает Promise: resolve при старте воспроизведения, reject при ошибке.
+// Фолбэк — Web Speech API.
 import api from "../tools/api.js";
 
 let _audio = null;
@@ -18,16 +19,19 @@ const webSpeech = (text) => {
     } catch { /* нет TTS */ }
 };
 
-export const speakNorwegian = (text) => {
+export const speakNorwegian = (text) => new Promise((resolve, reject) => {
     const t = (text || "").trim();
-    if (!t) return;
+    if (!t) { resolve(); return; }
     try {
         if (_audio) _audio.pause();
         _audio = new Audio(api.ttsUrl(t));
-        _audio.play().catch(() => webSpeech(t));
-    } catch {
+        _audio.onplaying = () => resolve();
+        _audio.onerror = () => { webSpeech(t); reject(new Error("audio")); };
+        _audio.play().catch(() => { webSpeech(t); reject(new Error("play")); });
+    } catch (e) {
         webSpeech(t);
+        reject(e);
     }
-};
+});
 
 export default speakNorwegian;

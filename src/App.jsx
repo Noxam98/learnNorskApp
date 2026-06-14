@@ -28,6 +28,17 @@ function App() {
         else useWordsStore.getState().reset();
     }, [isAuthed]);
 
+    // Пока у части слов нет звука — периодически обновляем (фон сервера их догружает).
+    useEffect(() => {
+        if (!isAuthed) return;
+        const id = setInterval(() => {
+            const dl = useWordsStore.getState().dictList;
+            const incomplete = dl.some((d) => d.words.some((w) => !w.hasTts));
+            if (incomplete) useWordsStore.getState().refresh();
+        }, 45000);
+        return () => clearInterval(id);
+    }, [isAuthed]);
+
     const routes = (
         <Routes location={location}>
             <Route path="/" element={<Navigate to="/words" />} />

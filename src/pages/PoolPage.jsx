@@ -20,6 +20,16 @@ export const PoolPage = () => {
     const [offset, setOffset] = useState(0);
     const [loading, setLoading] = useState(false);
     const [added, setAdded] = useState({});
+    const [ttsBusy, setTtsBusy] = useState({});
+
+    const onSpeak = async (word) => {
+        setTtsBusy((b) => ({ ...b, [word]: true }));
+        try {
+            await speakNorwegian(word);
+            setItems((list) => list.map((it) => (it.word === word ? { ...it, hasTts: true } : it)));
+        } catch { /* нет звука */ }
+        setTtsBusy((b) => ({ ...b, [word]: false }));
+    };
 
     const load = async (reset) => {
         setLoading(true);
@@ -69,10 +79,16 @@ export const PoolPage = () => {
                                     <span className={`chip pos ${cls}`}>{posLabel(w.part_of_speech, t)}</span>
                                     <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
                                 </div>
-                                <div className="wcard__actions" style={{ position: "static", opacity: 1, background: "transparent", boxShadow: "none" }}>
-                                    <button className="iconbtn" aria-label={t.tts} onClick={() => speakNorwegian(w.word)}><Icon n="volume" /></button>
-                                    <button className="btn btn--outline btn--sm" disabled={added[w.word]} onClick={() => onAdd(w.word)}>
-                                        <Icon n={added[w.word] ? "check" : "plus"} sm /> {t.addToDict}
+                                <div className="wcard__actions">
+                                    <button className="iconbtn" aria-label={t.tts} disabled={ttsBusy[w.word]}
+                                        title={w.hasTts ? t.tts : t.ttsPreparing}
+                                        style={w.hasTts ? undefined : { opacity: 0.45 }}
+                                        onClick={() => onSpeak(w.word)}>
+                                        {ttsBusy[w.word] ? <Icon n="settings" className="spin" /> : <Icon n="volume" />}
+                                    </button>
+                                    <button className="iconbtn" aria-label={t.addToDict} title={t.addToDict}
+                                        disabled={added[w.word]} onClick={() => onAdd(w.word)}>
+                                        <Icon n={added[w.word] ? "check" : "plus"} />
                                     </button>
                                 </div>
                             </div>
