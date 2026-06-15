@@ -200,7 +200,7 @@
   .startbar__hint { font-size: var(--fs-14); color: var(--ink-2); }
 
   @media (max-width: 640px) {
-    .sel-main { padding: var(--sp-5) 0 120px; }
+    .sel-main { padding: var(--sp-5) 0 180px; }
     .sel-head .h1 { font-size: var(--fs-34); }
     .dgroup__body { grid-template-columns: 1fr; }
     .startbar__row { flex-wrap: wrap; gap: var(--sp-3); }
