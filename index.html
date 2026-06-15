@@ -10,6 +10,13 @@
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lære Norsk Appen</title>
+    <script>
+      // Применяем тему до отрисовки, чтобы не было вспышки светлой темы.
+      try {
+        var s = JSON.parse(localStorage.getItem("system-storage") || "{}");
+        document.documentElement.dataset.theme = (s.state && s.state.theme) === "dark" ? "dark" : "light";
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -121,6 +121,55 @@
   --dur: .22s;
 }
 
+/* ============================================================
+   Тёмная тема — переопределение токенов. Остальные стили работают
+   на var(--...) и подхватывают её автоматически.
+   ============================================================ */
+[data-theme="dark"] {
+  --canvas:    #0E1413;
+  --surface:   #161D1B;
+  --surface-2: #1C2522;
+  --surface-3: #232E2A;
+  --border:    #2B3733;
+  --border-2:  #3A4843;
+
+  --ink:   #EAF1EE;
+  --ink-2: #A9B7B1;
+  --ink-3: #76847E;
+  --ink-on: #FFFFFF;
+
+  /* фьорд: ярче для контраста на тёмном; светлые субтоны → тёмные */
+  --fjord-600: #3C8593;
+  --fjord-500: #4E97A2;
+  --fjord-300: #5E97A0;
+  --fjord-100: #1B3A3D;
+  --fjord-50:  #15302F;
+
+  --ember-700: #F0703F;
+  --ember-600: #E2632F;
+  --ember-500: #F0703F;
+  --ember-100: #3A2117;
+  --ember-50:  #2A1A12;
+
+  --success:    #62C083;  --success-bg: #163026;
+  --danger:     #E67A6A;  --danger-bg:  #38211E;
+  --warning:    #D8A53E;  --warning-bg: #332B16;
+
+  --pos-phrase: #5FC6D4;  --pos-phrase-bg: #133339;
+  --pos-noun:   #6FC78A;  --pos-noun-bg:   #173326;
+  --pos-verb:   #D8AD4E;  --pos-verb-bg:   #332B14;
+  --pos-adj:    #A79CF0;  --pos-adj-bg:    #25224A;
+  --pos-other:  #9AA8A1;  --pos-other-bg:  #232C28;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.5), 0 1px 2px rgba(0,0,0,.4);
+  --shadow-md: 0 6px 20px rgba(0,0,0,.5);
+  --shadow-lg: 0 18px 48px rgba(0,0,0,.6);
+  --shadow-focus: 0 0 0 4px rgba(78,151,162,.35);
+
+  color-scheme: dark;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; }

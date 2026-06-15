@@ -67,6 +67,15 @@
 .nav__avatar:hover { box-shadow: var(--shadow-sm); transform: translateY(-1px); }
 .nav__avatar.is-active { box-shadow: 0 0 0 3px rgba(25, 80, 89, .25); }
 .nav__avatar .ic { color: #fff; }
+
+/* Переключатель темы в шапке */
+.nav__theme {
+  width: 38px; height: 38px; flex: none; border-radius: var(--r-full);
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid var(--border); color: var(--ink-2);
+  cursor: pointer; transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.nav__theme:hover { background: var(--surface-3); color: var(--ink); }
 .nav__spacer { flex: 1; }
 
 /* ---------- Buttons ---------- */

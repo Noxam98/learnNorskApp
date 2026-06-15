@@ -11,7 +11,8 @@ const MyPage = () => {
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
     const navigate = useNavigate();
-    const { logout, user } = useAuth();
+    const { logout, user, setTheme } = useAuth();
+    const theme = useSystemStore((state) => state.theme);
     const dictList = useWordsStore((state) => state.dictList);
 
     const [tts, setTts] = useState(true);
@@ -103,6 +104,11 @@ const MyPage = () => {
                                 <option value="pl">Polski</option>
                                 <option value="lt">Lietuvių</option>
                             </select>
+                        </div>
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n={theme === "dark" ? "moon" : "sun"} sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{t.darkTheme}</span><span className="setrow__d">{t.darkThemeDesc}</span></span>
+                            <span className={`toggle${theme === "dark" ? " is-on" : ""}`} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} />
                         </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="volume" sm /></span>

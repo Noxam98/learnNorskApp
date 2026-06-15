@@ -5,6 +5,7 @@ import { NavigationBar } from "./components/navigationBar";
 import Footer from "./components/footer.jsx";
 import { useWordsStore } from "./store/wordStore.jsx";
 import { useAuthStore } from "./store/AuthStore.jsx";
+import { useSystemStore } from "./store/systemStore.jsx";
 
 import { BrandLoader } from "./components/ui/Spinner.jsx";
 import { WordListPage } from "./pages/WordListPage.jsx";
@@ -22,8 +23,15 @@ function App() {
     const isLoadingData = useWordsStore((s) => s.isLoading);
     const dataLoaded = useWordsStore((s) => s.loaded);
 
+    const theme = useSystemStore((s) => s.theme);
+
     // Проверка сессии при старте.
     useEffect(() => { useAuthStore.getState().checkAuth(); }, []);
+
+    // Тема оформления → атрибут на <html>, остальное делают CSS-токены.
+    useEffect(() => {
+        document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+    }, [theme]);
 
     // Данные полностью серверные: грузим при наличии сессии, чистим при выходе.
     useEffect(() => {

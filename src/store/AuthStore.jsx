@@ -44,6 +44,9 @@ export const useAuthStore = create((set, get) => ({
         try {
             const userData = await api.getProtectedData();
             set({ user: { username: userData.username }, accessToken: api.accessToken });
+            if (userData.theme === "light" || userData.theme === "dark") {
+                useSystemStore.getState().setTheme(userData.theme);  // тема юзера с сервера
+            }
             return true;
         } catch {
             // apiRequest сам пытается обновить токен по 401; сюда попадаем только если не вышло.
@@ -80,6 +83,10 @@ export const useAuthStore = create((set, get) => ({
                 accessToken: data.access_token,
                 isLoading: false,
             });
+            // подтянуть тему юзера с сервера
+            api.getProtectedData().then((me) => {
+                if (me?.theme === "light" || me?.theme === "dark") useSystemStore.getState().setTheme(me.theme);
+            }).catch(() => {});
             return data;
         } catch (error) {
             const lang = useSystemStore.getState().currentLanguage;
@@ -97,6 +104,12 @@ export const useAuthStore = create((set, get) => ({
             get().logout();
             throw error;
         }
+    },
+
+    // Сменить тему: мгновенно локально + сохранить на бэкенде (если авторизован).
+    setTheme: (theme) => {
+        useSystemStore.getState().setTheme(theme);
+        if (get().accessToken) api.setUserTheme(theme).catch(() => {});
     },
 
     logout: () => {

@@ -10,7 +10,8 @@ export const NavigationBar = () => {
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
     const { pathname } = useLocation();
-    const { user } = useAuth();
+    const { user, setTheme } = useAuth();
+    const theme = useSystemStore((s) => s.theme);
     const initial = (user?.username?.[0] || "").toUpperCase();
 
     return (
@@ -32,6 +33,11 @@ export const NavigationBar = () => {
                     </Link>
                 </nav>
                 <div className="nav__spacer" />
+                <button className="nav__theme hide-mobile" aria-label="theme"
+                    title={theme === "dark" ? "Light" : "Dark"}
+                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+                    <Icon n={theme === "dark" ? "sun" : "moon"} sm />
+                </button>
                 <span className="hide-mobile"><LanguageChooser /></span>
                 <Link
                     className={`nav__avatar${pathname === "/mypage" ? " is-active" : ""}`}
