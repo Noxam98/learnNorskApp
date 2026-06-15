@@ -311,6 +311,7 @@
   .qword {
     font-size: var(--fs-72); font-weight: 800; letter-spacing: var(--ls-tighter);
     line-height: 1.05; margin: var(--sp-3) 0 var(--sp-2); color: var(--game-ink);
+    overflow-wrap: break-word; word-break: break-word; hyphens: auto; max-width: 100%;
   }
   .qpos { display: inline-flex; align-items: center; gap: 7px; padding: 5px 13px; border-radius: var(--r-full); font-size: var(--fs-13); font-weight: 700; background: rgba(242,166,90,.14); color: var(--game-accent); }
 
@@ -323,7 +324,7 @@
   .flashcard:hover { border-color: var(--game-accent); }
   .flashcard:active { transform: translateY(1px); }
   .flashcard__back { margin-top: var(--sp-6); min-height: 44px; display: flex; align-items: center; justify-content: center; border-top: 1px solid var(--game-border); padding-top: var(--sp-5); }
-  .flashcard__answer { font-size: var(--fs-34); font-weight: 700; color: var(--game-accent); }
+  .flashcard__answer { font-size: var(--fs-34); font-weight: 700; color: var(--game-accent); overflow-wrap: break-word; word-break: break-word; hyphens: auto; max-width: 100%; min-width: 0; }
   .flashcard__hint { font-size: var(--fs-14); color: var(--game-ink-2); letter-spacing: var(--ls-wide); text-transform: uppercase; }
   .qspeak { margin-left: 8px; vertical-align: middle; color: var(--game-ink-2); background: transparent; border: none; cursor: pointer; }
   .qspeak:hover { color: var(--game-ink); }
@@ -354,7 +355,7 @@
   .fb-icon { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none; }
   .fb-icon .ic { width: 17px; height: 17px; }
   .fb-title { font-size: var(--fs-16); font-weight: 800; letter-spacing: var(--ls-tight); }
-  .fb-line { font-size: var(--fs-14); color: var(--game-ink-2); line-height: var(--lh-snug); }
+  .fb-line { font-size: var(--fs-14); color: var(--game-ink-2); line-height: var(--lh-snug); overflow-wrap: break-word; word-break: break-word; min-width: 0; max-width: 100%; }
   .fb-line b { color: var(--game-ink); font-weight: 700; }
 
   /* finished summary */

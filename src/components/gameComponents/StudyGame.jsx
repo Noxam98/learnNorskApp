@@ -10,6 +10,8 @@ import { speakNorwegian } from "../ui/tts.js";
 import { posLabel } from "../ui/pos.js";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
+// Коды языков (BCP-47) для расстановки переносов hyphens: auto. Норвежский — nb.
+const BCP = { ru: "ru", ukr: "uk", en: "en", pl: "pl", lt: "lt" };
 const HINTS = {
     ru: { reveal: "нажми — перевод", next: "нажми — дальше", studied: "Просмотрено" },
     ukr: { reveal: "натисни — переклад", next: "натисни — далі", studied: "Переглянуто" },
@@ -121,7 +123,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
                                 exit={{ opacity: 0, x: -60, rotate: -1 }}
                                 transition={{ duration: 0.22, ease: [0.2, 0.7, 0.2, 1] }}>
                                 <div className="qcount">{t.word} {idx + 1} / {total}</div>
-                                <h1 className="qword">
+                                <h1 className="qword" lang={isNo2Int ? "nb" : (BCP[currentLanguage] || currentLanguage)}>
                                     {front}
                                     {noVisible && (
                                         <SpeakButton text={no} hasTts={cur.hasTts} className="qspeak" lg
@@ -133,7 +135,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
                                 <div className={`flashcard__back${flipped ? " is-shown" : ""}`}>
                                     <AnimatePresence mode="wait" initial={false}>
                                         {flipped
-                                            ? <motion.span key="a" className="flashcard__answer" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>{back}</motion.span>
+                                            ? <motion.span key="a" className="flashcard__answer" lang={isNo2Int ? (BCP[currentLanguage] || currentLanguage) : "nb"} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>{back}</motion.span>
                                             : <motion.span key="h" className="flashcard__hint" initial={{ opacity: 0 }} animate={{ opacity: 0.9 }} exit={{ opacity: 0 }}>{h.reveal}</motion.span>}
                                     </AnimatePresence>
                                 </div>

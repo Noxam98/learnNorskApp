@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -11,6 +12,8 @@ import { speakNorwegian } from "../ui/tts.js";
 import api from "../tools/api.js";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
+// Коды языков (BCP-47) для расстановки переносов hyphens: auto. Норвежский — nb.
+const BCP = { ru: "ru", ukr: "uk", en: "en", pl: "pl", lt: "lt" };
 
 const filterChosenWords = (dictList) =>
     dictList.flatMap((d) => d.words.filter((w) => w?.gameData?.isChoosedToGame));
@@ -185,7 +188,7 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
                 <div className="qcard">
                     <div className="qcount">{t.word} {qIndex} / {total}</div>
                     <div className="qprompt">{t.translateTo} {promptTarget}</div>
-                    <h1 className="qword">{question}
+                    <h1 className="qword" lang={isNo2Int ? "nb" : (BCP[currentLanguage] || currentLanguage)}>{question}
                         {isNo2Int && (
                             <SpeakButton text={no} hasTts={current.hasTts} className="qspeak" lg
                                 ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
@@ -201,7 +204,7 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
                                     ? (opt === correctPrimary ? " is-correct" : (opt === chosen ? " is-wrong" : ""))
                                     : "";
                                 return (
-                                    <button key={opt} className={`choice${cls}`} disabled={status !== "ASKING"} onClick={() => choose(opt)}>
+                                    <button key={opt} className={`choice${cls}`} lang={isNo2Int ? (BCP[currentLanguage] || currentLanguage) : "nb"} disabled={status !== "ASKING"} onClick={() => choose(opt)}>
                                         {opt}
                                     </button>
                                 );

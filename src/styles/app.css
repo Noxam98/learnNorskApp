@@ -210,6 +210,7 @@
     font-size: var(--fs-18); font-weight: 600; cursor: pointer;
     background: var(--game-surface); color: var(--game-ink);
     border: 2px solid var(--game-border);
+    overflow-wrap: break-word; word-break: break-word; hyphens: auto; min-width: 0;
     transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
 .choice:hover:not(:disabled) { border-color: var(--game-accent); }
