@@ -215,7 +215,9 @@
 }
 .choice:hover:not(:disabled) { border-color: var(--game-accent); }
 .choice:active:not(:disabled) { transform: translateY(1px); }
-.choice:disabled { cursor: default; }
+/* после ответа кнопки выключены, но клик должен «проваливаться» на .pstage,
+   чтобы вторым кликом (в т.ч. по области кнопок) перейти к следующему слову */
+.choice:disabled { cursor: default; pointer-events: none; }
 .choice.is-correct { border-color: var(--game-correct); color: var(--game-correct); background: rgba(98,192,131,.12); }
 .choice.is-wrong { border-color: var(--game-incorrect); color: var(--game-incorrect); background: rgba(230,122,82,.12); }
 /* На мобильном тоже 2 колонки (4 варианта = 2×2) — компактнее и влезает в экран */
