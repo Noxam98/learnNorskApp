@@ -349,10 +349,11 @@
   .gbtn--ghost:hover { background: rgba(255,255,255,.1); }
 
   /* feedback banner */
-  .feedback { margin-top: var(--sp-8); display: none; align-items: center; justify-content: center; flex-direction: column; gap: var(--sp-3); }
-  .fb-icon { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; }
-  .fb-title { font-size: var(--fs-24); font-weight: 800; letter-spacing: var(--ls-tight); }
-  .fb-line { font-size: var(--fs-16); color: var(--game-ink-2); }
+  .feedback { margin-top: var(--sp-4); display: none; align-items: center; justify-content: center; flex-direction: column; gap: var(--sp-1); }
+  .fb-icon { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; margin-bottom: 2px; }
+  .fb-icon .ic { width: 20px; height: 20px; }
+  .fb-title { font-size: var(--fs-18); font-weight: 800; letter-spacing: var(--ls-tight); }
+  .fb-line { font-size: var(--fs-14); color: var(--game-ink-2); line-height: var(--lh-snug); }
   .fb-line b { color: var(--game-ink); font-weight: 700; }
 
   /* finished summary */
