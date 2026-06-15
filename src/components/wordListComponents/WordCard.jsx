@@ -59,8 +59,6 @@ export const Card = ({ wordItem, languageTranslate }) => {
                     )}
                 </div>
                 <div className="wcard__actions" onClick={(e) => e.stopPropagation()}>
-                    <SpeakButton text={no} hasTts={wordItem.hasTts} ariaLabel={t.tts}
-                        title={t.tts} titlePreparing={t.ttsPreparing} />
                     <button
                         className="iconbtn"
                         aria-label={t.description}
@@ -70,6 +68,8 @@ export const Card = ({ wordItem, languageTranslate }) => {
                         <Icon n="info" />
                     </button>
                     <button className="iconbtn" aria-label="Редактировать" onClick={openEdit}><Icon n="edit" /></button>
+                    <SpeakButton text={no} hasTts={wordItem.hasTts} ariaLabel={t.tts}
+                        title={t.tts} titlePreparing={t.ttsPreparing} />
                 </div>
             </div>
 

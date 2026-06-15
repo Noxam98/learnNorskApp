@@ -240,8 +240,6 @@ export const PoolPage = () => {
                                     )}
                                 </div>
                                 <div className="wcard__actions">
-                                    <SpeakButton text={w.word} hasTts={w.hasTts} ariaLabel={t.tts}
-                                        title={t.tts} titlePreparing={t.ttsPreparing} />
                                     <button className="iconbtn" aria-label={t.description} title={t.description}
                                         onClick={() => setDescWord(w.word)}>
                                         <Icon n="info" />
@@ -250,6 +248,8 @@ export const PoolPage = () => {
                                         disabled={added[w.word] || addingId === w.word} onClick={() => onAdd(w.word)}>
                                         {addingId === w.word ? <BtnSpinner /> : <Icon n={added[w.word] ? "check" : "plus"} />}
                                     </button>
+                                    <SpeakButton text={w.word} hasTts={w.hasTts} ariaLabel={t.tts}
+                                        title={t.tts} titlePreparing={t.ttsPreparing} />
                                     {isAdmin && (
                                         <button className="iconbtn is-danger" aria-label="delete" title="Удалить из базы (админ)"
                                             onClick={() => onAdminDelete(w.word)}>
