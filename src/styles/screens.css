@@ -1,5 +1,5 @@
 /* ===== from words.html ===== */
-.words-main { padding: var(--sp-8) 0 var(--sp-16); }
+.words-main { padding: var(--sp-8) var(--sp-6) var(--sp-16); }
 
   /* Dictionary chooser */
   .dictbar { display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap; }
@@ -148,7 +148,7 @@
   }
 
   @media (max-width: 640px) {
-    .words-main { padding: var(--sp-5) 0 var(--sp-12); }
+    .words-main { padding: var(--sp-5) var(--sp-4) var(--sp-12); }
     .wcard { padding: 8px 8px 8px 11px; gap: var(--sp-2); }
     .wcard__actions { opacity: 1; }
     .composer { flex-wrap: wrap; }
