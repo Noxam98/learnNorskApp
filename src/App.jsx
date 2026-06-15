@@ -66,7 +66,7 @@ function App() {
     // Первичная загрузка серверных данных — полноэкранный лоадер вместо пустых экранов.
     const showInitialLoader = isLoadingData && !dataLoaded;
     return (
-        <div className={`app${path === "/words" ? " app--fixed" : ""}`}>
+        <div className="app">
             <NavigationBar />
             {showInitialLoader ? <BrandLoader size="lg" /> : routes}
             {showFooter && <Footer />}

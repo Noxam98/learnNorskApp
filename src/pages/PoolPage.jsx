@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../components/tools/api.js";
 import { useWordsStore } from "../store/wordStore.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
+import { Modal } from "../components/ui/Modal.jsx";
 import { BtnSpinner, SkeletonWordlist } from "../components/ui/Spinner.jsx";
 import { SearchBox } from "../components/ui/SearchBox.jsx";
 import { posMeta, posLabel } from "../components/ui/pos.js";
@@ -29,6 +31,8 @@ export const PoolPage = () => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
     const addFromPool = useWordsStore((s) => s.addFromPool);
+    const createDictFromPool = useWordsStore((s) => s.createDictFromPool);
+    const navigate = useNavigate();
 
     const [q, setQ] = useState("");
     const [appliedQ, setAppliedQ] = useState("");
@@ -45,6 +49,10 @@ export const PoolPage = () => {
     const [addingId, setAddingId] = useState(null);
     const [added, setAdded] = useState({});
     const [facets, setFacets] = useState({ topics: [], levels: [] });
+    const [dictOpen, setDictOpen] = useState(false);
+    const [dictName, setDictName] = useState("");
+    const [creating, setCreating] = useState(false);
+    const [createErr, setCreateErr] = useState("");
     const firstRun = useRef(true);
 
     // Список тем с количеством (для фильтра) — один раз.
@@ -96,6 +104,30 @@ export const PoolPage = () => {
 
     const hasFilters = topics.length > 0 || !!level;
 
+    // Имя нового словаря по фильтрам (с возможностью переписать вручную).
+    const autoDictName = () => {
+        const parts = [];
+        if (topics.length) parts.push(topics.map((k) => topicLabel(t, k)).join(", "));
+        if (level) parts.push(level);
+        if (appliedQ.trim()) parts.push(`«${appliedQ.trim()}»`);
+        return parts.length ? parts.join(" · ") : (t.allWordsName || "Все слова");
+    };
+
+    const openCreate = () => { setDictName(autoDictName()); setCreateErr(""); setDictOpen(true); };
+    const doCreate = async () => {
+        const name = dictName.trim();
+        if (!name) return;
+        setCreating(true); setCreateErr("");
+        try {
+            await createDictFromPool({ name, q: appliedQ, topics, level });
+            setDictOpen(false);
+            navigate("/words");
+        } catch {
+            setCreateErr(t.dictExistsError || "Не удалось создать словарь");
+        }
+        setCreating(false);
+    };
+
     return (
         <main className="shell words-main">
             <div className="page-head" style={{ marginBottom: "var(--sp-4)" }}>
@@ -136,6 +168,10 @@ export const PoolPage = () => {
                                 onClick={() => pickLevel(lv)}>{lv}</button>
                         ))}
                     </div>
+
+                    <button className="btn btn--primary btn--sm" disabled={!total} onClick={openCreate}>
+                        <Icon n="plus" sm /> {t.addAllToNewDict || "В новый словарь"} <b>{total}</b>
+                    </button>
 
                     <div className="grow" />
 
@@ -216,6 +252,27 @@ export const PoolPage = () => {
                     </button>
                 </div>
             )}
+
+            <Modal
+                open={dictOpen}
+                onClose={() => { if (!creating) setDictOpen(false); }}
+                title={t.newDictTitle || "Новый словарь"}
+                footer={<>
+                    <button className="btn btn--ghost" disabled={creating} onClick={() => setDictOpen(false)}>{t.cancel}</button>
+                    <button className="btn btn--primary" disabled={creating || !dictName.trim()} onClick={doCreate}>
+                        {creating ? <BtnSpinner /> : <Icon n="plus" sm />} {t.create || "Создать"}
+                    </button>
+                </>}
+            >
+                <div className="field">
+                    <label className="label">{t.dictNameLabel || "Название словаря"}</label>
+                    <input className="input" value={dictName} autoFocus
+                        onChange={(e) => setDictName(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") doCreate(); }} />
+                    <span className="input-hint">{(t.willAddWords || "Будет добавлено слов")}: <b>{total}</b></span>
+                    {createErr && <span className="alert"><Icon n="x" sm /> {createErr}</span>}
+                </div>
+            </Modal>
         </main>
     );
 };

@@ -73,6 +73,14 @@ export const useWordsStore = create((set, get) => ({
         await get().loadData(true);
     },
 
+    // Создать словарь из всех слов пула, подходящих под фильтр.
+    createDictFromPool: async ({ name, q, topics, level }) => {
+        const res = await api.createDictFromPool({ name, q, topics, level });
+        await get().loadData(true);
+        if (res?.name) set({ currentDictName: res.name });
+        return res;
+    },
+
     importDict: async (dictJson) => {
         await api.importDict(dictJson);
         await get().loadData(true);

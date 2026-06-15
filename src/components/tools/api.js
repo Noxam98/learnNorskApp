@@ -173,6 +173,9 @@ class ApiService {
     addWords(dictId, prompt) { return this._send('POST', `/dictionaries/${dictId}/words`, { prompt }); }
     addPoolWord(dictId, norwegian) { return this._send('POST', `/dictionaries/${dictId}/add_pool`, { norwegian }); }
     importDict(dict) { return this._send('POST', '/dictionaries/import', { name: dict.dictName, words: dict.words || [] }); }
+    createDictFromPool({ name, q = "", topics = [], level = "" }) {
+        return this._send('POST', '/dictionaries/from_pool', { name, q, topics, level });
+    }
     deleteWord(wordId) { return this._send('DELETE', `/words/${wordId}`); }
     editWord(wordId, override) { return this._send('PATCH', `/words/${wordId}`, override); }
     recordResult(wordId, correct) { return this._send('POST', `/words/${wordId}/result`, { correct }); }
