@@ -1,15 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "../components/tools/api.js";
 import { useWordsStore } from "../store/wordStore.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
-import { Dots, BtnSpinner, SkeletonWordlist, CountdownRing } from "../components/ui/Spinner.jsx";
+import { BtnSpinner, SkeletonWordlist } from "../components/ui/Spinner.jsx";
+import { SearchBox } from "../components/ui/SearchBox.jsx";
 import { posMeta, posLabel } from "../components/ui/pos.js";
 import { SpeakButton } from "../components/ui/SpeakButton.jsx";
 
-const LIMIT = 60;
 const SEARCH_DEBOUNCE_MS = 550;
+const PAGE_SIZES = [30, 60, 120];
+const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
+
+const topicLabel = (t, key) => t.topics?.[key] || key;
+
+// Окно номеров страниц вокруг текущей.
+const pageWindow = (page, totalPages) => {
+    const span = 2, out = [];
+    let lo = Math.max(1, page - span), hi = Math.min(totalPages, page + span);
+    if (page <= span) hi = Math.min(totalPages, 1 + span * 2);
+    if (page > totalPages - span) lo = Math.max(1, totalPages - span * 2);
+    for (let i = lo; i <= hi; i++) out.push(i);
+    return out;
+};
 
 export const PoolPage = () => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
@@ -17,41 +31,70 @@ export const PoolPage = () => {
     const addFromPool = useWordsStore((s) => s.addFromPool);
 
     const [q, setQ] = useState("");
+    const [appliedQ, setAppliedQ] = useState("");
     const [items, setItems] = useState([]);
     const [total, setTotal] = useState(0);
-    const [offset, setOffset] = useState(0);
-    const [loading, setLoading] = useState(true); // на старте сразу грузим — без мелькания «пусто»
-    const [searchPhase, setSearchPhase] = useState("counting"); // idle | counting | searching
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(60);
+    const [topics, setTopics] = useState([]);
+    const [level, setLevel] = useState("");
+    const [sort, setSort] = useState("alpha");
+    const [order, setOrder] = useState("asc");
+    const [loading, setLoading] = useState(true);
+    const [searchPhase, setSearchPhase] = useState("idle"); // idle | counting | searching
     const [addingId, setAddingId] = useState(null);
     const [added, setAdded] = useState({});
+    const [facets, setFacets] = useState({ topics: [], levels: [] });
+    const firstRun = useRef(true);
 
-    const load = async (reset) => {
-        setLoading(true);
-        const off = reset ? 0 : offset;
-        try {
-            const res = await api.getPool({ q, limit: LIMIT, offset: off });
-            setTotal(res.total || 0);
-            setItems(reset ? (res.words || []) : [...items, ...(res.words || [])]);
-            setOffset(off + (res.words?.length || 0));
-        } catch { /* ignore */ }
-        setLoading(false);
-    };
-
+    // Список тем с количеством (для фильтра) — один раз.
     useEffect(() => {
+        api.getPoolTopics().then((r) => setFacets({ topics: r.topics || [], levels: r.levels || [] })).catch(() => {});
+    }, []);
+
+    // Дебаунс поиска: кольцо отсчёта → применяем запрос (сброс на 1-ю страницу).
+    useEffect(() => {
+        if (firstRun.current) { firstRun.current = false; return; }
         setSearchPhase("counting");
-        const id = setTimeout(async () => {
-            setSearchPhase("searching");
-            await load(true);
-            setSearchPhase("idle");
-        }, SEARCH_DEBOUNCE_MS);
+        const id = setTimeout(() => { setAppliedQ(q.trim()); setPage(1); }, SEARCH_DEBOUNCE_MS);
         return () => clearTimeout(id);
     }, [q]);
+
+    // Загрузка страницы при изменении запроса/фильтров/сортировки/страницы.
+    useEffect(() => {
+        let cancelled = false;
+        setLoading(true);
+        setSearchPhase((p) => (p === "counting" ? "searching" : p));
+        api.getPool({ q: appliedQ, limit: pageSize, offset: (page - 1) * pageSize, topics, level, sort, order })
+            .then((res) => {
+                if (cancelled) return;
+                setItems(res.words || []);
+                setTotal(res.total || 0);
+            })
+            .catch(() => { if (!cancelled) setItems([]); })
+            .finally(() => { if (!cancelled) { setLoading(false); setSearchPhase("idle"); } });
+        return () => { cancelled = true; };
+    }, [appliedQ, page, pageSize, topics, level, sort, order]);
+
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    useEffect(() => { if (page > totalPages) setPage(totalPages); }, [totalPages]); // eslint-disable-line
+
+    const toggleTopic = (key) => {
+        setPage(1);
+        setTopics((prev) => prev.includes(key) ? prev.filter((x) => x !== key) : [...prev, key]);
+    };
+    const pickLevel = (lv) => { setPage(1); setLevel((cur) => (cur === lv ? "" : lv)); };
+    const onSort = (s) => { setPage(1); setSort(s); };
+    const onPageSize = (n) => { setPage(1); setPageSize(n); };
+    const clearFilters = () => { setPage(1); setTopics([]); setLevel(""); };
 
     const onAdd = async (word) => {
         setAddingId(word);
         try { await addFromPool(word); setAdded((a) => ({ ...a, [word]: true })); } catch { /* ignore */ }
         setAddingId(null);
     };
+
+    const hasFilters = topics.length > 0 || !!level;
 
     return (
         <main className="shell words-main">
@@ -63,17 +106,58 @@ export const PoolPage = () => {
                 </div>
             </div>
 
-            <div className="composer" style={{ marginBottom: "var(--sp-4)" }}>
-                <span className="composer__spark"><Icon n="search" /></span>
-                <input type="text" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.inputPlaceholder} />
-                <span className="composer__hint" style={{ display: "inline-flex", alignItems: "center", gap: "var(--sp-2)" }}>
-                    {searchPhase === "counting"
-                        ? <CountdownRing key={q} duration={SEARCH_DEBOUNCE_MS} />
-                        : searchPhase === "searching"
-                            ? <Dots />
-                            : null}
-                    {total}
-                </span>
+            <SearchBox value={q} onChange={setQ} placeholder={t.poolSearchPlaceholder || t.inputPlaceholder}
+                phase={searchPhase} debounceMs={SEARCH_DEBOUNCE_MS} count={total}
+                style={{ marginBottom: "var(--sp-3)" }} />
+
+            {/* Фильтр-бар: темы, уровень, сортировка, размер страницы */}
+            <div className="poolbar">
+                {facets.topics.length > 0 && (
+                    <div className="poolbar__chips">
+                        {facets.topics.map(({ topic, count }) => (
+                            <button key={topic}
+                                className={`fchip${topics.includes(topic) ? " is-on" : ""}`}
+                                onClick={() => toggleTopic(topic)}>
+                                {topicLabel(t, topic)} <span className="fchip__n">{count}</span>
+                            </button>
+                        ))}
+                        {hasFilters && (
+                            <button className="fchip fchip--clear" onClick={clearFilters}>
+                                <Icon n="x" sm /> {t.clearFilters || "Сброс"}
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                <div className="poolbar__row">
+                    <div className="seg">
+                        {LEVELS.map((lv) => (
+                            <button key={lv} className={`seg__btn${level === lv ? " is-on" : ""}`}
+                                onClick={() => pickLevel(lv)}>{lv}</button>
+                        ))}
+                    </div>
+
+                    <div className="grow" />
+
+                    <label className="poolbar__sel">
+                        <Icon n="sort" sm />
+                        <select value={sort} onChange={(e) => onSort(e.target.value)}>
+                            <option value="alpha">{t.poolSort?.alpha || "А-Я"}</option>
+                            <option value="level">{t.poolSort?.level || "Уровень"}</option>
+                            <option value="added">{t.poolSort?.added || "Новые"}</option>
+                        </select>
+                    </label>
+                    <button className="iconbtn" title={order === "asc" ? "↑" : "↓"}
+                        onClick={() => { setPage(1); setOrder((o) => (o === "asc" ? "desc" : "asc")); }}>
+                        <Icon n={order === "asc" ? "arrow-up" : "arrow-down"} sm />
+                    </button>
+
+                    <label className="poolbar__sel">
+                        <select value={pageSize} onChange={(e) => onPageSize(Number(e.target.value))}>
+                            {PAGE_SIZES.map((n) => <option key={n} value={n}>{n} / {t.pageSize || "стр."}</option>)}
+                        </select>
+                    </label>
+                </div>
             </div>
 
             {items.length ? (
@@ -84,6 +168,7 @@ export const PoolPage = () => {
                             <div className="wcard" key={w.word}>
                                 <div className="wcard__body">
                                     <span className="wcard__word">{w.word}</span>
+                                    {w.level && <span className="chip lvl">{w.level}</span>}
                                     <span className={`chip pos ${cls}`}>{posLabel(w.part_of_speech, t)}</span>
                                     <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
                                 </div>
@@ -100,13 +185,34 @@ export const PoolPage = () => {
                     })}
                 </div>
             ) : (
-                (loading || searchPhase !== "idle") ? <SkeletonWordlist count={12} /> : <p className="muted" style={{ textAlign: "center", padding: "var(--sp-12) 0" }}>{t.poolEmpty}</p>
+                (loading || searchPhase !== "idle")
+                    ? <SkeletonWordlist count={12} />
+                    : <p className="muted" style={{ textAlign: "center", padding: "var(--sp-12) 0" }}>{t.poolEmpty}</p>
             )}
 
-            {items.length < total && (
-                <div style={{ textAlign: "center", marginTop: "var(--sp-5)" }}>
-                    <button className="btn btn--outline" onClick={() => load(false)} disabled={loading}>
-                        {loading ? <BtnSpinner /> : "+"}
+            {/* Постраничная навигация */}
+            {totalPages > 1 && (
+                <div className="pager">
+                    <button className="pager__btn" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+                        <Icon n="chevron-left" sm />
+                    </button>
+                    {pageWindow(page, totalPages)[0] > 1 && (
+                        <>
+                            <button className="pager__btn" onClick={() => setPage(1)}>1</button>
+                            <span className="pager__gap">…</span>
+                        </>
+                    )}
+                    {pageWindow(page, totalPages).map((p) => (
+                        <button key={p} className={`pager__btn${p === page ? " is-on" : ""}`} onClick={() => setPage(p)}>{p}</button>
+                    ))}
+                    {pageWindow(page, totalPages).slice(-1)[0] < totalPages && (
+                        <>
+                            <span className="pager__gap">…</span>
+                            <button className="pager__btn" onClick={() => setPage(totalPages)}>{totalPages}</button>
+                        </>
+                    )}
+                    <button className="pager__btn" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+                        <Icon n="chevron-right" sm />
                     </button>
                 </div>
             )}

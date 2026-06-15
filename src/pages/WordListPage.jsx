@@ -6,6 +6,8 @@ import { useSystemStore } from "../store/systemStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
 import { Dots, BtnSpinner, CountdownRing } from "../components/ui/Spinner.jsx";
+import { SearchBox } from "../components/ui/SearchBox.jsx";
+import { matchWord } from "../components/tools/matchWord.js";
 import { posMeta, posLabel } from "../components/ui/pos.js";
 import Error from "../components/tools/error.jsx";
 import api from "../components/tools/api.js";
@@ -47,6 +49,7 @@ export const WordListPage = () => {
     const [pendingDelete, setPendingDelete] = useState(null);
     const [sort, setSort] = useState("added");
     const [sortOpen, setSortOpen] = useState(false);
+    const [search, setSearch] = useState("");
     const [suggestions, setSuggestions] = useState([]);
     // Фаза автокомплита: idle | counting (кольцо отсчёта дебаунса) | searching (запрос в пул)
     const [searchPhase, setSearchPhase] = useState("idle");
@@ -81,7 +84,7 @@ export const WordListPage = () => {
     const sl = SORT_LABELS[currentLanguage] || SORT_LABELS.en;
 
     const displayWords = useMemo(() => {
-        const arr = [...wordList];
+        const arr = (search ? wordList.filter((w) => matchWord(w, search)) : wordList).slice();
         const byNo = (a, b) => (a.translate?.no?.[0] || "").localeCompare(b.translate?.no?.[0] || "");
         if (sort === "alpha") arr.sort(byNo);
         else if (sort === "pos") arr.sort((a, b) => {
@@ -89,7 +92,7 @@ export const WordListPage = () => {
             return d || byNo(a, b);
         });
         return arr; // "added" — исходный порядок добавления
-    }, [wordList, sort]);
+    }, [wordList, sort, search]);
 
     const handleAdd = async () => {
         if (!prompt.trim()) return;
@@ -214,13 +217,24 @@ export const WordListPage = () => {
                 )}
             </div>
 
+            {/* Поиск по словам словаря (по всем языкам) */}
+            {wordList.length > 0 && (
+                <SearchBox value={search} onChange={setSearch}
+                    placeholder={t.dictSearchPlaceholder || t.poolSearchPlaceholder || t.inputPlaceholder}
+                    count={search ? displayWords.length : null} style={{ marginBottom: "var(--sp-3)" }} />
+            )}
+
             {/* Список слов */}
             {wordList.length ? (
-                <div className="wordlist">
-                    {displayWords.map((wordItem) => (
-                        <Card key={wordItem.id} wordItem={wordItem} languageTranslate={currentLanguage} />
-                    ))}
-                </div>
+                displayWords.length ? (
+                    <div className="wordlist">
+                        {displayWords.map((wordItem) => (
+                            <Card key={wordItem.id} wordItem={wordItem} languageTranslate={currentLanguage} />
+                        ))}
+                    </div>
+                ) : (
+                    <p className="muted" style={{ textAlign: "center", padding: "var(--sp-8) 0" }}>{t.nothingFound || "—"}</p>
+                )
             ) : (
                 <p className="muted" style={{ textAlign: "center", padding: "var(--sp-12) 0" }}>{t.addWordsHere}</p>
             )}
