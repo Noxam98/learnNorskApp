@@ -147,6 +147,9 @@
   font-size: var(--fs-12); font-weight: 600; letter-spacing: .01em;
 }
 .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.chip--clickable { transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }
+.chip--clickable:hover { box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+.chip--clickable:active { transform: translateY(0); }
 
 .pos { /* part of speech tag */ }
 .pos--phrase { color: var(--pos-phrase); background: var(--pos-phrase-bg); }

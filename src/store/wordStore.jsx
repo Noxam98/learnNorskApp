@@ -60,6 +60,12 @@ export const useWordsStore = create((set, get) => ({
         await get().loadData(true);
     },
 
+    // Удалить одно слово из текущего словаря (по id).
+    removeFromDict: async (wordId) => {
+        await api.deleteWord(wordId);
+        await get().loadData(true);
+    },
+
     addNewDict: async (name) => {
         await api.createDict(name);
         await get().loadData(true);

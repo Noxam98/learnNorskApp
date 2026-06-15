@@ -4,32 +4,26 @@ import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { Modal } from "../ui/Modal.jsx";
-import { BtnSpinner, Dots } from "../ui/Spinner.jsx";
+import { WordInfoModal } from "../ui/WordInfoModal.jsx";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { posMeta, posLabel } from "../ui/pos.js";
-import api from "../tools/api.js";
 
 export const Card = ({ wordItem, languageTranslate }) => {
     const choseWord = useWordsStore((state) => state.choseWord);
     const editWord = useWordsStore((state) => state.editWord);
     const reportWord = useWordsStore((state) => state.reportWord);
-    const loadDescription = useWordsStore((state) => state.loadDescription);
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
 
     const [descOpen, setDescOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
     const [draft, setDraft] = useState("");
-    const [synonyms, setSynonyms] = useState(null);
 
     const no = wordItem.translate?.no?.[0] || "";
     const translation = wordItem.translate?.[languageTranslate]?.join(", ") || "";
     const { cls } = posMeta(wordItem.part_of_speech);
     const label = posLabel(wordItem.part_of_speech, t);
     const isSelected = !!wordItem?.techData?.isSelected;
-    const isLoadingDesc = wordItem.descriptionState === "loading";
-    const descriptionText = wordItem.description?.description?.[currentLanguage] || "";
-    const hasDescription = descriptionText.trim() !== "";
 
     const openEdit = (e) => {
         e.stopPropagation();
@@ -45,11 +39,6 @@ export const Card = ({ wordItem, languageTranslate }) => {
 
     const openDescription = (e) => {
         e.stopPropagation();
-        if (!hasDescription && !isLoadingDesc) loadDescription(wordItem.id);
-        setSynonyms(null);
-        api.getSynonyms(wordItem.id, { lang: currentLanguage })
-            .then((r) => setSynonyms(r.synonyms || []))
-            .catch(() => setSynonyms([]));
         setDescOpen(true);
     };
 
@@ -73,42 +62,14 @@ export const Card = ({ wordItem, languageTranslate }) => {
                         title={t.description}
                         onClick={openDescription}
                     >
-                        {isLoadingDesc ? <BtnSpinner /> : <Icon n="book" />}
+                        <Icon n="info" />
                     </button>
                     <button className="iconbtn" aria-label="Редактировать" onClick={openEdit}><Icon n="edit" /></button>
                 </div>
             </div>
 
-            <Modal open={descOpen} onClose={() => setDescOpen(false)} title={no}>
-                {hasDescription ? (
-                    <p className="muted" style={{ margin: 0, lineHeight: "var(--lh-normal)" }}>{descriptionText}</p>
-                ) : isLoadingDesc ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }} aria-busy="true">
-                        <span className="skel skel--line" style={{ width: "100%" }} />
-                        <span className="skel skel--line" style={{ width: "94%" }} />
-                        <span className="skel skel--line" style={{ width: "78%" }} />
-                    </div>
-                ) : (
-                    <p className="muted" style={{ margin: 0, lineHeight: "var(--lh-normal)" }}>{t.descUnavailable}</p>
-                )}
-                {synonyms === null && (
-                    <div className="row" style={{ gap: "var(--sp-3)", marginTop: "var(--sp-5)", color: "var(--ink-3)" }}>
-                        <Dots /> <span style={{ fontSize: "var(--fs-14)" }}>{t.similar}</span>
-                    </div>
-                )}
-                {synonyms?.length > 0 && (
-                    <div style={{ marginTop: "var(--sp-5)" }}>
-                        <div className="label" style={{ marginBottom: "var(--sp-2)" }}>{t.similar}</div>
-                        <div className="row wrap" style={{ gap: "var(--sp-2)" }}>
-                            {synonyms.map((s) => (
-                                <span key={s.word} className="chip" style={{ background: "var(--surface-3)", color: "var(--ink)" }}>
-                                    <b>{s.word}</b>{s.translate?.[0] ? ` — ${s.translate[0]}` : ""}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                )}
-            </Modal>
+            <WordInfoModal open={descOpen} word={no} wordId={wordItem.id}
+                lang={currentLanguage} t={t} onClose={() => setDescOpen(false)} />
 
             <Modal
                 open={editOpen}

@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
@@ -113,21 +114,31 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
                     </div>
                 ) : (
                     <>
-                        <div className="qcard flashcard" onClick={advance} style={{ cursor: "pointer" }}>
-                            <div className="qcount">{t.word} {idx + 1} / {total}</div>
-                            <h1 className="qword">
-                                {front}
-                                {noVisible && (
-                                    <SpeakButton text={no} hasTts={cur.hasTts} className="qspeak" lg
-                                        ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
-                                )}
-                            </h1>
-                            {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
+                        <AnimatePresence mode="wait" initial={false}>
+                            <motion.div key={idx} className="qcard flashcard" onClick={advance} style={{ cursor: "pointer" }}
+                                initial={{ opacity: 0, x: 60, rotate: 1 }}
+                                animate={{ opacity: 1, x: 0, rotate: 0 }}
+                                exit={{ opacity: 0, x: -60, rotate: -1 }}
+                                transition={{ duration: 0.22, ease: [0.2, 0.7, 0.2, 1] }}>
+                                <div className="qcount">{t.word} {idx + 1} / {total}</div>
+                                <h1 className="qword">
+                                    {front}
+                                    {noVisible && (
+                                        <SpeakButton text={no} hasTts={cur.hasTts} className="qspeak" lg
+                                            ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
+                                    )}
+                                </h1>
+                                {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
 
-                            <div className={`flashcard__back${flipped ? " is-shown" : ""}`}>
-                                {flipped ? <span className="flashcard__answer">{back}</span> : <span className="flashcard__hint">{h.reveal}</span>}
-                            </div>
-                        </div>
+                                <div className={`flashcard__back${flipped ? " is-shown" : ""}`}>
+                                    <AnimatePresence mode="wait" initial={false}>
+                                        {flipped
+                                            ? <motion.span key="a" className="flashcard__answer" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>{back}</motion.span>
+                                            : <motion.span key="h" className="flashcard__hint" initial={{ opacity: 0 }} animate={{ opacity: 0.9 }} exit={{ opacity: 0 }}>{h.reveal}</motion.span>}
+                                    </AnimatePresence>
+                                </div>
+                            </motion.div>
+                        </AnimatePresence>
 
                         <div className="pcta">
                             <button className="gbtn gbtn--accent" onClick={advance}>

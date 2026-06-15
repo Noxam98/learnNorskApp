@@ -3,7 +3,7 @@ import api from "../components/tools/api.js";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
-import { BrandLoader, BtnSpinner } from "../components/ui/Spinner.jsx";
+import { BrandLoader } from "../components/ui/Spinner.jsx";
 
 const Bar = ({ value, total, label }) => {
     const pct = total ? Math.round((value / total) * 100) : 0;
@@ -25,13 +25,6 @@ export const StatsPage = () => {
     const t = interfaceTranslate[currentLanguage];
     const [data, setData] = useState(null);
     const [err, setErr] = useState("");
-    const [busy, setBusy] = useState(false);
-
-    const describeAll = async () => {
-        setBusy(true);
-        try { const r = await api.adminDescribeAll(); window.alert(`Запущено. В очереди описаний: ${r.pending}`); } catch { /* */ }
-        setBusy(false);
-    };
 
     const load = () => api.getAdminStats().then(setData).catch(() => setErr("forbidden"));
     useEffect(() => {
@@ -66,9 +59,6 @@ export const StatsPage = () => {
                     <Bar value={p.tts} total={p.total} label="С озвучкой" />
                     <Bar value={p.classified} total={p.total} label="Классифицировано (уровень)" />
                     <Bar value={p.description} total={p.total} label="С описанием" />
-                    <button className="btn btn--primary btn--sm" disabled={busy} style={{ marginTop: "var(--sp-2)" }} onClick={describeAll}>
-                        {busy ? <BtnSpinner /> : <Icon n="sparkles" sm />} Добить описания
-                    </button>
                 </div>
 
                 <div className="card" style={{ padding: "var(--sp-5)" }}>
