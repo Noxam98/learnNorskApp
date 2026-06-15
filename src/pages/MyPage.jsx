@@ -5,6 +5,7 @@ import { useSystemStore } from "../store/systemStore.jsx";
 import { useWordsStore } from "../store/wordStore.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { Icon } from "../components/ui/Icon.jsx";
+import { wordCount, dictCount } from "../components/tools/plural.js";
 
 const MyPage = () => {
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
@@ -40,7 +41,7 @@ const MyPage = () => {
                 <div className="pavatar">{avatar}</div>
                 <div className="phead__meta">
                     <div className="phead__name">{username}</div>
-                    <div className="phead__sub">Lære Norsk · {stats.dicts} {t.dictionaries.toLowerCase()} · {stats.total} {t.word.toLowerCase()}</div>
+                    <div className="phead__sub">Lære Norsk · {dictCount(stats.dicts, currentLanguage)} · {wordCount(stats.total, currentLanguage)}</div>
                 </div>
                 <button className="btn btn--outline" onClick={logOut}><Icon n="logout" sm /> {t.logout}</button>
             </div>

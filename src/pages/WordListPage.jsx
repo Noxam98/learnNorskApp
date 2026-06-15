@@ -8,6 +8,7 @@ import { Modal } from "../components/ui/Modal.jsx";
 import { Dots, BtnSpinner, CountdownRing } from "../components/ui/Spinner.jsx";
 import { SearchBox } from "../components/ui/SearchBox.jsx";
 import { matchWord } from "../components/tools/matchWord.js";
+import { wordsNoun } from "../components/tools/plural.js";
 import { posMeta, posLabel } from "../components/ui/pos.js";
 import Error from "../components/tools/error.jsx";
 import api from "../components/tools/api.js";
@@ -147,11 +148,11 @@ export const WordListPage = () => {
                     )}
                 </div>
 
-                <span className="count-pill"><b>{wordList.length}</b> {t.word.toLowerCase()}</span>
+                <span className="count-pill"><b>{wordList.length}</b> {wordsNoun(wordList.length, currentLanguage)}</span>
 
                 <span className="toolbar__sep" />
 
-                <button className="tool" onClick={() => setDictOpen(true)}><Icon n="plus" sm /> {t.newDict.replace("..", "")}</button>
+                <button className="tool hide-mobile" onClick={() => setDictOpen(true)}><Icon n="plus" sm /> {t.newDict.replace("..", "")}</button>
                 <button className="tool" onClick={toggleSelectAll}><Icon n="check-square" sm /> {t.chooseAll}</button>
                 {selectedCount > 0 && <span className="toolbar__count">{selectedCount}</span>}
                 <button className="tool is-danger" disabled={!selectedCount || deletingSel}

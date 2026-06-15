@@ -14,6 +14,7 @@ import { SpeakButton } from "../components/ui/SpeakButton.jsx";
 const SEARCH_DEBOUNCE_MS = 550;
 const PAGE_SIZES = [30, 60, 120];
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
+const TOPICS_TOGGLE = { ru: "Темы", ukr: "Теми", en: "Topics", pl: "Tematy", lt: "Temos" };
 
 const topicLabel = (t, key) => t.topics?.[key] || key;
 
@@ -49,6 +50,7 @@ export const PoolPage = () => {
     const [addingId, setAddingId] = useState(null);
     const [added, setAdded] = useState({});
     const [facets, setFacets] = useState({ topics: [], levels: [] });
+    const [topicsOpen, setTopicsOpen] = useState(() => (typeof window !== "undefined" ? window.innerWidth > 700 : true));
     const [dictOpen, setDictOpen] = useState(false);
     const [dictName, setDictName] = useState("");
     const [creating, setCreating] = useState(false);
@@ -142,21 +144,30 @@ export const PoolPage = () => {
                 phase={searchPhase} debounceMs={SEARCH_DEBOUNCE_MS} count={total}
                 style={{ marginBottom: "var(--sp-3)" }} />
 
-            {/* Фильтр-бар: темы, уровень, сортировка, размер страницы */}
+            {/* Фильтр-бар: темы (сворачиваемые), уровень, сортировка, размер страницы */}
             <div className="poolbar">
                 {facets.topics.length > 0 && (
-                    <div className="poolbar__chips">
-                        {facets.topics.map(({ topic, count }) => (
-                            <button key={topic}
-                                className={`fchip${topics.includes(topic) ? " is-on" : ""}`}
-                                onClick={() => toggleTopic(topic)}>
-                                {topicLabel(t, topic)} <span className="fchip__n">{count}</span>
-                            </button>
-                        ))}
+                    <div className="poolbar__topics">
+                        <button className={`fchip fchip--toggle${topics.length ? " is-on" : ""}`} onClick={() => setTopicsOpen((o) => !o)}>
+                            <Icon n="grid" sm /> {TOPICS_TOGGLE[currentLanguage] || TOPICS_TOGGLE.en}
+                            {topics.length > 0 && <span className="fchip__n">{topics.length}</span>}
+                            <Icon n="chevron-down" sm className="fchip__chev" style={{ transform: topicsOpen ? "rotate(180deg)" : "none" }} />
+                        </button>
                         {hasFilters && (
                             <button className="fchip fchip--clear" onClick={clearFilters}>
                                 <Icon n="x" sm /> {t.clearFilters || "Сброс"}
                             </button>
+                        )}
+                        {topicsOpen && (
+                            <div className="poolbar__chips">
+                                {facets.topics.map(({ topic, count }) => (
+                                    <button key={topic}
+                                        className={`fchip${topics.includes(topic) ? " is-on" : ""}`}
+                                        onClick={() => toggleTopic(topic)}>
+                                        {topicLabel(t, topic)} <span className="fchip__n">{count}</span>
+                                    </button>
+                                ))}
+                            </div>
                         )}
                     </div>
                 )}

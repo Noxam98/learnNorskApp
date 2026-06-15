@@ -132,6 +132,21 @@
   .pager__btn:disabled { opacity: .4; cursor: default; }
   .pager__gap { color: var(--ink-3); padding: 0 2px; }
 
+  /* Сворачиваемые темы */
+  .poolbar__topics { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+  .poolbar__topics .poolbar__chips { width: 100%; margin-top: 2px; }
+  .fchip--toggle { background: var(--surface-3); }
+  .fchip--toggle.is-on { background: var(--fjord-50); color: var(--fjord-600); border-color: var(--fjord-300); }
+  .fchip__chev { opacity: .55; transition: transform var(--dur) var(--ease); }
+
+  /* Компактные заголовки разделов на мобильных */
+  @media (max-width: 640px) {
+    .page-head .muted { display: none; }
+    .page-head .h1 { font-size: var(--fs-28); }
+    .sel-head p { display: none; }
+    .sel-head .eyebrow { margin-bottom: 2px; }
+  }
+
   @media (max-width: 640px) {
     .words-main { padding: var(--sp-5) 0 var(--sp-12); }
     .wcard { padding: 8px 8px 8px 11px; gap: var(--sp-2); }
