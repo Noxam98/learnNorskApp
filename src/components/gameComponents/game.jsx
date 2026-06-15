@@ -7,13 +7,12 @@ import { Icon } from "../ui/Icon.jsx";
 import { BrandMark } from "../ui/BrandMark.jsx";
 import { BrandLoader } from "../ui/Spinner.jsx";
 import { posLabel } from "../ui/pos.js";
+import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakNorwegian } from "../ui/tts.js";
 import api from "../tools/api.js";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
-// Коды языков (BCP-47) для расстановки переносов hyphens: auto. Норвежский — nb.
-const BCP = { ru: "ru", ukr: "uk", en: "en", pl: "pl", lt: "lt" };
 
 const filterChosenWords = (dictList) =>
     dictList.flatMap((d) => d.words.filter((w) => w?.gameData?.isChoosedToGame));
@@ -54,6 +53,8 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
     const accepted = (isNo2Int ? translations : (current?.translate?.no || [])).map((s) => s.trim()).filter(Boolean);
     const correctPrimary = (isNo2Int ? translations[0] : no) || "";
     const promptTarget = isNo2Int ? (ENDONYM[currentLanguage] || currentLanguage) : "Norsk";
+    const qLang = hyLang(currentLanguage, isNo2Int);    // язык вопроса (слова)
+    const aLang = hyLang(currentLanguage, !isNo2Int);   // язык вариантов/ответов
 
     useEffect(() => {
         if (!quiz && status === "ASKING" && inputRef.current) inputRef.current.focus();
@@ -188,7 +189,7 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
                 <div className="qcard">
                     <div className="qcount">{t.word} {qIndex} / {total}</div>
                     <div className="qprompt">{t.translateTo} {promptTarget}</div>
-                    <h1 className="qword" lang={isNo2Int ? "nb" : (BCP[currentLanguage] || currentLanguage)}>{question}
+                    <h1 className="qword" lang={qLang}>{hyphenate(question, qLang)}
                         {isNo2Int && (
                             <SpeakButton text={no} hasTts={current.hasTts} className="qspeak" lg
                                 ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
@@ -204,8 +205,8 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
                                     ? (opt === correctPrimary ? " is-correct" : (opt === chosen ? " is-wrong" : ""))
                                     : "";
                                 return (
-                                    <button key={opt} className={`choice${cls}`} lang={isNo2Int ? (BCP[currentLanguage] || currentLanguage) : "nb"} disabled={status !== "ASKING"} onClick={() => choose(opt)}>
-                                        {opt}
+                                    <button key={opt} className={`choice${cls}`} lang={aLang} disabled={status !== "ASKING"} onClick={() => choose(opt)}>
+                                        {hyphenate(opt, aLang)}
                                     </button>
                                 );
                             })}
@@ -227,14 +228,14 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(98,192,131,.16)", color: "var(--game-correct)" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-correct)" }}>{t.correctly}</div>
-                            {!quiz && otherAccepted.length > 0 && <div className="fb-line">{t.alsoAccepted} <b>{otherAccepted.join(", ")}</b></div>}
+                            {!quiz && otherAccepted.length > 0 && <div className="fb-line">{t.alsoAccepted} <b lang={aLang}>{hyphenate(otherAccepted.join(", "), aLang)}</b></div>}
                         </div>
                     )}
                     {status === "INCORRECT" && (
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(230,122,82,.16)", color: "var(--game-incorrect)" }}><Icon n="x" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-incorrect)" }}>{t.notQuite}</div>
-                            <div className="fb-line">{t.mistake} <b>{accepted.join(", ")}</b></div>
+                            <div className="fb-line">{t.mistake} <b lang={aLang}>{hyphenate(accepted.join(", "), aLang)}</b></div>
                             {descriptionText && <div className="fb-line muted">{descriptionText}</div>}
                         </div>
                     )}
