@@ -6,7 +6,7 @@ import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { BrandMark } from "../ui/BrandMark.jsx";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
-import { speakNorwegian } from "../ui/tts.js";
+import { speakText } from "../ui/tts.js";
 import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 
@@ -38,13 +38,22 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
     const [idx, setIdx] = useState(0);
     const [flipped, setFlipped] = useState(false);
 
-    // Озвучка: норвежское слово проигрываем, когда оно на экране.
-    const _no = (i) => words[i]?.translate?.no?.[0] || "";
-    useEffect(() => {  // лицевая сторона норвежская — играем сразу при показе карточки
-        if (sound && isNo2Int && _no(idx)) speakNorwegian(_no(idx)).catch(() => {});
+    // Озвучка по направлению: видимое слово — при показе карточки, ответ — при перевороте.
+    const _sides = (i) => {
+        const w = words[i];
+        const no = w?.translate?.no?.[0] || "";
+        const tr = (w?.translate?.[currentLanguage] || []).filter(Boolean).join(", ");
+        return isNo2Int ? { front: no, back: tr } : { front: tr, back: no };
+    };
+    useEffect(() => {  // видимое игроку слово
+        if (!sound) return;
+        const { front } = _sides(idx);
+        if (front) speakText(front, hyLang(currentLanguage, isNo2Int)).catch(() => {});
     }, [idx]); // eslint-disable-line
-    useEffect(() => {  // норвежское на обороте — играем при перевороте
-        if (sound && !isNo2Int && flipped && _no(idx)) speakNorwegian(_no(idx)).catch(() => {});
+    useEffect(() => {  // правильный ответ при перевороте
+        if (!sound || !flipped) return;
+        const { back } = _sides(idx);
+        if (back) speakText(back, hyLang(currentLanguage, !isNo2Int)).catch(() => {});
     }, [flipped]); // eslint-disable-line
 
     const playStyle = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };

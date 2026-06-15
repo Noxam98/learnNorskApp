@@ -203,6 +203,14 @@
 .gsound input { width: 18px; height: 18px; accent-color: var(--fjord-600); cursor: pointer; }
 .gsound .ic { color: var(--fjord-600); }
 
+/* Экран выбора: явные разделы — «1 Выбери режим», «2 Выбери слова» */
+.sel-section { margin-top: var(--sp-8); }
+.sel-section + .sel-section { padding-top: var(--sp-7); border-top: 1px solid var(--border); }
+.sel-section__title { display: flex; align-items: center; gap: var(--sp-3); margin: 0 0 var(--sp-5);
+    font-size: var(--fs-20); font-weight: 800; letter-spacing: var(--ls-tight); color: var(--ink); }
+.sel-section__num { display: inline-grid; place-items: center; width: 26px; height: 26px; flex: none;
+    border-radius: 50%; background: var(--fjord-600); color: #fff; font-size: var(--fs-14); font-weight: 800; }
+
 /* Режим «выбор варианта» — кнопки ответов (тёмная тема игры) */
 .choices { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; max-width: 600px; margin-top: var(--sp-8); }
 .choice {

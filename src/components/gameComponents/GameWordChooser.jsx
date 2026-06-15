@@ -10,7 +10,7 @@ const MIN_WORDS_STUDY = 1;  // для флешкарт достаточно од
 const ENDONYM = { ru: "Русский", ukr: "Українська", en: "English", pl: "Polski", lt: "Lietuvių" };
 // Тип игры: study (флешкарты), input (ввод), choice (выбор)
 const TYPES = [
-    { key: "study", icon: "book" },
+    { key: "study", icon: "layers" },
     { key: "input", icon: "edit" },
     { key: "choice", icon: "check-square" },
 ];
@@ -29,15 +29,23 @@ const TYPE_DESC = {
     lt:  { study: "Kortelės: žiūrėk ir versk", input: "Įrašyk vertimą", choice: "Pasirink variantą" },
 };
 const ROW_LABELS = {
-    ru:  { type: "Режим", dir: "Направление" },
-    ukr: { type: "Режим", dir: "Напрямок" },
-    en:  { type: "Mode", dir: "Direction" },
-    pl:  { type: "Tryb", dir: "Kierunek" },
-    lt:  { type: "Režimas", dir: "Kryptis" },
+    ru:  { type: "Режим", dir: "Направление", audio: "Звук" },
+    ukr: { type: "Режим", dir: "Напрямок", audio: "Звук" },
+    en:  { type: "Mode", dir: "Direction", audio: "Audio" },
+    pl:  { type: "Tryb", dir: "Kierunek", audio: "Dźwięk" },
+    lt:  { type: "Režimas", dir: "Kryptis", audio: "Garsas" },
 };
 const SOUND_LABEL = {
     ru: "Озвучивать слова", ukr: "Озвучувати слова", en: "Play audio",
     pl: "Odtwarzaj dźwięk", lt: "Įgarsinti žodžius",
+};
+const STEP_MODE = {
+    ru: "Выбери режим игры", ukr: "Обери режим гри", en: "Choose game mode",
+    pl: "Wybierz tryb gry", lt: "Pasirink žaidimo režimą",
+};
+const STEP_WORDS = {
+    ru: "Выбери слова", ukr: "Обери слова", en: "Choose words",
+    pl: "Wybierz słowa", lt: "Pasirink žodžius",
 };
 
 const DictGroup = ({ dictItem, currentLanguage, t, defaultOpen }) => {
@@ -90,6 +98,8 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
     const tl = TYPE_LABELS[currentLanguage] || TYPE_LABELS.en;
     const td = TYPE_DESC[currentLanguage] || TYPE_DESC.en;
     const rl = ROW_LABELS[currentLanguage] || ROW_LABELS.en;
+    const stepMode = STEP_MODE[currentLanguage] || STEP_MODE.en;
+    const stepWords = STEP_WORDS[currentLanguage] || STEP_WORDS.en;
 
     const minWords = gameType === "study" ? MIN_WORDS_STUDY : MIN_WORDS;
     const chosen = useMemo(
@@ -112,8 +122,11 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
                     <span className="eyebrow"><Icon n="target" sm /> {t.startGame}</span>
                     <h1 className="h1">{t.selectWordsTitle}</h1>
                     <p>{t.selectWordsDesc}</p>
+                </div>
 
-                    {/* Настройка игры — тип и направление */}
+                {/* Шаг 1 — режим игры */}
+                <section className="sel-section">
+                    <h2 className="sel-section__title"><span className="sel-section__num">1</span> {stepMode}</h2>
                     <div className="gsetup">
                         <div className="gsetup__block">
                             <span className="gsetup__lbl">{rl.type}</span>
@@ -136,19 +149,26 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
                                 ))}
                             </div>
                         </div>
+                        <div className="gsetup__block">
+                            <span className="gsetup__lbl">{rl.audio}</span>
+                            <div className="modeseg" role="tablist">
+                                <button className={`modeseg__btn${sound ? " is-on" : ""}`} onClick={() => setSound(!sound)}>
+                                    <Icon n="volume" sm className="modeseg__arrow" /> {SOUND_LABEL[currentLanguage] || SOUND_LABEL.en}
+                                </button>
+                            </div>
+                        </div>
                     </div>
+                </section>
 
-                    <label className="gsound">
-                        <input type="checkbox" checked={!!sound} onChange={(e) => setSound(e.target.checked)} />
-                        <Icon n="volume" sm /> <span>{SOUND_LABEL[currentLanguage] || SOUND_LABEL.en}</span>
-                    </label>
-                </div>
-
-                <div className="dictgroups">
-                    {dictList.map((dictItem, i) => (
-                        <DictGroup key={dictItem.dictName} dictItem={dictItem} currentLanguage={currentLanguage} t={t} defaultOpen={i === firstWithWords} />
-                    ))}
-                </div>
+                {/* Шаг 2 — слова */}
+                <section className="sel-section">
+                    <h2 className="sel-section__title"><span className="sel-section__num">2</span> {stepWords}</h2>
+                    <div className="dictgroups">
+                        {dictList.map((dictItem, i) => (
+                            <DictGroup key={dictItem.dictName} dictItem={dictItem} currentLanguage={currentLanguage} t={t} defaultOpen={i === firstWithWords} />
+                        ))}
+                    </div>
+                </section>
             </main>
 
             <div className="startbar">

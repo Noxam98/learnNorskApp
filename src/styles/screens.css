@@ -161,7 +161,7 @@
   }
 
 /* ===== from game.html ===== */
-.sel-main { padding: var(--sp-8) 0 140px; }
+.sel-main { padding: var(--sp-8) var(--sp-6) 140px; }
   .sel-head { max-width: 640px; }
   .sel-head .h1 { font-size: var(--fs-44); }
   .sel-head p { font-size: var(--fs-18); color: var(--ink-2); margin: var(--sp-3) 0 0; line-height: var(--lh-normal); }
@@ -203,7 +203,7 @@
   .startbar__hint { font-size: var(--fs-14); color: var(--ink-2); }
 
   @media (max-width: 640px) {
-    .sel-main { padding: var(--sp-5) 0 180px; }
+    .sel-main { padding: var(--sp-5) var(--sp-4) 180px; }
     .sel-head .h1 { font-size: var(--fs-34); }
     .dgroup__body { grid-template-columns: 1fr; }
     .startbar__row { flex-wrap: wrap; gap: var(--sp-3); }
@@ -213,7 +213,7 @@
   }
 
 /* ===== from mypage.html ===== */
-.prof-main { padding: var(--sp-8) 0 var(--sp-16); }
+.prof-main { padding: var(--sp-8) var(--sp-6) var(--sp-16); }
 
   /* header */
   .phead { display: flex; align-items: center; gap: var(--sp-5); flex-wrap: wrap; }
@@ -270,7 +270,7 @@
 
   @media (max-width: 880px) { .pgrid { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2,1fr); } }
   @media (max-width: 640px) {
-    .prof-main { padding: var(--sp-5) 0 var(--sp-12); }
+    .prof-main { padding: var(--sp-5) var(--sp-4) var(--sp-12); }
     .phead__name { font-size: var(--fs-28); }
     .pavatar { width: 64px; height: 64px; font-size: var(--fs-28); }
   }
