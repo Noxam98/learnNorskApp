@@ -184,6 +184,8 @@
   align-items: center; justify-content: space-between;
 }
 .foot__brand { display: flex; align-items: center; gap: var(--sp-3); color: var(--ink-2); font-size: var(--fs-14); }
+.foot__cta { display: flex; align-items: center; gap: var(--sp-4); }
+.foot__ask { color: var(--ink-3); font-size: var(--fs-13); }
 .foot__links { display: flex; gap: var(--sp-5); flex-wrap: wrap; }
 .foot__links a { color: var(--ink-2); text-decoration: none; font-size: var(--fs-14); font-weight: 500; }
 .foot__links a:hover { color: var(--fjord-600); }

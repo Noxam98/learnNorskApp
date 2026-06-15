@@ -18,11 +18,15 @@
     .nav__link .ic { width: 18px; height: 18px; }
 }
 
-/* Футер: на мобильных стопкой и аккуратно */
+/* Футер: на мобильных по центру, ссылки — тапабельные пилюли */
 @media (max-width: 640px) {
-    .foot__row { flex-direction: column; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-5) 0; }
+    .foot__row { flex-direction: column; align-items: center; text-align: center; gap: var(--sp-4); padding: var(--sp-10) 0 var(--sp-6); }
     .foot__brand { font-size: var(--fs-13); }
-    .foot__links { gap: var(--sp-4); }
+    .foot__cta { flex-direction: column; gap: var(--sp-3); width: 100%; }
+    .foot__ask { font-size: var(--fs-13); }
+    .foot__links { justify-content: center; gap: var(--sp-3); }
+    .foot__links a { padding: 9px 20px; border: 1px solid var(--border); border-radius: var(--r-full); background: var(--surface); }
+    .foot__links a:hover { border-color: var(--fjord-300); }
 }
 
 /* Страница «Слова»: скроллится список слов, а не вся страница */
