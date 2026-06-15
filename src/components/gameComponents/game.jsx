@@ -3,10 +3,11 @@ import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
+import { BrandMark } from "../ui/BrandMark.jsx";
 import { BrandLoader } from "../ui/Spinner.jsx";
 import { posLabel } from "../ui/pos.js";
+import { SpeakButton } from "../ui/SpeakButton.jsx";
 import api from "../tools/api.js";
-import { speakNorwegian } from "../ui/tts.js";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 
@@ -157,7 +158,7 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false }) => {
         <div className="play" data-state={status.toLowerCase()} style={playStyle}>
             <div className="ptop">
                 <a className="ptop__brand" onClick={backToSelection} style={{ cursor: "pointer" }}>
-                    <span className="brand__mark"><svg viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="10" fill="#195059" /><path d="M6 26 L13.5 13 L18 20.5 L22 14 L30 26 Z" fill="#EAF1EE" /><circle cx="25.5" cy="11" r="3.1" fill="#CE4A21" /></svg></span>
+                    <BrandMark />
                     <span className="brand__name">Lære<b>·</b>Norsk</span>
                 </a>
                 <div className="pstats">
@@ -179,10 +180,8 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false }) => {
                     <div className="qprompt">{t.translateTo} {promptTarget}</div>
                     <h1 className="qword">{question}
                         {isNo2Int && (
-                            <button className="qspeak" aria-label={t.tts} disabled={!current.hasTts}
-                                title={current.hasTts ? t.tts : t.ttsPreparing}
-                                style={current.hasTts ? undefined : { opacity: 0.4 }}
-                                onClick={() => speakNorwegian(no)}><Icon n="volume" lg /></button>
+                            <SpeakButton text={no} hasTts={current.hasTts} className="qspeak" lg
+                                ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
                         )}
                     </h1>
                     {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}

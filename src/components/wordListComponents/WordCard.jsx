@@ -5,9 +5,9 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { Modal } from "../ui/Modal.jsx";
 import { BtnSpinner, Dots } from "../ui/Spinner.jsx";
+import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { posMeta, posLabel } from "../ui/pos.js";
 import api from "../tools/api.js";
-import { speakNorwegian } from "../ui/tts.js";
 
 export const Card = ({ wordItem, languageTranslate }) => {
     const choseWord = useWordsStore((state) => state.choseWord);
@@ -65,12 +65,8 @@ export const Card = ({ wordItem, languageTranslate }) => {
                     <span className="wcard__tr">{translation}</span>
                 </div>
                 <div className="wcard__actions" onClick={(e) => e.stopPropagation()}>
-                    <button className="iconbtn" aria-label={t.tts} disabled={!wordItem.hasTts}
-                        title={wordItem.hasTts ? t.tts : t.ttsPreparing}
-                        style={wordItem.hasTts ? undefined : { opacity: 0.4 }}
-                        onClick={() => speakNorwegian(no)}>
-                        <Icon n="volume" />
-                    </button>
+                    <SpeakButton text={no} hasTts={wordItem.hasTts} ariaLabel={t.tts}
+                        title={t.tts} titlePreparing={t.ttsPreparing} />
                     <button
                         className="iconbtn"
                         aria-label={t.description}
@@ -84,9 +80,17 @@ export const Card = ({ wordItem, languageTranslate }) => {
             </div>
 
             <Modal open={descOpen} onClose={() => setDescOpen(false)} title={no}>
-                <p className="muted" style={{ margin: 0, lineHeight: "var(--lh-normal)" }}>
-                    {hasDescription ? descriptionText : (isLoadingDesc ? t.descLoading : t.descUnavailable)}
-                </p>
+                {hasDescription ? (
+                    <p className="muted" style={{ margin: 0, lineHeight: "var(--lh-normal)" }}>{descriptionText}</p>
+                ) : isLoadingDesc ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }} aria-busy="true">
+                        <span className="skel skel--line" style={{ width: "100%" }} />
+                        <span className="skel skel--line" style={{ width: "94%" }} />
+                        <span className="skel skel--line" style={{ width: "78%" }} />
+                    </div>
+                ) : (
+                    <p className="muted" style={{ margin: 0, lineHeight: "var(--lh-normal)" }}>{t.descUnavailable}</p>
+                )}
                 {synonyms === null && (
                     <div className="row" style={{ gap: "var(--sp-3)", marginTop: "var(--sp-5)", color: "var(--ink-3)" }}>
                         <Dots /> <span style={{ fontSize: "var(--fs-14)" }}>{t.similar}</span>

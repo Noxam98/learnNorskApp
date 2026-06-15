@@ -6,7 +6,7 @@ import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Dots, BtnSpinner, SkeletonWordlist, CountdownRing } from "../components/ui/Spinner.jsx";
 import { posMeta, posLabel } from "../components/ui/pos.js";
-import { speakNorwegian } from "../components/ui/tts.js";
+import { SpeakButton } from "../components/ui/SpeakButton.jsx";
 
 const LIMIT = 60;
 const SEARCH_DEBOUNCE_MS = 550;
@@ -20,8 +20,8 @@ export const PoolPage = () => {
     const [items, setItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [offset, setOffset] = useState(0);
-    const [loading, setLoading] = useState(false);
-    const [searchPhase, setSearchPhase] = useState("idle"); // idle | counting | searching
+    const [loading, setLoading] = useState(true); // на старте сразу грузим — без мелькания «пусто»
+    const [searchPhase, setSearchPhase] = useState("counting"); // idle | counting | searching
     const [addingId, setAddingId] = useState(null);
     const [added, setAdded] = useState({});
 
@@ -88,12 +88,8 @@ export const PoolPage = () => {
                                     <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
                                 </div>
                                 <div className="wcard__actions">
-                                    <button className="iconbtn" aria-label={t.tts} disabled={!w.hasTts}
-                                        title={w.hasTts ? t.tts : t.ttsPreparing}
-                                        style={w.hasTts ? undefined : { opacity: 0.4 }}
-                                        onClick={() => speakNorwegian(w.word)}>
-                                        <Icon n="volume" />
-                                    </button>
+                                    <SpeakButton text={w.word} hasTts={w.hasTts} ariaLabel={t.tts}
+                                        title={t.tts} titlePreparing={t.ttsPreparing} />
                                     <button className="iconbtn" aria-label={t.addToDict} title={t.addToDict}
                                         disabled={added[w.word] || addingId === w.word} onClick={() => onAdd(w.word)}>
                                         {addingId === w.word ? <BtnSpinner /> : <Icon n={added[w.word] ? "check" : "plus"} />}
@@ -104,7 +100,7 @@ export const PoolPage = () => {
                     })}
                 </div>
             ) : (
-                loading ? <SkeletonWordlist count={12} /> : <p className="muted" style={{ textAlign: "center", padding: "var(--sp-12) 0" }}>{t.poolEmpty}</p>
+                (loading || searchPhase !== "idle") ? <SkeletonWordlist count={12} /> : <p className="muted" style={{ textAlign: "center", padding: "var(--sp-12) 0" }}>{t.poolEmpty}</p>
             )}
 
             {items.length < total && (
