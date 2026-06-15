@@ -218,7 +218,8 @@
 .choice:disabled { cursor: default; }
 .choice.is-correct { border-color: var(--game-correct); color: var(--game-correct); background: rgba(98,192,131,.12); }
 .choice.is-wrong { border-color: var(--game-incorrect); color: var(--game-incorrect); background: rgba(230,122,82,.12); }
-@media (max-width: 640px) { .choices { grid-template-columns: 1fr; } }
+/* На мобильном тоже 2 колонки (4 варианта = 2×2) — компактнее и влезает в экран */
+@media (max-width: 640px) { .choices { grid-template-columns: 1fr 1fr; gap: var(--sp-2); margin-top: var(--sp-5); } .choice { padding: 14px 12px; font-size: var(--fs-16); } }
 
 /* Нижняя панель старта игры на мобильных: прогресс на всю ширину, кнопка снизу */
 @media (max-width: 640px) {
