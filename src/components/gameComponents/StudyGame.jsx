@@ -6,7 +6,7 @@ import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { BrandMark } from "../ui/BrandMark.jsx";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
-import { speakText } from "../ui/tts.js";
+import { speakText, prefetchTts } from "../ui/tts.js";
 import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 
@@ -45,10 +45,11 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
         const tr = (w?.translate?.[currentLanguage] || []).filter(Boolean).join(", ");
         return isNo2Int ? { front: no, back: tr } : { front: tr, back: no };
     };
-    useEffect(() => {  // видимое игроку слово
+    useEffect(() => {  // видимое игроку слово (+ прогрев ответа для мгновенного переворота)
         if (!sound) return;
-        const { front } = _sides(idx);
+        const { front, back } = _sides(idx);
         if (front) speakText(front, hyLang(currentLanguage, isNo2Int)).catch(() => {});
+        if (back) prefetchTts(back, hyLang(currentLanguage, !isNo2Int));
     }, [idx]); // eslint-disable-line
     useEffect(() => {  // правильный ответ при перевороте
         if (!sound || !flipped) return;

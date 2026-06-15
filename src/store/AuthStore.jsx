@@ -43,7 +43,7 @@ export const useAuthStore = create((set, get) => ({
         }
         try {
             const userData = await api.getProtectedData();
-            set({ user: { username: userData.username, isAdmin: !!userData.is_admin }, accessToken: api.accessToken });
+            set({ user: { username: userData.username, isAdmin: !!userData.is_admin, gamePrefs: userData.gamePrefs || null }, accessToken: api.accessToken });
             if (userData.theme === "light" || userData.theme === "dark") {
                 useSystemStore.getState().setTheme(userData.theme);  // тема юзера с сервера
             }

@@ -193,7 +193,7 @@
     backdrop-filter: saturate(1.4) blur(16px);
     border-top: 1px solid var(--border); box-shadow: 0 -8px 30px rgba(16,28,26,.06);
   }
-  .startbar__row { padding: var(--sp-4) 0; display: flex; align-items: center; gap: var(--sp-5); }
+  .startbar__row { padding: var(--sp-4) var(--sp-6); display: flex; align-items: center; gap: var(--sp-5); }
   .progress { flex: 1; max-width: 420px; }
   .progress__top { display: flex; justify-content: space-between; font-size: var(--fs-13); margin-bottom: 7px; }
   .progress__top b { color: var(--ink); font-weight: 700; }
@@ -206,7 +206,7 @@
     .sel-main { padding: var(--sp-5) var(--sp-4) 180px; }
     .sel-head .h1 { font-size: var(--fs-34); }
     .dgroup__body { grid-template-columns: 1fr; }
-    .startbar__row { flex-wrap: wrap; gap: var(--sp-3); }
+    .startbar__row { flex-wrap: wrap; gap: var(--sp-3); padding: var(--sp-4) var(--sp-4); }
     .progress { order: -1; max-width: none; width: 100%; }
     .startbar .btn { flex: 1; }
     .startbar__hint { display: none; }

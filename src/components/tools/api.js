@@ -196,6 +196,7 @@ class ApiService {
         return this._send('GET', `/pool?${qs.toString()}`);
     }
     setUserTheme(theme) { return this._send('POST', '/me/theme', { theme }); }
+    setGamePrefs(prefs) { return this._send('POST', '/me/game_prefs', prefs); }
     getAdminStats() { return this._send('GET', '/admin/stats'); }
     adminDeleteWord(word) { return this._send('DELETE', `/admin/pool/${encodeURIComponent(word)}`); }
     adminDescribeAll() { return this._send('POST', '/admin/describe_all'); }

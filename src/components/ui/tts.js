@@ -32,6 +32,14 @@ export const speakText = (text, lang) => new Promise((resolve, reject) => {
     audio.play().catch((e) => reject(e));
 });
 
+// Прогреть озвучку заранее (бэкенд сгенерит и закеширует в Tigris, браузер — в
+// HTTP-кеш), чтобы последующее воспроизведение было мгновенным. Без звука.
+export const prefetchTts = (text, lang) => {
+    const t = (text || "").trim();
+    if (!t) return;
+    try { fetch(api.ttsUrl(t, lang)).catch(() => {}); } catch { /* */ }
+};
+
 export const speakNorwegian = (text) => speakText(text);
 
 export default speakNorwegian;

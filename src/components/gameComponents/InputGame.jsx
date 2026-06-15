@@ -9,7 +9,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
-import { speakText } from "../ui/tts.js";
+import { speakText, prefetchTts } from "../ui/tts.js";
 import { ENDONYM, PLAY_STYLE, filterChosenWords, pickWord, shuffle, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 
 export const InputGame = ({ setGameState, mode = "no2int", sound = false }) => {
@@ -45,9 +45,11 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false }) => {
         if (status === "ASKING" && inputRef.current) inputRef.current.focus();
     }, [status, current]);
 
-    // Озвучка видимого слова при показе.
+    // Озвучка видимого слова при показе (+ прогрев правильного ответа заранее).
     useEffect(() => {
-        if (sound && status === "ASKING" && question) speakText(question, qLang).catch(() => {});
+        if (!sound || status !== "ASKING") return;
+        if (question) speakText(question, qLang).catch(() => {});
+        if (correctPrimary) prefetchTts(correctPrimary, aLang);
     }, [current, sound]); // eslint-disable-line
     // Озвучка правильного ответа после ответа.
     useEffect(() => {

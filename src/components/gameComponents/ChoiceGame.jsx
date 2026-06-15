@@ -8,7 +8,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { BrandLoader } from "../ui/Spinner.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
-import { speakText } from "../ui/tts.js";
+import { speakText, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
 import { ENDONYM, PLAY_STYLE, filterChosenWords, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 
@@ -44,9 +44,11 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false }) => 
     const qLang = hyLang(currentLanguage, isNo2Int);    // язык вопроса
     const aLang = hyLang(currentLanguage, !isNo2Int);   // язык ответа/вариантов
 
-    // Озвучка видимого слова при показе.
+    // Озвучка видимого слова при показе (+ прогрев правильного ответа заранее).
     useEffect(() => {
-        if (sound && status === "ASKING" && question) speakText(question, qLang).catch(() => {});
+        if (!sound || status !== "ASKING") return;
+        if (question) speakText(question, qLang).catch(() => {});
+        if (correctPrimary) prefetchTts(correctPrimary, aLang);
     }, [current, sound]); // eslint-disable-line
     // Озвучка правильного ответа после ответа.
     useEffect(() => {
