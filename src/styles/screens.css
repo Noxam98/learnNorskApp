@@ -345,6 +345,7 @@
   .answer input:focus { border-color: var(--game-accent); box-shadow: 0 0 0 4px rgba(242,166,90,.16); }
 
   .pcta { margin-top: var(--sp-6); display: flex; gap: var(--sp-3); justify-content: center; }
+  .qhint { display: inline-flex; align-items: center; gap: 8px; color: var(--game-ink-2); font-size: var(--fs-14); font-weight: 600; letter-spacing: var(--ls-wide); text-transform: uppercase; }
   .gbtn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 16px 30px; border-radius: var(--r-lg); font-weight: 700; font-size: var(--fs-16); cursor: pointer; border: none; transition: transform var(--dur) var(--ease), background var(--dur) var(--ease); }
   .gbtn:active { transform: translateY(1px); }
   .gbtn--accent { background: var(--game-accent); color: #1a1208; }

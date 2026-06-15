@@ -37,7 +37,12 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
     const isNo2Int = mode !== "int2no";
 
     const [status, setStatus] = useState("ASKING"); // ASKING | CORRECT | INCORRECT | FINISHED
-    const [current, setCurrent] = useState(() => pickWord(wordsToGame, []));
+    // Режим «выбор»: фиксированный перемешанный порядок, каждое слово ровно один раз,
+    // прогресс по индексу (qpos), результаты в порядке ответов (results).
+    const [order, setOrder] = useState(() => shuffle(wordsToGame));
+    const [qpos, setQpos] = useState(0);
+    const [results, setResults] = useState([]); // [{ id, ok }] — для quiz
+    const [currentW, setCurrentW] = useState(() => quiz ? null : pickWord(wordsToGame, [])); // текущее в режиме ВВОДА
     const [guessed, setGuessed] = useState([]);
     const [missed, setMissed] = useState([]);
     const [input, setInput] = useState("");
@@ -45,7 +50,10 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
     const [chosen, setChosen] = useState(null);
     const inputRef = useRef(null);
 
-    const knownFirstTry = guessed.filter((id) => !missed.includes(id)).length;
+    const current = quiz ? (order[qpos] || null) : currentW;
+    const knownFirstTry = quiz ? results.filter((r) => r.ok).length : guessed.filter((id) => !missed.includes(id)).length;
+    const correctCount = quiz ? results.filter((r) => r.ok).length : guessed.length;
+    const wrongCount = quiz ? results.filter((r) => !r.ok).length : missed.length;
 
     const no = current?.translate?.no?.[0] || "";
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
@@ -65,12 +73,14 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
         if (sound && !quiz && isNo2Int && status === "ASKING" && no) speakNorwegian(no).catch(() => {});
     }, [current, sound]); // eslint-disable-line
 
+    // В режиме ВВОДА верный ответ авто-переходит. В режиме «выбор» — переход по
+    // второму клику по экрану (см. onClick у .pstage), таймера нет.
     useEffect(() => {
-        if (status === "CORRECT") {
+        if (!quiz && status === "CORRECT") {
             const timer = setTimeout(() => goNext(), 1100);
             return () => clearTimeout(timer);
         }
-    }, [status]);
+    }, [status]); // eslint-disable-line
 
     // Подгрузка вариантов для режима «выбор».
     useEffect(() => {
@@ -94,6 +104,13 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
     }, [quiz, status, current, currentLanguage, mode]);
 
     const applyResult = (ok) => {
+        if (quiz) {
+            // Каждое слово ровно один раз: фиксируем результат и сразу двигаем прогресс.
+            recordGameResult(current.id, ok);
+            setResults((rs) => [...rs, { id: current.id, ok }]);
+            setStatus(ok ? "CORRECT" : "INCORRECT");
+            return;
+        }
         if (ok) {
             if (!missed.includes(current.id)) recordGameResult(current.id, true);
             const ng = [...guessed, current.id];
@@ -109,10 +126,17 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
     };
 
     const goNext = () => {
+        if (quiz) {
+            if (qpos + 1 >= total) { setStatus("FINISHED"); return; }
+            setQpos(qpos + 1);
+            setChosen(null);
+            setStatus("ASKING");
+            return;
+        }
         let next = pickWord(wordsToGame, [...guessed, current?.id]);
         if (!next) next = pickWord(wordsToGame, guessed);
         if (!next) { setStatus("FINISHED"); return; }
-        setCurrent(next);
+        setCurrentW(next);
         setInput("");
         setChosen(null);
         setStatus("ASKING");
@@ -126,6 +150,11 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
         applyResult(accepted.some((a) => a.toLowerCase() === answer));
     };
 
+    // Режим «выбор»: второй клик по экрану (после ответа) — следующее слово.
+    const onStageClick = () => {
+        if (quiz && (status === "CORRECT" || status === "INCORRECT")) goNext();
+    };
+
     const choose = (opt) => {
         if (status !== "ASKING") return;
         setChosen(opt);
@@ -134,8 +163,10 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
     };
 
     const restart = () => {
-        setGuessed([]); setMissed([]); setInput(""); setChosen(null);
-        setCurrent(pickWord(wordsToGame, []));
+        setGuessed([]); setMissed([]); setResults([]); setQpos(0);
+        setOrder(shuffle(wordsToGame));
+        setInput(""); setChosen(null);
+        setCurrentW(quiz ? null : pickWord(wordsToGame, []));
         setStatus("ASKING");
     };
 
@@ -163,10 +194,15 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
     const descriptionText = current.description?.description?.[currentLanguage] || "";
     const otherAccepted = accepted.filter((a) => a.toLowerCase() !== input.trim().toLowerCase());
     const score = total ? Math.round((knownFirstTry / total) * 100) : 0;
-    const qIndex = Math.min(guessed.length + 1, total);
+    const qIndex = Math.min((quiz ? qpos : guessed.length) + 1, total);
     // Сегменты прогресс-бара: по слову. Пройденные красятся по результату
-    // (красный — была ошибка, зелёный — верно с первого раза), текущее — акцент.
+    // (красный — ошибка, зелёный — верно), текущее — акцент.
     const segs = Array.from({ length: total }, (_, i) => {
+        if (quiz) {
+            if (i < results.length) return results[i].ok ? "ok" : "err";
+            if (i === results.length && status !== "FINISHED") return "now";
+            return "";
+        }
         if (i < guessed.length) return missed.includes(guessed[i]) ? "err" : "ok";
         if (i === guessed.length && status !== "FINISHED") return "now";
         return "";
@@ -180,8 +216,8 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
                     <span className="brand__name">Lære<b>·</b>Norsk</span>
                 </a>
                 <div className="pstats">
-                    <span className="stat stat--ok"><Icon n="check" sm /> {guessed.length}</span>
-                    <span className="stat stat--err"><Icon n="x" sm /> {missed.length}</span>
+                    <span className="stat stat--ok"><Icon n="check" sm /> {correctCount}</span>
+                    <span className="stat stat--err"><Icon n="x" sm /> {wrongCount}</span>
                 </div>
                 <a className="pexit" onClick={backToSelection} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
             </div>
@@ -190,7 +226,8 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
                 {segs.map((s, i) => <span key={i} className={`pseg${s ? " is-" + s : ""}`} />)}
             </div>
 
-            <div className="pstage">
+            <div className="pstage" onClick={onStageClick}
+                style={quiz && (status === "CORRECT" || status === "INCORRECT") ? { cursor: "pointer" } : undefined}>
                 <div className="qcard">
                     <div className="qcount">{t.word} {qIndex} / {total}</div>
                     <div className="qprompt">{t.translateTo} {promptTarget}</div>
@@ -246,9 +283,12 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
                     )}
 
                     <div className="pcta">
-                        {status === "INCORRECT"
-                            ? <button className="gbtn gbtn--accent" onClick={goNext}>{t.next} <Icon n="arrow-right" sm /></button>
-                            : (!quiz && <button className="gbtn gbtn--accent" onClick={submit} disabled={status === "CORRECT"}><Icon n="check" sm /> {t.check}</button>)}
+                        {quiz
+                            ? ((status === "CORRECT" || status === "INCORRECT") &&
+                                <span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span>)
+                            : (status === "INCORRECT"
+                                ? <button className="gbtn gbtn--accent" onClick={goNext}>{t.next} <Icon n="arrow-right" sm /></button>
+                                : <button className="gbtn gbtn--accent" onClick={submit} disabled={status === "CORRECT"}><Icon n="check" sm /> {t.check}</button>)}
                     </div>
                 </div>
 
