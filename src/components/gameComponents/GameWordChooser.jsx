@@ -47,6 +47,10 @@ const STEP_WORDS = {
     ru: "Выбери слова", ukr: "Обери слова", en: "Choose words",
     pl: "Wybierz słowa", lt: "Pasirink žodžius",
 };
+const SETUP_TITLE = {
+    ru: "Настройка игры", ukr: "Налаштування гри", en: "Game setup",
+    pl: "Ustawienia gry", lt: "Žaidimo nustatymai",
+};
 
 const DictGroup = ({ dictItem, currentLanguage, t, defaultOpen }) => {
     const [open, setOpen] = useState(defaultOpen);
@@ -100,6 +104,7 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
     const rl = ROW_LABELS[currentLanguage] || ROW_LABELS.en;
     const stepMode = STEP_MODE[currentLanguage] || STEP_MODE.en;
     const stepWords = STEP_WORDS[currentLanguage] || STEP_WORDS.en;
+    const setupTitle = SETUP_TITLE[currentLanguage] || SETUP_TITLE.en;
 
     const minWords = gameType === "study" ? MIN_WORDS_STUDY : MIN_WORDS;
     const chosen = useMemo(
@@ -120,13 +125,13 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
             <main className="shell sel-main">
                 <div className="sel-head">
                     <span className="eyebrow"><Icon n="target" sm /> {t.startGame}</span>
-                    <h1 className="h1">{t.selectWordsTitle}</h1>
-                    <p>{t.selectWordsDesc}</p>
+                    <h1 className="h1">{setupTitle}</h1>
                 </div>
 
                 {/* Шаг 1 — режим игры */}
                 <section className="sel-section">
                     <h2 className="sel-section__title"><span className="sel-section__num">1</span> {stepMode}</h2>
+                    <p className="sel-section__sub">{tl[gameType]} — {td[gameType]}</p>
                     <div className="gsetup">
                         <div className="gsetup__block">
                             <span className="gsetup__lbl">{rl.type}</span>
@@ -137,7 +142,6 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
                                     </button>
                                 ))}
                             </div>
-                            <p className="gsetup__desc">{td[gameType]}</p>
                         </div>
                         <div className="gsetup__block">
                             <span className="gsetup__lbl">{rl.dir}</span>
