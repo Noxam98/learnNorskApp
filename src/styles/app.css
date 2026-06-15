@@ -205,7 +205,7 @@
 
 /* Экран выбора: явные разделы — «1 Выбери режим», «2 Выбери слова» */
 .sel-section { margin-top: var(--sp-8); }
-.sel-section + .sel-section { padding-top: var(--sp-7); border-top: 1px solid var(--border); }
+.sel-section + .sel-section { padding-top: var(--sp-5); }
 .sel-section__title { display: flex; align-items: center; gap: var(--sp-3); margin: 0 0 var(--sp-5);
     font-size: var(--fs-20); font-weight: 800; letter-spacing: var(--ls-tight); color: var(--ink); }
 .sel-section__num { display: inline-grid; place-items: center; width: 26px; height: 26px; flex: none;
