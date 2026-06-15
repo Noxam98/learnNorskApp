@@ -196,6 +196,7 @@ class ApiService {
         return this._send('GET', `/pool?${qs.toString()}`);
     }
     setUserTheme(theme) { return this._send('POST', '/me/theme', { theme }); }
+    getAdminStats() { return this._send('GET', '/admin/stats'); }
     getPoolTopics() { return this._send('GET', '/pool/topics'); }
     getPoolDescription(word) { return this._send('GET', `/pool/${encodeURIComponent(word)}/description`); }
     getPoolSynonyms(word, { lang = "ru" } = {}) { return this._send('GET', `/pool/${encodeURIComponent(word)}/synonyms?lang=${encodeURIComponent(lang)}`); }

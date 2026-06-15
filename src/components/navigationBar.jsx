@@ -33,6 +33,11 @@ export const NavigationBar = () => {
                     </Link>
                 </nav>
                 <div className="nav__spacer" />
+                {user?.isAdmin && (
+                    <Link className="nav__theme hide-mobile" to="/stats" aria-label="stats" title="Статистика">
+                        <Icon n="chart" sm />
+                    </Link>
+                )}
                 <button className="nav__theme hide-mobile" aria-label="theme"
                     title={theme === "dark" ? "Light" : "Dark"}
                     onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>

@@ -43,7 +43,7 @@ export const useAuthStore = create((set, get) => ({
         }
         try {
             const userData = await api.getProtectedData();
-            set({ user: { username: userData.username }, accessToken: api.accessToken });
+            set({ user: { username: userData.username, isAdmin: !!userData.is_admin }, accessToken: api.accessToken });
             if (userData.theme === "light" || userData.theme === "dark") {
                 useSystemStore.getState().setTheme(userData.theme);  // тема юзера с сервера
             }
@@ -83,9 +83,10 @@ export const useAuthStore = create((set, get) => ({
                 accessToken: data.access_token,
                 isLoading: false,
             });
-            // подтянуть тему юзера с сервера
+            // подтянуть тему и роль юзера с сервера
             api.getProtectedData().then((me) => {
                 if (me?.theme === "light" || me?.theme === "dark") useSystemStore.getState().setTheme(me.theme);
+                if (me) set({ user: { username, isAdmin: !!me.is_admin } });
             }).catch(() => {});
             return data;
         } catch (error) {

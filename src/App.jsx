@@ -14,6 +14,7 @@ import { GamePage } from "./pages/GamePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import MyPage from "./pages/MyPage.jsx";
+import { StatsPage } from "./pages/StatsPage.jsx";
 
 function App() {
     const location = useLocation();
@@ -22,6 +23,7 @@ function App() {
     const isAuthed = !!accessToken;
     const isLoadingData = useWordsStore((s) => s.isLoading);
     const dataLoaded = useWordsStore((s) => s.loaded);
+    const isAdmin = useAuthStore((s) => s.user?.isAdmin);
 
     const theme = useSystemStore((s) => s.theme);
 
@@ -59,6 +61,7 @@ function App() {
             <Route path="/authorization" element={<LoginPage />} />
             <Route path="/registration" element={<RegisterPage />} />
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/stats" element={isAdmin ? <StatsPage /> : <Navigate to="/words" replace />} />
         </Routes>
     );
 
