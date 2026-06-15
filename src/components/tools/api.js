@@ -196,6 +196,8 @@ class ApiService {
         return this._send('GET', `/pool?${qs.toString()}`);
     }
     getPoolTopics() { return this._send('GET', '/pool/topics'); }
+    getPoolDescription(word) { return this._send('GET', `/pool/${encodeURIComponent(word)}/description`); }
+    getPoolSynonyms(word, { lang = "ru" } = {}) { return this._send('GET', `/pool/${encodeURIComponent(word)}/synonyms?lang=${encodeURIComponent(lang)}`); }
     ttsUrl(word) { return `${this.baseUrl}/tts?word=${encodeURIComponent(word)}`; }
 
     logout() {

@@ -35,6 +35,10 @@ const ROW_LABELS = {
     pl:  { type: "Tryb", dir: "Kierunek" },
     lt:  { type: "Režimas", dir: "Kryptis" },
 };
+const SOUND_LABEL = {
+    ru: "Озвучивать слова", ukr: "Озвучувати слова", en: "Play audio",
+    pl: "Odtwarzaj dźwięk", lt: "Įgarsinti žodžius",
+};
 
 const DictGroup = ({ dictItem, currentLanguage, t, defaultOpen }) => {
     const [open, setOpen] = useState(defaultOpen);
@@ -78,7 +82,7 @@ const DictGroup = ({ dictItem, currentLanguage, t, defaultOpen }) => {
     );
 };
 
-export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGameType }) => {
+export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGameType, sound, setSound }) => {
     const dictList = useWordsStore((state) => state.dictList);
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
@@ -133,6 +137,11 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
                             </div>
                         </div>
                     </div>
+
+                    <label className="gsound">
+                        <input type="checkbox" checked={!!sound} onChange={(e) => setSound(e.target.checked)} />
+                        <Icon n="volume" sm /> <span>{SOUND_LABEL[currentLanguage] || SOUND_LABEL.en}</span>
+                    </label>
                 </div>
 
                 <div className="dictgroups">

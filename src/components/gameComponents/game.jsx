@@ -7,6 +7,7 @@ import { BrandMark } from "../ui/BrandMark.jsx";
 import { BrandLoader } from "../ui/Spinner.jsx";
 import { posLabel } from "../ui/pos.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
+import { speakNorwegian } from "../ui/tts.js";
 import api from "../tools/api.js";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
@@ -22,7 +23,7 @@ const pickWord = (pool, excludeIds) => {
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 const uniq = (arr) => { const s = new Set(); return arr.filter((x) => x && !s.has(x.toLowerCase()) && s.add(x.toLowerCase())); };
 
-export const Game = ({ setGameState, mode = "no2int", quiz = false }) => {
+export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = false }) => {
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const dictList = useWordsStore((state) => state.dictList);
     const toggleChooseToGame = useWordsStore((state) => state.ToggleChooseToGame);
@@ -54,6 +55,11 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false }) => {
     useEffect(() => {
         if (!quiz && status === "ASKING" && inputRef.current) inputRef.current.focus();
     }, [status, current, quiz]);
+
+    // Озвучка в режиме ВВОДА, если исходное слово норвежское — играем при показе вопроса.
+    useEffect(() => {
+        if (sound && !quiz && isNo2Int && status === "ASKING" && no) speakNorwegian(no).catch(() => {});
+    }, [current, sound]); // eslint-disable-line
 
     useEffect(() => {
         if (status === "CORRECT") {
@@ -119,6 +125,7 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false }) => {
     const choose = (opt) => {
         if (status !== "ASKING") return;
         setChosen(opt);
+        if (sound && no) speakNorwegian(no).catch(() => {});  // после выбора — озвучить правильное норвежское
         applyResult(opt === correctPrimary);
     };
 

@@ -115,7 +115,7 @@ export const Card = ({ wordItem, languageTranslate }) => {
                 onClose={() => setEditOpen(false)}
                 title={`${t.translate}: ${no}`}
                 footer={<>
-                    <button className="btn btn--danger-ghost" style={{ marginRight: "auto" }}
+                    <button className="btn btn--danger-ghost" style={{ marginRight: "auto", whiteSpace: "normal", textAlign: "left" }}
                         onClick={() => { setEditOpen(false); reportWord(wordItem.id).catch(() => {}); }}>
                         {t.reportWrong}
                     </button>

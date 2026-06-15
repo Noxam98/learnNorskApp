@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { BrandMark } from "../ui/BrandMark.jsx";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
+import { speakNorwegian } from "../ui/tts.js";
 import { posLabel } from "../ui/pos.js";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
@@ -21,7 +22,7 @@ const filterChosenWords = (dictList) =>
 
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
-export const StudyGame = ({ setGameState, mode = "no2int" }) => {
+export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const dictList = useWordsStore((s) => s.dictList);
     const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
@@ -34,6 +35,15 @@ export const StudyGame = ({ setGameState, mode = "no2int" }) => {
 
     const [idx, setIdx] = useState(0);
     const [flipped, setFlipped] = useState(false);
+
+    // Озвучка: норвежское слово проигрываем, когда оно на экране.
+    const _no = (i) => words[i]?.translate?.no?.[0] || "";
+    useEffect(() => {  // лицевая сторона норвежская — играем сразу при показе карточки
+        if (sound && isNo2Int && _no(idx)) speakNorwegian(_no(idx)).catch(() => {});
+    }, [idx]); // eslint-disable-line
+    useEffect(() => {  // норвежское на обороте — играем при перевороте
+        if (sound && !isNo2Int && flipped && _no(idx)) speakNorwegian(_no(idx)).catch(() => {});
+    }, [flipped]); // eslint-disable-line
 
     const playStyle = { position: "fixed", inset: 0, zIndex: 90, overflowY: "auto" };
 

@@ -120,6 +120,16 @@
 }
 .wcard:hover .wcard__actions { opacity: 1; }
 
+/* На мобильных действия (включая озвучку) — постоянно видны и в потоке, не по ховеру */
+@media (max-width: 640px) {
+    .wcard__actions {
+        position: static; transform: none; opacity: 1;
+        padding-left: 0; background: none; box-shadow: none;
+        flex: none;
+    }
+    .wcard.is-selected .wcard__actions { background: none; box-shadow: none; }
+}
+
 /* Неактивная кнопка озвучки (нет аудио) */
 .iconbtn:disabled { cursor: not-allowed; }
 .iconbtn:disabled:hover { background: transparent; }
@@ -189,6 +199,9 @@
     .gsetup { gap: var(--sp-4); }
     .gsetup__block { width: 100%; }
 }
+.gsound { display: inline-flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-5); cursor: pointer; font-size: var(--fs-14); font-weight: 600; color: var(--ink-2); }
+.gsound input { width: 18px; height: 18px; accent-color: var(--fjord-600); cursor: pointer; }
+.gsound .ic { color: var(--fjord-600); }
 
 /* Режим «выбор варианта» — кнопки ответов (тёмная тема игры) */
 .choices { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; max-width: 600px; margin-top: var(--sp-8); }

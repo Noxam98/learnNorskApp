@@ -6,7 +6,7 @@ import { useSystemStore } from "../store/systemStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
-import { BtnSpinner, SkeletonWordlist } from "../components/ui/Spinner.jsx";
+import { BtnSpinner, SkeletonWordlist, Dots } from "../components/ui/Spinner.jsx";
 import { SearchBox } from "../components/ui/SearchBox.jsx";
 import { posMeta, posLabel } from "../components/ui/pos.js";
 import { SpeakButton } from "../components/ui/SpeakButton.jsx";
@@ -49,6 +49,10 @@ export const PoolPage = () => {
     const [searchPhase, setSearchPhase] = useState("idle"); // idle | counting | searching
     const [addingId, setAddingId] = useState(null);
     const [added, setAdded] = useState({});
+    const [descWord, setDescWord] = useState(null);   // слово, чьё описание открыто
+    const [descText, setDescText] = useState("");
+    const [descLoading, setDescLoading] = useState(false);
+    const [synonyms, setSynonyms] = useState(null);
     const [facets, setFacets] = useState({ topics: [], levels: [] });
     const [topicsOpen, setTopicsOpen] = useState(() => (typeof window !== "undefined" ? window.innerWidth > 700 : true));
     const [dictOpen, setDictOpen] = useState(false);
@@ -102,6 +106,17 @@ export const PoolPage = () => {
         setAddingId(word);
         try { await addFromPool(word); setAdded((a) => ({ ...a, [word]: true })); } catch { /* ignore */ }
         setAddingId(null);
+    };
+
+    const openDesc = (word) => {
+        setDescWord(word); setDescText(""); setSynonyms(null); setDescLoading(true);
+        api.getPoolDescription(word)
+            .then((r) => setDescText(r.description?.[currentLanguage] || r.description?.en || ""))
+            .catch(() => setDescText(""))
+            .finally(() => setDescLoading(false));
+        api.getPoolSynonyms(word, { lang: currentLanguage })
+            .then((r) => setSynonyms(r.synonyms || []))
+            .catch(() => setSynonyms([]));
     };
 
     const hasFilters = topics.length > 0 || !!level;
@@ -224,6 +239,10 @@ export const PoolPage = () => {
                                 <div className="wcard__actions">
                                     <SpeakButton text={w.word} hasTts={w.hasTts} ariaLabel={t.tts}
                                         title={t.tts} titlePreparing={t.ttsPreparing} />
+                                    <button className="iconbtn" aria-label={t.description} title={t.description}
+                                        onClick={() => openDesc(w.word)}>
+                                        <Icon n="book" />
+                                    </button>
                                     <button className="iconbtn" aria-label={t.addToDict} title={t.addToDict}
                                         disabled={added[w.word] || addingId === w.word} onClick={() => onAdd(w.word)}>
                                         {addingId === w.word ? <BtnSpinner /> : <Icon n={added[w.word] ? "check" : "plus"} />}
@@ -285,6 +304,37 @@ export const PoolPage = () => {
                     <span className="input-hint">{(t.willAddWords || "Будет добавлено слов")}: <b>{total}</b></span>
                     {createErr && <span className="alert"><Icon n="x" sm /> {createErr}</span>}
                 </div>
+            </Modal>
+
+            <Modal open={!!descWord} onClose={() => setDescWord(null)} title={descWord || ""}>
+                {descLoading ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }} aria-busy="true">
+                        <span className="skel skel--line" style={{ width: "100%" }} />
+                        <span className="skel skel--line" style={{ width: "94%" }} />
+                        <span className="skel skel--line" style={{ width: "78%" }} />
+                    </div>
+                ) : (
+                    <p className="muted" style={{ margin: 0, lineHeight: "var(--lh-normal)" }}>
+                        {descText || t.descUnavailable}
+                    </p>
+                )}
+                {synonyms === null && !descLoading && (
+                    <div className="row" style={{ gap: "var(--sp-3)", marginTop: "var(--sp-5)", color: "var(--ink-3)" }}>
+                        <Dots /> <span style={{ fontSize: "var(--fs-14)" }}>{t.similar}</span>
+                    </div>
+                )}
+                {synonyms?.length > 0 && (
+                    <div style={{ marginTop: "var(--sp-5)" }}>
+                        <div className="label" style={{ marginBottom: "var(--sp-2)" }}>{t.similar}</div>
+                        <div className="row wrap" style={{ gap: "var(--sp-2)" }}>
+                            {synonyms.map((s) => (
+                                <span key={s.word} className="chip" style={{ background: "var(--surface-3)", color: "var(--ink)" }}>
+                                    <b>{s.word}</b>{s.translate?.[0] ? ` — ${s.translate[0]}` : ""}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </Modal>
         </main>
     );

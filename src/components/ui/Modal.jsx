@@ -29,7 +29,7 @@ export const Modal = ({ open, onClose, title, children, footer, maxWidth = 460 }
                     </div>
                     <div style={{ padding: "var(--sp-5)" }}>{children}</div>
                     {footer && (
-                        <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--sp-3)", padding: "0 var(--sp-5) var(--sp-5)" }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "flex-end", gap: "var(--sp-3)", rowGap: "var(--sp-2)", padding: "0 var(--sp-5) var(--sp-5)" }}>
                             {footer}
                         </div>
                     )}
