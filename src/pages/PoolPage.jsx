@@ -134,7 +134,7 @@ export const PoolPage = () => {
         <main className="shell words-main">
             <div className="page-head" style={{ marginBottom: "var(--sp-4)" }}>
                 <div>
-                    <span className="eyebrow"><Icon n="grid" sm /> {t.navBar.base}</span>
+                    <span className="eyebrow"><Icon n="library" sm /> {t.navBar.base}</span>
                     <h1 className="h1">{t.poolTitle}</h1>
                     <p className="muted" style={{ margin: "6px 0 0" }}>{t.poolDesc}</p>
                 </div>

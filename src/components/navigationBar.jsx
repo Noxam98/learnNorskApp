@@ -22,13 +22,13 @@ export const NavigationBar = () => {
                 </Link>
                 <nav className="nav__links">
                     <Link className={`nav__link${pathname === "/words" ? " is-active" : ""}`} to="/words">
-                        <Icon n="book" sm /> <span>{t.navBar.words}</span>
+                        <Icon n="bookmark" sm /> <span>{t.navBar.words}</span>
                     </Link>
                     <Link className={`nav__link${pathname === "/game" ? " is-active" : ""}`} to="/game">
                         <Icon n="play" sm /> <span>{t.navBar.game}</span>
                     </Link>
                     <Link className={`nav__link${pathname === "/pool" ? " is-active" : ""}`} to="/pool">
-                        <Icon n="grid" sm /> <span>{t.navBar.base}</span>
+                        <Icon n="library" sm /> <span>{t.navBar.base}</span>
                     </Link>
                 </nav>
                 <div className="nav__spacer" />
