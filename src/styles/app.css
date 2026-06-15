@@ -167,6 +167,17 @@
     .modeseg__btn { flex: 1; padding: 9px 8px; font-size: var(--fs-13); }
 }
 
+/* Компактная настройка игры: тип + направление */
+.gsetup { display: flex; flex-wrap: wrap; gap: var(--sp-5); margin-top: var(--sp-5); }
+.gsetup__block { display: flex; flex-direction: column; gap: var(--sp-2); }
+.gsetup__lbl { font-size: var(--fs-12); font-weight: 700; letter-spacing: var(--ls-wide); text-transform: uppercase; color: var(--ink-3); }
+.gsetup__block .modeseg { margin-top: 0; }
+.gsetup__desc { margin: 2px 0 0; font-size: var(--fs-13); color: var(--ink-2); }
+@media (max-width: 480px) {
+    .gsetup { gap: var(--sp-4); }
+    .gsetup__block { width: 100%; }
+}
+
 /* Режим «выбор варианта» — кнопки ответов (тёмная тема игры) */
 .choices { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; max-width: 600px; margin-top: var(--sp-8); }
 .choice {

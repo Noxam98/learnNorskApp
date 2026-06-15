@@ -152,9 +152,10 @@
   .dgroup { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-xs); overflow: hidden; }
   .dgroup__head { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-4) var(--sp-5); cursor: pointer; }
   .dgroup__ic { width: 38px; height: 38px; border-radius: 10px; background: var(--fjord-50); color: var(--fjord-600); display: grid; place-items: center; flex: none; }
-  .dgroup__meta { flex: 1; min-width: 0; }
-  .dgroup__name { font-size: var(--fs-18); font-weight: 700; }
-  .dgroup__sub { font-size: var(--fs-13); color: var(--ink-3); margin-top: 1px; }
+  .dgroup__meta { flex: 1; min-width: 0; position: relative; }
+  .dgroup__name { display: block; font-size: var(--fs-18); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* счётчик — отдельной строкой в абсолюте, не занимает место и не толкает имя */
+  .dgroup__sub { position: absolute; top: 100%; left: 0; margin-top: 1px; font-size: var(--fs-13); color: var(--ink-3); white-space: nowrap; pointer-events: none; }
   .dgroup__sel { font-size: var(--fs-13); font-weight: 700; color: var(--ember-600); background: var(--ember-50); padding: 4px 11px; border-radius: var(--r-full); }
   .dgroup__chev { color: var(--ink-3); transition: transform var(--dur) var(--ease); }
   .dgroup.is-open .dgroup__chev { transform: rotate(180deg); }
@@ -297,6 +298,18 @@
     line-height: 1.05; margin: var(--sp-3) 0 var(--sp-2); color: var(--game-ink);
   }
   .qpos { display: inline-flex; align-items: center; gap: 7px; padding: 5px 13px; border-radius: var(--r-full); font-size: var(--fs-13); font-weight: 700; background: rgba(242,166,90,.14); color: var(--game-accent); }
+
+  /* Флешкарта (режим «изучение») */
+  .flashcard {
+    background: var(--game-surface); border: 1px solid var(--game-border);
+    border-radius: var(--r-xl); padding: var(--sp-10) var(--sp-6); text-align: center;
+    box-shadow: var(--shadow-md); transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .flashcard:hover { border-color: var(--game-accent); }
+  .flashcard:active { transform: translateY(1px); }
+  .flashcard__back { margin-top: var(--sp-6); min-height: 44px; display: flex; align-items: center; justify-content: center; border-top: 1px solid var(--game-border); padding-top: var(--sp-5); }
+  .flashcard__answer { font-size: var(--fs-34); font-weight: 700; color: var(--game-accent); }
+  .flashcard__hint { font-size: var(--fs-14); color: var(--game-ink-2); letter-spacing: var(--ls-wide); text-transform: uppercase; }
   .qspeak { margin-left: 8px; vertical-align: middle; color: var(--game-ink-2); background: transparent; border: none; cursor: pointer; }
   .qspeak:hover { color: var(--game-ink); }
 
