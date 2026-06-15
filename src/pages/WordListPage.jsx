@@ -1,4 +1,5 @@
 import { useRef, useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation";
 import { Card } from "../components/wordListComponents/WordCard";
 import { useWordsStore } from "../store/wordStore";
@@ -237,7 +238,12 @@ export const WordListPage = () => {
                     <p className="muted" style={{ textAlign: "center", padding: "var(--sp-8) 0" }}>{t.nothingFound || "—"}</p>
                 )
             ) : (
-                <p className="muted" style={{ textAlign: "center", padding: "var(--sp-12) 0" }}>{t.addWordsHere}</p>
+                <div className="muted" style={{ textAlign: "center", padding: "var(--sp-12) var(--sp-4)" }}>
+                    <p style={{ margin: 0 }}>{t.addWordsHere}</p>
+                    <p style={{ margin: "var(--sp-2) 0 0" }}>
+                        {t.orFromBase} <Link to="/pool" style={{ color: "var(--fjord-600)", fontWeight: 600 }}>{t.navBar.base}</Link>
+                    </p>
+                </div>
             )}
 
             <Modal
