@@ -14,18 +14,24 @@ const stopAll = () => {
     try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch { /* */ }
 };
 
-export const speakNorwegian = (text) => new Promise((resolve, reject) => {
+// Код языка озвучки из языка интерфейса (украинский: ukr → uk).
+export const ttsLang = (uiLang) => ({ ru: "ru", ukr: "uk", en: "en", pl: "pl", lt: "lt" }[uiLang] || uiLang);
+
+// Озвучка текста. lang не задан → норвежский (как было); задан → голос перевода.
+export const speakText = (text, lang) => new Promise((resolve, reject) => {
     const t = (text || "").trim();
     if (!t) { resolve(); return; }
 
     stopAll();
 
-    const audio = new Audio(api.ttsUrl(t));
+    const audio = new Audio(api.ttsUrl(t, lang));
     _audio = audio;
 
     audio.onplaying = () => resolve();
     audio.onerror = () => reject(new Error("audio"));
     audio.play().catch((e) => reject(e));
 });
+
+export const speakNorwegian = (text) => speakText(text);
 
 export default speakNorwegian;

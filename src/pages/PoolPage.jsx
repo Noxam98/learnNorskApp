@@ -12,6 +12,7 @@ import { BtnSpinner, SkeletonWordlist } from "../components/ui/Spinner.jsx";
 import { SearchBox } from "../components/ui/SearchBox.jsx";
 import { posMeta, posLabel } from "../components/ui/pos.js";
 import { SpeakButton } from "../components/ui/SpeakButton.jsx";
+import { ttsLang } from "../components/ui/tts.js";
 
 const SEARCH_DEBOUNCE_MS = 550;
 const PAGE_SIZES = [30, 60, 120];
@@ -233,6 +234,10 @@ export const PoolPage = () => {
                                     {w.level && <span className="chip lvl">{w.level}</span>}
                                     <span className={`chip pos ${cls}`}>{posLabel(w.part_of_speech, t)}</span>
                                     <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
+                                    {w.translate?.[currentLanguage]?.length > 0 && (
+                                        <SpeakButton text={w.translate[currentLanguage].join(", ")} lang={ttsLang(currentLanguage)}
+                                            className="iconbtn wcard__trspeak" ariaLabel={t.tts} title={t.tts} />
+                                    )}
                                 </div>
                                 <div className="wcard__actions">
                                     <SpeakButton text={w.word} hasTts={w.hasTts} ariaLabel={t.tts}

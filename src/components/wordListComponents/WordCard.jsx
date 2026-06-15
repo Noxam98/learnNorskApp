@@ -6,6 +6,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { Modal } from "../ui/Modal.jsx";
 import { WordInfoModal } from "../ui/WordInfoModal.jsx";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
+import { ttsLang } from "../ui/tts.js";
 import { posMeta, posLabel } from "../ui/pos.js";
 
 export const Card = ({ wordItem, languageTranslate }) => {
@@ -52,6 +53,10 @@ export const Card = ({ wordItem, languageTranslate }) => {
                     <span className="wcard__word">{no.toLowerCase()}</span>
                     <span className={`chip pos ${cls}`}>{label}</span>
                     <span className="wcard__tr">{translation}</span>
+                    {translation && (
+                        <SpeakButton text={translation} lang={ttsLang(languageTranslate)}
+                            className="iconbtn wcard__trspeak" ariaLabel={t.tts} title={t.tts} />
+                    )}
                 </div>
                 <div className="wcard__actions" onClick={(e) => e.stopPropagation()}>
                     <SpeakButton text={no} hasTts={wordItem.hasTts} ariaLabel={t.tts}

@@ -72,6 +72,9 @@
   .wcard__word { font-size: var(--fs-16); font-weight: 700; color: var(--ink); letter-spacing: var(--ls-tight); white-space: nowrap; flex: none; }
   .wcard__tr { font-size: var(--fs-14); color: var(--ink-2); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .wcard__tr b { color: var(--ink); font-weight: 600; }
+  .wcard__trspeak { flex: none; width: 26px; height: 26px; border-radius: var(--r-xs); color: var(--ink-3); }
+  .wcard__trspeak:hover { color: var(--ink); }
+  .wcard__trspeak .ic { width: 15px; height: 15px; }
   .wcard .pos { padding: 2px 8px; font-size: 11px; flex: none; }
 
   .wcard__actions { display: flex; align-items: center; gap: 0; opacity: 0; transition: opacity var(--dur) var(--ease); }
