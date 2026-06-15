@@ -12,8 +12,9 @@ export const useWordsStore = create((set, get) => ({
     loaded: false,
 
     // Загрузка всех словарей пользователя с сервера.
-    loadData: async () => {
-        set({ isLoading: true });
+    // silent=true — без полноэкранного лоадера (обновление после мутаций).
+    loadData: async (silent = false) => {
+        if (!silent) set({ isLoading: true });
         try {
             const data = await api.getData();
             const names = data.dictNames || [];
@@ -47,7 +48,7 @@ export const useWordsStore = create((set, get) => ({
         const dictId = get()._currentDictId();
         if (!dictId) return { added: 0, errors: [] };
         const res = await api.addWords(dictId, prompt);
-        await get().loadData();
+        await get().loadData(true);
         return res;
     },
 
@@ -56,12 +57,12 @@ export const useWordsStore = create((set, get) => ({
         const dictId = get()._currentDictId();
         if (!dictId) return;
         await api.addPoolWord(dictId, norwegian);
-        await get().loadData();
+        await get().loadData(true);
     },
 
     addNewDict: async (name) => {
         await api.createDict(name);
-        await get().loadData();
+        await get().loadData(true);
         set({ currentDictName: name });
     },
 
@@ -69,12 +70,12 @@ export const useWordsStore = create((set, get) => ({
         const d = get().dictList.find((x) => x.dictName === dictName);
         if (!d) return;
         await api.deleteDict(d.id);
-        await get().loadData();
+        await get().loadData(true);
     },
 
     importDict: async (dictJson) => {
         await api.importDict(dictJson);
-        await get().loadData();
+        await get().loadData(true);
         if (dictJson?.dictName) set({ currentDictName: dictJson.dictName });
     },
 
@@ -83,19 +84,19 @@ export const useWordsStore = create((set, get) => ({
         if (!dict) return;
         const ids = dict.words.filter((w) => w?.techData?.isSelected).map((w) => w.id);
         await Promise.all(ids.map((id) => api.deleteWord(id)));
-        await get().loadData();
+        await get().loadData(true);
     },
 
     editWord: async (wordId, override) => {
         // override: { translate?, part_of_speech? }
         await api.editWord(wordId, override);
-        await get().loadData();
+        await get().loadData(true);
     },
 
     // Пометить слово неправильным: удалить из общего пула и перегенерировать.
     reportWord: async (wordId) => {
         await api.reportWord(wordId);
-        await get().loadData();
+        await get().loadData(true);
     },
 
     // Ленивая загрузка описания (по требованию, не пакетно).

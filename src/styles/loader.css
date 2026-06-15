@@ -1,0 +1,322 @@
+/* ============================================================
+   Lære Norsk — Loaders
+   Контекстные лоадеры для всего, что грузится из БД.
+   НЕ полноэкранные — каждый живёт внутри своей области и
+   повторяет вёрстку контента, который заменяет (skeleton).
+   Зависит от tokens.css.
+   ============================================================
+   Состав:
+   1. Брендовый лоадер «орбита флагов»  .ln-loader
+   2. Точки-фьорд / кнопочный спиннер    .ln-dots / .ln-spin
+   3. Skeleton-примитивы                 .skel
+   4. Готовые skeleton-блоки по экранам  .sk-*
+   ============================================================ */
+
+/* ============================================================
+   1 · БРЕНДОВЫЙ ЛОАДЕР — «перевод по орбите»
+   Вокруг норвежского флага вращаются флаги языков (UA·LT·PL).
+   Для инициализации секции/панели — ставится по центру области.
+   ============================================================ */
+.ln-loader {
+  --ln-size: 56px;
+  --ln-flag: calc(var(--ln-size) * 0.30);
+  --ln-core: calc(var(--ln-size) * 0.46);
+  --ln-dur: 2.4s;
+  --ln-odur: 5s;            /* цикл орбиты спутников: обороты + два сбора в стопочку */
+  --ln-nodur: 11s;          /* цикл Норвегии: долго в центре, иногда — вылазка на орбиту */
+  --ln-track: var(--border-2);
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: var(--ln-size);
+  height: var(--ln-size);
+  flex: none;
+}
+.ln-loader__track {
+  position: absolute;
+  inset: calc(var(--ln-flag) * 0.5 - 1px);
+  border-radius: var(--r-full);
+  border: 1.5px dashed var(--ln-track);
+  animation: ln-spin calc(var(--ln-dur) * 3) linear infinite reverse;
+}
+.ln-loader__ring { position: absolute; inset: 0; }
+
+/* Каждый флаг едет по кругу в собственной «спице». Все три используют
+   ОДНУ кривую скорости (без переменных в keyframes!) и различаются
+   только задержкой. Кривая: несколько быстрых оборотов «веером», затем
+   медленный участок, где флаги съезжаются в плотную стопочку — и так
+   дважды за цикл, в двух разных точках кольца. Флаг внутри спицы
+   контр-вращается точной числовой инверсией → полоски всегда ровные. */
+.ln-orbit {
+  position: absolute; inset: 0;
+  animation: ln-orbit var(--ln-odur) linear infinite;
+}
+.ln-orbit:nth-child(2) { animation-delay: calc(var(--ln-odur) * -0.06); }
+.ln-orbit:nth-child(3) { animation-delay: calc(var(--ln-odur) * -0.12); }
+
+.ln-flag {
+  position: absolute; top: 0; left: 35%;     /* слот на 12 ч, угол задаёт спица */
+  width: var(--ln-flag); height: var(--ln-flag);
+  border-radius: var(--r-full);
+  box-shadow: 0 1px 3px rgba(16,28,26,.22), inset 0 0 0 1.4px rgba(255,255,255,.9);
+  background-repeat: no-repeat; background-position: center;
+  animation: ln-orbit-rev var(--ln-odur) linear infinite;   /* держит флаг ровным */
+}
+.ln-orbit:nth-child(2) .ln-flag { animation-delay: calc(var(--ln-odur) * -0.06); }
+.ln-orbit:nth-child(3) .ln-flag { animation-delay: calc(var(--ln-odur) * -0.12); }
+.ln-flag--ua { background-image: linear-gradient(#0057B7 0 50%, #FFD700 50% 100%); }
+.ln-flag--lt { background-image: linear-gradient(#FDB913 0 33.33%, #006A44 33.33% 66.66%, #C1272D 66.66% 100%); }
+.ln-flag--pl { background-image: linear-gradient(#FFFFFF 0 50%, #DC143C 50% 100%); }
+/* Норвежский флаг: обычно — ядро в центре, иногда выходит на орбиту.
+   .ln-no   — спица (вращение = орбитальный угол)
+   .ln-no-arm — радиус (центр ↔ кольцо) + масштаб (крупнее в центре)
+   .ln-no-flag — сам флаг, контр-вращается → крест всегда ровный */
+.ln-no { position: absolute; inset: 0; animation: ln-no-orbit var(--ln-nodur) linear infinite; }
+.ln-no-arm {
+  position: absolute;
+  top: calc(50% - var(--ln-core) / 2);
+  left: calc(50% - var(--ln-core) / 2);
+  width: var(--ln-core); height: var(--ln-core);
+  animation: ln-no-radius var(--ln-nodur) ease-in-out infinite;
+}
+.ln-no-flag {
+  display: block;
+  width: 100%; height: 100%;
+  border-radius: var(--r-full);
+  background-color: #BA0C2F;
+  background-repeat: no-repeat;
+  background-position: 42% center, center 50%, 42% center, center 50%;
+  background-image:
+    linear-gradient(#00205B, #00205B),
+    linear-gradient(#00205B, #00205B),
+    linear-gradient(#FFFFFF, #FFFFFF),
+    linear-gradient(#FFFFFF, #FFFFFF);
+  background-size: 13% 100%, 100% 13%, 27% 100%, 100% 27%;
+  box-shadow: 0 2px 6px rgba(16,28,26,.28), inset 0 0 0 1.6px rgba(255,255,255,.9);
+  animation: ln-no-rev var(--ln-nodur) linear infinite;
+}
+@keyframes ln-spin { to { transform: rotate(360deg); } }
+@keyframes ln-core-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+/* кривая скорости спицы: быстро (веер, ~1.3 оборота) → медленно (сбор #1)
+   → быстро (веер, ~2.3 оборота) → медленно (сбор #2). всего 1440° = 4
+   полных оборота за цикл → стык бесшовный. сборы в разных точках кольца. */
+@keyframes ln-orbit {
+  0%   { transform: rotate(0deg); }
+  8%   { transform: rotate(85deg); }
+  22%  { transform: rotate(120deg); }   /* сбор #1 (медленно) ~ верх кольца */
+  46%  { transform: rotate(570deg); }
+  60%  { transform: rotate(605deg); }   /* сбор #2 (медленно) ~ другая точка */
+  100% { transform: rotate(1440deg); }
+}
+@keyframes ln-orbit-rev {
+  0%   { transform: rotate(0deg); }
+  8%   { transform: rotate(-85deg); }
+  22%  { transform: rotate(-120deg); }
+  46%  { transform: rotate(-570deg); }
+  60%  { transform: rotate(-605deg); }
+  100% { transform: rotate(-1440deg); }
+}
+/* Норвегия: непрерывный угол (2 оборота за цикл) + контр-вращение флага */
+@keyframes ln-no-orbit { from { transform: rotate(0deg); }   to { transform: rotate(720deg); } }
+@keyframes ln-no-rev   { from { transform: rotate(0deg); }   to { transform: rotate(-720deg); } }
+/* радиус: долго в центре (scale 1), затем вылазка на кольцо (меньше) и назад */
+@keyframes ln-no-radius {
+  0%, 52% { transform: translateY(0) scale(1); }
+  63%     { transform: translateY(calc(var(--ln-size) * -0.35)) scale(.62); }
+  82%     { transform: translateY(calc(var(--ln-size) * -0.35)) scale(.62); }
+  93%,100%{ transform: translateY(0) scale(1); }
+}
+
+.ln-loader--sm { --ln-size: 40px; }
+.ln-loader--md { --ln-size: 56px; }
+.ln-loader--lg { --ln-size: 88px; }
+.ln-loader.is-dark, .ln-on-dark .ln-loader { --ln-track: var(--game-border); }
+
+/* лоадер + подпись, по центру области */
+.ln-loading {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: var(--sp-4); text-align: center;
+  padding: var(--sp-12) var(--sp-6);
+}
+.ln-loading__label {
+  font-size: var(--fs-14); font-weight: 600;
+  letter-spacing: var(--ls-wide); text-transform: uppercase;
+  color: var(--ink-3);
+}
+.ln-on-dark .ln-loading__label { color: var(--game-ink-2); }
+.ln-loading__label::after { content: ""; animation: ln-ellipsis 1.6s steps(4,end) infinite; }
+@keyframes ln-ellipsis {
+  0% { content: ""; } 25% { content: "·"; }
+  50% { content: "··"; } 75%,100% { content: "···"; }
+}
+
+/* ============================================================
+   2 · ТОЧКИ И КНОПОЧНЫЙ СПИННЕР (inline-действия)
+   ============================================================ */
+.ln-dots { display: inline-flex; align-items: center; gap: calc(var(--ln-dot,8px)*.7); vertical-align: middle; }
+.ln-dots i {
+  width: var(--ln-dot,8px); height: var(--ln-dot,8px);
+  border-radius: var(--r-full); background: var(--fjord-300);
+  animation: ln-bounce 1.1s var(--ease) infinite;
+}
+.ln-dots i:nth-child(1) { background: var(--ember-500); }
+.ln-dots i:nth-child(2) { background: var(--fjord-500); animation-delay: .14s; }
+.ln-dots i:nth-child(3) { background: var(--fjord-300); animation-delay: .28s; }
+@keyframes ln-bounce {
+  0%,70%,100% { transform: translateY(0); opacity: .55; }
+  35% { transform: translateY(-55%); opacity: 1; }
+}
+
+.ln-spin {
+  display: inline-block; width: 1em; height: 1em;
+  border-radius: var(--r-full);
+  border: 2px solid currentColor; border-top-color: transparent;
+  animation: ln-spin .8s linear infinite; vertical-align: -0.15em;
+}
+
+/* состояние «грузится» для .btn (текст приглушается, спиннер впереди) */
+.btn.is-loading { pointer-events: none; }
+.btn.is-loading > :not(.ln-spin) { opacity: .55; }
+
+/* ============================================================
+   3 · SKELETON-ПРИМИТИВЫ
+   ============================================================ */
+.skel {
+  display: block;
+  background: linear-gradient(90deg, var(--surface-3) 25%, var(--surface-2) 50%, var(--surface-3) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s linear infinite;
+  border-radius: var(--r-sm);
+}
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.skel--line   { height: .72em; border-radius: var(--r-full); }
+.skel--circle { border-radius: var(--r-full); }
+/* тёмная (игровая) тема */
+.skel.is-dark, .ln-on-dark .skel {
+  background: linear-gradient(90deg, var(--game-surface) 25%, var(--game-surface-2) 50%, var(--game-surface) 75%);
+  background-size: 200% 100%;
+}
+
+/* ============================================================
+   4 · ГОТОВЫЕ SKELETON-БЛОКИ ПО ЭКРАНАМ
+   Самодостаточны: повторяют метрики реальных карточек,
+   не зависят от inline-стилей страниц.
+   ============================================================ */
+
+/* — Слова: карточка слова (карточки текут и переносятся, ширина по контенту) — */
+.sk-wordlist { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-3); }
+.sk-wcard {
+  display: inline-flex; align-items: center; gap: var(--sp-3);
+  padding: 8px 14px 8px 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-md); box-shadow: var(--shadow-xs); min-width: 0;
+}
+.sk-wcard__check { width: 19px; height: 19px; border-radius: 6px; flex: none; }
+.sk-wcard__body { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.sk-wcard__w   { height: 13px; width: 70px; border-radius: var(--r-full); flex: none; }
+.sk-wcard__chip{ height: 16px; width: 40px; border-radius: var(--r-full); flex: none; }
+.sk-wcard__tr  { height: 11px; width: 120px; border-radius: var(--r-full); }
+/* разная ширина → живой, нерегулярный ряд как в реальном списке */
+.sk-wcard:nth-child(3n)   .sk-wcard__w  { width: 94px; }
+.sk-wcard:nth-child(4n)   .sk-wcard__w  { width: 56px; }
+.sk-wcard:nth-child(3n+1) .sk-wcard__tr { width: 70px; }
+.sk-wcard:nth-child(2n)   .sk-wcard__tr { width: 180px; }
+.sk-wcard:nth-child(5n)   .sk-wcard__tr { width: 40px; }
+.sk-wcard:nth-child(7n)   .sk-wcard__tr { display: none; }
+
+/* — Слова: строка «ИИ переводит…» внутри карточки — */
+.sk-translating { color: var(--ember-600); display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-13); font-weight: 600; }
+
+/* — Игра · выбор: группа словаря — */
+.sk-dgroup {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-xs);
+  padding: var(--sp-4) var(--sp-5);
+  display: flex; align-items: center; gap: var(--sp-4);
+}
+.sk-dgroup__ic   { width: 38px; height: 38px; border-radius: 10px; flex: none; }
+.sk-dgroup__name { height: 14px; width: 150px; border-radius: var(--r-full); margin-bottom: 9px; }
+.sk-dgroup__sub  { height: 10px; width: 64px;  border-radius: var(--r-full); }
+.sk-dgroup__chev { width: 18px; height: 18px; border-radius: var(--r-xs); margin-left: auto; flex: none; }
+
+/* — Игра · выбор: слово-пик (раскрытая группа) — */
+.sk-wpick { display: flex; align-items: center; gap: var(--sp-3); padding: 11px 14px; border-radius: var(--r-md); }
+.sk-wpick__check { width: 22px; height: 22px; border-radius: 7px; flex: none; }
+.sk-wpick__w { height: 13px; width: 80px; border-radius: var(--r-full); }
+.sk-wpick__t { height: 11px; width: 60px; border-radius: var(--r-full); margin-left: auto; }
+
+/* — Режимы: карточка режима — */
+.sk-mode {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-xl); box-shadow: var(--shadow-xs); padding: var(--sp-6);
+}
+.sk-mode__top  { display: flex; align-items: center; gap: var(--sp-4); }
+.sk-mode__ic   { width: 52px; height: 52px; border-radius: var(--r-md); flex: none; }
+.sk-mode__lvl  { width: 64px; height: 24px; border-radius: var(--r-full); margin-left: auto; }
+.sk-mode__name { height: 22px; width: 55%; border-radius: var(--r-sm); margin: var(--sp-5) 0 var(--sp-4); }
+.sk-mode__line { height: 12px; border-radius: var(--r-full); margin-bottom: 9px; }
+.sk-mode__line.is-short { width: 70%; }
+.sk-mode__go   { height: 14px; width: 110px; border-radius: var(--r-full); margin-top: var(--sp-6); }
+
+/* — Профиль: плитка статистики — */
+.sk-scard {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-xs); padding: var(--sp-5);
+}
+.sk-scard__ic { width: 38px; height: 38px; border-radius: 10px; margin-bottom: var(--sp-4); }
+.sk-scard__n  { height: 30px; width: 58px; border-radius: var(--r-sm); margin-bottom: 11px; }
+.sk-scard__l  { height: 12px; width: 92px; border-radius: var(--r-full); }
+
+/* — Профиль: строка прогресса по словарю — */
+.sk-drow { padding: var(--sp-4) 0; border-top: 1px solid var(--border); }
+.sk-drow:first-child { border-top: none; padding-top: var(--sp-2); }
+.sk-drow__top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.sk-drow__name { height: 13px; width: 160px; border-radius: var(--r-full); }
+.sk-drow__val  { height: 13px; width: 46px;  border-radius: var(--r-full); }
+.sk-drow__bar  { height: 8px; border-radius: var(--r-full); }
+.sk-drow:nth-child(2) .sk-drow__name { width: 130px; }
+.sk-drow:nth-child(3) .sk-drow__name { width: 184px; }
+
+/* — Профиль: шапка — */
+.sk-phead { display: flex; align-items: center; gap: var(--sp-5); }
+.sk-phead__avatar { width: 84px; height: 84px; border-radius: var(--r-xl); flex: none; }
+.sk-phead__name { height: 26px; width: 200px; border-radius: var(--r-sm); margin-bottom: 12px; }
+.sk-phead__sub  { height: 13px; width: 260px; border-radius: var(--r-full); }
+
+/* — Игра · раунд (тёмная тема): загрузка следующего слова — */
+.sk-play {
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--sp-5); padding: var(--sp-12) var(--sp-6);
+}
+.sk-play__kicker { height: 12px; width: 120px; border-radius: var(--r-full); }
+.sk-play__word   { height: 54px; width: 280px; max-width: 80%; border-radius: var(--r-md); }
+.sk-play__input  { height: 56px; width: 360px; max-width: 90%; border-radius: var(--r-lg); }
+
+/* — Аудирование: загрузка озвучки — */
+.sk-audio { display: flex; flex-direction: column; align-items: center; gap: var(--sp-4); }
+.sk-audio__btn { width: 88px; height: 88px; border-radius: var(--r-full); }
+
+/* — универсальная строка списка (fallback) — */
+.sk-row { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-3) 0; }
+.sk-row__ic { width: 36px; height: 36px; border-radius: 9px; flex: none; }
+.sk-row__l1 { height: 13px; width: 40%; border-radius: var(--r-full); margin-bottom: 8px; }
+.sk-row__l2 { height: 10px; width: 24%; border-radius: var(--r-full); }
+
+/* ============================================================
+   5 · КОЛЬЦО ОБРАТНОГО ОТСЧЁТА ДЕБАУНСА
+   «Добегает» по кругу за --cring-dur (время дебаунса поиска),
+   затем родитель показывает .ln-dots (запрос в БД пошёл).
+   ============================================================ */
+.cring { display: inline-block; vertical-align: -3px; transform: rotate(-90deg); flex: none; }
+.cring__track { fill: none; stroke: var(--border-2); }
+.cring__run {
+  fill: none; stroke: var(--ember-500); stroke-linecap: round;
+  animation: cring-run var(--cring-dur, 550ms) linear forwards;
+}
+@keyframes cring-run { from { stroke-dashoffset: var(--cring-len); } to { stroke-dashoffset: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ln-orbit, .ln-flag, .ln-no, .ln-no-arm, .ln-no-flag, .ln-loader__track,
+  .ln-dots i, .ln-spin, .ln-loading__label::after, .skel, .cring__run { animation-duration: 0s; }
+}

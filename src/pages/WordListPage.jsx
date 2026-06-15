@@ -5,10 +5,12 @@ import { useWordsStore } from "../store/wordStore";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
+import { Dots, BtnSpinner, CountdownRing } from "../components/ui/Spinner.jsx";
 import { posMeta, posLabel } from "../components/ui/pos.js";
 import Error from "../components/tools/error.jsx";
 import api from "../components/tools/api.js";
 
+const SEARCH_DEBOUNCE_MS = 550; // время «добега» кольца отсчёта до запроса в пул
 const POS_ORDER = ["noun", "verb", "adj", "phrase", "other"];
 const SORT_LABELS = {
     ru:  { title: "Сортировка", added: "По добавлению", alpha: "По алфавиту", pos: "По части речи" },
@@ -46,25 +48,33 @@ export const WordListPage = () => {
     const [sort, setSort] = useState("added");
     const [sortOpen, setSortOpen] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
+    // Фаза автокомплита: idle | counting (кольцо отсчёта дебаунса) | searching (запрос в пул)
+    const [searchPhase, setSearchPhase] = useState("idle");
+    const [addingPool, setAddingPool] = useState(null); // слово, которое сейчас добавляется из пула
+    const [deletingSel, setDeletingSel] = useState(false);
     const searchTimer = useRef();
 
-    // Автокомплит из общего пула (по мере ввода).
+    // Автокомплит из общего пула (по мере ввода): кольцо отсчёта → запрос → результаты.
     const onPromptChange = (val) => {
         setPrompt(val);
         clearTimeout(searchTimer.current);
         const q = val.trim();
-        if (q.length < 2) { setSuggestions([]); return; }
+        if (q.length < 2) { setSuggestions([]); setSearchPhase("idle"); return; }
+        setSearchPhase("counting");
         searchTimer.current = setTimeout(async () => {
+            setSearchPhase("searching");
             try {
                 const res = await api.searchPool(q);
                 setSuggestions(res.results || []);
             } catch { setSuggestions([]); }
-        }, 250);
+            setSearchPhase("idle");
+        }, SEARCH_DEBOUNCE_MS);
     };
 
     const pickSuggestion = async (norwegian) => {
-        setSuggestions([]); setPrompt("");
+        setSuggestions([]); setPrompt(""); setSearchPhase("idle"); setAddingPool(norwegian);
         try { await addFromPool(norwegian); } catch { setError(t.connectionError); }
+        setAddingPool(null);
     };
 
     const dictLabel = dictName === "default" ? t.defaultDict : dictName;
@@ -141,7 +151,10 @@ export const WordListPage = () => {
                 <button className="tool" onClick={() => setDictOpen(true)}><Icon n="plus" sm /> {t.newDict.replace("..", "")}</button>
                 <button className="tool" onClick={toggleSelectAll}><Icon n="check-square" sm /> {t.chooseAll}</button>
                 {selectedCount > 0 && <span className="toolbar__count">{selectedCount}</span>}
-                <button className="tool is-danger" onClick={deleteChosedWords} disabled={!selectedCount}><Icon n="trash" sm /> {t.delete}</button>
+                <button className="tool is-danger" disabled={!selectedCount || deletingSel}
+                    onClick={async () => { setDeletingSel(true); try { await deleteChosedWords(); } catch { setError(t.connectionError); } setDeletingSel(false); }}>
+                    {deletingSel ? <BtnSpinner /> : <Icon n="trash" sm />} {t.delete}
+                </button>
 
                 <div className="grow" />
 
@@ -175,10 +188,14 @@ export const WordListPage = () => {
                 <span className="composer__spark"><Icon n="sparkles" /></span>
                 <input type="text" value={prompt} placeholder={t.inputPlaceholder}
                     onChange={(e) => onPromptChange(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") { setSuggestions([]); handleAdd(); } }} />
-                <span className="composer__hint">ru · ukr · en · pl · lt</span>
-                <button className="btn btn--accent" onClick={handleAdd} disabled={isLoading}>
-                    {isLoading ? <Icon n="settings" sm className="spin" /> : <Icon n="plus" sm />} {isLoading ? t.fetching : t.add}
+                    onKeyDown={(e) => { if (e.key === "Enter") { setSuggestions([]); setSearchPhase("idle"); handleAdd(); } }} />
+                {searchPhase === "counting"
+                    ? <CountdownRing key={prompt} duration={SEARCH_DEBOUNCE_MS} />
+                    : searchPhase === "searching"
+                        ? <Dots />
+                        : <span className="composer__hint">ru · ukr · en · pl · lt</span>}
+                <button className="btn btn--accent" onClick={handleAdd} disabled={isLoading || !!addingPool}>
+                    {(isLoading || addingPool) ? <BtnSpinner /> : <Icon n="plus" sm />} {isLoading ? t.fetching : t.add}
                 </button>
 
                 {suggestions.length > 0 && (
@@ -210,11 +227,14 @@ export const WordListPage = () => {
 
             <Modal
                 open={!!pendingDelete}
-                onClose={() => setPendingDelete(null)}
+                onClose={() => { if (!deletingSel) setPendingDelete(null); }}
                 title={t.deleteDictTitle}
                 footer={<>
-                    <button className="btn btn--ghost" onClick={() => setPendingDelete(null)}>{t.cancel}</button>
-                    <button className="btn btn--accent" onClick={() => { removeDict(pendingDelete); setPendingDelete(null); }}>{t.delete}</button>
+                    <button className="btn btn--ghost" disabled={deletingSel} onClick={() => setPendingDelete(null)}>{t.cancel}</button>
+                    <button className="btn btn--accent" disabled={deletingSel}
+                        onClick={async () => { setDeletingSel(true); try { await removeDict(pendingDelete); } catch { setError(t.connectionError); } setDeletingSel(false); setPendingDelete(null); }}>
+                        {deletingSel ? <BtnSpinner /> : t.delete}
+                    </button>
                 </>}
             >
                 <p className="muted" style={{ margin: 0 }}>«{pendingDelete}» {t.deleteDictBody}</p>

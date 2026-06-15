@@ -4,6 +4,7 @@ import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { Modal } from "../ui/Modal.jsx";
+import { BtnSpinner, Dots } from "../ui/Spinner.jsx";
 import { posMeta, posLabel } from "../ui/pos.js";
 import api from "../tools/api.js";
 import { speakNorwegian } from "../ui/tts.js";
@@ -76,7 +77,7 @@ export const Card = ({ wordItem, languageTranslate }) => {
                         title={t.description}
                         onClick={openDescription}
                     >
-                        {isLoadingDesc ? <Icon n="settings" className="spin" /> : <Icon n="book" />}
+                        {isLoadingDesc ? <BtnSpinner /> : <Icon n="book" />}
                     </button>
                     <button className="iconbtn" aria-label="Редактировать" onClick={openEdit}><Icon n="edit" /></button>
                 </div>
@@ -86,6 +87,11 @@ export const Card = ({ wordItem, languageTranslate }) => {
                 <p className="muted" style={{ margin: 0, lineHeight: "var(--lh-normal)" }}>
                     {hasDescription ? descriptionText : (isLoadingDesc ? t.descLoading : t.descUnavailable)}
                 </p>
+                {synonyms === null && (
+                    <div className="row" style={{ gap: "var(--sp-3)", marginTop: "var(--sp-5)", color: "var(--ink-3)" }}>
+                        <Dots /> <span style={{ fontSize: "var(--fs-14)" }}>{t.similar}</span>
+                    </div>
+                )}
                 {synonyms?.length > 0 && (
                     <div style={{ marginTop: "var(--sp-5)" }}>
                         <div className="label" style={{ marginBottom: "var(--sp-2)" }}>{t.similar}</div>

@@ -6,6 +6,7 @@ import Footer from "./components/footer.jsx";
 import { useWordsStore } from "./store/wordStore.jsx";
 import { useAuthStore } from "./store/AuthStore.jsx";
 
+import { BrandLoader } from "./components/ui/Spinner.jsx";
 import { WordListPage } from "./pages/WordListPage.jsx";
 import { PoolPage } from "./pages/PoolPage.jsx";
 import { GamePage } from "./pages/GamePage.jsx";
@@ -18,6 +19,8 @@ function App() {
     const path = location.pathname;
     const accessToken = useAuthStore((s) => s.accessToken);
     const isAuthed = !!accessToken;
+    const isLoadingData = useWordsStore((s) => s.isLoading);
+    const dataLoaded = useWordsStore((s) => s.loaded);
 
     // Проверка сессии при старте.
     useEffect(() => { useAuthStore.getState().checkAuth(); }, []);
@@ -60,10 +63,12 @@ function App() {
     if (!isAuthed) return <Navigate to="/authorization" replace />;
 
     const showFooter = path === "/words" || path === "/mypage" || path === "/pool";
+    // Первичная загрузка серверных данных — полноэкранный лоадер вместо пустых экранов.
+    const showInitialLoader = isLoadingData && !dataLoaded;
     return (
         <div className={`app${path === "/words" ? " app--fixed" : ""}`}>
             <NavigationBar />
-            {routes}
+            {showInitialLoader ? <BrandLoader size="lg" /> : routes}
             {showFooter && <Footer />}
         </div>
     );

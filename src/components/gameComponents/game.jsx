@@ -3,6 +3,7 @@ import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
+import { BrandLoader } from "../ui/Spinner.jsx";
 import { posLabel } from "../ui/pos.js";
 import api from "../tools/api.js";
 import { speakNorwegian } from "../ui/tts.js";
@@ -199,7 +200,11 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false }) => {
                                     </button>
                                 );
                             })}
-                            {!options && <div className="qprompt" style={{ gridColumn: "1 / -1" }}>…</div>}
+                            {!options && (
+                                <div style={{ gridColumn: "1 / -1" }}>
+                                    <BrandLoader dark />
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <form className="answer" onSubmit={submit}>

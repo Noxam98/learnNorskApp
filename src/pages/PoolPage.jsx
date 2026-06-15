@@ -4,10 +4,12 @@ import { useWordsStore } from "../store/wordStore.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
+import { Dots, BtnSpinner, SkeletonWordlist, CountdownRing } from "../components/ui/Spinner.jsx";
 import { posMeta, posLabel } from "../components/ui/pos.js";
 import { speakNorwegian } from "../components/ui/tts.js";
 
 const LIMIT = 60;
+const SEARCH_DEBOUNCE_MS = 550;
 
 export const PoolPage = () => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
@@ -19,6 +21,8 @@ export const PoolPage = () => {
     const [total, setTotal] = useState(0);
     const [offset, setOffset] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [searchPhase, setSearchPhase] = useState("idle"); // idle | counting | searching
+    const [addingId, setAddingId] = useState(null);
     const [added, setAdded] = useState({});
 
     const load = async (reset) => {
@@ -34,12 +38,19 @@ export const PoolPage = () => {
     };
 
     useEffect(() => {
-        const id = setTimeout(() => load(true), 250);
+        setSearchPhase("counting");
+        const id = setTimeout(async () => {
+            setSearchPhase("searching");
+            await load(true);
+            setSearchPhase("idle");
+        }, SEARCH_DEBOUNCE_MS);
         return () => clearTimeout(id);
     }, [q]);
 
     const onAdd = async (word) => {
+        setAddingId(word);
         try { await addFromPool(word); setAdded((a) => ({ ...a, [word]: true })); } catch { /* ignore */ }
+        setAddingId(null);
     };
 
     return (
@@ -55,7 +66,14 @@ export const PoolPage = () => {
             <div className="composer" style={{ marginBottom: "var(--sp-4)" }}>
                 <span className="composer__spark"><Icon n="search" /></span>
                 <input type="text" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.inputPlaceholder} />
-                <span className="composer__hint">{total}</span>
+                <span className="composer__hint" style={{ display: "inline-flex", alignItems: "center", gap: "var(--sp-2)" }}>
+                    {searchPhase === "counting"
+                        ? <CountdownRing key={q} duration={SEARCH_DEBOUNCE_MS} />
+                        : searchPhase === "searching"
+                            ? <Dots />
+                            : null}
+                    {total}
+                </span>
             </div>
 
             {items.length ? (
@@ -77,8 +95,8 @@ export const PoolPage = () => {
                                         <Icon n="volume" />
                                     </button>
                                     <button className="iconbtn" aria-label={t.addToDict} title={t.addToDict}
-                                        disabled={added[w.word]} onClick={() => onAdd(w.word)}>
-                                        <Icon n={added[w.word] ? "check" : "plus"} />
+                                        disabled={added[w.word] || addingId === w.word} onClick={() => onAdd(w.word)}>
+                                        {addingId === w.word ? <BtnSpinner /> : <Icon n={added[w.word] ? "check" : "plus"} />}
                                     </button>
                                 </div>
                             </div>
@@ -86,13 +104,13 @@ export const PoolPage = () => {
                     })}
                 </div>
             ) : (
-                <p className="muted" style={{ textAlign: "center", padding: "var(--sp-12) 0" }}>{loading ? "…" : t.poolEmpty}</p>
+                loading ? <SkeletonWordlist count={12} /> : <p className="muted" style={{ textAlign: "center", padding: "var(--sp-12) 0" }}>{t.poolEmpty}</p>
             )}
 
             {items.length < total && (
                 <div style={{ textAlign: "center", marginTop: "var(--sp-5)" }}>
                     <button className="btn btn--outline" onClick={() => load(false)} disabled={loading}>
-                        {loading ? "…" : "+"}
+                        {loading ? <BtnSpinner /> : "+"}
                     </button>
                 </div>
             )}

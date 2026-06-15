@@ -5,6 +5,7 @@ import { useSystemStore } from "../store/systemStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { BrandMark, BrandName } from "../components/ui/BrandMark.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
+import { BtnSpinner } from "../components/ui/Spinner.jsx";
 import LanguageChooser from "../components/languageChooser.jsx";
 import { SAMPLES, POS_DOT } from "../interface/samples.js";
 
@@ -79,7 +80,9 @@ const RegisterPage = () => {
                         </div>
 
                         <button className="btn btn--accent btn--lg btn--block auth__submit" disabled={isLoading}>
-                            {isLoading ? `${t.registration}…` : t.register} <Icon n="arrow-right" sm />
+                            {isLoading
+                                ? <><BtnSpinner /> {t.registration}…</>
+                                : <>{t.register} <Icon n="arrow-right" sm /></>}
                         </button>
                     </form>
 
