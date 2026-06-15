@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation";
 import { useSystemStore } from "../store/systemStore.jsx";
+import { useAuth } from "../hooks/useAuth.js";
 import LanguageChooser from "./languageChooser.jsx";
 import { BrandMark, BrandName } from "./ui/BrandMark.jsx";
 import { Icon } from "./ui/Icon.jsx";
@@ -9,6 +10,8 @@ export const NavigationBar = () => {
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
     const { pathname } = useLocation();
+    const { user } = useAuth();
+    const initial = (user?.username?.[0] || "").toUpperCase();
 
     return (
         <header className="nav">
@@ -29,13 +32,14 @@ export const NavigationBar = () => {
                     </Link>
                 </nav>
                 <div className="nav__spacer" />
-                <LanguageChooser />
+                <span className="hide-mobile"><LanguageChooser /></span>
                 <Link
-                    className={`nav__link${pathname === "/mypage" ? " is-active" : ""}`}
+                    className={`nav__avatar${pathname === "/mypage" ? " is-active" : ""}`}
                     to="/mypage"
-                    aria-label="Профиль"
+                    aria-label={t.navBar.profile || "Профиль"}
+                    title={user?.username || (t.navBar.profile || "Профиль")}
                 >
-                    <Icon n="user" />
+                    {initial || <Icon n="user" sm />}
                 </Link>
             </div>
         </header>

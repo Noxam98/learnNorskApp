@@ -9,15 +9,13 @@
     .nav__links { margin-left: 0; gap: 2px; }
     .nav__link { padding: 8px 11px; font-size: var(--fs-14); }
 }
-@media (max-width: 430px) {
+/* На телефонах меню — только иконки (подписи скрыты), чтобы помещались
+   три раздела + заметная кнопка профиля справа. */
+@media (max-width: 480px) {
     .brand__name { display: none; }
-    .nav__link { padding: 7px 8px; font-size: var(--fs-13); gap: 5px; }
-    .nav__link .ic { width: 15px; height: 15px; }
-}
-/* совсем узкие экраны — только иконки в меню, без подписей */
-@media (max-width: 360px) {
     .nav__link span { display: none; }
-    .nav__link { padding: 8px 10px; }
+    .nav__link { padding: 9px 11px; }
+    .nav__link .ic { width: 18px; height: 18px; }
 }
 
 /* Футер: на мобильных стопкой и аккуратно */
