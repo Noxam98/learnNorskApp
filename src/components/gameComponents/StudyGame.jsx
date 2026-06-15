@@ -90,7 +90,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
                     <span className="brand__name">Lære<b>·</b>Norsk</span>
                 </a>
                 <div className="pstats">
-                    <span className="stat"><Icon n="book" sm /> {Math.min(idx + (finished ? 0 : 1), total)} / {total}</span>
+                    <span className="stat"><Icon n="layers" sm /> {Math.min(idx + (finished ? 0 : 1), total)} / {total}</span>
                 </div>
                 <a className="pexit" onClick={backToSelection} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
             </div>

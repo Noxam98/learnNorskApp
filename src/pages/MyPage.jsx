@@ -49,7 +49,7 @@ const MyPage = () => {
 
             <div className="stats">
                 <div className="scard">
-                    <div className="scard__ic" style={{ background: "var(--fjord-50)", color: "var(--fjord-600)" }}><Icon n="book" /></div>
+                    <div className="scard__ic" style={{ background: "var(--fjord-50)", color: "var(--fjord-600)" }}><Icon n="type" /></div>
                     <div className="scard__n">{stats.total}</div>
                     <div className="scard__l">{t.wordsTotal}</div>
                 </div>
