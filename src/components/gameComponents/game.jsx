@@ -144,7 +144,7 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
         setGameState("chooseWords");
     };
 
-    const playStyle = { position: "fixed", inset: 0, zIndex: 90, overflowY: "auto" };
+    const playStyle = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };
 
     if (total === 0 || !current) {
         return (
@@ -164,6 +164,13 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
     const otherAccepted = accepted.filter((a) => a.toLowerCase() !== input.trim().toLowerCase());
     const score = total ? Math.round((knownFirstTry / total) * 100) : 0;
     const qIndex = Math.min(guessed.length + 1, total);
+    // Сегменты прогресс-бара: по слову. Пройденные красятся по результату
+    // (красный — была ошибка, зелёный — верно с первого раза), текущее — акцент.
+    const segs = Array.from({ length: total }, (_, i) => {
+        if (i < guessed.length) return missed.includes(guessed[i]) ? "err" : "ok";
+        if (i === guessed.length && status !== "FINISHED") return "now";
+        return "";
+    });
 
     return (
         <div className="play" data-state={status.toLowerCase()} style={playStyle}>
@@ -179,10 +186,8 @@ export const Game = ({ setGameState, mode = "no2int", quiz = false, sound = fals
                 <a className="pexit" onClick={backToSelection} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
             </div>
 
-            <div className="pdots">
-                {Array.from({ length: total }).map((_, i) => (
-                    <span key={i} className={`pdot${i < guessed.length ? " is-ok" : i === guessed.length ? " is-now" : ""}`} />
-                ))}
+            <div className="pbar pbar--seg" aria-hidden="true">
+                {segs.map((s, i) => <span key={i} className={`pseg${s ? " is-" + s : ""}`} />)}
             </div>
 
             <div className="pstage">

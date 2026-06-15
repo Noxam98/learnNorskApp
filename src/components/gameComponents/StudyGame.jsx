@@ -47,7 +47,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
         if (sound && !isNo2Int && flipped && _no(idx)) speakNorwegian(_no(idx)).catch(() => {});
     }, [flipped]); // eslint-disable-line
 
-    const playStyle = { position: "fixed", inset: 0, zIndex: 90, overflowY: "auto" };
+    const playStyle = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };
 
     const backToSelection = () => {
         words.forEach((w) => { if (w?.gameData?.isChoosedToGame) toggleChooseToGame(w.id); });
@@ -98,10 +98,8 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
                 <a className="pexit" onClick={backToSelection} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
             </div>
 
-            <div className="pdots">
-                {Array.from({ length: total }).map((_, i) => (
-                    <span key={i} className={`pdot${i < idx ? " is-ok" : i === idx ? " is-now" : ""}`} />
-                ))}
+            <div className="pbar" aria-hidden="true">
+                <span className="pbar__fill" style={{ width: `${total ? (idx / total) * 100 : 0}%` }} />
             </div>
 
             <div className="pstage">
