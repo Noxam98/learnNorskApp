@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../components/tools/api.js";
 import { useWordsStore } from "../store/wordStore.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
+import { useAuthStore } from "../store/AuthStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
@@ -33,6 +34,7 @@ export const PoolPage = () => {
     const t = interfaceTranslate[currentLanguage];
     const addFromPool = useWordsStore((s) => s.addFromPool);
     const createDictFromPool = useWordsStore((s) => s.createDictFromPool);
+    const isAdmin = useAuthStore((s) => s.user?.isAdmin);
     const navigate = useNavigate();
 
     const [q, setQ] = useState("");
@@ -106,6 +108,15 @@ export const PoolPage = () => {
         setAddingId(word);
         try { await addFromPool(word); setAdded((a) => ({ ...a, [word]: true })); } catch { /* ignore */ }
         setAddingId(null);
+    };
+
+    const onAdminDelete = async (word) => {
+        if (!window.confirm(`Удалить «${word}» из базы слов? (у всех, без восстановления)`)) return;
+        try {
+            await api.adminDeleteWord(word);
+            setItems((prev) => prev.filter((w) => w.word !== word));
+            setTotal((tt) => Math.max(0, tt - 1));
+        } catch { /* ignore */ }
     };
 
     const openDesc = (word) => {
@@ -247,6 +258,12 @@ export const PoolPage = () => {
                                         disabled={added[w.word] || addingId === w.word} onClick={() => onAdd(w.word)}>
                                         {addingId === w.word ? <BtnSpinner /> : <Icon n={added[w.word] ? "check" : "plus"} />}
                                     </button>
+                                    {isAdmin && (
+                                        <button className="iconbtn is-danger" aria-label="delete" title="Удалить из базы (админ)"
+                                            onClick={() => onAdminDelete(w.word)}>
+                                            <Icon n="trash" />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         );
