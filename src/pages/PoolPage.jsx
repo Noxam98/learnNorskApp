@@ -169,9 +169,11 @@ export const PoolPage = () => {
                         ))}
                     </div>
 
-                    <button className="btn btn--primary btn--sm" disabled={!total} onClick={openCreate}>
-                        <Icon n="plus" sm /> {t.addAllToNewDict || "В новый словарь"} <b>{total}</b>
-                    </button>
+                    {(hasFilters || appliedQ.trim()) && (
+                        <button className="btn btn--primary btn--sm" disabled={!total} onClick={openCreate}>
+                            <Icon n="plus" sm /> {t.addAllToNewDict || "В новый словарь"} <b>{total}</b>
+                        </button>
+                    )}
 
                     <div className="grow" />
 
