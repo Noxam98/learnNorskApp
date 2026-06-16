@@ -204,6 +204,9 @@ class ApiService {
     getPoolDescription(word) { return this._send('GET', `/pool/${encodeURIComponent(word)}/description`); }
     getPoolSynonyms(word, { lang = "ru" } = {}) { return this._send('GET', `/pool/${encodeURIComponent(word)}/synonyms?lang=${encodeURIComponent(lang)}`); }
     getWordDiff(a, b, lang = "ru") { return this._send('GET', `/pool/diff?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}&lang=${encodeURIComponent(lang)}`); }
+    redescribe(word, hint) { return this._send('POST', `/pool/${encodeURIComponent(word)}/redescribe`, { hint }); }
+    getPoolMeta(word) { return this._send('GET', `/pool/${encodeURIComponent(word)}/meta`); }
+    rediff(a, b, lang, hint) { return this._send('POST', '/pool/rediff', { a, b, lang, hint }); }
     ttsUrl(word, lang) { return `${this.baseUrl}/tts?word=${encodeURIComponent(word)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`; }
 
     logout() {

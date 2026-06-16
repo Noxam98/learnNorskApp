@@ -18,9 +18,41 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const [view, setView] = useState(null); // { no, desc, descLoading, synonyms }
     const [dictBusy, setDictBusy] = useState(false);
     const [diff, setDiff] = useState(null); // { with, loading, data } — разбор разницы с близким словом
+    const [fixOpen, setFixOpen] = useState(false); // форма исправления описания
+    const [fixHint, setFixHint] = useState("");
+    const [fixBusy, setFixBusy] = useState(false);
+    const [dfixOpen, setDfixOpen] = useState(false); // форма исправления разницы
+    const [dfixHint, setDfixHint] = useState("");
+    const [dfixBusy, setDfixBusy] = useState(false);
+
+    const submitRediff = async () => {
+        if (!diff || !view || dfixBusy) return;
+        const other = diff.with;
+        setDfixBusy(true);
+        try {
+            const r = await api.rediff(view.no, other, lang, dfixHint.trim());
+            setDiff((d) => (d && d.with === other ? { ...d, data: r.diff, loading: false } : d));
+            setDfixOpen(false); setDfixHint("");
+        } catch { /* не вышло */ }
+        setDfixBusy(false);
+    };
+
+    const submitFix = async () => {
+        if (fixBusy || !view) return;
+        const no = view.no;
+        setFixBusy(true);
+        try {
+            const r = await api.redescribe(no, fixHint.trim());
+            const nd = r.description?.[lang] || r.description?.en || "";
+            setView((v) => (v && v.no === no ? { ...v, desc: nd } : v));
+            setFixOpen(false); setFixHint("");
+        } catch { /* не вышло — оставляем как есть */ }
+        setFixBusy(false);
+    };
 
     // Разница между текущим словом и близким по смыслу (по клику на «?»). Повторный клик — закрыть.
     const openDiff = (other) => {
+        setDfixOpen(false); setDfixHint("");
         if (diff && diff.with === other) { setDiff(null); return; }
         setDiff({ with: other, loading: true, data: null });
         api.getWordDiff(view.no, other, lang)
@@ -29,8 +61,8 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     };
 
     const loadWord = (no, id) => {
-        setView({ no, desc: "", descLoading: true, synonyms: null });
-        setDiff(null);
+        setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null });
+        setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint("");
         const fresh = (v) => v && v.no === no; // игнорируем ответы устаревшей навигации
         const descP = id ? api.getWordDescription(id) : api.getPoolDescription(no);
         const synP = id ? api.getSynonyms(id, { lang }) : api.getPoolSynonyms(no, { lang });
@@ -38,11 +70,12 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
+        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null } : v)).catch(() => {});
     };
 
     useEffect(() => {
         if (open && word) loadWord(word, wordId);
-        if (!open) { setView(null); setDiff(null); }
+        if (!open) { setView(null); setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); }
     }, [open, word, wordId]); // eslint-disable-line
 
     const curDict = dictList.find((d) => d.dictName === currentDictName);
@@ -61,6 +94,16 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     return (
         <Modal open={open} onClose={onClose} title={view?.no || word || ""}>
+            {(view?.level || view?.topics?.length > 0) && (
+                <div className="row wrap" style={{ gap: "6px", marginBottom: "var(--sp-3)" }}>
+                    {view.level && <span className="chip lvl">{view.level}</span>}
+                    {(view.topics || []).map((k) => (
+                        <span key={k} className="chip" style={{ background: "var(--surface-3)", color: "var(--ink-2)" }}>
+                            {t.topics?.[k] || k}
+                        </span>
+                    ))}
+                </div>
+            )}
             {!view || view.descLoading ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }} aria-busy="true">
                     <span className="skel skel--line" style={{ width: "100%" }} />
@@ -71,6 +114,27 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                 <p className="muted" style={{ margin: 0, lineHeight: "var(--lh-normal)" }}>
                     {view.desc || t.descUnavailable}
                 </p>
+            )}
+
+            {view && !view.descLoading && (
+                fixOpen ? (
+                    <div style={{ marginTop: "var(--sp-3)", display: "flex", flexDirection: "column", gap: "var(--sp-2)" }}>
+                        <textarea className="input" rows={2} value={fixHint} autoFocus
+                            onChange={(e) => setFixHint(e.target.value)} placeholder={t.fixHintPlaceholder} />
+                        <div className="row" style={{ gap: "var(--sp-2)" }}>
+                            <button className="btn btn--primary btn--sm" disabled={fixBusy} onClick={submitFix}>
+                                {fixBusy ? <BtnSpinner /> : <Icon n="sparkles" sm />} {t.regenerate}
+                            </button>
+                            <button className="btn btn--ghost btn--sm" disabled={fixBusy} onClick={() => { setFixOpen(false); setFixHint(""); }}>
+                                {t.cancel}
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <button className="diff-link" onClick={() => setFixOpen(true)} style={{ marginTop: "var(--sp-2)" }}>
+                        <Icon n="edit" sm /> {t.fixDesc}
+                    </button>
+                )
             )}
 
             <div style={{ marginTop: "var(--sp-5)" }}>
@@ -125,6 +189,24 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                                     <span><b>{view.no}</b> — {diff.data.when_a}</span>
                                     <span><b>{diff.with}</b> — {diff.data.when_b}</span>
                                     {diff.data.example && <span className="muted">{diff.data.example}</span>}
+                                    {dfixOpen ? (
+                                        <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-2)", marginTop: "var(--sp-1)" }}>
+                                            <textarea className="input" rows={2} value={dfixHint} autoFocus
+                                                onChange={(e) => setDfixHint(e.target.value)} placeholder={t.fixHintPlaceholder} />
+                                            <div className="row" style={{ gap: "var(--sp-2)" }}>
+                                                <button className="btn btn--primary btn--sm" disabled={dfixBusy} onClick={submitRediff}>
+                                                    {dfixBusy ? <BtnSpinner /> : <Icon n="sparkles" sm />} {t.regenerate}
+                                                </button>
+                                                <button className="btn btn--ghost btn--sm" disabled={dfixBusy} onClick={() => { setDfixOpen(false); setDfixHint(""); }}>
+                                                    {t.cancel}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button className="diff-link" onClick={() => setDfixOpen(true)} style={{ marginTop: "var(--sp-1)" }}>
+                                            <Icon n="edit" sm /> {t.fix}
+                                        </button>
+                                    )}
                                 </div>
                             ) : (
                                 <p className="muted" style={{ margin: 0 }}>{t.descUnavailable}</p>

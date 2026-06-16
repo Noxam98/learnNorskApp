@@ -160,6 +160,10 @@
 .syn__diff:hover, .syn__diff.is-on { opacity: 1; color: var(--fjord-600); }
 .syn__diff .ic { width: 14px; height: 14px; display: block; }
 .diffbox { margin-top: var(--sp-4); padding: var(--sp-4); border-radius: var(--r-lg); background: var(--surface-3); font-size: var(--fs-14); color: var(--ink); }
+.diff-link { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: none; background: transparent;
+    color: var(--ink-3); font-size: var(--fs-13); font-weight: 600; cursor: pointer; }
+.diff-link:hover { color: var(--fjord-600); }
+.diff-link .ic { width: 14px; height: 14px; }
 
 .pos { /* part of speech tag */ }
 .pos--phrase { color: var(--pos-phrase); background: var(--pos-phrase-bg); }
