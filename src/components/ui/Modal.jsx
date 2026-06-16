@@ -1,8 +1,18 @@
+import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "./Icon.jsx";
 
 // Лёгкий модал в стиле дизайн-системы.
-export const Modal = ({ open, onClose, title, children, footer, maxWidth = 460 }) => (
+export const Modal = ({ open, onClose, title, children, footer, maxWidth = 460 }) => {
+    // Пока модалка открыта — блокируем прокрутку фона (свайп под модалкой).
+    useEffect(() => {
+        if (!open) return;
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        return () => { document.body.style.overflow = prev; };
+    }, [open]);
+
+    return (
     <AnimatePresence>
         {open && (
             <motion.div
@@ -12,6 +22,7 @@ export const Modal = ({ open, onClose, title, children, footer, maxWidth = 460 }
                 style={{
                     position: "fixed", inset: 0, zIndex: 100, background: "rgba(16,28,26,.45)",
                     display: "grid", placeItems: "center", padding: "var(--sp-5)",
+                    overscrollBehavior: "contain",
                 }}
             >
                 <motion.div
@@ -31,7 +42,7 @@ export const Modal = ({ open, onClose, title, children, footer, maxWidth = 460 }
                         <span className="panel__title" style={{ fontSize: "var(--fs-18)", fontWeight: 700 }}>{title}</span>
                         <button className="iconbtn" onClick={onClose} aria-label="Закрыть"><Icon n="x" /></button>
                     </div>
-                    <div style={{ padding: "var(--sp-5)", overflowY: "auto", flex: "1 1 auto", minHeight: 0 }}>{children}</div>
+                    <div style={{ padding: "var(--sp-5)", overflowY: "auto", overscrollBehavior: "contain", flex: "1 1 auto", minHeight: 0 }}>{children}</div>
                     {footer && (
                         <div style={{ flexShrink: 0, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "flex-end", gap: "var(--sp-3)", rowGap: "var(--sp-2)", padding: "0 var(--sp-5) var(--sp-5)" }}>
                             {footer}
@@ -41,6 +52,7 @@ export const Modal = ({ open, onClose, title, children, footer, maxWidth = 460 }
             </motion.div>
         )}
     </AnimatePresence>
-);
+    );
+};
 
 export default Modal;
