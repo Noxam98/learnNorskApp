@@ -123,6 +123,19 @@
 .iconbtn.is-added { color: var(--success); }
 .iconbtn.is-added:hover { background: var(--danger-bg); color: var(--danger); }
 
+/* ---------- Выбор словаря (перенос слов) ---------- */
+.dictpick { display: flex; flex-direction: column; gap: var(--sp-2); }
+.dictpick__item {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: 11px 13px; border-radius: var(--r-sm);
+  border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+  font-size: var(--fs-15); font-weight: 600; cursor: pointer; text-align: left; width: 100%;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.dictpick__item:hover:not(:disabled) { background: var(--surface-3); border-color: var(--border-2); }
+.dictpick__item:disabled { opacity: .5; cursor: default; }
+.dictpick__chev { margin-left: auto; color: var(--ink-3); }
+
 /* ---------- Inputs ---------- */
 .field { display: flex; flex-direction: column; gap: var(--sp-2); }
 .label { font-size: var(--fs-13); font-weight: 600; color: var(--ink-2); }

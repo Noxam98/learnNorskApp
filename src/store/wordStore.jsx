@@ -106,6 +106,17 @@ export const useWordsStore = create((set, get) => ({
         await get().loadData(true);
     },
 
+    // Перенести выбранные слова текущего словаря в другой (по имени словаря).
+    moveChosenWords: async (targetDictName) => {
+        const dict = get().dictList.find((x) => x.dictName === get().currentDictName);
+        const target = get().dictList.find((x) => x.dictName === targetDictName);
+        if (!dict || !target || target.dictName === dict.dictName) return;
+        const ids = dict.words.filter((w) => w?.techData?.isSelected).map((w) => w.id);
+        if (!ids.length) return;
+        await api.moveWords(ids, target.id);
+        await get().loadData(true);
+    },
+
     editWord: async (wordId, override) => {
         // override: { translate?, part_of_speech? }
         await api.editWord(wordId, override);

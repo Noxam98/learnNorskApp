@@ -33,6 +33,7 @@ export const WordListPage = () => {
     const setCurrentDict = useWordsStore((state) => state.setCurrentDict);
     const removeDict = useWordsStore((state) => state.removeDict);
     const deleteChosedWords = useWordsStore((state) => state.deleteChosedWords);
+    const moveChosenWords = useWordsStore((state) => state.moveChosenWords);
     const choseWord = useWordsStore((state) => state.choseWord);
     const addFromPool = useWordsStore((state) => state.addFromPool);
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
@@ -57,7 +58,18 @@ export const WordListPage = () => {
     const [searchPhase, setSearchPhase] = useState("idle");
     const [addingPool, setAddingPool] = useState(null); // слово, которое сейчас добавляется из пула
     const [deletingSel, setDeletingSel] = useState(false);
+    const [moveOpen, setMoveOpen] = useState(false);
+    const [movingSel, setMovingSel] = useState(false);
     const searchTimer = useRef();
+
+    // Другие словари (куда можно перенести выбранные слова).
+    const otherDicts = dictNames.filter((n) => n !== dictName);
+    const doMove = async (targetName) => {
+        setMovingSel(true);
+        try { await moveChosenWords(targetName); setMoveOpen(false); }
+        catch { setError(t.connectionError); }
+        setMovingSel(false);
+    };
 
     // Автокомплит из общего пула (по мере ввода): кольцо отсчёта → запрос → результаты.
     const onPromptChange = (val) => {
@@ -156,6 +168,10 @@ export const WordListPage = () => {
                 <button className="tool hide-mobile" onClick={() => setDictOpen(true)}><Icon n="plus" sm /> {t.newDict.replace("..", "")}</button>
                 <button className="tool" onClick={toggleSelectAll}><Icon n="check-square" sm /> {t.chooseAll}</button>
                 {selectedCount > 0 && <span className="toolbar__count">{selectedCount}</span>}
+                <button className="tool" disabled={!selectedCount || movingSel || otherDicts.length === 0}
+                    onClick={() => setMoveOpen(true)}>
+                    {movingSel ? <BtnSpinner /> : <Icon n="arrow-right" sm />} {t.moveTo}
+                </button>
                 <button className="tool is-danger" disabled={!selectedCount || deletingSel}
                     onClick={async () => { setDeletingSel(true); try { await deleteChosedWords(); } catch { setError(t.connectionError); } setDeletingSel(false); }}>
                     {deletingSel ? <BtnSpinner /> : <Icon n="trash" sm />} {t.delete}
@@ -259,6 +275,26 @@ export const WordListPage = () => {
                 </>}
             >
                 <p className="muted" style={{ margin: 0 }}>«{pendingDelete}» {t.deleteDictBody}</p>
+            </Modal>
+
+            <Modal
+                open={moveOpen}
+                onClose={() => { if (!movingSel) setMoveOpen(false); }}
+                title={`${t.moveToTitle} (${selectedCount})`}
+                footer={<button className="btn btn--ghost" disabled={movingSel} onClick={() => setMoveOpen(false)}>{t.cancel}</button>}
+            >
+                {otherDicts.length ? (
+                    <div className="dictpick">
+                        {otherDicts.map((name) => (
+                            <button key={name} className="dictpick__item" disabled={movingSel} onClick={() => doMove(name)}>
+                                <Icon n="layers" sm /> <span>{name === "default" ? t.defaultDict : name}</span>
+                                <Icon n="arrow-right" sm className="dictpick__chev" />
+                            </button>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="muted" style={{ margin: 0 }}>{t.noOtherDicts}</p>
+                )}
             </Modal>
 
             <Error text={error} setText={setError} />

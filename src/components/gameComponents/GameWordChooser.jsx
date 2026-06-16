@@ -4,6 +4,7 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { wordCount } from "../tools/plural.js";
+import { posMeta, posLabel } from "../ui/pos.js";
 
 const MIN_WORDS = 10;       // для режимов с проверкой ответа
 const MIN_WORDS_STUDY = 1;  // для флешкарт достаточно одного
@@ -81,12 +82,15 @@ const DictGroup = ({ dictItem, currentLanguage, t, defaultOpen }) => {
             <div className="dgroup__body">
                 {words.map((w) => {
                     const on = !!w?.gameData?.isChoosedToGame;
+                    const { cls } = posMeta(w.part_of_speech);
                     return (
-                        <label key={w.id} className={`wpick${on ? " is-on" : ""}`} onClick={() => toggleChooseToGame(w.id)}>
-                            <span className={`check${on ? " is-on" : ""}`}>{on && <Icon n="check" />}</span>
-                            <span className="wpick__w">{w.translate?.no?.[0]}</span>
-                            <span className="wpick__t">{w.translate?.[currentLanguage]?.join(", ")}</span>
-                        </label>
+                        <div key={w.id} className={`wcard${on ? " is-selected" : ""}`} onClick={() => toggleChooseToGame(w.id)}>
+                            <div className="wcard__body">
+                                <span className="wcard__word">{w.translate?.no?.[0]}</span>
+                                <span className="wcard__meta"><span className={`chip pos ${cls}`}>{posLabel(w.part_of_speech, t)}</span></span>
+                                <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
+                            </div>
+                        </div>
                     );
                 })}
             </div>

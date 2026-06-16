@@ -177,6 +177,7 @@ class ApiService {
         return this._send('POST', '/dictionaries/from_pool', { name, q, topics, level });
     }
     deleteWord(wordId) { return this._send('DELETE', `/words/${wordId}`); }
+    moveWords(ids, dictId) { return this._send('POST', `/words/move`, { ids, dict_id: dictId }); }
     editWord(wordId, override) { return this._send('PATCH', `/words/${wordId}`, override); }
     recordResult(wordId, correct) { return this._send('POST', `/words/${wordId}/result`, { correct }); }
     reportWord(wordId) { return this._send('POST', `/words/${wordId}/report`); }
