@@ -17,9 +17,20 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     const [view, setView] = useState(null); // { no, desc, descLoading, synonyms }
     const [dictBusy, setDictBusy] = useState(false);
+    const [diff, setDiff] = useState(null); // { with, loading, data } — разбор разницы с близким словом
+
+    // Разница между текущим словом и близким по смыслу (по клику на «?»). Повторный клик — закрыть.
+    const openDiff = (other) => {
+        if (diff && diff.with === other) { setDiff(null); return; }
+        setDiff({ with: other, loading: true, data: null });
+        api.getWordDiff(view.no, other, lang)
+            .then((r) => setDiff((d) => (d && d.with === other ? { ...d, loading: false, data: r.diff } : d)))
+            .catch(() => setDiff((d) => (d && d.with === other ? { ...d, loading: false, data: null } : d)));
+    };
 
     const loadWord = (no, id) => {
         setView({ no, desc: "", descLoading: true, synonyms: null });
+        setDiff(null);
         const fresh = (v) => v && v.no === no; // игнорируем ответы устаревшей навигации
         const descP = id ? api.getWordDescription(id) : api.getPoolDescription(no);
         const synP = id ? api.getSynonyms(id, { lang }) : api.getPoolSynonyms(no, { lang });
@@ -31,7 +42,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     useEffect(() => {
         if (open && word) loadWord(word, wordId);
-        if (!open) setView(null);
+        if (!open) { setView(null); setDiff(null); }
     }, [open, word, wordId]); // eslint-disable-line
 
     const curDict = dictList.find((d) => d.dictName === currentDictName);
@@ -83,17 +94,43 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                     <div className="label" style={{ marginBottom: "var(--sp-2)" }}>{t.similar}</div>
                     <div className="row wrap" style={{ gap: "var(--sp-2)" }}>
                         {view.synonyms.map((s) => (
-                            <button
-                                key={s.word}
-                                className="chip chip--clickable"
-                                style={{ background: "var(--surface-3)", color: "var(--ink)", cursor: "pointer", border: "none" }}
-                                title={t.description}
-                                onClick={() => loadWord(s.word)}
-                            >
-                                <b>{s.word}</b>{s.translate?.[0] ? ` — ${s.translate[0]}` : ""}
-                            </button>
+                            <span key={s.word} className="chip syn" style={{ background: "var(--surface-3)", color: "var(--ink)" }}>
+                                <span className="syn__go" title={t.description} onClick={() => loadWord(s.word)}>
+                                    <b>{s.word}</b>{s.translate?.[0] ? ` — ${s.translate[0]}` : ""}
+                                </span>
+                                <button
+                                    className={`syn__diff${diff?.with === s.word ? " is-on" : ""}`}
+                                    title={t.difference} aria-label={t.difference}
+                                    onClick={() => openDiff(s.word)}
+                                >
+                                    <Icon n="compare" sm />
+                                </button>
+                            </span>
                         ))}
                     </div>
+
+                    {diff && (
+                        <div className="diffbox">
+                            <div className="label" style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "var(--sp-2)" }}>
+                                <Icon n="compare" sm /> {t.difference}: <b>{view.no}</b> / <b>{diff.with}</b>
+                            </div>
+                            {diff.loading ? (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }} aria-busy="true">
+                                    <span className="skel skel--line" style={{ width: "100%" }} />
+                                    <span className="skel skel--line" style={{ width: "85%" }} />
+                                </div>
+                            ) : diff.data ? (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-2)", lineHeight: "var(--lh-normal)" }}>
+                                    <span>{diff.data.summary}</span>
+                                    <span><b>{view.no}</b> — {diff.data.when_a}</span>
+                                    <span><b>{diff.with}</b> — {diff.data.when_b}</span>
+                                    {diff.data.example && <span className="muted">{diff.data.example}</span>}
+                                </div>
+                            ) : (
+                                <p className="muted" style={{ margin: 0 }}>{t.descUnavailable}</p>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
         </Modal>

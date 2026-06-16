@@ -43,9 +43,11 @@
   <symbol id="i-spark-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="currentColor"/></symbol>
   <symbol id="i-sort" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-type" viewBox="0 0 24 24"><path d="M4 7V5h16v2M9 19h6M12 5v14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-compare" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4M4 7h16M16 13l4 4-4 4M20 17H4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>`;
   function inject() {
-    if (document.getElementById('__ln_icons')) return;
+    var existing = document.getElementById('__ln_icons');
+    if (existing) { existing.innerHTML = SPRITE; return; }  // обновляем спрайт (в т.ч. при HMR/новых иконках)
     var w = document.createElement('div');
     w.id = '__ln_icons';
     w.innerHTML = SPRITE;

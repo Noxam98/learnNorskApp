@@ -203,6 +203,7 @@ class ApiService {
     getPoolTopics() { return this._send('GET', '/pool/topics'); }
     getPoolDescription(word) { return this._send('GET', `/pool/${encodeURIComponent(word)}/description`); }
     getPoolSynonyms(word, { lang = "ru" } = {}) { return this._send('GET', `/pool/${encodeURIComponent(word)}/synonyms?lang=${encodeURIComponent(lang)}`); }
+    getWordDiff(a, b, lang = "ru") { return this._send('GET', `/pool/diff?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}&lang=${encodeURIComponent(lang)}`); }
     ttsUrl(word, lang) { return `${this.baseUrl}/tts?word=${encodeURIComponent(word)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`; }
 
     logout() {
