@@ -58,7 +58,7 @@ export const interfaceTranslate = {
         defaultDict: 'Словарь по умолчанию',
         move: 'Переместить',
         fetching: 'Загрузка слов..',
-        newDict: 'Имя нового словаря..',
+        newDict: 'Имя нового словаря..', newDictItem: 'Создать новый словарь',
         addWordsHere: 'Словарь пуст. Впишите слово или несколько в поле выше — переведём, озвучим и добавим.',
         orFromBase: 'Или выберите готовые в',
         inputPlaceholder: 'Слово, несколько или тема…',
@@ -193,7 +193,7 @@ export const interfaceTranslate = {
         defaultDict: 'Default dictionary', // добавлено
         move: 'Move',
         fetching: 'Fetching words..',
-        newDict: 'New dictionary name..',
+        newDict: 'New dictionary name..', newDictItem: 'Create new dictionary',
         addWordsHere: 'Your dictionary is empty. Type a word or several in the field above — we’ll translate, voice and add them.',
         orFromBase: 'Or pick ready ones from the',
         inputPlaceholder: 'A word, several, or a topic…',
@@ -327,7 +327,7 @@ export const interfaceTranslate = {
         defaultDict: 'Словник за замовчуванням', // добавлено
         move: 'Перемістити',
         fetching: 'Завантаження слів..',
-        newDict: 'Назва нового словника..',
+        newDict: 'Назва нового словника..', newDictItem: 'Створити новий словник',
         addWordsHere: 'Словник порожній. Впишіть слово чи кілька у поле вище — перекладемо, озвучимо й додамо.',
         orFromBase: 'Або виберіть готові з',
         inputPlaceholder: 'Слово, кілька або тема…',
@@ -461,7 +461,7 @@ export const interfaceTranslate = {
         defaultDict: 'Domyślny słownik', // добавлено
         move: 'Przenieś',
         fetching: 'Pobieranie słów..',
-        newDict: 'Nowa nazwa słownika..',
+        newDict: 'Nowa nazwa słownika..', newDictItem: 'Utwórz nowy słownik',
         addWordsHere: 'Słownik jest pusty. Wpisz słowo lub kilka w polu powyżej — przetłumaczymy, udźwiękowimy i dodamy.',
         orFromBase: 'Albo wybierz gotowe z',
         inputPlaceholder: 'Słowo, kilka lub temat…',
@@ -591,7 +591,7 @@ export const interfaceTranslate = {
         defaultDict: 'Numatytasis žodynas', // добавлено
         move: 'Perkelti',
         fetching: 'Įkeliami žodžiai..',
-        newDict: 'Naujo žodyno pavadinimas..',
+        newDict: 'Naujo žodyno pavadinimas..', newDictItem: 'Sukurti naują žodyną',
         addWordsHere: 'Žodynas tuščias. Įveskite žodį ar kelis laukelyje viršuje — išversime, įgarsinsime ir pridėsime.',
         orFromBase: 'Arba pasirinkite iš',
         inputPlaceholder: 'Žodis, keli ar tema…',

@@ -34,6 +34,7 @@ export const WordListPage = () => {
     const removeDict = useWordsStore((state) => state.removeDict);
     const deleteChosedWords = useWordsStore((state) => state.deleteChosedWords);
     const moveChosenWords = useWordsStore((state) => state.moveChosenWords);
+    const moveChosenToNew = useWordsStore((state) => state.moveChosenToNew);
     const refineChosenWords = useWordsStore((state) => state.refineChosenWords);
     const choseWord = useWordsStore((state) => state.choseWord);
     const addFromPool = useWordsStore((state) => state.addFromPool);
@@ -61,6 +62,9 @@ export const WordListPage = () => {
     const [deletingSel, setDeletingSel] = useState(false);
     const [moveOpen, setMoveOpen] = useState(false);
     const [movingSel, setMovingSel] = useState(false);
+    const [moveTarget, setMoveTarget] = useState(null); // выбранный существующий словарь
+    const [moveNew, setMoveNew] = useState(false);       // режим «новый словарь» (показан инпут)
+    const [moveNewName, setMoveNewName] = useState("");
     const [refiningSel, setRefiningSel] = useState(false);
     const [actionsOpen, setActionsOpen] = useState(false);
     const [confirm, setConfirm] = useState(null); // { body, danger, onYes }
@@ -84,10 +88,17 @@ export const WordListPage = () => {
 
     // Другие словари (куда можно перенести выбранные слова).
     const otherDicts = dictNames.filter((n) => n !== dictName);
-    const doMove = async (targetName) => {
+    const closeMove = () => { setMoveOpen(false); setMoveTarget(null); setMoveNew(false); setMoveNewName(""); };
+    // Готовность к переносу: либо введено имя нового словаря, либо выбран существующий.
+    const moveReady = moveNew ? !!moveNewName.trim() : !!moveTarget;
+    const doMove = async () => {
+        if (!moveReady) return;
         setMovingSel(true);
-        try { await moveChosenWords(targetName); setMoveOpen(false); }
-        catch { setError(t.connectionError); }
+        try {
+            if (moveNew) await moveChosenToNew(moveNewName.trim());
+            else await moveChosenWords(moveTarget);
+            closeMove();
+        } catch { setError(t.connectionError); }
         setMovingSel(false);
     };
 
@@ -337,22 +348,44 @@ export const WordListPage = () => {
 
             <Modal
                 open={moveOpen}
-                onClose={() => { if (!movingSel) setMoveOpen(false); }}
+                onClose={() => { if (!movingSel) closeMove(); }}
                 title={`${t.moveToTitle} (${selectedCount})`}
-                footer={<button className="btn btn--ghost" disabled={movingSel} onClick={() => setMoveOpen(false)}>{t.cancel}</button>}
+                footer={<>
+                    <button className="btn btn--ghost" disabled={movingSel} onClick={closeMove}>{t.cancel}</button>
+                    <button className="btn btn--primary" disabled={movingSel || !moveReady} onClick={doMove}>
+                        {movingSel ? <BtnSpinner /> : <Icon n="arrow-right" sm />} {t.moveTo}
+                    </button>
+                </>}
             >
-                {otherDicts.length ? (
-                    <div className="dictpick">
-                        {otherDicts.map((name) => (
-                            <button key={name} className="dictpick__item" disabled={movingSel} onClick={() => doMove(name)}>
-                                <Icon n="layers" sm /> <span>{name === "default" ? t.defaultDict : name}</span>
-                                <Icon n="arrow-right" sm className="dictpick__chev" />
-                            </button>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="muted" style={{ margin: 0 }}>{t.noOtherDicts}</p>
-                )}
+                <div className="dictpick">
+                    {/* Создать новый словарь — выделенный пункт сверху */}
+                    {moveNew ? (
+                        <div className="dictpick__new is-on">
+                            <Icon n="plus" sm />
+                            <input className="dictpick__input" autoFocus value={moveNewName} placeholder={t.newDict}
+                                onChange={(e) => setMoveNewName(e.target.value)}
+                                onKeyDown={(e) => { if (e.key === "Enter") doMove(); }} />
+                            <button className="iconbtn" aria-label={t.cancel} disabled={movingSel}
+                                onClick={() => { setMoveNew(false); setMoveNewName(""); }}><Icon n="x" sm /></button>
+                        </div>
+                    ) : (
+                        <button className="dictpick__item dictpick__item--new" disabled={movingSel}
+                            onClick={() => { setMoveNew(true); setMoveTarget(null); }}>
+                            <Icon n="plus" sm /> <span>{t.newDictItem}</span>
+                        </button>
+                    )}
+
+                    {/* Существующие словари — выбираются; в режиме нового словаря скрыты */}
+                    {!moveNew && (otherDicts.length ? otherDicts.map((name) => (
+                        <button key={name} className={`dictpick__item${moveTarget === name ? " is-on" : ""}`}
+                            disabled={movingSel} onClick={() => setMoveTarget(name)}>
+                            <Icon n="layers" sm /> <span>{name === "default" ? t.defaultDict : name}</span>
+                            {moveTarget === name && <Icon n="check" sm className="dictpick__chev" />}
+                        </button>
+                    )) : (
+                        <p className="muted" style={{ margin: 0 }}>{t.noOtherDicts}</p>
+                    ))}
+                </div>
             </Modal>
 
             <Modal

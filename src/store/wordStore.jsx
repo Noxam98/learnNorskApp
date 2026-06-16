@@ -128,6 +128,24 @@ export const useWordsStore = create((set, get) => ({
         await get().loadData(true);
     },
 
+    // Создать новый словарь и перенести в него выбранные слова (текущий словарь не меняем).
+    moveChosenToNew: async (name) => {
+        const dict = get().dictList.find((x) => x.dictName === get().currentDictName);
+        if (!dict) return;
+        const ids = dict.words.filter((w) => w?.techData?.isSelected).map((w) => w.id);
+        if (!ids.length) return;
+        let targetId;
+        try { targetId = (await api.createDict(name))?.id; }
+        catch { /* имя занято — перенесём в существующий с таким именем */ }
+        if (!targetId) {
+            await get().loadData(true);
+            targetId = get().dictList.find((d) => d.dictName === name)?.id;
+        }
+        if (!targetId) return;
+        await api.moveWords(ids, targetId);
+        await get().loadData(true);
+    },
+
     editWord: async (wordId, override) => {
         // override: { translate?, part_of_speech? }
         await api.editWord(wordId, override);
