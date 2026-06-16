@@ -55,6 +55,7 @@ export const PoolPage = () => {
     const [added, setAdded] = useState({});
     const [descWord, setDescWord] = useState(null);   // слово, чьё описание открыто
     const [facets, setFacets] = useState({ topics: [], levels: [] });
+    const [facetCounts, setFacetCounts] = useState(null); // динамические счётчики под текущий фильтр: { topics:{key:n} }
     const [topicsOpen, setTopicsOpen] = useState(() => (typeof window !== "undefined" ? window.innerWidth > 700 : true));
     const [dictOpen, setDictOpen] = useState(false);
     const [dictName, setDictName] = useState("");
@@ -85,6 +86,12 @@ export const PoolPage = () => {
                 if (cancelled) return;
                 setItems(res.words || []);
                 setTotal(res.total || 0);
+                if (res.facets) {
+                    setFacetCounts({
+                        topics: Object.fromEntries((res.facets.topics || []).map((x) => [x.topic, x.count])),
+                        levels: Object.fromEntries((res.facets.levels || []).map((x) => [x.level, x.count])),
+                    });
+                }
             })
             .catch(() => { if (!cancelled) setItems([]); })
             .finally(() => { if (!cancelled) { setLoading(false); setSearchPhase("idle"); } });
@@ -167,6 +174,12 @@ export const PoolPage = () => {
                             {topics.length > 0 && <span className="fchip__n">{topics.length}</span>}
                             <Icon n="chevron-down" sm className="fchip__chev" style={{ transform: topicsOpen ? "rotate(180deg)" : "none" }} />
                         </button>
+                        <div className="seg">
+                            {LEVELS.map((lv) => (
+                                <button key={lv} className={`seg__btn${level === lv ? " is-on" : ""}`}
+                                    onClick={() => pickLevel(lv)}>{lv}</button>
+                            ))}
+                        </div>
                         {hasFilters && (
                             <button className="fchip fchip--clear" onClick={clearFilters}>
                                 <Icon n="x" sm /> {t.clearFilters || "Сброс"}
@@ -174,26 +187,25 @@ export const PoolPage = () => {
                         )}
                         {topicsOpen && (
                             <div className="poolbar__chips">
-                                {facets.topics.map(({ topic, count }) => (
-                                    <button key={topic}
-                                        className={`fchip${topics.includes(topic) ? " is-on" : ""}`}
-                                        onClick={() => toggleTopic(topic)}>
-                                        {topicLabel(t, topic)} <span className="fchip__n">{count}</span>
-                                    </button>
-                                ))}
+                                {facets.topics.map(({ topic, count }) => {
+                                    // фасеты загружены → отсутствие темы значит 0 (а не статичный счёт)
+                                    const c = facetCounts ? (facetCounts.topics[topic] || 0) : count;
+                                    const on = topics.includes(topic);
+                                    return (
+                                        <button key={topic}
+                                            className={`fchip${on ? " is-on" : ""}${(!on && c === 0) ? " is-empty" : ""}`}
+                                            disabled={!on && c === 0}
+                                            onClick={() => toggleTopic(topic)}>
+                                            {topicLabel(t, topic)} <span className="fchip__n">{c}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
                 )}
 
                 <div className="poolbar__row">
-                    <div className="seg">
-                        {LEVELS.map((lv) => (
-                            <button key={lv} className={`seg__btn${level === lv ? " is-on" : ""}`}
-                                onClick={() => pickLevel(lv)}>{lv}</button>
-                        ))}
-                    </div>
-
                     {(hasFilters || appliedQ.trim()) && (
                         <button className="btn btn--primary btn--sm" disabled={!total} onClick={openCreate}>
                             <Icon n="plus" sm /> {t.addAllToNewDict || "В новый словарь"} <b>{total}</b>

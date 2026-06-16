@@ -103,7 +103,10 @@
   }
   .fchip:hover { border-color: var(--border-2); }
   .fchip.is-on { background: var(--fjord-600); border-color: var(--fjord-600); color: #fff; }
-  .fchip__n { font-size: 11px; opacity: .7; font-weight: 700; }
+  .fchip.is-empty { opacity: .38; cursor: default; }
+  .fchip.is-empty:hover { border-color: var(--border); }
+  .fchip__n { font-size: 11px; opacity: .7; font-weight: 700; display: inline-block;
+    min-width: 3ch; text-align: right; font-variant-numeric: tabular-nums; }
   .fchip--clear { color: var(--danger); }
 
   /* Сегмент уровней A1..C2 */
