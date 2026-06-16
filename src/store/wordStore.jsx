@@ -18,7 +18,11 @@ export const useWordsStore = create((set, get) => ({
         try {
             const data = await api.getData();
             const names = data.dictNames || [];
-            const current = names.includes(get().currentDictName) ? get().currentDictName : (names[0] || null);
+            const keep = get().currentDictName;
+            // приоритет: текущий выбор сессии → сохранённый на сервере → первый словарь
+            const current = (keep && names.includes(keep)) ? keep
+                : (data.currentDict && names.includes(data.currentDict)) ? data.currentDict
+                : (names[0] || null);
             set({ dictList: data.dictList || [], dictNames: names, currentDictName: current, loaded: true, isLoading: false });
         } catch (e) {
             set({ isLoading: false });
@@ -41,7 +45,7 @@ export const useWordsStore = create((set, get) => ({
         return d?.id;
     },
 
-    setCurrentDict: (dictName) => set({ currentDictName: dictName }),
+    setCurrentDict: (dictName) => { set({ currentDictName: dictName }); api.saveCurrentDict(dictName).catch(() => {}); },
 
     // Добавление слов в текущий словарь через ИИ (генерация на сервере + общий пул).
     addWords: async (prompt) => {
@@ -75,6 +79,7 @@ export const useWordsStore = create((set, get) => ({
         await api.createDict(name);
         await get().loadData(true);
         set({ currentDictName: name });
+        api.saveCurrentDict(name).catch(() => {});
     },
 
     removeDict: async (dictName) => {
