@@ -53,11 +53,16 @@ export const useWordsStore = create((set, get) => ({
     },
 
     // Добавить слово из общего пула (автокомплит) — мгновенно, без ИИ.
+    // Возвращает id добавленного слова в текущем словаре (для отмены), либо null.
     addFromPool: async (norwegian) => {
         const dictId = get()._currentDictId();
-        if (!dictId) return;
+        if (!dictId) return null;
         await api.addPoolWord(dictId, norwegian);
         await get().loadData(true);
+        const dict = get().dictList.find((d) => d.id === dictId);
+        const key = (norwegian || "").trim().toLowerCase();
+        const w = dict?.words?.find((x) => (x.translate?.no?.[0] || "").trim().toLowerCase() === key);
+        return w?.id ?? null;
     },
 
     // Удалить одно слово из текущего словаря (по id).

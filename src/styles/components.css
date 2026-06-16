@@ -119,6 +119,9 @@
 }
 .iconbtn:hover { background: var(--surface-3); color: var(--ink); }
 .iconbtn.is-danger:hover { background: var(--danger-bg); color: var(--danger); }
+/* «в словаре» — зелёная галочка; на ховору (десктоп) краснеет: тап уберёт из словаря */
+.iconbtn.is-added { color: var(--success); }
+.iconbtn.is-added:hover { background: var(--danger-bg); color: var(--danger); }
 
 /* ---------- Inputs ---------- */
 .field { display: flex; flex-direction: column; gap: var(--sp-2); }

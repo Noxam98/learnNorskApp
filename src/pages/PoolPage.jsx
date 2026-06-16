@@ -35,6 +35,7 @@ export const PoolPage = () => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
     const addFromPool = useWordsStore((s) => s.addFromPool);
+    const removeFromDict = useWordsStore((s) => s.removeFromDict);
     const createDictFromPool = useWordsStore((s) => s.createDictFromPool);
     const isAdmin = useAuthStore((s) => s.user?.isAdmin);
     const navigate = useNavigate();
@@ -112,7 +113,18 @@ export const PoolPage = () => {
 
     const onAdd = async (word) => {
         setAddingId(word);
-        try { await addFromPool(word); setAdded((a) => ({ ...a, [word]: true })); } catch { /* ignore */ }
+        // храним id добавленного слова — он нужен, чтобы отменить добавление
+        try { const id = await addFromPool(word); setAdded((a) => ({ ...a, [word]: id || true })); } catch { /* ignore */ }
+        setAddingId(null);
+    };
+
+    // Отмена: убрать слово из текущего словаря (не из общей базы).
+    const onRemove = async (word) => {
+        const id = added[word];
+        const drop = () => setAdded((a) => { const n = { ...a }; delete n[word]; return n; });
+        if (!id || id === true) { drop(); return; } // id неизвестен — просто сбрасываем отметку
+        setAddingId(word);
+        try { await removeFromDict(id); drop(); } catch { /* ignore */ }
         setAddingId(null);
     };
 
@@ -240,28 +252,34 @@ export const PoolPage = () => {
                     {items.map((w) => {
                         const { cls } = posMeta(w.part_of_speech);
                         return (
-                            <div className="wcard" key={w.word}>
+                            <div className={`wcard${added[w.word] ? " is-added" : ""}`} key={w.word}
+                                onClick={() => (added[w.word] ? onRemove(w.word) : onAdd(w.word))}>
                                 <div className="wcard__body">
                                     <span className="wcard__word">{w.word}</span>
-                                    {w.level && <span className="chip lvl">{w.level}</span>}
-                                    <span className={`chip pos ${cls}`}>{posLabel(w.part_of_speech, t)}</span>
+                                    <span className="wcard__meta">
+                                        {w.level && <span className="chip lvl">{w.level}</span>}
+                                        <span className={`chip pos ${cls}`}>{posLabel(w.part_of_speech, t)}</span>
+                                    </span>
                                     <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
-                                    {w.translate?.[currentLanguage]?.length > 0 && (
-                                        <SpeakButton text={w.translate[currentLanguage].join(", ")} lang={ttsLang(currentLanguage)}
-                                            className="iconbtn wcard__trspeak" ariaLabel={t.tts} title={t.tts} />
-                                    )}
                                 </div>
-                                <div className="wcard__actions">
+                                <div className="wcard__actions" onClick={(e) => e.stopPropagation()}>
                                     <button className="iconbtn" aria-label={t.description} title={t.description}
                                         onClick={() => setDescWord(w.word)}>
                                         <Icon n="info" />
                                     </button>
-                                    <button className="iconbtn" aria-label={t.addToDict} title={t.addToDict}
-                                        disabled={added[w.word] || addingId === w.word} onClick={() => onAdd(w.word)}>
+                                    <button className={`iconbtn${added[w.word] ? " is-added" : ""}`}
+                                        aria-label={added[w.word] ? t.removeFromDict : t.addToDict}
+                                        title={added[w.word] ? t.removeFromDict : t.addToDict}
+                                        disabled={addingId === w.word}
+                                        onClick={() => (added[w.word] ? onRemove(w.word) : onAdd(w.word))}>
                                         {addingId === w.word ? <BtnSpinner /> : <Icon n={added[w.word] ? "check" : "plus"} />}
                                     </button>
-                                    <SpeakButton text={w.word} hasTts={w.hasTts} ariaLabel={t.tts}
-                                        title={t.tts} titlePreparing={t.ttsPreparing} />
+                                    <SpeakButton
+                                        segments={[
+                                            { text: w.word, hasTts: w.hasTts },
+                                            { text: w.translate?.[currentLanguage]?.join(", "), lang: ttsLang(currentLanguage) },
+                                        ]}
+                                        ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
                                     {isAdmin && (
                                         <button className="iconbtn is-danger" aria-label="delete" title="Удалить из базы (админ)"
                                             onClick={() => onAdminDelete(w.word)}>

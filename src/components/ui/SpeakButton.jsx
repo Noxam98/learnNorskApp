@@ -1,20 +1,30 @@
 import { useState } from "react";
 import { Icon } from "./Icon.jsx";
 import { BtnSpinner } from "./Spinner.jsx";
-import { speakText } from "./tts.js";
+import { speakText, speakSequence } from "./tts.js";
 
 // Кнопка озвучки со спиннером ожидания: пока звук грузится/догенерится на
-// сервере — крутится спиннер (speakText резолвится в момент старта).
-// lang не задан → норвежское слово (нужен hasTts — аудио из пула).
-// lang задан (перевод) → озвучка генерится по требованию, кнопка всегда активна.
-export const SpeakButton = ({ text, hasTts, lang, className = "iconbtn", lg = false, title, titlePreparing, ariaLabel }) => {
+// сервере — крутится спиннер.
+// Одиночный режим (text + lang/hasTts): lang не задан → норвежское слово
+// (нужен hasTts — аудио из пула); lang задан (перевод) → генерится по требованию.
+// Режим очереди (segments: [{ text, lang, hasTts }]) — фрагменты играются подряд
+// (например норвежский → перевод). Норвежский фрагмент требует hasTts.
+export const SpeakButton = ({ text, hasTts, lang, segments, className = "iconbtn", lg = false, title, titlePreparing, ariaLabel }) => {
     const [loading, setLoading] = useState(false);
-    const enabled = lang ? !!text : hasTts;
+
+    // Можно ли озвучить фрагмент: перевод (lang) — если есть текст; норвежский — если есть hasTts.
+    const segEnabled = (s) => (s.lang ? !!(s.text || "").trim() : !!s.hasTts);
+    const playable = segments ? segments.filter(segEnabled) : null;
+    const enabled = segments ? playable.length > 0 : (lang ? !!text : hasTts);
+
     const onClick = async (e) => {
         e?.stopPropagation();
         if (!enabled || loading) return;
         setLoading(true);
-        try { await speakText(text, lang); } catch { /* нет звука — молчим */ }
+        try {
+            if (segments) await speakSequence(playable);
+            else await speakText(text, lang);
+        } catch { /* нет звука — молчим */ }
         setLoading(false);
     };
     return (

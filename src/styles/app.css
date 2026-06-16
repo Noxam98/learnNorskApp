@@ -122,6 +122,9 @@
 
 /* На мобильных действия (включая озвучку) — постоянно видны и в потоке, не по ховеру */
 @media (max-width: 640px) {
+    /* карточки — во всю ширину списка (а не по размеру содержимого); кнопки у правого края и по вертикальному центру */
+    .wcard { width: 100%; align-items: center; }
+    .wcard__body { flex: 1 1 auto; }
     .wcard__actions {
         position: static; transform: none; opacity: 1;
         padding-left: 0; background: none; box-shadow: none;

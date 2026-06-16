@@ -46,17 +46,12 @@ export const Card = ({ wordItem, languageTranslate }) => {
     return (
         <>
             <div className={`wcard${isSelected ? " is-selected" : ""}`} onClick={() => choseWord(wordItem.id)}>
-                <span className={`check wcard__check${isSelected ? " is-on" : ""}`}>
-                    {isSelected && <Icon n="check" />}
-                </span>
                 <div className="wcard__body">
                     <span className="wcard__word">{no.toLowerCase()}</span>
-                    <span className={`chip pos ${cls}`}>{label}</span>
+                    <span className="wcard__meta">
+                        <span className={`chip pos ${cls}`}>{label}</span>
+                    </span>
                     <span className="wcard__tr">{translation}</span>
-                    {translation && (
-                        <SpeakButton text={translation} lang={ttsLang(languageTranslate)}
-                            className="iconbtn wcard__trspeak" ariaLabel={t.tts} title={t.tts} />
-                    )}
                 </div>
                 <div className="wcard__actions" onClick={(e) => e.stopPropagation()}>
                     <button
@@ -68,8 +63,12 @@ export const Card = ({ wordItem, languageTranslate }) => {
                         <Icon n="info" />
                     </button>
                     <button className="iconbtn" aria-label="Редактировать" onClick={openEdit}><Icon n="edit" /></button>
-                    <SpeakButton text={no} hasTts={wordItem.hasTts} ariaLabel={t.tts}
-                        title={t.tts} titlePreparing={t.ttsPreparing} />
+                    <SpeakButton
+                        segments={[
+                            { text: no, hasTts: wordItem.hasTts },
+                            { text: translation, lang: ttsLang(languageTranslate) },
+                        ]}
+                        ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
                 </div>
             </div>
 
