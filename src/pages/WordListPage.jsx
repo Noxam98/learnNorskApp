@@ -34,6 +34,7 @@ export const WordListPage = () => {
     const removeDict = useWordsStore((state) => state.removeDict);
     const deleteChosedWords = useWordsStore((state) => state.deleteChosedWords);
     const moveChosenWords = useWordsStore((state) => state.moveChosenWords);
+    const refineChosenWords = useWordsStore((state) => state.refineChosenWords);
     const choseWord = useWordsStore((state) => state.choseWord);
     const addFromPool = useWordsStore((state) => state.addFromPool);
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
@@ -60,7 +61,26 @@ export const WordListPage = () => {
     const [deletingSel, setDeletingSel] = useState(false);
     const [moveOpen, setMoveOpen] = useState(false);
     const [movingSel, setMovingSel] = useState(false);
+    const [refiningSel, setRefiningSel] = useState(false);
+    const [actionsOpen, setActionsOpen] = useState(false);
+    const [confirm, setConfirm] = useState(null); // { body, danger, onYes }
     const searchTimer = useRef();
+
+    const askConfirm = (body, onYes, danger = false) => setConfirm({ body, onYes, danger });
+
+    // Уточнить перевод выбранных слов через ИИ (для одинаковых/неточных переводов).
+    const doRefine = async () => {
+        setRefiningSel(true);
+        try { await refineChosenWords(currentLanguage); }
+        catch { setError(t.connectionError); }
+        setRefiningSel(false);
+    };
+
+    const doDelete = async () => {
+        setDeletingSel(true);
+        try { await deleteChosedWords(); } catch { setError(t.connectionError); }
+        setDeletingSel(false);
+    };
 
     // Другие словари (куда можно перенести выбранные слова).
     const otherDicts = dictNames.filter((n) => n !== dictName);
@@ -123,6 +143,27 @@ export const WordListPage = () => {
         wordList.forEach((w) => { if (allSelected || !w?.techData?.isSelected) choseWord(w.id); });
     };
 
+    // Действия словаря (рендерятся инлайн на десктопе и в попапе на мобильных).
+    const actions = [
+        { key: "newdict", icon: "plus", label: t.newDict.replace("..", ""), onClick: () => setDictOpen(true) },
+        { key: "all", icon: "check-square", label: t.chooseAll, onClick: toggleSelectAll },
+        {
+            key: "refine", icon: "sparkles", label: t.refineTr, title: t.refineTrTitle,
+            disabled: selectedCount < 2 || refiningSel, busy: refiningSel,
+            onClick: () => askConfirm(t.confirmRefine.replace("{n}", selectedCount), doRefine),
+        },
+        {
+            key: "move", icon: "arrow-right", label: t.moveTo,
+            disabled: !selectedCount || movingSel || otherDicts.length === 0, busy: movingSel,
+            onClick: () => setMoveOpen(true),
+        },
+        {
+            key: "delete", icon: "trash", label: t.delete, danger: true,
+            disabled: !selectedCount || deletingSel, busy: deletingSel,
+            onClick: () => askConfirm(t.confirmDelete.replace("{n}", selectedCount), doDelete, true),
+        },
+    ];
+
     return (
         <main className="shell words-main">
             {/* Единая строка управления словарём */}
@@ -163,19 +204,16 @@ export const WordListPage = () => {
 
                 <span className="count-pill"><b>{wordList.length}</b> {wordsNoun(wordList.length, currentLanguage)}</span>
 
-                <span className="toolbar__sep" />
+                <span className="toolbar__sep hide-mobile" />
 
-                <button className="tool hide-mobile" onClick={() => setDictOpen(true)}><Icon n="plus" sm /> {t.newDict.replace("..", "")}</button>
-                <button className="tool" onClick={toggleSelectAll}><Icon n="check-square" sm /> {t.chooseAll}</button>
-                {selectedCount > 0 && <span className="toolbar__count">{selectedCount}</span>}
-                <button className="tool" disabled={!selectedCount || movingSel || otherDicts.length === 0}
-                    onClick={() => setMoveOpen(true)}>
-                    {movingSel ? <BtnSpinner /> : <Icon n="arrow-right" sm />} {t.moveTo}
-                </button>
-                <button className="tool is-danger" disabled={!selectedCount || deletingSel}
-                    onClick={async () => { setDeletingSel(true); try { await deleteChosedWords(); } catch { setError(t.connectionError); } setDeletingSel(false); }}>
-                    {deletingSel ? <BtnSpinner /> : <Icon n="trash" sm />} {t.delete}
-                </button>
+                {/* Десктоп — действия инлайн */}
+                {selectedCount > 0 && <span className="toolbar__count hide-mobile">{selectedCount}</span>}
+                {actions.map((a) => (
+                    <button key={a.key} className={`tool hide-mobile${a.danger ? " is-danger" : ""}`}
+                        disabled={a.disabled} title={a.title} onClick={a.onClick}>
+                        {a.busy ? <BtnSpinner /> : <Icon n={a.icon} sm />} {a.label}
+                    </button>
+                ))}
 
                 <div className="grow" />
 
@@ -196,6 +234,26 @@ export const WordListPage = () => {
                                         color: sort === key ? "var(--fjord-600)" : "var(--ink-2)",
                                     }} onClick={() => { setSort(key); setSortOpen(false); }}>
                                         {sl[key]}
+                                    </button>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </div>
+
+                {/* Мобильные — все действия под одной кнопкой (справа от сортировки) */}
+                <div className="only-mobile" style={{ position: "relative" }}>
+                    <button className="tool" onClick={() => setActionsOpen((p) => !p)}>
+                        <Icon n="dots" sm /> {t.actions}{selectedCount > 0 ? ` · ${selectedCount}` : ""}
+                    </button>
+                    {actionsOpen && (
+                        <>
+                            <div onClick={() => setActionsOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 30 }} />
+                            <div className="card actionsmenu">
+                                {actions.map((a) => (
+                                    <button key={a.key} className={`actionsmenu__item${a.danger ? " is-danger" : ""}`}
+                                        disabled={a.disabled} onClick={() => { setActionsOpen(false); a.onClick(); }}>
+                                        {a.busy ? <BtnSpinner /> : <Icon n={a.icon} sm />} <span>{a.label}</span>
                                     </button>
                                 ))}
                             </div>
@@ -295,6 +353,19 @@ export const WordListPage = () => {
                 ) : (
                     <p className="muted" style={{ margin: 0 }}>{t.noOtherDicts}</p>
                 )}
+            </Modal>
+
+            <Modal
+                open={!!confirm}
+                onClose={() => setConfirm(null)}
+                title={t.confirmTitle}
+                footer={<>
+                    <button className="btn btn--ghost" onClick={() => setConfirm(null)}>{t.cancel}</button>
+                    <button className={`btn ${confirm?.danger ? "btn--accent" : "btn--primary"}`}
+                        onClick={() => { const fn = confirm?.onYes; setConfirm(null); fn?.(); }}>{t.confirmYes}</button>
+                </>}
+            >
+                <p className="muted" style={{ margin: 0 }}>{confirm?.body}</p>
             </Modal>
 
             <Error text={error} setText={setError} />

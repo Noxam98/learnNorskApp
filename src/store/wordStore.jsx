@@ -106,6 +106,17 @@ export const useWordsStore = create((set, get) => ({
         await get().loadData(true);
     },
 
+    // Уточнить перевод выбранных слов через ИИ (для слов с одинаковым/неточным
+    // переводом) — правит общий пул на язык lang. Нужно ≥2 слова.
+    refineChosenWords: async (lang) => {
+        const dict = get().dictList.find((x) => x.dictName === get().currentDictName);
+        if (!dict) return;
+        const ids = dict.words.filter((w) => w?.techData?.isSelected).map((w) => w.id);
+        if (ids.length < 2) return;
+        await api.refineWords(ids, lang);
+        await get().loadData(true);
+    },
+
     // Перенести выбранные слова текущего словаря в другой (по имени словаря).
     moveChosenWords: async (targetDictName) => {
         const dict = get().dictList.find((x) => x.dictName === get().currentDictName);
