@@ -67,8 +67,6 @@ const MyPage = () => {
     const showVerbAa = useSystemStore((state) => state.showVerbAa);
     const dictList = useWordsStore((state) => state.dictList);
 
-    const [tts, setTts] = useState(true);
-    const [darkGame, setDarkGame] = useState(true);
 
     const stats = useMemo(() => {
         const allWords = dictList.flatMap((d) => d.words);
@@ -193,16 +191,6 @@ const MyPage = () => {
                                     : <GoogleSignInButton onCredential={onLinkGoogle} text="continue_with" />}
                             </div>
                         )}
-                        <div className="setrow">
-                            <span className="setrow__ic"><Icon n="volume" sm /></span>
-                            <span className="setrow__meta"><span className="setrow__t">{t.tts}</span><span className="setrow__d">{t.ttsDesc}</span></span>
-                            <span className={`toggle${tts ? " is-on" : ""}`} onClick={() => setTts((p) => !p)} />
-                        </div>
-                        <div className="setrow">
-                            <span className="setrow__ic"><Icon n="settings" sm /></span>
-                            <span className="setrow__meta"><span className="setrow__t">{t.darkGame}</span><span className="setrow__d">{t.darkGameDesc}</span></span>
-                            <span className={`toggle${darkGame ? " is-on" : ""}`} onClick={() => setDarkGame((p) => !p)} />
-                        </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="type" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.showArticles}</span><span className="setrow__d">{t.showArticlesDesc}</span></span>
