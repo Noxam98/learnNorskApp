@@ -1,5 +1,18 @@
 import ky from 'ky';
 import CryptoJS from 'crypto-js';
+import { useSystemStore } from '../../store/systemStore.jsx';
+import { interfaceTranslate } from '../../interface/interfaceTranslation';
+
+// Глобальный тост при сбоях запроса. Показываем только то, в чём пользователь не виноват:
+// сеть недоступна (status 0) либо перегрузка/сбой AI-провайдера (429/5xx). Прочие 4xx
+// (валидация и т.п.) — молча, их разбирает вызывающий код. Возвращает на нужном языке.
+function toastForError(status) {
+    const transient = status === 0 || status === 429 || status >= 500;
+    if (!transient) return;
+    const lang = useSystemStore.getState().currentLanguage;
+    const t = interfaceTranslate[lang] || interfaceTranslate.en;
+    useSystemStore.getState().showToast(status === 0 ? t.connectionError : t.providerError);
+}
 
 // Ключ шифрования токенов в localStorage. Это лишь лёгкая обфускация (на клиенте
 // настоящего секрета быть не может) — задаётся через env, иначе дефолт для разработки.
@@ -159,9 +172,16 @@ class ApiService {
         const opts = { method };
         if (body !== undefined) opts.json = body;
         opts.throwHttpErrors = false;
-        const response = await this.apiRequest(endpoint, opts);
+        let response;
+        try {
+            response = await this.apiRequest(endpoint, opts);
+        } catch (e) {
+            toastForError(0); // сеть/таймаут — ответа нет вовсе
+            throw e;
+        }
         if (!response.ok) {
             const err = await response.json().catch(() => ({}));
+            toastForError(response.status);
             throw new Error(err?.detail || `Request failed (${response.status})`);
         }
         return response.json();

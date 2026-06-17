@@ -8,6 +8,7 @@ import { useAuthStore } from "./store/AuthStore.jsx";
 import { useSystemStore } from "./store/systemStore.jsx";
 
 import { BrandLoader } from "./components/ui/Spinner.jsx";
+import Toast from "./components/tools/error.jsx";
 import { WordListPage } from "./pages/WordListPage.jsx";
 import { PoolPage } from "./pages/PoolPage.jsx";
 import { GamePage } from "./pages/GamePage.jsx";
@@ -26,6 +27,8 @@ function App() {
     const isAdmin = useAuthStore((s) => s.user?.isAdmin);
 
     const theme = useSystemStore((s) => s.theme);
+    const toast = useSystemStore((s) => s.toast);
+    const showToast = useSystemStore((s) => s.showToast);
 
     // Проверка сессии при старте.
     useEffect(() => { useAuthStore.getState().checkAuth(); }, []);
@@ -81,6 +84,7 @@ function App() {
             <NavigationBar />
             {showInitialLoader ? <BrandLoader size="lg" /> : routes}
             {showFooter && <Footer />}
+            <Toast text={toast} setText={showToast} />
         </div>
     );
 }

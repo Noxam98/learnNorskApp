@@ -78,13 +78,13 @@ export const WordListPage = () => {
     const doRefine = async () => {
         setRefiningSel(true);
         try { await refineChosenWords(currentLanguage); }
-        catch { setError(t.connectionError); }
+        catch { /* тост покажет api.js */ }
         setRefiningSel(false);
     };
 
     const doDelete = async () => {
         setDeletingSel(true);
-        try { await deleteChosedWords(); } catch { setError(t.connectionError); }
+        try { await deleteChosedWords(); } catch { /* тост покажет api.js */ }
         setDeletingSel(false);
     };
 
@@ -100,7 +100,7 @@ export const WordListPage = () => {
             if (moveNew) await moveChosenToNew(moveNewName.trim());
             else await moveChosenWords(moveTarget);
             closeMove();
-        } catch { setError(t.connectionError); }
+        } catch { /* тост покажет api.js */ }
         setMovingSel(false);
     };
 
@@ -123,7 +123,7 @@ export const WordListPage = () => {
 
     const pickSuggestion = async (norwegian) => {
         setSuggestions([]); setPrompt(""); setSearchPhase("idle"); setAddingPool(norwegian);
-        try { await addFromPool(norwegian); } catch { setError(t.connectionError); }
+        try { await addFromPool(norwegian); } catch { /* тост покажет api.js */ }
         setAddingPool(null);
     };
 
@@ -148,7 +148,7 @@ export const WordListPage = () => {
             const res = await addWords(prompt);
             if (res?.errors?.length) setError(res.errors.join("\n"));
             setPrompt("");
-        } catch { setError(t.connectionError); }
+        } catch { /* тост покажет api.js */ }
         setIsLoading(false);
     };
 
@@ -341,7 +341,7 @@ export const WordListPage = () => {
                 footer={<>
                     <button className="btn btn--ghost" disabled={deletingSel} onClick={() => setPendingDelete(null)}>{t.cancel}</button>
                     <button className="btn btn--accent" disabled={deletingSel}
-                        onClick={async () => { setDeletingSel(true); try { await removeDict(pendingDelete); } catch { setError(t.connectionError); } setDeletingSel(false); setPendingDelete(null); }}>
+                        onClick={async () => { setDeletingSel(true); try { await removeDict(pendingDelete); } catch { /* тост покажет api.js */ } setDeletingSel(false); setPendingDelete(null); }}>
                         {deletingSel ? <BtnSpinner /> : t.delete}
                     </button>
                 </>}
