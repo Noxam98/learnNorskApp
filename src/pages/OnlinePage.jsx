@@ -10,7 +10,7 @@ import api from "../components/tools/api.js";
 import { playSound, playWin, preloadSounds } from "../components/tools/sound.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
-const DEFAULT_SETTINGS = { game: "quiz", dir: "no2int", level: "", topic: "", count: 7, maxPlayers: 4, private: false };
+const DEFAULT_SETTINGS = { game: "quiz", dir: "no2int", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
 
 // Полноэкранный игровой контейнер в теме приложения (а не в тёмной теме обычных игр).
 const SCREEN = {
@@ -397,6 +397,8 @@ const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, conf
             </select></div>
         <div className="field"><label className="label">{to.words || "Слов"}: {s.count}</label>
             <input type="range" min={3} max={20} value={s.count} onChange={(e) => set("count", +e.target.value)} style={{ width: "100%" }} /></div>
+        <div className="field"><label className="label">{to.questionTime || "Время на вопрос"}: {s.qtime}{to.secUnit || "с"}</label>
+            <input type="range" min={5} max={30} value={s.qtime} onChange={(e) => set("qtime", +e.target.value)} style={{ width: "100%" }} /></div>
         <div className="field"><label className="label">{to.maxPlayers || "Макс. игроков"}: {s.maxPlayers}</label>
             <input type="range" min={2} max={8} value={s.maxPlayers} onChange={(e) => set("maxPlayers", +e.target.value)} style={{ width: "100%" }} /></div>
         <div className="setrow">
