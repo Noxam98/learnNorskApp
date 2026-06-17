@@ -25,13 +25,22 @@ export const StatsPage = () => {
     const t = interfaceTranslate[currentLanguage];
     const [data, setData] = useState(null);
     const [err, setErr] = useState("");
+    const [control, setControl] = useState(null); // {autofill, embed, describe} -> paused?
 
     const load = () => api.getAdminStats().then(setData).catch(() => setErr("forbidden"));
+    const loadControl = () => api.getAdminControl().then((r) => setControl(r.paused)).catch(() => {});
     useEffect(() => {
-        load();
-        const id = setInterval(load, 15000); // авто-обновление — видно процесс
+        load(); loadControl();
+        const id = setInterval(() => { load(); loadControl(); }, 15000); // авто-обновление — видно процесс
         return () => clearInterval(id);
     }, []);
+
+    const toggle = async (key) => {
+        const next = !control?.[key];
+        setControl((c) => ({ ...(c || {}), [key]: next })); // оптимистично
+        try { const r = await api.setAdminControl(key, next); setControl(r.paused); }
+        catch { loadControl(); }
+    };
 
     if (err) return <main className="shell words-main"><p className="muted" style={{ padding: "var(--sp-12) 0", textAlign: "center" }}>403 — Forbidden</p></main>;
     if (!data) return <main className="shell words-main"><BrandLoader /></main>;
@@ -53,6 +62,31 @@ export const StatsPage = () => {
             </div>
 
             <div className="pgrid" style={{ display: "grid", gap: "var(--sp-4)", gridTemplateColumns: "1fr 1fr" }}>
+                <div className="card" style={{ padding: "var(--sp-5)", gridColumn: "1 / -1" }}>
+                    <div className="label" style={{ marginBottom: "var(--sp-4)" }}>Фоновые задачи</div>
+                    {[["autofill", "Добавление слов"], ["embed", "Эмбеддинги"], ["describe", "Описания"]].map(([key, name]) => {
+                        const paused = control?.[key];
+                        return (
+                            <div key={key} className="row between" style={{ padding: "6px 0", fontSize: "var(--fs-14)" }}>
+                                <span className="row" style={{ gap: "var(--sp-2)" }}>
+                                    <span style={{ width: 8, height: 8, borderRadius: "var(--r-full)", background: paused ? "var(--surface-3)" : "#22c55e" }} />
+                                    {name} <span className="muted">{paused ? "· на паузе" : "· работает"}</span>
+                                </span>
+                                <button
+                                    className="btn btn--sm"
+                                    onClick={() => toggle(key)}
+                                    disabled={control == null}
+                                    style={paused
+                                        ? { background: "var(--fjord-600)", color: "#fff" }
+                                        : { background: "transparent", color: "#ef4444", border: "1px solid #ef4444" }}
+                                >
+                                    {paused ? "▶ Возобновить" : "⏹ Остановить"}
+                                </button>
+                            </div>
+                        );
+                    })}
+                </div>
+
                 <div className="card" style={{ padding: "var(--sp-5)" }}>
                     <div className="label" style={{ marginBottom: "var(--sp-4)" }}>Пул слов · всего <b style={{ color: "var(--ink)" }}>{p.total}</b></div>
                     <Bar value={p.embedding} total={p.total} label="С эмбеддингом" />

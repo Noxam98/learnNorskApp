@@ -203,6 +203,8 @@ class ApiService {
     getAdminStats() { return this._send('GET', '/admin/stats'); }
     adminDeleteWord(word) { return this._send('DELETE', `/admin/pool/${encodeURIComponent(word)}`); }
     adminDescribeAll() { return this._send('POST', '/admin/describe_all'); }
+    getAdminControl() { return this._send('GET', '/admin/control'); }
+    setAdminControl(key, paused) { return this._send('POST', `/admin/control/${key}?paused=${paused}`); }
     getPoolTopics() { return this._send('GET', '/pool/topics'); }
     getPoolDescription(word) { return this._send('GET', `/pool/${encodeURIComponent(word)}/description`); }
     getPoolSynonyms(word, { lang = "ru" } = {}) { return this._send('GET', `/pool/${encodeURIComponent(word)}/synonyms?lang=${encodeURIComponent(lang)}`); }
