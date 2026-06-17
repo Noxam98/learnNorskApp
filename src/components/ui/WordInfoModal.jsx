@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Modal } from "./Modal.jsx";
 import { Icon } from "./Icon.jsx";
+import { posFormsRows } from "./pos.js";
 import { BtnSpinner, Dots } from "./Spinner.jsx";
 import { useWordsStore } from "../../store/wordStore.jsx";
 import api from "../tools/api.js";
@@ -70,7 +71,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
-        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null } : v)).catch(() => {});
+        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null } : v)).catch(() => {});
     };
 
     useEffect(() => {
@@ -135,6 +136,20 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                         <Icon n="edit" sm /> {t.fixDesc}
                     </button>
                 )
+            )}
+
+            {view?.forms && posFormsRows(view.no, view.forms).length > 0 && (
+                <div style={{ marginTop: "var(--sp-5)" }}>
+                    <div className="label" style={{ marginBottom: "var(--sp-2)" }}>{t.grammForms || "Грамматические формы"}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "4px var(--sp-3)", fontSize: "var(--fs-14)" }}>
+                        {posFormsRows(view.no, view.forms).map(({ label, value }) => (
+                            <div key={label} style={{ display: "contents" }}>
+                                <span className="muted">{label}</span>
+                                <b>{value}</b>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             )}
 
             <div style={{ marginTop: "var(--sp-5)" }}>

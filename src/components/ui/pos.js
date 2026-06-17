@@ -59,6 +59,36 @@ export const posMeta = (pos) => {
     return { cls: "pos--other", key: "other", raw };
 };
 
+// Артикль существительного (en/ei/et) для подстановки перед словом в карточке. "" если не сущ.
+export const nounArticle = (forms) =>
+    (forms && forms.pos === "noun" && forms.gender) ? forms.gender : "";
+
+// Полный набор грамматических форм слова → [{label, value}] для подробного показа.
+// word — само норвежское слово (нужно для неопр. формы ед.ч. сущ. и инфинитива гл.).
+export const posFormsRows = (word, forms) => {
+    if (!forms) return [];
+    const r = [];
+    const add = (label, value) => { if (value) r.push({ label, value }); };
+    if (forms.pos === "noun") {
+        add("ед. ч.", [forms.gender, word].filter(Boolean).join(" "));
+        add("ед. ч. (определ.)", forms.def_sg);
+        add("мн. ч.", forms.indef_pl);
+        add("мн. ч. (определ.)", forms.def_pl);
+    } else if (forms.pos === "verb") {
+        add("инфинитив", `å ${word}`);
+        add("настоящее", forms.present);
+        add("прош. время", forms.past);
+        add("перфект", forms.perfect);
+    } else if (forms.pos === "adjective") {
+        add("положит.", word);
+        add("ср. род", forms.neuter);
+        add("мн. ч.", forms.plural);
+        add("сравнит.", forms.comparative);
+        add("превосх.", forms.superlative);
+    }
+    return r;
+};
+
 // Локализованная короткая метка части речи.
 export const posLabel = (pos, t) => {
     const { key, raw } = posMeta(pos);

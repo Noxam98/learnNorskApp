@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.py$|\\\\.txt$|\\\\.toml$|\\\\.env\")",
+      "Bash(python3 -c ' *)"
+    ],
+    "additionalDirectories": [
+      "/home/maks/projects/laereNorskBackand"
+    ]
+  }
+}

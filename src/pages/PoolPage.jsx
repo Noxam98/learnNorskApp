@@ -10,7 +10,7 @@ import { Modal } from "../components/ui/Modal.jsx";
 import { WordInfoModal } from "../components/ui/WordInfoModal.jsx";
 import { BtnSpinner, SkeletonWordlist } from "../components/ui/Spinner.jsx";
 import { SearchBox } from "../components/ui/SearchBox.jsx";
-import { posMeta, posLabel, POS_INFO, POS_ORDER, posApiKey } from "../components/ui/pos.js";
+import { posMeta, posLabel, POS_INFO, POS_ORDER, posApiKey, nounArticle } from "../components/ui/pos.js";
 import { SpeakButton } from "../components/ui/SpeakButton.jsx";
 import { ttsLang } from "../components/ui/tts.js";
 
@@ -239,24 +239,10 @@ export const PoolPage = () => {
                             {posLabel(posApiKey(key), t)}
                         </button>
                     ))}
-                    <button className="fchip fchip--toggle" onClick={() => setPosRefOpen((o) => !o)} title="Что значат части речи">
+                    <button className="fchip fchip--toggle" onClick={() => setPosRefOpen(true)} title="Что значат части речи">
                         <Icon n="info" sm /> справка
                     </button>
                 </div>
-                {posRefOpen && (
-                    <div className="card" style={{ padding: "var(--sp-4)", marginBottom: "var(--sp-2)" }}>
-                        <div className="label" style={{ marginBottom: "var(--sp-3)" }}>Части речи — кратко</div>
-                        {POS_ORDER.map((key) => {
-                            const info = POS_INFO[key];
-                            return (
-                                <div key={key} style={{ fontSize: "var(--fs-13)", padding: "5px 0", borderBottom: "1px solid var(--surface-3)" }}>
-                                    <b>{info.name}</b> <span className="chip pos" style={{ fontSize: "var(--fs-11)" }}>{posLabel(posApiKey(key), t)}</span>
-                                    <div className="muted">{info.desc}{info.ex && <> · напр.: {info.ex}</>}</div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
 
                 {isAdmin && (
                     <div className="poolbar__row" style={{ flexWrap: "wrap", gap: "var(--sp-2)" }}>
@@ -304,11 +290,15 @@ export const PoolPage = () => {
                 <div className="wordlist">
                     {items.map((w) => {
                         const { cls } = posMeta(w.part_of_speech);
+                        const article = nounArticle(w.forms);
                         return (
                             <div className={`wcard${added[w.word] ? " is-added" : ""}`} key={w.word}
                                 onClick={() => (added[w.word] ? onRemove(w.word) : onAdd(w.word))}>
                                 <div className="wcard__body">
-                                    <span className="wcard__word">{w.word}</span>
+                                    <span className="wcard__word">
+                                        {article && <span className="muted" style={{ fontWeight: 400 }}>{article} </span>}
+                                        {w.word}
+                                    </span>
                                     <span className="wcard__meta">
                                         {w.level && <span className="chip lvl">{w.level}</span>}
                                         <span className={`chip pos ${cls}`}>{posLabel(w.part_of_speech, t)}</span>
@@ -400,6 +390,21 @@ export const PoolPage = () => {
                     <span className="input-hint">{(t.willAddWords || "Будет добавлено слов")}: <b>{total}</b></span>
                     {createErr && <span className="alert"><Icon n="x" sm /> {createErr}</span>}
                 </div>
+            </Modal>
+
+            <Modal open={posRefOpen} onClose={() => setPosRefOpen(false)} title="Части речи — справочник" maxWidth={560}>
+                {POS_ORDER.map((key) => {
+                    const info = POS_INFO[key];
+                    return (
+                        <div key={key} style={{ fontSize: "var(--fs-13)", padding: "8px 0", borderBottom: "1px solid var(--surface-3)" }}>
+                            <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
+                                <b>{info.name}</b>
+                                <span className={`chip pos ${posMeta(posApiKey(key)).cls}`} style={{ fontSize: "var(--fs-11)" }}>{posLabel(posApiKey(key), t)}</span>
+                            </span>
+                            <div className="muted" style={{ marginTop: 2 }}>{info.desc}{info.ex && <> · напр.: {info.ex}</>}</div>
+                        </div>
+                    );
+                })}
             </Modal>
 
             <WordInfoModal open={!!descWord} word={descWord}
