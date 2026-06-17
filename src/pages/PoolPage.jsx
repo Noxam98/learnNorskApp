@@ -50,6 +50,7 @@ export const PoolPage = () => {
     const [level, setLevel] = useState("");
     const [sort, setSort] = useState("alpha");
     const [order, setOrder] = useState("asc");
+    const [missing, setMissing] = useState(""); // админ: "" | embedding | description | tts | meta
     const [loading, setLoading] = useState(true);
     const [searchPhase, setSearchPhase] = useState("idle"); // idle | counting | searching
     const [addingId, setAddingId] = useState(null);
@@ -82,7 +83,7 @@ export const PoolPage = () => {
         let cancelled = false;
         setLoading(true);
         setSearchPhase((p) => (p === "counting" ? "searching" : p));
-        api.getPool({ q: appliedQ, limit: pageSize, offset: (page - 1) * pageSize, topics, level, sort, order })
+        api.getPool({ q: appliedQ, limit: pageSize, offset: (page - 1) * pageSize, topics, level, sort, order, missing })
             .then((res) => {
                 if (cancelled) return;
                 setItems(res.words || []);
@@ -97,7 +98,7 @@ export const PoolPage = () => {
             .catch(() => { if (!cancelled) setItems([]); })
             .finally(() => { if (!cancelled) { setLoading(false); setSearchPhase("idle"); } });
         return () => { cancelled = true; };
-    }, [appliedQ, page, pageSize, topics, level, sort, order]);
+    }, [appliedQ, page, pageSize, topics, level, sort, order, missing]);
 
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
     useEffect(() => { if (page > totalPages) setPage(totalPages); }, [totalPages]); // eslint-disable-line
@@ -107,9 +108,10 @@ export const PoolPage = () => {
         setTopics((prev) => prev.includes(key) ? prev.filter((x) => x !== key) : [...prev, key]);
     };
     const pickLevel = (lv) => { setPage(1); setLevel((cur) => (cur === lv ? "" : lv)); };
+    const pickMissing = (val) => { setPage(1); setMissing((cur) => (cur === val ? "" : val)); };
     const onSort = (s) => { setPage(1); setSort(s); };
     const onPageSize = (n) => { setPage(1); setPageSize(n); };
-    const clearFilters = () => { setPage(1); setTopics([]); setLevel(""); };
+    const clearFilters = () => { setPage(1); setTopics([]); setLevel(""); setMissing(""); };
 
     const onAdd = async (word) => {
         setAddingId(word);
@@ -137,7 +139,7 @@ export const PoolPage = () => {
         } catch { /* ignore */ }
     };
 
-    const hasFilters = topics.length > 0 || !!level;
+    const hasFilters = topics.length > 0 || !!level || !!missing;
 
     // Имя нового словаря по фильтрам (с возможностью переписать вручную).
     const autoDictName = () => {
@@ -217,6 +219,18 @@ export const PoolPage = () => {
                     </div>
                 )}
 
+                {isAdmin && (
+                    <div className="poolbar__row" style={{ flexWrap: "wrap", gap: "var(--sp-2)" }}>
+                        <span className="muted" style={{ fontSize: "var(--fs-13)" }}>Админ · без:</span>
+                        {[["embedding", "эмбеддинга"], ["description", "описания"], ["tts", "озвучки"], ["meta", "уровня/тем"]].map(([val, name]) => (
+                            <button key={val} className={`fchip${missing === val ? " is-on" : ""}`} onClick={() => pickMissing(val)}>
+                                {name}
+                            </button>
+                        ))}
+                        {missing && <span className="muted" style={{ fontSize: "var(--fs-13)" }}>найдено: <b>{total}</b></span>}
+                    </div>
+                )}
+
                 <div className="poolbar__row">
                     {(hasFilters || appliedQ.trim()) && (
                         <button className="btn btn--primary btn--sm" disabled={!total} onClick={openCreate}>
@@ -259,6 +273,9 @@ export const PoolPage = () => {
                                     <span className="wcard__meta">
                                         {w.level && <span className="chip lvl">{w.level}</span>}
                                         <span className={`chip pos ${cls}`}>{posLabel(w.part_of_speech, t)}</span>
+                                        {isAdmin && !w.hasEmbedding && <span className="chip" style={{ background: "#fee2e2", color: "#b91c1c" }} title="нет эмбеддинга">emb</span>}
+                                        {isAdmin && !w.hasDescription && <span className="chip" style={{ background: "#fef3c7", color: "#92400e" }} title="нет описания">desc</span>}
+                                        {isAdmin && !w.hasTts && <span className="chip" style={{ background: "#e0e7ff", color: "#3730a3" }} title="нет озвучки">tts</span>}
                                     </span>
                                     <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
                                 </div>
