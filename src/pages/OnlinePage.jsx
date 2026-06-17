@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { useAuthStore } from "../store/AuthStore.jsx";
@@ -25,6 +27,70 @@ function beep(freq = 880, dur = 0.09) {
     } catch { /* no-op */ }
 }
 
+// Звук ответа: верно — две восходящие ноты, неверно — низкий бзз.
+function sfx(ok) {
+    if (ok) { beep(660, 0.1); setTimeout(() => beep(990, 0.13), 90); }
+    else { beep(180, 0.24); }
+}
+
+// Полноэкранный игровой контейнер в теме приложения (а не в тёмной теме обычных игр).
+const SCREEN = {
+    position: "fixed", inset: 0, zIndex: 90, overflow: "auto",
+    background: "var(--surface-2)", color: "var(--ink)",
+    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+    padding: "var(--sp-5)",
+};
+
+function choiceStyle(kind) {
+    const base = {
+        padding: "16px 14px", borderRadius: 14, border: "2px solid var(--border)",
+        background: "var(--surface)", color: "var(--ink)", fontSize: "var(--fs-18)",
+        fontWeight: 600, cursor: kind === "idle" || kind === "selected" ? "pointer" : "default", width: "100%",
+    };
+    if (kind === "correct") return { ...base, borderColor: "var(--success)", color: "var(--success)", background: "var(--success-bg)" };
+    if (kind === "wrong") return { ...base, borderColor: "var(--danger)", color: "var(--danger)", background: "var(--danger-bg)" };
+    if (kind === "dim") return { ...base, opacity: 0.45 };
+    if (kind === "selected") return { ...base, borderColor: "var(--ink-3)" };
+    return base;
+}
+
+// Праздничный салют для победителя: центральный залп + боковые «пушки» ~1.2 сек.
+function fireConfetti() {
+    confetti({ particleCount: 150, spread: 90, startVelocity: 45, origin: { y: 0.35 } });
+    const end = Date.now() + 1200;
+    (function frame() {
+        confetti({ particleCount: 6, angle: 60, spread: 60, origin: { x: 0 } });
+        confetti({ particleCount: 6, angle: 120, spread: 60, origin: { x: 1 } });
+        if (Date.now() < end) requestAnimationFrame(frame);
+    })();
+}
+
+// Таймер вопроса: секционная полоса (по секунде на секцию) + цифра, едущая вслед за фронтом.
+function TimerBar({ total, left }) {
+    const pct = total ? (left / total) * 100 : 0;
+    return (
+        <div style={{ position: "relative", width: "100%", maxWidth: 600, margin: "0 auto var(--sp-6)" }}>
+            <div style={{ display: "flex", gap: 3, height: 8 }}>
+                {Array.from({ length: total }).map((_, i) => (
+                    <span key={i} style={{
+                        flex: 1, borderRadius: 2,
+                        background: i < left ? "var(--ember-600)" : "var(--border)",
+                        transition: "background .25s linear",
+                    }} />
+                ))}
+            </div>
+            <motion.div animate={{ left: `${pct}%` }} transition={{ ease: "linear", duration: 0.12 }}
+                style={{ position: "absolute", top: 11, transform: "translateX(-50%)", fontWeight: 800, fontSize: "var(--fs-14)", color: "var(--ember-600)" }}>
+                {Math.ceil(left)}
+            </motion.div>
+        </div>
+    );
+}
+
+// Варианты для «игровых» анимаций: стаггер-появление карточек вариантов.
+const OPT_LIST = { hidden: {}, show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } } };
+const OPT_ITEM = { hidden: { opacity: 0, y: 28, scale: 0.9 }, show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 320, damping: 22 } } };
+
 export const OnlinePage = () => {
     const lang = useSystemStore((s) => s.currentLanguage);
     const t = interfaceTranslate[lang];
@@ -41,6 +107,7 @@ export const OnlinePage = () => {
     const [reveal, setReveal] = useState(null);
     const [podium, setPodium] = useState(null);
     const [createOpen, setCreateOpen] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(0);   // секунды до конца вопроса (визуальный таймер)
 
     const send = useCallback((obj) => {
         const ws = wsRef.current;
@@ -62,7 +129,7 @@ export const OnlinePage = () => {
                     break;
                 case "countdown": setCountdown(m.sec); beep(m.sec === 1 ? 1320 : 880); break;
                 case "question": setQuestion(m); setChosen(null); setReveal(null); setPodium(null); setCountdown(null); break;
-                case "reveal": setReveal(m); break;
+                case "reveal": setReveal(m); sfx(m.gained > 0); break;
                 case "ended": setPodium(m.podium); setQuestion(null); setReveal(null); break;
                 case "left": setRoom(null); setQuestion(null); setReveal(null); setPodium(null); setCountdown(null); break;
                 case "error": case "game_error":
@@ -75,7 +142,40 @@ export const OnlinePage = () => {
 
     const myReady = room?.players?.find((p) => p.isYou)?.ready;
 
-    const answer = (i) => { if (chosen == null) { setChosen(i); send({ type: "answer", q: question.i, choice: i }); } };
+    const answer = (i, ev) => {
+        if (chosen != null || reveal) return;
+        if (ev?.currentTarget?.blur) ev.currentTarget.blur();   // на смартфоне снимаем фокус с кнопки
+        setChosen(i);
+        send({ type: "answer", q: question.i, choice: i });
+    };
+
+    // Новый вопрос — снять фокус с кнопки прошлого экрана (иначе на мобиле она подсвечена).
+    useEffect(() => {
+        if (question && document.activeElement?.blur) document.activeElement.blur();
+    }, [question?.i]);
+
+    // Визуальный таймер вопроса (полоса сверху + бегущая цифра). Останавливается на reveal.
+    useEffect(() => {
+        if (!question || reveal) return;
+        const total = question.time || 15;
+        const start = performance.now();
+        setTimeLeft(total);
+        let raf;
+        const tick = () => {
+            const left = Math.max(0, total - (performance.now() - start) / 1000);
+            setTimeLeft(left);
+            if (left > 0) raf = requestAnimationFrame(tick);
+        };
+        raf = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(raf);
+    }, [question?.i, reveal]); // eslint-disable-line
+
+    // Салют синхронно с выездом первого места на подиуме (строки появляются со стаггером).
+    useEffect(() => {
+        if (!podium) return;
+        const id = setTimeout(fireConfetti, 400);
+        return () => clearTimeout(id);
+    }, [podium]);
 
     // ---------- Рендер ----------
     if (!connected) {
@@ -86,67 +186,118 @@ export const OnlinePage = () => {
 
     // Подиум (конец игры) — поверх всего
     if (room && podium) {
-        return <main className="shell prof-main"><div className="panel"><div className="panel__head">
-            <span className="panel__title">{to.podium || "Итоги"}</span></div>
-            <div className="panel__body">
-                {podium.map((p) => (
-                    <div className="setrow" key={p.name}>
-                        <span className="setrow__ic" style={{ fontWeight: 700 }}>{p.place}</span>
-                        <span className="setrow__meta"><span className="setrow__t">{p.name}</span></span>
-                        <b>{p.score}</b>
-                    </div>
-                ))}
-                <button className="btn btn--accent btn--block" style={{ marginTop: "var(--sp-4)" }}
+        const medals = ["🥇", "🥈", "🥉"];
+        return <main style={{ ...SCREEN, justifyContent: "flex-start", paddingTop: "var(--sp-7)" }}>
+            <div style={{ width: "100%", maxWidth: 560, margin: "0 auto" }}>
+                <motion.div initial={{ scale: 0, rotate: -15 }} animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 12 }}
+                    style={{ textAlign: "center", fontSize: 64 }}>🏆</motion.div>
+                <h1 style={{ textAlign: "center", margin: "var(--sp-2) 0 var(--sp-5)" }}>{to.podium || "Итоги"}</h1>
+                <div className="panel"><div className="panel__body">
+                    {podium.map((p, i) => (
+                        <motion.div className="setrow" key={p.name}
+                            initial={{ opacity: 0, y: 24, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.2 + i * 0.15 }}
+                            style={i === 0 ? { background: "var(--success-bg)", borderRadius: 12 } : undefined}>
+                            <span className="setrow__ic" style={{ fontWeight: 700, fontSize: "var(--fs-18)" }}>{medals[i] || p.place}</span>
+                            <span className="setrow__meta"><span className="setrow__t" style={i === 0 ? { fontWeight: 800 } : undefined}>{p.name}</span></span>
+                            <b style={{ fontSize: i === 0 ? "var(--fs-20)" : undefined }}>{p.score}</b>
+                        </motion.div>
+                    ))}
+                </div></div>
+                <button className="btn btn--accent btn--block btn--lg" style={{ marginTop: "var(--sp-5)" }}
                     onClick={() => setPodium(null)}>{to.toLobby || "В лобби"}</button>
-            </div></div></main>;
+            </div>
+        </main>;
     }
 
     // В комнате
     if (room) {
-        // Обратный отсчёт
+        // Обратный отсчёт — пружинный пульс с расходящимся кольцом
         if (countdown != null) {
-            return <main className="play" data-state="asking" style={{ position: "fixed", inset: 0, zIndex: 90, display: "grid", placeItems: "center" }}>
-                <div style={{ textAlign: "center" }}>
-                    <div className="muted">{to.starting || "Старт через"}</div>
-                    <div style={{ fontSize: 120, fontWeight: 800, lineHeight: 1 }}>{countdown}</div>
+            return <main style={SCREEN}>
+                <div style={{ textAlign: "center", position: "relative" }}>
+                    <div className="muted" style={{ marginBottom: "var(--sp-3)" }}>{to.starting || "Старт через"}</div>
+                    <div style={{ position: "relative", display: "inline-grid", placeItems: "center" }}>
+                        <motion.span key={`ring${countdown}`}
+                            initial={{ scale: 0.6, opacity: 0.6 }} animate={{ scale: 2.2, opacity: 0 }} transition={{ duration: 0.9, ease: "easeOut" }}
+                            style={{ position: "absolute", width: 160, height: 160, borderRadius: "50%", border: "4px solid var(--ember-600)" }} />
+                        <AnimatePresence mode="wait">
+                            <motion.div key={countdown}
+                                initial={{ scale: 0.2, opacity: 0, rotate: -25 }}
+                                animate={{ scale: [1.5, 1], opacity: 1, rotate: 0 }}
+                                exit={{ scale: 2.2, opacity: 0 }}
+                                transition={{ type: "spring", stiffness: 320, damping: 14 }}
+                                style={{ fontSize: 150, fontWeight: 900, lineHeight: 1, color: "var(--ember-600)" }}>
+                                {countdown}
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
                 </div>
             </main>;
         }
         // Игра идёт — вопрос
         if (question) {
             const opts = question.options || [];
-            return <main className="play" data-state="asking" style={{ position: "fixed", inset: 0, zIndex: 90, overflow: "auto" }}>
-                <div className="pstage"><div className="qcard">
-                    <div className="qcount">{to.question || "Вопрос"} {question.i + 1} / {question.total}</div>
-                    <h1 className="qword">{question.prompt}</h1>
-                    <div className="choices">
-                        {opts.map((opt, i) => {
-                            let cls = "";
-                            if (reveal) cls = i === reveal.correct ? " is-correct" : (i === chosen ? " is-wrong" : "");
-                            else if (i === chosen) cls = " is-selected";
-                            return <button key={i} className={`choice${cls}`} disabled={chosen != null || !!reveal}
-                                onClick={() => answer(i)}>{opt}</button>;
-                        })}
-                    </div>
+            return <main style={{ ...SCREEN, justifyContent: "flex-start", paddingTop: "var(--sp-7)" }}>
+                <div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
+                    {!reveal && <TimerBar total={question.time || 15} left={timeLeft} />}
+                    <AnimatePresence mode="wait">
+                        <motion.div key={question.i}
+                            initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.04 }}
+                            transition={{ duration: 0.22 }}>
+                            <div className="muted" style={{ textAlign: "center", textTransform: "uppercase", letterSpacing: "var(--ls-wide)", fontWeight: 700, fontSize: "var(--fs-13)" }}>
+                                {to.question || "Вопрос"} {question.i + 1} / {question.total}
+                            </div>
+                            <motion.h1 initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                                transition={{ type: "spring", stiffness: 260, damping: 18 }}
+                                style={{ fontSize: "clamp(2rem,7vw,3rem)", margin: "var(--sp-3) 0 var(--sp-5)", textAlign: "center" }}>
+                                {question.prompt}
+                            </motion.h1>
+                            <motion.div variants={OPT_LIST} initial="hidden" animate="show"
+                                style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--sp-3)" }}>
+                                {opts.map((opt, i) => {
+                                    let kind = "idle";
+                                    if (reveal) kind = i === reveal.correct ? "correct" : (i === chosen ? "wrong" : "dim");
+                                    else if (i === chosen) kind = "selected";
+                                    const revAnim = !reveal ? undefined
+                                        : kind === "correct" ? { scale: [1, 1.12, 1], boxShadow: ["0 0 0 rgba(0,0,0,0)", "0 0 28px var(--success)", "0 0 0 rgba(0,0,0,0)"] }
+                                            : kind === "wrong" ? { x: [0, -9, 9, -6, 6, 0] }
+                                                : { opacity: 0.4, scale: 0.96 };
+                                    return <motion.button key={i} variants={OPT_ITEM} animate={revAnim}
+                                        whileTap={!reveal && chosen == null ? { scale: 0.94 } : undefined}
+                                        transition={{ duration: 0.5 }} style={choiceStyle(kind)}
+                                        disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>{opt}</motion.button>;
+                                })}
+                            </motion.div>
+                        </motion.div>
+                    </AnimatePresence>
+
+                    {!reveal && chosen != null && <p className="muted" style={{ textAlign: "center", marginTop: "var(--sp-4)" }}>{to.waitOthers || "Ждём остальных…"}</p>}
+
                     {reveal && (
-                        <div style={{ marginTop: "var(--sp-4)" }}>
-                            <div className="qhint">{reveal.gained > 0 ? `+${reveal.gained}` : "—"}</div>
+                        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} style={{ marginTop: "var(--sp-5)" }}>
+                            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 420, damping: 12 }}
+                                style={{ textAlign: "center", fontWeight: 900, fontSize: "var(--fs-28)", color: reveal.gained > 0 ? "var(--success)" : "var(--ink-3)" }}>
+                                {reveal.gained > 0 ? `+${reveal.gained}` : "—"}
+                                {reveal.streak >= 2 && <motion.span animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 0.5, repeat: 1 }} style={{ marginLeft: 10, display: "inline-block" }}>🔥 {reveal.streak}</motion.span>}
+                            </motion.div>
                             <div className="panel" style={{ marginTop: "var(--sp-3)" }}>
                                 <div className="panel__head"><span className="panel__title">{to.leaderboard || "Лидеры"}</span></div>
                                 <div className="panel__body">
-                                    {reveal.standings.map((s) => (
-                                        <div className="setrow" key={s.name}>
-                                            <span className="setrow__ic" style={{ fontWeight: 700 }}>{s.place}</span>
-                                            <span className="setrow__meta"><span className="setrow__t">{s.name}</span></span>
-                                            <b>{s.score}</b>
-                                        </div>
+                                    {reveal.standings.map((st, ri) => (
+                                        <motion.div className="setrow" key={st.name} layout
+                                            initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: ri * 0.06 }}>
+                                            <span className="setrow__ic" style={{ fontWeight: 700 }}>{st.place}</span>
+                                            <span className="setrow__meta"><span className="setrow__t">{st.name}{st.streak >= 2 ? ` 🔥${st.streak}` : ""}</span></span>
+                                            <b>{st.score}</b>
+                                        </motion.div>
                                     ))}
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     )}
-                    {!reveal && chosen != null && <div className="qhint" style={{ marginTop: "var(--sp-4)" }}>{to.waitOthers || "Ждём остальных…"}</div>}
-                </div></div>
+                </div>
             </main>;
         }
         // Лобби
