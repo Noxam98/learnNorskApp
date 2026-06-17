@@ -6,6 +6,8 @@ import { useWordsStore } from "../store/wordStore.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { Icon } from "../components/ui/Icon.jsx";
 import GoogleSignInButton from "../components/ui/GoogleSignInButton.jsx";
+import { Modal } from "../components/ui/Modal.jsx";
+import { BtnSpinner } from "../components/ui/Spinner.jsx";
 import api from "../components/tools/api.js";
 import { wordCount, dictCount } from "../components/tools/plural.js";
 
@@ -29,6 +31,23 @@ const MyPage = () => {
             const msg = String(e?.message || "");
             useSystemStore.getState().showToast(msg.includes("password") ? t.setPasswordFirst : t.unexpectedError);
         });
+    };
+
+    // Задать/сменить пароль (в т.ч. первый пароль для Google-аккаунта).
+    const [pwOpen, setPwOpen] = useState(false);
+    const [pwValue, setPwValue] = useState("");
+    const [pwSaving, setPwSaving] = useState(false);
+    const [pwError, setPwError] = useState("");
+    const closePw = () => { if (!pwSaving) { setPwOpen(false); setPwValue(""); setPwError(""); } };
+    const savePw = async () => {
+        if (pwValue.length < 6) { setPwError(t.passwordLengthError); return; }
+        setPwSaving(true); setPwError("");
+        try {
+            await api.setPassword(pwValue);
+            await refreshMe();
+            setPwOpen(false); setPwValue("");
+        } catch { setPwError(t.unexpectedError); }
+        setPwSaving(false);
     };
     const theme = useSystemStore((state) => state.theme);
     const dictList = useWordsStore((state) => state.dictList);
@@ -128,6 +147,16 @@ const MyPage = () => {
                             <span className="setrow__meta"><span className="setrow__t">{t.darkTheme}</span><span className="setrow__d">{t.darkThemeDesc}</span></span>
                             <span className={`toggle${theme === "dark" ? " is-on" : ""}`} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} />
                         </div>
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="lock" sm /></span>
+                            <span className="setrow__meta">
+                                <span className="setrow__t">{t.password}</span>
+                                <span className="setrow__d">{user?.hasPassword ? t.passwordSet : t.passwordNotSet}</span>
+                            </span>
+                            <button className="btn btn--ghost" onClick={() => setPwOpen(true)}>
+                                {user?.hasPassword ? t.changePassword : t.setPassword}
+                            </button>
+                        </div>
                         {GOOGLE_ON && (
                             <div className="setrow">
                                 <span className="setrow__ic"><Icon n="user" sm /></span>
@@ -153,6 +182,29 @@ const MyPage = () => {
                     </div>
                 </div>
             </div>
+
+            <Modal
+                open={pwOpen}
+                onClose={closePw}
+                title={user?.hasPassword ? t.changePassword : t.setPassword}
+                footer={<>
+                    <button className="btn btn--ghost" disabled={pwSaving} onClick={closePw}>{t.cancel}</button>
+                    <button className="btn btn--accent" disabled={pwSaving || pwValue.length < 6} onClick={savePw}>
+                        {pwSaving ? <BtnSpinner /> : t.save}
+                    </button>
+                </>}
+            >
+                <div className="field">
+                    <div className="input-icon">
+                        <Icon n="lock" sm />
+                        <input className={`input${pwError ? " is-error" : ""}`} type="password" autoFocus value={pwValue}
+                            placeholder={t.newPasswordPlaceholder}
+                            onChange={(e) => { setPwValue(e.target.value); setPwError(""); }}
+                            onKeyDown={(e) => { if (e.key === "Enter") savePw(); }} />
+                    </div>
+                    {pwError && <span className="alert"><Icon n="x" sm /> {pwError}</span>}
+                </div>
+            </Modal>
         </main>
     );
 };

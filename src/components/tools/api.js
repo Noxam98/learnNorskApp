@@ -184,6 +184,7 @@ class ApiService {
     // Привязать/отвязать Google к текущему аккаунту (требует авторизации).
     linkGoogle(credential) { return this._send('POST', '/me/link_google', { credential }); }
     unlinkGoogle() { return this._send('POST', '/me/unlink_google'); }
+    setPassword(password) { return this._send('POST', '/me/set_password', { password }); }
 
     async getProtectedData() {
         const response = await this.apiRequest('/me');
