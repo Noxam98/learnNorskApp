@@ -31,6 +31,9 @@ export const NavigationBar = () => {
                     <Link className={`nav__link${pathname === "/pool" ? " is-active" : ""}`} to="/pool">
                         <Icon n="library" sm /> <span>{t.navBar.base}</span>
                     </Link>
+                    <Link className={`nav__link${pathname === "/online" ? " is-active" : ""}`} to="/online">
+                        <Icon n="globe" sm /> <span>{t.navBar.online || "Онлайн"}</span>
+                    </Link>
                 </nav>
                 <div className="nav__spacer" />
                 {user?.isAdmin && (

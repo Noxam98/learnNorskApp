@@ -12,6 +12,7 @@ import Toast from "./components/tools/error.jsx";
 import { WordListPage } from "./pages/WordListPage.jsx";
 import { PoolPage } from "./pages/PoolPage.jsx";
 import { GamePage } from "./pages/GamePage.jsx";
+import { OnlinePage } from "./pages/OnlinePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import MyPage from "./pages/MyPage.jsx";
@@ -61,6 +62,7 @@ function App() {
             <Route path="/words" element={<WordListPage />} />
             <Route path="/pool" element={<PoolPage />} />
             <Route path="/game" element={<GamePage />} />
+            <Route path="/online" element={<OnlinePage />} />
             <Route path="/authorization" element={<LoginPage />} />
             <Route path="/registration" element={<RegisterPage />} />
             <Route path="/mypage" element={<MyPage />} />

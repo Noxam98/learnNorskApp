@@ -72,7 +72,7 @@ export const interfaceTranslate = {
         addWordsHere: 'Словарь пуст. Впишите слово или несколько в поле выше — переведём, озвучим и добавим.',
         orFromBase: 'Или выберите готовые в',
         inputPlaceholder: 'Слово, несколько или тема…',
-        navBar: { words: 'Мой словарь', game: 'Игра', base: 'База слов', profile: 'Профиль' },
+        navBar: { words: 'Мой словарь', game: 'Игра', base: 'База слов', profile: 'Профиль', online: 'Онлайн' },
         pos: { noun: 'сущ.', verb: 'гл.', adj: 'прил.', phrase: 'фраза', other: 'проч.' },
         selectWordsTitle: "Выберите слова для игры",
         selectWordsDesc: "Отметьте слова из любых словарей — мы покажем их по-норвежски, а вы введёте перевод. Минимум 10 слов.",
@@ -140,7 +140,21 @@ export const interfaceTranslate = {
         pitchReg: "Добавляйте норвежские слова, а переводы и часть речи подберёт ИИ. Тренируйтесь в игре, когда наберёте десяток.",
         haveAccount: "Уже есть аккаунт?",
         noAccountQ: "Нет аккаунта?",
-        errors: { dictWasExist: 'Данное имя уже есть в списке.' }
+        errors: { dictWasExist: 'Данное имя уже есть в списке.' },
+        online: {
+            title: "Онлайн", roomsCount: "комнат", create: "Создать комнату", roomName: "Название",
+            noRooms: "Пока нет открытых комнат", players: "Игроки", you: "вы", ready: "готов",
+            notReady: "не готов", imReady: "Я готов", cancelReady: "Не готов", needPlayers: "Нужно ≥2 игроков",
+            leave: "Выйти", starting: "Старт через", question: "Вопрос", leaderboard: "Лидеры",
+            podium: "Итоги", toLobby: "В лобби", waitOthers: "Ждём остальных…", inGame: "идёт игра",
+            wordsShort: "сл.", direction: "Направление", dirNo2Int: "Норвежское → перевод",
+            dirInt2No: "Перевод → норвежское", level: "Уровень", anyLevel: "Любой", topic: "Тема",
+            anyTopic: "Любая", words: "Слов", maxPlayers: "Макс. игроков", private: "Приватная",
+            privateDesc: "Не показывать в списке", connecting: "Подключение…",
+            games: { quiz: "Викторина" }, genericError: "Ошибка",
+            room_not_found: "Комната не найдена", room_in_game: "Игра уже идёт",
+            room_full: "Комната заполнена", not_enough_words: "Недостаточно слов для этих настроек",
+        }
     },
     en: {
         guessedStats: ["guessed", "of"],
@@ -217,7 +231,7 @@ export const interfaceTranslate = {
         addWordsHere: 'Your dictionary is empty. Type a word or several in the field above — we’ll translate, voice and add them.',
         orFromBase: 'Or pick ready ones from the',
         inputPlaceholder: 'A word, several, or a topic…',
-        navBar: { words: 'My dictionary', game: 'Game', base: 'Word base', profile: 'Profile' },
+        navBar: { words: 'My dictionary', game: 'Game', base: 'Word base', profile: 'Profile', online: 'Online' },
         pos: { noun: 'noun', verb: 'verb', adj: 'adj.', phrase: 'phrase', other: 'other' },
         selectWordsTitle: "Choose words to play",
         selectWordsDesc: "Pick words from any dictionaries — we'll show them in Norwegian and you type the translation. At least 10 words.",
@@ -285,7 +299,21 @@ export const interfaceTranslate = {
         pitchReg: "Add Norwegian words and AI fills in translations and part of speech. Train in the game once you have ten.",
         haveAccount: "Already have an account?",
         noAccountQ: "No account?",
-        errors: { dictWasExist: 'This name already exists in the list.' }
+        errors: { dictWasExist: 'This name already exists in the list.' },
+        online: {
+            title: "Online", roomsCount: "rooms", create: "Create room", roomName: "Name",
+            noRooms: "No open rooms yet", players: "Players", you: "you", ready: "ready",
+            notReady: "not ready", imReady: "I'm ready", cancelReady: "Not ready", needPlayers: "Need ≥2 players",
+            leave: "Leave", starting: "Starting in", question: "Question", leaderboard: "Leaders",
+            podium: "Results", toLobby: "To lobby", waitOthers: "Waiting for others…", inGame: "in game",
+            wordsShort: "w.", direction: "Direction", dirNo2Int: "Norwegian → translation",
+            dirInt2No: "Translation → Norwegian", level: "Level", anyLevel: "Any", topic: "Topic",
+            anyTopic: "Any", words: "Words", maxPlayers: "Max players", private: "Private",
+            privateDesc: "Hide from the list", connecting: "Connecting…",
+            games: { quiz: "Quiz" }, genericError: "Error",
+            room_not_found: "Room not found", room_in_game: "Game already started",
+            room_full: "Room is full", not_enough_words: "Not enough words for these settings",
+        }
     },
     ukr: {
         guessedStats: ["відгадано", "з"],
@@ -361,7 +389,7 @@ export const interfaceTranslate = {
         addWordsHere: 'Словник порожній. Впишіть слово чи кілька у поле вище — перекладемо, озвучимо й додамо.',
         orFromBase: 'Або виберіть готові з',
         inputPlaceholder: 'Слово, кілька або тема…',
-        navBar: { words: 'Мій словник', game: 'Гра', base: 'База слів', profile: 'Профіль' },
+        navBar: { words: 'Мій словник', game: 'Гра', base: 'База слів', profile: 'Профіль', online: 'Онлайн' },
         pos: { noun: 'ім.', verb: 'дієсл.', adj: 'прикм.', phrase: 'фраза', other: 'інше' },
         selectWordsTitle: "Виберіть слова для гри",
         selectWordsDesc: "Позначте слова з будь-яких словників — ми покажемо їх норвезькою, а ви введете переклад. Мінімум 10 слів.",
@@ -429,7 +457,21 @@ export const interfaceTranslate = {
         pitchReg: "Додавайте норвезькі слова, а переклади й частину мови підбере ШІ. Тренуйтеся у грі, коли назбираєте десяток.",
         haveAccount: "Вже є акаунт?",
         noAccountQ: "Немає акаунта?",
-        errors: { dictWasExist: 'Ця назва вже є у списку.' }
+        errors: { dictWasExist: 'Ця назва вже є у списку.' },
+        online: {
+            title: "Онлайн", roomsCount: "кімнат", create: "Створити кімнату", roomName: "Назва",
+            noRooms: "Поки немає відкритих кімнат", players: "Гравці", you: "ви", ready: "готовий",
+            notReady: "не готовий", imReady: "Я готовий", cancelReady: "Не готовий", needPlayers: "Потрібно ≥2 гравців",
+            leave: "Вийти", starting: "Старт через", question: "Питання", leaderboard: "Лідери",
+            podium: "Підсумки", toLobby: "У лобі", waitOthers: "Чекаємо на інших…", inGame: "гра триває",
+            wordsShort: "сл.", direction: "Напрямок", dirNo2Int: "Норвезьке → переклад",
+            dirInt2No: "Переклад → норвезьке", level: "Рівень", anyLevel: "Будь-який", topic: "Тема",
+            anyTopic: "Будь-яка", words: "Слів", maxPlayers: "Макс. гравців", private: "Приватна",
+            privateDesc: "Не показувати у списку", connecting: "Підключення…",
+            games: { quiz: "Вікторина" }, genericError: "Помилка",
+            room_not_found: "Кімнату не знайдено", room_in_game: "Гра вже триває",
+            room_full: "Кімната заповнена", not_enough_words: "Недостатньо слів для цих налаштувань",
+        }
     },
     pl: {
         guessedStats: ["odgadnięto", "z"],
@@ -505,7 +547,7 @@ export const interfaceTranslate = {
         addWordsHere: 'Słownik jest pusty. Wpisz słowo lub kilka w polu powyżej — przetłumaczymy, udźwiękowimy i dodamy.',
         orFromBase: 'Albo wybierz gotowe z',
         inputPlaceholder: 'Słowo, kilka lub temat…',
-        navBar: { words: 'Mój słownik', game: 'Gra', base: 'Baza słów', profile: 'Profil' },
+        navBar: { words: 'Mój słownik', game: 'Gra', base: 'Baza słów', profile: 'Profil', online: 'Online' },
         pos: { noun: 'rzecz.', verb: 'czas.', adj: 'przym.', phrase: 'fraza', other: 'inne' },
         selectWordsTitle: "Wybierz słowa do gry",
         selectWordsDesc: "Zaznacz słowa z dowolnych słowników — pokażemy je po norwesku, a Ty wpiszesz tłumaczenie. Minimum 10 słów.",
@@ -573,7 +615,21 @@ export const interfaceTranslate = {
         pitchReg: "Dodawaj norweskie słowa, a AI dobierze tłumaczenia i część mowy. Trenuj w grze, gdy uzbierasz dziesięć.",
         haveAccount: "Masz już konto?",
         noAccountQ: "Nie masz konta?",
-        errors: { dictWasExist: 'Ta nazwa już istnieje na liście.' }
+        errors: { dictWasExist: 'Ta nazwa już istnieje na liście.' },
+        online: {
+            title: "Online", roomsCount: "pokoi", create: "Utwórz pokój", roomName: "Nazwa",
+            noRooms: "Brak otwartych pokoi", players: "Gracze", you: "ty", ready: "gotowy",
+            notReady: "niegotowy", imReady: "Jestem gotów", cancelReady: "Niegotowy", needPlayers: "Potrzeba ≥2 graczy",
+            leave: "Wyjdź", starting: "Start za", question: "Pytanie", leaderboard: "Liderzy",
+            podium: "Wyniki", toLobby: "Do lobby", waitOthers: "Czekamy na innych…", inGame: "gra trwa",
+            wordsShort: "sł.", direction: "Kierunek", dirNo2Int: "Norweskie → tłumaczenie",
+            dirInt2No: "Tłumaczenie → norweskie", level: "Poziom", anyLevel: "Dowolny", topic: "Temat",
+            anyTopic: "Dowolny", words: "Słowa", maxPlayers: "Maks. graczy", private: "Prywatny",
+            privateDesc: "Ukryj z listy", connecting: "Łączenie…",
+            games: { quiz: "Quiz" }, genericError: "Błąd",
+            room_not_found: "Nie znaleziono pokoju", room_in_game: "Gra już trwa",
+            room_full: "Pokój pełny", not_enough_words: "Za mało słów dla tych ustawień",
+        }
     },
     lt: {
         guessedStats: ["atspėta", "iš"],
@@ -645,7 +701,7 @@ export const interfaceTranslate = {
         addWordsHere: 'Žodynas tuščias. Įveskite žodį ar kelis laukelyje viršuje — išversime, įgarsinsime ir pridėsime.',
         orFromBase: 'Arba pasirinkite iš',
         inputPlaceholder: 'Žodis, keli ar tema…',
-        navBar: { words: 'Mano žodynas', game: 'Žaidimas', base: 'Žodžių bazė', profile: 'Profilis' },
+        navBar: { words: 'Mano žodynas', game: 'Žaidimas', base: 'Žodžių bazė', profile: 'Profilis', online: 'Internetu' },
         pos: { noun: 'dkt.', verb: 'veiks.', adj: 'būdv.', phrase: 'frazė', other: 'kita' },
         selectWordsTitle: "Pasirinkite žodžius žaidimui",
         selectWordsDesc: "Pažymėkite žodžius iš bet kurių žodynų — parodysime juos norvegiškai, o jūs įvesite vertimą. Bent 10 žodžių.",
@@ -713,6 +769,20 @@ export const interfaceTranslate = {
         pitchReg: "Pridėkite norvegiškų žodžių, o DI parinks vertimus ir kalbos dalį. Treniruokitės žaidime, kai turėsite dešimt.",
         haveAccount: "Jau turite paskyrą?",
         noAccountQ: "Neturite paskyros?",
-        errors: { dictWasExist: 'Šis pavadinimas jau yra sąraše.' }
+        errors: { dictWasExist: 'Šis pavadinimas jau yra sąraše.' },
+        online: {
+            title: "Internetu", roomsCount: "kambarių", create: "Sukurti kambarį", roomName: "Pavadinimas",
+            noRooms: "Kol kas nėra atvirų kambarių", players: "Žaidėjai", you: "jūs", ready: "pasiruošęs",
+            notReady: "nepasiruošęs", imReady: "Pasiruošęs", cancelReady: "Nepasiruošęs", needPlayers: "Reikia ≥2 žaidėjų",
+            leave: "Išeiti", starting: "Startas po", question: "Klausimas", leaderboard: "Lyderiai",
+            podium: "Rezultatai", toLobby: "Į lobį", waitOthers: "Laukiame kitų…", inGame: "vyksta žaidimas",
+            wordsShort: "ž.", direction: "Kryptis", dirNo2Int: "Norvegiškas → vertimas",
+            dirInt2No: "Vertimas → norvegiškas", level: "Lygis", anyLevel: "Bet koks", topic: "Tema",
+            anyTopic: "Bet kokia", words: "Žodžiai", maxPlayers: "Maks. žaidėjų", private: "Privatus",
+            privateDesc: "Nerodyti sąraše", connecting: "Jungiamasi…",
+            games: { quiz: "Viktorina" }, genericError: "Klaida",
+            room_not_found: "Kambarys nerastas", room_in_game: "Žaidimas jau prasidėjo",
+            room_full: "Kambarys pilnas", not_enough_words: "Per mažai žodžių šiems nustatymams",
+        }
     }
 };

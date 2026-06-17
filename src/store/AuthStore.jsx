@@ -35,6 +35,7 @@ const _userFrom = (me) => ({
     email: me.email || null,
     googleLinked: !!me.googleLinked,
     hasPassword: !!me.hasPassword,
+    onlinePrefs: me.onlinePrefs || null,
 });
 
 // Токенами владеет ApiService (единственный источник правды + localStorage).

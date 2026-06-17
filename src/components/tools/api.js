@@ -186,6 +186,13 @@ class ApiService {
     unlinkGoogle() { return this._send('POST', '/me/unlink_google'); }
     setPassword(password) { return this._send('POST', '/me/set_password', { password }); }
     setName(name) { return this._send('POST', '/me/name', { name }); }
+    setOnlinePrefs(prefs) { return this._send('POST', '/me/online_prefs', prefs); }
+
+    // URL WebSocket-а онлайн-раздела (токен и язык — в query, т.к. браузерный WS без заголовков).
+    onlineSocketUrl(lang) {
+        const base = this.baseUrl.replace(/^http/, 'ws');
+        return `${base}/ws/online?token=${encodeURIComponent(this.accessToken || '')}&lang=${encodeURIComponent(lang || 'ru')}`;
+    }
 
     async getProtectedData() {
         const response = await this.apiRequest('/me');
