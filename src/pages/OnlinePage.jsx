@@ -10,7 +10,7 @@ import api from "../components/tools/api.js";
 import { playSound, playWin, preloadSounds } from "../components/tools/sound.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
-const DEFAULT_SETTINGS = { game: "quiz", dir: "no2int", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
+const DEFAULT_SETTINGS = { game: "quiz", dir: "no2int", source: "pool", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
 
 // Полноэкранный игровой контейнер в теме приложения (а не в тёмной теме обычных игр).
 const SCREEN = {
@@ -293,7 +293,7 @@ export const OnlinePage = () => {
                     <div className="phead__name">{room.name}</div>
                     <div className="phead__sub">
                         {(to.games?.[s.game]) || s.game} · {s.dir === "int2no" ? (to.dirInt2No || "перевод → норв.") : (to.dirNo2Int || "норв. → перевод")} · {s.count} {to.wordsShort || "сл."}
-                        {s.level ? ` · ${s.level}` : ""}{s.topic ? ` · ${t.topics?.[s.topic] || s.topic}` : ""}
+                        {s.source === "dict" ? ` · ${to.sourceDict || "мои словари"}` : `${s.level ? ` · ${s.level}` : ""}${s.topic ? ` · ${t.topics?.[s.topic] || s.topic}` : ""}`}
                     </div>
                 </div>
                 {amHost && <button className="btn btn--ghost" onClick={() => setEditOpen(true)} title={to.roomSettings || "Настройки комнаты"}><Icon n="settings" sm /></button>}
@@ -348,7 +348,7 @@ export const OnlinePage = () => {
                         <span className="setrow__meta">
                             <span className="setrow__t">{r.name}</span>
                             <span className="setrow__d">
-                                {(to.games?.[r.game]) || r.game} · {r.count} {to.wordsShort || "сл."}{r.level ? ` · ${r.level}` : ""}{r.topic ? ` · ${t.topics?.[r.topic] || r.topic}` : ""}
+                                {(to.games?.[r.game]) || r.game} · {r.count} {to.wordsShort || "сл."}{r.source === "dict" ? ` · ${to.sourceDict || "мои словари"}` : `${r.level ? ` · ${r.level}` : ""}${r.topic ? ` · ${t.topics?.[r.topic] || r.topic}` : ""}`}
                                 {r.state !== "lobby" ? ` · ${to.inGame || "идёт игра"}` : ""}
                             </span>
                         </span>
@@ -385,16 +385,23 @@ const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, conf
                 <option value="no2int">{to.dirNo2Int || "Норвежское → перевод"}</option>
                 <option value="int2no">{to.dirInt2No || "Перевод → норвежское"}</option>
             </select></div>
-        <div className="field"><label className="label">{to.level || "Уровень"}</label>
-            <select className="input" value={s.level} onChange={(e) => set("level", e.target.value)}>
-                <option value="">{to.anyLevel || "Любой"}</option>
-                {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
+        <div className="field"><label className="label">{to.wordSource || "Источник слов"}</label>
+            <select className="input" value={s.source} onChange={(e) => set("source", e.target.value)}>
+                <option value="pool">{to.sourcePool || "Общий пул"}</option>
+                <option value="dict">{to.sourceDict || "Мои словари"}</option>
             </select></div>
-        <div className="field"><label className="label">{to.topic || "Тема"}</label>
-            <select className="input" value={s.topic} onChange={(e) => set("topic", e.target.value)}>
-                <option value="">{to.anyTopic || "Любая"}</option>
-                {Object.keys(topics).map((k) => <option key={k} value={k}>{topics[k]}</option>)}
-            </select></div>
+        {s.source !== "dict" && <>
+            <div className="field"><label className="label">{to.level || "Уровень"}</label>
+                <select className="input" value={s.level} onChange={(e) => set("level", e.target.value)}>
+                    <option value="">{to.anyLevel || "Любой"}</option>
+                    {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
+                </select></div>
+            <div className="field"><label className="label">{to.topic || "Тема"}</label>
+                <select className="input" value={s.topic} onChange={(e) => set("topic", e.target.value)}>
+                    <option value="">{to.anyTopic || "Любая"}</option>
+                    {Object.keys(topics).map((k) => <option key={k} value={k}>{topics[k]}</option>)}
+                </select></div>
+        </>}
         <div className="field"><label className="label">{to.words || "Слов"}: {s.count}</label>
             <input type="range" min={3} max={20} value={s.count} onChange={(e) => set("count", +e.target.value)} style={{ width: "100%" }} /></div>
         <div className="field"><label className="label">{to.questionTime || "Время на вопрос"}: {s.qtime}{to.secUnit || "с"}</label>
