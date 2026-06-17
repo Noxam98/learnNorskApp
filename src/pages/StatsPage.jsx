@@ -93,7 +93,7 @@ export const StatsPage = () => {
                     <Bar value={p.tts} total={p.total} label="С озвучкой" />
                     <Bar value={p.classified} total={p.total} label="Классифицировано (уровень)" />
                     <Bar value={p.description} total={p.total} label="С описанием" />
-                    <Bar value={p.forms} total={p.total} label="С грамм. формами" />
+                    <Bar value={p.forms} total={p.formable ?? p.total} label="С грамм. формами (сущ./глаг./прил.)" />
                 </div>
 
                 <div className="card" style={{ padding: "var(--sp-5)" }}>

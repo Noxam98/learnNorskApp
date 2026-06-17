@@ -214,6 +214,13 @@
 .pos--noun   { color: var(--pos-noun);   background: var(--pos-noun-bg); }
 .pos--verb   { color: var(--pos-verb);   background: var(--pos-verb-bg); }
 .pos--adj    { color: var(--pos-adj);    background: var(--pos-adj-bg); }
+.pos--adv    { color: var(--pos-adv);    background: var(--pos-adv-bg); }
+.pos--prep   { color: var(--pos-prep);   background: var(--pos-prep-bg); }
+.pos--conj   { color: var(--pos-conj);   background: var(--pos-conj-bg); }
+.pos--pron   { color: var(--pos-pron);   background: var(--pos-pron-bg); }
+.pos--det    { color: var(--pos-det);    background: var(--pos-det-bg); }
+.pos--num    { color: var(--pos-num);    background: var(--pos-num-bg); }
+.pos--intj   { color: var(--pos-intj);   background: var(--pos-intj-bg); }
 .pos--other  { color: var(--pos-other);  background: var(--pos-other-bg); }
 
 /* ---------- Card surfaces ---------- */

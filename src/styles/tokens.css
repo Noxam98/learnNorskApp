@@ -75,6 +75,13 @@
   --pos-noun:      #3C7A4E;  --pos-noun-bg:    #E4F0E6;
   --pos-verb:      #A9781A;  --pos-verb-bg:    #F6EBCE;
   --pos-adj:       #5E54B8;  --pos-adj-bg:     #E8E5F6;
+  --pos-adv:       #C75B33;  --pos-adv-bg:     #F8E8DF;
+  --pos-prep:      #2F6FB0;  --pos-prep-bg:    #E2ECF7;
+  --pos-conj:      #8A5A3C;  --pos-conj-bg:    #F1E6DD;
+  --pos-pron:      #A93F9C;  --pos-pron-bg:    #F6E2F2;
+  --pos-det:       #6F7D1F;  --pos-det-bg:     #EFF1D8;
+  --pos-num:       #B23A3A;  --pos-num-bg:     #F8E1E1;
+  --pos-intj:      #D14F6F;  --pos-intj-bg:    #FAE4E9;
   --pos-other:     #616A63;  --pos-other-bg:   #E9ECE8;
 
   /* ---- Game · dark focus mode ---- */
@@ -159,6 +166,13 @@
   --pos-noun:   #6FC78A;  --pos-noun-bg:   #173326;
   --pos-verb:   #D8AD4E;  --pos-verb-bg:   #332B14;
   --pos-adj:    #A79CF0;  --pos-adj-bg:    #25224A;
+  --pos-adv:    #E6925F;  --pos-adv-bg:    #33231A;
+  --pos-prep:   #6FA8E0;  --pos-prep-bg:   #16263A;
+  --pos-conj:   #D09A6E;  --pos-conj-bg:   #2E2419;
+  --pos-pron:   #E089CF;  --pos-pron-bg:   #321B2D;
+  --pos-det:    #BFC861;  --pos-det-bg:    #2A2D12;
+  --pos-num:    #E07A7A;  --pos-num-bg:    #331717;
+  --pos-intj:   #EE8AA0;  --pos-intj-bg:   #331A20;
   --pos-other:  #9AA8A1;  --pos-other-bg:  #232C28;
 
   --shadow-xs: 0 1px 2px rgba(0,0,0,.4);
