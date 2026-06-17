@@ -4,13 +4,14 @@ import confetti from "canvas-confetti";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { useAuthStore } from "../store/AuthStore.jsx";
+import { useWordsStore } from "../store/wordStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
 import api from "../components/tools/api.js";
 import { playSound, playWin, preloadSounds } from "../components/tools/sound.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
-const DEFAULT_SETTINGS = { game: "quiz", dir: "no2int", source: "pool", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
+const DEFAULT_SETTINGS = { game: "quiz", dir: "no2int", source: "pool", dictId: "", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
 
 // Полноэкранный игровой контейнер в теме приложения (а не в тёмной теме обычных игр).
 const SCREEN = {
@@ -91,6 +92,7 @@ export const OnlinePage = () => {
     const t = interfaceTranslate[lang];
     const to = t.online || {};
     const savedPrefs = useAuthStore((s) => s.user?.onlinePrefs);
+    const dictList = useWordsStore((s) => s.dictList);
 
     const wsRef = useRef(null);
     const [connected, setConnected] = useState(false);
@@ -346,7 +348,7 @@ export const OnlinePage = () => {
                 <button className="btn btn--outline" onClick={() => send({ type: "leave" })}><Icon n="arrow-left" sm /> {to.leave || "Выйти"}</button>
             </div>
 
-            <RoomForm open={editOpen} onClose={() => setEditOpen(false)} t={t} to={to}
+            <RoomForm open={editOpen} onClose={() => setEditOpen(false)} t={t} to={to} dicts={dictList}
                 title={to.roomSettings || "Настройки комнаты"} confirmLabel={t.save}
                 initial={s} initialName={room.name}
                 onConfirm={(name, settings) => {
@@ -404,7 +406,7 @@ export const OnlinePage = () => {
             </div></div>
         ) : <p className="muted" style={{ textAlign: "center", marginTop: "var(--sp-5)" }}>{to.noRooms || "Пока нет открытых комнат"}</p>}
 
-        <RoomForm open={createOpen} onClose={() => setCreateOpen(false)} t={t} to={to}
+        <RoomForm open={createOpen} onClose={() => setCreateOpen(false)} t={t} to={to} dicts={dictList}
             initial={savedPrefs} onConfirm={(name, settings) => {
                 send({ type: "create", name, settings });
                 api.setOnlinePrefs(settings).catch(() => {});
@@ -413,7 +415,7 @@ export const OnlinePage = () => {
     </main>;
 };
 
-const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, confirmLabel, onConfirm }) => {
+const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, confirmLabel, onConfirm, dicts = [] }) => {
     const [name, setName] = useState(initialName);
     const [s, setS] = useState({ ...DEFAULT_SETTINGS, ...(initial || {}) });
     useEffect(() => { if (open) { setS({ ...DEFAULT_SETTINGS, ...(initial || {}) }); setName(initialName); } }, [open]); // eslint-disable-line
@@ -436,6 +438,13 @@ const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, conf
                 <option value="pool">{to.sourcePool || "Общий пул"}</option>
                 <option value="dict">{to.sourceDict || "Мои словари"}</option>
             </select></div>
+        {s.source === "dict" && (
+            <div className="field"><label className="label">{to.dictionary || "Словарь"}</label>
+                <select className="input" value={s.dictId} onChange={(e) => set("dictId", e.target.value)}>
+                    <option value="">{to.allDicts || "Все словари"}</option>
+                    {dicts.map((d) => <option key={d.id} value={d.id}>{d.dictName === "default" ? t.defaultDict : d.dictName} ({d.words?.length || 0})</option>)}
+                </select></div>
+        )}
         {s.source !== "dict" && <>
             <div className="field"><label className="label">{to.level || "Уровень"}</label>
                 <select className="input" value={s.level} onChange={(e) => set("level", e.target.value)}>
