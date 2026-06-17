@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import confetti from "canvas-confetti";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
@@ -42,6 +42,22 @@ function fireConfetti() {
         confetti({ particleCount: 6, angle: 120, spread: 60, origin: { x: 1 } });
         if (Date.now() < end) requestAnimationFrame(frame);
     })();
+}
+
+// Чип игрока: серый, пока не ответил; ярче — когда ответил. layoutId → плавно переезжает
+// из верхнего ряда на кнопку при показе ответов.
+function PlayerChip({ name, bright }) {
+    return (
+        <motion.div layoutId={`pc-${name}`} transition={{ type: "spring", stiffness: 500, damping: 34 }}
+            style={{
+                padding: "3px 10px", borderRadius: 999, fontSize: "var(--fs-12)", fontWeight: 700,
+                whiteSpace: "nowrap", border: "1px solid var(--border)",
+                background: bright ? "var(--ember-600)" : "var(--surface-3)",
+                color: bright ? "#fff" : "var(--ink-3)",
+            }}>
+            {name}
+        </motion.div>
+    );
 }
 
 // Таймер вопроса: секционная полоса (по секунде на секцию) + цифра, едущая вслед за фронтом.
@@ -88,6 +104,9 @@ export const OnlinePage = () => {
     const [createOpen, setCreateOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);   // секунды до конца вопроса (визуальный таймер)
+    const [answered, setAnswered] = useState([]);  // имена ответивших на текущий вопрос
+    const answeredRef = useRef([]);
+    const roomRef = useRef(null);                   // актуальная комната для колбэков WS
 
     const send = useCallback((obj) => {
         const ws = wsRef.current;
@@ -104,11 +123,24 @@ export const OnlinePage = () => {
             switch (m.type) {
                 case "rooms": setRooms(m.rooms || []); break;
                 case "room":
+                    roomRef.current = m.room;
                     setRoom(m.room);
                     if (m.room.state === "lobby") { setCountdown(null); setQuestion(null); setReveal(null); }
                     break;
                 case "countdown": setCountdown(m.sec); playSound(m.sec === 1 ? "start" : "tick"); break;
-                case "question": setQuestion(m); setChosen(null); setReveal(null); setPodium(null); setCountdown(null); playSound("question"); break;
+                case "question":
+                    setQuestion(m); setChosen(null); setReveal(null); setPodium(null); setCountdown(null);
+                    answeredRef.current = []; setAnswered([]);
+                    playSound("question");
+                    break;
+                case "answered": {
+                    const prev = answeredRef.current;
+                    const names = m.names || [];
+                    const myName = roomRef.current?.players?.find((p) => p.isYou)?.name;
+                    if (names.some((n) => !prev.includes(n) && n !== myName)) playSound("select");  // чужой ответ
+                    answeredRef.current = names; setAnswered(names);
+                    break;
+                }
                 case "reveal": setReveal(m); playSound(m.gained > 0 ? "correct" : "wrong"); break;
                 case "ended": setPodium(m.podium); setQuestion(null); setReveal(null); break;
                 case "left": setRoom(null); setQuestion(null); setReveal(null); setPodium(null); setCountdown(null); break;
@@ -224,8 +256,14 @@ export const OnlinePage = () => {
         if (question) {
             const opts = question.options || [];
             return <main style={{ ...SCREEN, justifyContent: "flex-start", paddingTop: "var(--sp-7)" }}>
-                <div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
+                <LayoutGroup><div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
                     {!reveal && <TimerBar total={question.time || 15} left={timeLeft} />}
+                    {/* Ряд игроков под таймером: серые → ярче при ответе. На reveal — переедут на кнопки. */}
+                    {!reveal && (
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: "var(--sp-5)", minHeight: 26 }}>
+                            {(room.players || []).map((p) => <PlayerChip key={p.name} name={p.name} bright={answered.includes(p.name)} />)}
+                        </div>
+                    )}
                     <AnimatePresence mode="wait">
                         <motion.div key={question.i}
                             initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.04 }}
@@ -239,7 +277,7 @@ export const OnlinePage = () => {
                                 {question.prompt}
                             </motion.h1>
                             <motion.div variants={OPT_LIST} initial="hidden" animate="show"
-                                style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--sp-3)" }}>
+                                style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--sp-3)", rowGap: "var(--sp-5)" }}>
                                 {opts.map((opt, i) => {
                                     let kind = "idle";
                                     if (reveal) kind = i === reveal.correct ? "correct" : (i === chosen ? "wrong" : "dim");
@@ -248,10 +286,18 @@ export const OnlinePage = () => {
                                         : kind === "correct" ? { scale: [1, 1.12, 1], boxShadow: ["0 0 0 rgba(0,0,0,0)", "0 0 28px var(--success)", "0 0 0 rgba(0,0,0,0)"] }
                                             : kind === "wrong" ? { x: [0, -9, 9, -6, 6, 0] }
                                                 : { opacity: 0.7 };
-                                    return <motion.button key={i} variants={OPT_ITEM} animate={revAnim}
-                                        whileTap={!reveal && chosen == null ? { scale: 0.94 } : undefined}
-                                        transition={{ duration: 0.5 }} style={choiceStyle(kind)}
-                                        disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>{opt}</motion.button>;
+                                    const voters = reveal ? (reveal.votes?.[question.keys?.[i]] || []) : [];
+                                    return <div key={i} style={{ position: "relative" }}>
+                                        <motion.button variants={OPT_ITEM} animate={revAnim}
+                                            whileTap={!reveal && chosen == null ? { scale: 0.94 } : undefined}
+                                            transition={{ duration: 0.5 }} style={choiceStyle(kind)}
+                                            disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>{opt}</motion.button>
+                                        {voters.length > 0 && (
+                                            <div style={{ position: "absolute", left: 0, right: 0, bottom: -12, display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "center" }}>
+                                                {voters.map((n) => <PlayerChip key={n} name={n} bright />)}
+                                            </div>
+                                        )}
+                                    </div>;
                                 })}
                             </motion.div>
                         </motion.div>
@@ -281,7 +327,7 @@ export const OnlinePage = () => {
                             </div>
                         </motion.div>
                     )}
-                </div>
+                </div></LayoutGroup>
             </main>;
         }
         // Лобби
