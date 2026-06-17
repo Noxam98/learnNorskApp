@@ -21,16 +21,6 @@ const TOPICS_TOGGLE = { ru: "Темы", ukr: "Теми", en: "Topics", pl: "Tema
 
 const topicLabel = (t, key) => t.topics?.[key] || key;
 
-// Компактная строка грамматических форм слова (по части речи).
-const formsLine = (w) => {
-    const f = w.forms;
-    if (!f) return "";
-    if (f.pos === "noun") return [f.gender && `${f.gender} ${w.word}`, f.indef_pl].filter(Boolean).join(" · ");
-    if (f.pos === "verb") return [`å ${w.word}`, f.present, f.past, f.perfect].filter(Boolean).join(" · ");
-    if (f.pos === "adjective") return [f.comparative, f.superlative].filter(Boolean).join(" · ");
-    return "";
-};
-
 // Окно номеров страниц вокруг текущей.
 const pageWindow = (page, totalPages) => {
     const span = 2, out = [];
@@ -307,7 +297,6 @@ export const PoolPage = () => {
                                         {isAdmin && !w.hasTts && <span className="chip" style={{ background: "#e0e7ff", color: "#3730a3" }} title="нет озвучки">tts</span>}
                                     </span>
                                     <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
-                                    {formsLine(w) && <span className="muted" style={{ fontSize: "var(--fs-12)" }}>{formsLine(w)}</span>}
                                 </div>
                                 <div className="wcard__actions" onClick={(e) => e.stopPropagation()}>
                                     <button className="iconbtn" aria-label={t.description} title={t.description}

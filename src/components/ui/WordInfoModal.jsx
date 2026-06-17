@@ -96,18 +96,18 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     };
 
     const titleNode = (
-        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
+        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "wrap" }}>
             {view?.no || word || ""}
             <SpeakButton text={view?.no || word} hasTts={view?.hasTts}
                 ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
             <button
-                className={`iconbtn${inDict ? " is-added" : ""}`}
+                className={`btn btn--sm ${inDict ? "btn--danger-ghost" : "btn--primary"}`}
                 disabled={dictBusy || !currentDictName}
-                aria-label={inDict ? t.removeFromDict : t.addToDict}
                 title={!currentDictName ? t.addToDict : (inDict ? t.removeFromDict : t.addToDict)}
                 onClick={toggleDict}
             >
-                {dictBusy ? <BtnSpinner /> : <Icon n={inDict ? "check" : "plus"} />}
+                {dictBusy ? <BtnSpinner /> : <Icon n={inDict ? "trash" : "plus"} sm />}
+                {" "}{inDict ? t.removeFromDict : t.addToDict}
             </button>
         </span>
     );
@@ -115,7 +115,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     return (
         <Modal open={open} onClose={onClose} title={titleNode}>
             {view?.translate?.[lang]?.length > 0 && (
-                <p style={{ margin: "0 0 var(--sp-3)", fontSize: "var(--fs-16)", fontWeight: 600, color: "var(--ink)" }}>
+                <p style={{ margin: "calc(-1 * var(--sp-3)) 0 var(--sp-4)", fontSize: "var(--fs-13)", color: "var(--ink-3)" }}>
                     {view.translate[lang].join(", ")}
                 </p>
             )}
@@ -170,7 +170,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                         aria-expanded={formsOpen}
                     >
                         <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
-                            <Icon n="layers" sm /> {t.grammForms || "Грамматические формы"}
+                            <Icon n="type" sm /> {t.grammForms || "Грамматические формы"}
                         </span>
                         <Icon n="chevron-down" sm style={{ transition: "transform .18s", transform: formsOpen ? "rotate(180deg)" : "none" }} />
                     </button>

@@ -6,6 +6,7 @@ import { useWordsStore } from "../store/wordStore";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
+import { WordInfoModal } from "../components/ui/WordInfoModal.jsx";
 import { Dots, BtnSpinner, CountdownRing } from "../components/ui/Spinner.jsx";
 import { SearchBox } from "../components/ui/SearchBox.jsx";
 import { matchWord } from "../components/tools/matchWord.js";
@@ -55,6 +56,7 @@ export const WordListPage = () => {
     const [sort, setSort] = useState("added");
     const [sortOpen, setSortOpen] = useState(false);
     const [search, setSearch] = useState("");
+    const [info, setInfo] = useState(null); // { no, wordId } — открытое инфо-окно слова (живёт на странице, не в карточке)
     const [suggestions, setSuggestions] = useState([]);
     // Фаза автокомплита: idle | counting (кольцо отсчёта дебаунса) | searching (запрос в пул)
     const [searchPhase, setSearchPhase] = useState("idle");
@@ -316,7 +318,8 @@ export const WordListPage = () => {
                 displayWords.length ? (
                     <div className="wordlist">
                         {displayWords.map((wordItem) => (
-                            <Card key={wordItem.id} wordItem={wordItem} languageTranslate={currentLanguage} />
+                            <Card key={wordItem.id} wordItem={wordItem} languageTranslate={currentLanguage}
+                                onInfo={(no, wordId) => setInfo({ no, wordId })} />
                         ))}
                     </div>
                 ) : (
@@ -400,6 +403,9 @@ export const WordListPage = () => {
             >
                 <p className="muted" style={{ margin: 0 }}>{confirm?.body}</p>
             </Modal>
+
+            <WordInfoModal open={!!info} word={info?.no} wordId={info?.wordId}
+                lang={currentLanguage} t={t} onClose={() => setInfo(null)} />
 
             <Error text={error} setText={setError} />
         </main>

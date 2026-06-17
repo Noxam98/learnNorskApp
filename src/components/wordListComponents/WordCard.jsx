@@ -4,19 +4,17 @@ import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { Modal } from "../ui/Modal.jsx";
-import { WordInfoModal } from "../ui/WordInfoModal.jsx";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { ttsLang } from "../ui/tts.js";
 import { posMeta, posLabel, nounArticle } from "../ui/pos.js";
 
-export const Card = ({ wordItem, languageTranslate }) => {
+export const Card = ({ wordItem, languageTranslate, onInfo }) => {
     const choseWord = useWordsStore((state) => state.choseWord);
     const editWord = useWordsStore((state) => state.editWord);
     const reportWord = useWordsStore((state) => state.reportWord);
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
 
-    const [descOpen, setDescOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
     const [draft, setDraft] = useState("");
 
@@ -41,7 +39,7 @@ export const Card = ({ wordItem, languageTranslate }) => {
 
     const openDescription = (e) => {
         e.stopPropagation();
-        setDescOpen(true);
+        onInfo?.(no, wordItem.id);
     };
 
     return (
@@ -75,9 +73,6 @@ export const Card = ({ wordItem, languageTranslate }) => {
                         ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
                 </div>
             </div>
-
-            <WordInfoModal open={descOpen} word={no} wordId={wordItem.id}
-                lang={currentLanguage} t={t} onClose={() => setDescOpen(false)} />
 
             <Modal
                 open={editOpen}
