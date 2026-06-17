@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Modal } from "./Modal.jsx";
 import { Icon } from "./Icon.jsx";
+import { SpeakButton } from "./SpeakButton.jsx";
 import { posFormsRows } from "./pos.js";
 import { BtnSpinner, Dots } from "./Spinner.jsx";
 import { useWordsStore } from "../../store/wordStore.jsx";
@@ -17,6 +18,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const removeFromDict = useWordsStore((s) => s.removeFromDict);
 
     const [view, setView] = useState(null); // { no, desc, descLoading, synonyms }
+    const [formsOpen, setFormsOpen] = useState(false); // аккордеон грамм. форм (скрыт по умолчанию)
     const [dictBusy, setDictBusy] = useState(false);
     const [diff, setDiff] = useState(null); // { with, loading, data } — разбор разницы с близким словом
     const [fixOpen, setFixOpen] = useState(false); // форма исправления описания
@@ -63,7 +65,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     const loadWord = (no, id) => {
         setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null });
-        setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint("");
+        setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); setFormsOpen(false);
         const fresh = (v) => v && v.no === no; // игнорируем ответы устаревшей навигации
         const descP = id ? api.getWordDescription(id) : api.getPoolDescription(no);
         const synP = id ? api.getSynonyms(id, { lang }) : api.getPoolSynonyms(no, { lang });
@@ -71,7 +73,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
-        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null } : v)).catch(() => {});
+        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts } : v)).catch(() => {});
     };
 
     useEffect(() => {
@@ -93,8 +95,16 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
         setDictBusy(false);
     };
 
+    const titleNode = (
+        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
+            {view?.no || word || ""}
+            <SpeakButton text={view?.no || word} hasTts={view?.hasTts}
+                ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
+        </span>
+    );
+
     return (
-        <Modal open={open} onClose={onClose} title={view?.no || word || ""}>
+        <Modal open={open} onClose={onClose} title={titleNode}>
             {(view?.level || view?.topics?.length > 0) && (
                 <div className="row wrap" style={{ gap: "6px", marginBottom: "var(--sp-3)" }}>
                     {view.level && <span className="chip lvl">{view.level}</span>}
@@ -140,15 +150,26 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
             {view?.forms && posFormsRows(view.no, view.forms).length > 0 && (
                 <div style={{ marginTop: "var(--sp-5)" }}>
-                    <div className="label" style={{ marginBottom: "var(--sp-2)" }}>{t.grammForms || "Грамматические формы"}</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "4px var(--sp-3)", fontSize: "var(--fs-14)" }}>
-                        {posFormsRows(view.no, view.forms).map(({ label, value }) => (
-                            <div key={label} style={{ display: "contents" }}>
-                                <span className="muted">{label}</span>
-                                <b>{value}</b>
-                            </div>
-                        ))}
-                    </div>
+                    <button
+                        className="forms-acc__head"
+                        onClick={() => setFormsOpen((o) => !o)}
+                        aria-expanded={formsOpen}
+                    >
+                        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
+                            <Icon n="layers" sm /> {t.grammForms || "Грамматические формы"}
+                        </span>
+                        <Icon n="chevron-down" sm style={{ transition: "transform .18s", transform: formsOpen ? "rotate(180deg)" : "none" }} />
+                    </button>
+                    {formsOpen && (
+                        <div className="forms-tbl">
+                            {posFormsRows(view.no, view.forms).map(({ label, value }) => (
+                                <div key={label} className="forms-tbl__row">
+                                    <span className="forms-tbl__label">{label}</span>
+                                    <span className="forms-tbl__val">{value}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 

@@ -194,6 +194,21 @@
 .diff-link:hover { color: var(--fjord-600); }
 .diff-link .ic { width: 14px; height: 14px; }
 
+/* Грамматические формы — аккордеон + таблица */
+.forms-acc__head { display: flex; align-items: center; justify-content: space-between; width: 100%;
+    padding: 10px var(--sp-3); border: 1px solid var(--surface-3); border-radius: var(--r-lg);
+    background: var(--surface-2); color: var(--ink); font-size: var(--fs-14); font-weight: 600;
+    cursor: pointer; transition: background .15s, border-color .15s; }
+.forms-acc__head:hover { background: var(--surface-3); border-color: var(--fjord-300, var(--surface-3)); }
+.forms-acc__head .ic { width: 15px; height: 15px; }
+.forms-tbl { margin-top: var(--sp-2); border: 1px solid var(--surface-3); border-radius: var(--r-lg); overflow: hidden; }
+.forms-tbl__row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3);
+    padding: 9px var(--sp-3); font-size: var(--fs-14); }
+.forms-tbl__row:nth-child(odd) { background: var(--surface-2); }
+.forms-tbl__row + .forms-tbl__row { border-top: 1px solid var(--surface-3); }
+.forms-tbl__label { color: var(--ink-3); font-size: var(--fs-13); white-space: nowrap; }
+.forms-tbl__val { color: var(--ink); font-weight: 700; text-align: right; }
+
 .pos { /* part of speech tag */ }
 .pos--phrase { color: var(--pos-phrase); background: var(--pos-phrase-bg); }
 .pos--noun   { color: var(--pos-noun);   background: var(--pos-noun-bg); }

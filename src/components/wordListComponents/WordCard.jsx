@@ -7,7 +7,7 @@ import { Modal } from "../ui/Modal.jsx";
 import { WordInfoModal } from "../ui/WordInfoModal.jsx";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { ttsLang } from "../ui/tts.js";
-import { posMeta, posLabel } from "../ui/pos.js";
+import { posMeta, posLabel, nounArticle } from "../ui/pos.js";
 
 export const Card = ({ wordItem, languageTranslate }) => {
     const choseWord = useWordsStore((state) => state.choseWord);
@@ -24,6 +24,7 @@ export const Card = ({ wordItem, languageTranslate }) => {
     const translation = wordItem.translate?.[languageTranslate]?.join(", ") || "";
     const { cls } = posMeta(wordItem.part_of_speech);
     const label = posLabel(wordItem.part_of_speech, t);
+    const article = nounArticle(wordItem.forms);
     const isSelected = !!wordItem?.techData?.isSelected;
 
     const openEdit = (e) => {
@@ -47,7 +48,10 @@ export const Card = ({ wordItem, languageTranslate }) => {
         <>
             <div className={`wcard${isSelected ? " is-selected" : ""}`} onClick={() => choseWord(wordItem.id)}>
                 <div className="wcard__body">
-                    <span className="wcard__word">{no.toLowerCase()}</span>
+                    <span className="wcard__word">
+                        {article && <span className="muted" style={{ fontWeight: 400 }}>{article} </span>}
+                        {no.toLowerCase()}
+                    </span>
                     <span className="wcard__meta">
                         <span className={`chip pos ${cls}`}>{label}</span>
                     </span>
