@@ -65,6 +65,7 @@ const MyPage = () => {
     const theme = useSystemStore((state) => state.theme);
     const showArticles = useSystemStore((state) => state.showArticles);
     const showVerbAa = useSystemStore((state) => state.showVerbAa);
+    const soundOn = useSystemStore((state) => state.soundOn);
     const dictList = useWordsStore((state) => state.dictList);
 
 
@@ -200,6 +201,11 @@ const MyPage = () => {
                             <span className="setrow__ic"><Icon n="type" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.showVerbAa}</span><span className="setrow__d">{t.showVerbAaDesc}</span></span>
                             <span className={`toggle${showVerbAa ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setShowVerbAa(!showVerbAa)} />
+                        </div>
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="volume" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{t.gameSounds}</span><span className="setrow__d">{t.gameSoundsDesc}</span></span>
+                            <span className={`toggle${soundOn ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setSoundOn(!soundOn)} />
                         </div>
                     </div>
                 </div>

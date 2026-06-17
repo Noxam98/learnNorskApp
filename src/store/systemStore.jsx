@@ -10,6 +10,7 @@ export const useSystemStore = create(persist(
         toast: "", // глобальное сообщение об ошибке (тост внизу слева); пусто = скрыт
         showArticles: true, // показывать артикль (en/ei/et) перед сущ. на чипах слов
         showVerbAa: true,    // показывать «å» перед глаголами на чипах слов
+        soundOn: true,       // звуки игры (онлайн-режим)
 
         setCurrentLanguage: (newLanguage) =>
             set(
@@ -26,6 +27,7 @@ export const useSystemStore = create(persist(
 
         setShowArticles: (v) => set(produce((state) => { state.showArticles = !!v; })),
         setShowVerbAa: (v) => set(produce((state) => { state.showVerbAa = !!v; })),
+        setSoundOn: (v) => set(produce((state) => { state.soundOn = !!v; })),
 
     }),
     {
@@ -34,7 +36,7 @@ export const useSystemStore = create(persist(
         // toast — эфемерный, в localStorage не сохраняем (иначе всплывёт после перезагрузки).
         partialize: (state) => ({
             currentLanguage: state.currentLanguage, theme: state.theme,
-            showArticles: state.showArticles, showVerbAa: state.showVerbAa,
+            showArticles: state.showArticles, showVerbAa: state.showVerbAa, soundOn: state.soundOn,
         }),
     }
 ));

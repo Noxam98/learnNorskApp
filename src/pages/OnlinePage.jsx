@@ -7,31 +7,10 @@ import { useAuthStore } from "../store/AuthStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
 import api from "../components/tools/api.js";
+import { playSound, playWin, preloadSounds } from "../components/tools/sound.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const DEFAULT_SETTINGS = { game: "quiz", dir: "no2int", level: "", topic: "", count: 7, maxPlayers: 4, private: false };
-
-// Короткий бип через Web Audio (для обратного отсчёта). Без аудио-ассетов.
-let _ac = null;
-function beep(freq = 880, dur = 0.09) {
-    try {
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        if (!Ctx) return;
-        _ac = _ac || new Ctx();
-        if (_ac.state === "suspended") _ac.resume();
-        const o = _ac.createOscillator(), g = _ac.createGain();
-        o.frequency.value = freq; o.connect(g); g.connect(_ac.destination);
-        g.gain.setValueAtTime(0.18, _ac.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, _ac.currentTime + dur);
-        o.start(); o.stop(_ac.currentTime + dur);
-    } catch { /* no-op */ }
-}
-
-// Звук ответа: верно — две восходящие ноты, неверно — низкий бзз.
-function sfx(ok) {
-    if (ok) { beep(660, 0.1); setTimeout(() => beep(990, 0.13), 90); }
-    else { beep(180, 0.24); }
-}
 
 // Полноэкранный игровой контейнер в теме приложения (а не в тёмной теме обычных игр).
 const SCREEN = {
@@ -127,9 +106,9 @@ export const OnlinePage = () => {
                     setRoom(m.room);
                     if (m.room.state === "lobby") { setCountdown(null); setQuestion(null); setReveal(null); }
                     break;
-                case "countdown": setCountdown(m.sec); beep(m.sec === 1 ? 1320 : 880); break;
-                case "question": setQuestion(m); setChosen(null); setReveal(null); setPodium(null); setCountdown(null); break;
-                case "reveal": setReveal(m); sfx(m.gained > 0); break;
+                case "countdown": setCountdown(m.sec); playSound(m.sec === 1 ? "start" : "tick"); break;
+                case "question": setQuestion(m); setChosen(null); setReveal(null); setPodium(null); setCountdown(null); playSound("question"); break;
+                case "reveal": setReveal(m); playSound(m.gained > 0 ? "correct" : "wrong"); break;
                 case "ended": setPodium(m.podium); setQuestion(null); setReveal(null); break;
                 case "left": setRoom(null); setQuestion(null); setReveal(null); setPodium(null); setCountdown(null); break;
                 case "error": case "game_error":
@@ -145,9 +124,13 @@ export const OnlinePage = () => {
     const answer = (i, ev) => {
         if (chosen != null || reveal) return;
         if (ev?.currentTarget?.blur) ev.currentTarget.blur();   // на смартфоне снимаем фокус с кнопки
+        playSound("select");
         setChosen(i);
         send({ type: "answer", q: question.i, choice: i });
     };
+
+    // Аудио предзагружаем при входе в комнату — к старту игры всё закешировано.
+    useEffect(() => { if (room) preloadSounds(); }, [room?.id]); // eslint-disable-line
 
     // Новый вопрос — снять фокус с кнопки прошлого экрана (иначе на мобиле она подсвечена).
     useEffect(() => {
@@ -173,7 +156,7 @@ export const OnlinePage = () => {
     // Салют синхронно с выездом первого места на подиуме (строки появляются со стаггером).
     useEffect(() => {
         if (!podium) return;
-        const id = setTimeout(fireConfetti, 400);
+        const id = setTimeout(() => { fireConfetti(); playWin(); }, 400);
         return () => clearTimeout(id);
     }, [podium]);
 
