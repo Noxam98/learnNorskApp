@@ -162,6 +162,29 @@ class ApiService {
         return data;
     }
 
+    // Вход/регистрация через Google: шлём ID-token, получаем нашу пару токенов.
+    async loginWithGoogle(credential) {
+        const response = await this.apiRequest('/auth/google', {
+            method: 'POST',
+            json: { credential },
+            throwHttpErrors: false,
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData?.detail || 'Google sign-in failed');
+        }
+        const data = await response.json();
+        if (!data.access_token || !data.refresh_token) {
+            throw new Error('Invalid login response');
+        }
+        this._setTokens(data.access_token, data.refresh_token);
+        return data;
+    }
+
+    // Привязать/отвязать Google к текущему аккаунту (требует авторизации).
+    linkGoogle(credential) { return this._send('POST', '/me/link_google', { credential }); }
+    unlinkGoogle() { return this._send('POST', '/me/unlink_google'); }
+
     async getProtectedData() {
         const response = await this.apiRequest('/me');
         return response.json();

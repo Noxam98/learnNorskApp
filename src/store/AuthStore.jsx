@@ -26,6 +26,16 @@ const getError = (error, currentLanguage) => {
     return (t['unexpectedError'] || '') + msg;
 };
 
+// Привести ответ /me к объекту user в сторе (включая email/привязку Google для настроек).
+const _userFrom = (me) => ({
+    username: me.username,
+    isAdmin: !!me.is_admin,
+    gamePrefs: me.gamePrefs || null,
+    email: me.email || null,
+    googleLinked: !!me.googleLinked,
+    hasPassword: !!me.hasPassword,
+});
+
 // Токенами владеет ApiService (единственный источник правды + localStorage).
 // Стор только зеркалит состояние для реактивности UI и НЕ персистит токены сам.
 export const useAuthStore = create((set, get) => ({
@@ -43,7 +53,7 @@ export const useAuthStore = create((set, get) => ({
         }
         try {
             const userData = await api.getProtectedData();
-            set({ user: { username: userData.username, isAdmin: !!userData.is_admin, gamePrefs: userData.gamePrefs || null }, accessToken: api.accessToken });
+            set({ user: _userFrom(userData), accessToken: api.accessToken });
             if (userData.theme === "light" || userData.theme === "dark") {
                 useSystemStore.getState().setTheme(userData.theme);  // тема юзера с сервера
             }
@@ -86,7 +96,7 @@ export const useAuthStore = create((set, get) => ({
             // подтянуть тему и роль юзера с сервера
             api.getProtectedData().then((me) => {
                 if (me?.theme === "light" || me?.theme === "dark") useSystemStore.getState().setTheme(me.theme);
-                if (me) set({ user: { username, isAdmin: !!me.is_admin } });
+                if (me) set({ user: _userFrom(me) });
             }).catch(() => {});
             return data;
         } catch (error) {
@@ -94,6 +104,32 @@ export const useAuthStore = create((set, get) => ({
             set({ authorizationError: getError(error, lang), isLoading: false });
             throw error;
         }
+    },
+
+    // Вход/регистрация через Google: credential (ID-token) от Google Identity Services.
+    loginWithGoogle: async (credential) => {
+        set({ isLoading: true, authorizationError: null });
+        try {
+            const data = await api.loginWithGoogle(credential);
+            set({ accessToken: data.access_token, isLoading: false });
+            const me = await api.getProtectedData().catch(() => null);
+            if (me) {
+                set({ user: _userFrom(me) });
+                if (me.theme === "light" || me.theme === "dark") useSystemStore.getState().setTheme(me.theme);
+            }
+            return data;
+        } catch (error) {
+            const lang = useSystemStore.getState().currentLanguage;
+            set({ authorizationError: getError(error, lang), isLoading: false });
+            throw error;
+        }
+    },
+
+    // Перечитать /me (после привязки/отвязки Google в настройках).
+    refreshMe: async () => {
+        const me = await api.getProtectedData().catch(() => null);
+        if (me) set({ user: _userFrom(me) });
+        return me;
     },
 
     refreshAuthToken: async () => {

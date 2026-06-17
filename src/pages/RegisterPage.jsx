@@ -7,10 +7,17 @@ import { BrandMark, BrandName } from "../components/ui/BrandMark.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { BtnSpinner } from "../components/ui/Spinner.jsx";
 import LanguageChooser from "../components/languageChooser.jsx";
+import GoogleSignInButton from "../components/ui/GoogleSignInButton.jsx";
+import { AuthDivider } from "../components/ui/AuthDivider.jsx";
 import { SAMPLES, POS_DOT } from "../interface/samples.js";
 
+const GOOGLE_ON = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
 const RegisterPage = () => {
-    const { register, login, isLoading, registrationError } = useAuth();
+    const { register, login, loginWithGoogle, isLoading, registrationError } = useAuth();
+    const onGoogle = React.useCallback((credential) => {
+        loginWithGoogle(credential).then(() => navigate("/mypage")).catch(() => {});
+    }, [loginWithGoogle]);
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
@@ -85,6 +92,13 @@ const RegisterPage = () => {
                                 : <>{t.register} <Icon n="arrow-right" sm /></>}
                         </button>
                     </form>
+
+                    {GOOGLE_ON && (
+                        <>
+                            <AuthDivider label={t.orWord} />
+                            <GoogleSignInButton onCredential={onGoogle} text="signup_with" />
+                        </>
+                    )}
 
                     <p className="auth__switch">{t.haveAccount} <Link to="/authorization">{t.login}</Link></p>
                 </div>

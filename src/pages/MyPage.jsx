@@ -1,17 +1,35 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { useWordsStore } from "../store/wordStore.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { Icon } from "../components/ui/Icon.jsx";
+import GoogleSignInButton from "../components/ui/GoogleSignInButton.jsx";
+import api from "../components/tools/api.js";
 import { wordCount, dictCount } from "../components/tools/plural.js";
+
+const GOOGLE_ON = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const MyPage = () => {
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
     const navigate = useNavigate();
-    const { logout, user, setTheme } = useAuth();
+    const { logout, user, setTheme, refreshMe } = useAuth();
+
+    // Привязка/отвязка Google в настройках. Конфликты (409/«нет пароля») — точечным тостом.
+    const onLinkGoogle = useCallback((credential) => {
+        api.linkGoogle(credential).then(refreshMe).catch((e) => {
+            const msg = String(e?.message || "");
+            useSystemStore.getState().showToast(msg.includes("already linked") ? t.googleAlreadyLinked : t.unexpectedError);
+        });
+    }, [refreshMe, t]);
+    const onUnlinkGoogle = () => {
+        api.unlinkGoogle().then(refreshMe).catch((e) => {
+            const msg = String(e?.message || "");
+            useSystemStore.getState().showToast(msg.includes("password") ? t.setPasswordFirst : t.unexpectedError);
+        });
+    };
     const theme = useSystemStore((state) => state.theme);
     const dictList = useWordsStore((state) => state.dictList);
 
@@ -110,6 +128,18 @@ const MyPage = () => {
                             <span className="setrow__meta"><span className="setrow__t">{t.darkTheme}</span><span className="setrow__d">{t.darkThemeDesc}</span></span>
                             <span className={`toggle${theme === "dark" ? " is-on" : ""}`} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} />
                         </div>
+                        {GOOGLE_ON && (
+                            <div className="setrow">
+                                <span className="setrow__ic"><Icon n="user" sm /></span>
+                                <span className="setrow__meta">
+                                    <span className="setrow__t">{t.googleAccount}</span>
+                                    <span className="setrow__d">{user?.googleLinked ? (user.email || t.googleLinked) : t.googleAccountDesc}</span>
+                                </span>
+                                {user?.googleLinked
+                                    ? <button className="btn btn--ghost" onClick={onUnlinkGoogle}>{t.unlink}</button>
+                                    : <GoogleSignInButton onCredential={onLinkGoogle} text="continue_with" />}
+                            </div>
+                        )}
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="volume" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.tts}</span><span className="setrow__d">{t.ttsDesc}</span></span>
