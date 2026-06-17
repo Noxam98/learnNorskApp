@@ -279,23 +279,25 @@ export const OnlinePage = () => {
                                 {question.prompt}
                             </motion.h1>
                             <motion.div variants={OPT_LIST} initial="hidden" animate="show"
-                                style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--sp-3)", rowGap: "var(--sp-5)" }}>
+                                style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--sp-3)", rowGap: 40 }}>
                                 {opts.map((opt, i) => {
                                     let kind = "idle";
                                     if (reveal) kind = i === reveal.correct ? "correct" : (i === chosen ? "wrong" : "dim");
                                     else if (i === chosen) kind = "selected";
+                                    // opacity задаём явно, чтобы текст верного/выбранного не гас при reveal
                                     const revAnim = !reveal ? undefined
-                                        : kind === "correct" ? { scale: [1, 1.12, 1], boxShadow: ["0 0 0 rgba(0,0,0,0)", "0 0 28px var(--success)", "0 0 0 rgba(0,0,0,0)"] }
-                                            : kind === "wrong" ? { x: [0, -9, 9, -6, 6, 0] }
-                                                : { opacity: 0.7 };
+                                        : kind === "correct" ? { opacity: 1, scale: [1, 1.08, 1], boxShadow: ["0 0 0 rgba(0,0,0,0)", "0 0 28px var(--success)", "0 0 0 rgba(0,0,0,0)"] }
+                                            : kind === "wrong" ? { opacity: 1, x: [0, -9, 9, -6, 6, 0] }
+                                                : { opacity: 0.65 };
                                     const voters = reveal ? (reveal.votes?.[question.keys?.[i]] || []) : [];
                                     return <div key={i} style={{ position: "relative" }}>
                                         <motion.button variants={OPT_ITEM} animate={revAnim}
                                             whileTap={!reveal && chosen == null ? { scale: 0.94 } : undefined}
                                             transition={{ duration: 0.5 }} style={choiceStyle(kind)}
                                             disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>{opt}</motion.button>
-                                        {voters.length > 0 && (
-                                            <div style={{ position: "absolute", left: 0, right: 0, bottom: -12, display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "center" }}>
+                                        {/* чипы голосов — оверлеем у ВЕРХНЕГО края кнопки (не по центру → слово не перекрыто) */}
+                                        {reveal && voters.length > 0 && (
+                                            <div style={{ position: "absolute", top: -11, left: 0, right: 0, display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "center", pointerEvents: "none" }}>
                                                 {voters.map((n) => <PlayerChip key={n} name={n} bright />)}
                                             </div>
                                         )}
