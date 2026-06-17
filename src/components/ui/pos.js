@@ -1,11 +1,40 @@
-// Маппинг части речи (норвежское/англ. значение из бэкенда) на класс цвета и ключ метки.
-// Сама подпись локализуется через interfaceTranslate[lang].pos[key].
+// Маппинг части речи (норвежское/англ./рус. значение из бэкенда) на класс цвета и ключ метки.
+// Подпись чипа берётся из interfaceTranslate[lang].pos[key] или из POS_INFO (фолбэк).
 const MAP = [
     { re: /(substantiv|noun|сущ|ім\.|rzecz|dkt)/i,            cls: "pos--noun",   key: "noun" },
     { re: /(verb|гл|дієсл|czas|veiks)/i,                       cls: "pos--verb",   key: "verb" },
     { re: /(adjektiv|adjective|adj|прил|прикм|przym|būdv)/i,   cls: "pos--adj",    key: "adj" },
+    { re: /(adverb|нареч|присл)/i,                             cls: "pos--adv",    key: "adverb" },
+    { re: /(preposisjon|preposition|предлог|прийм)/i,         cls: "pos--prep",   key: "preposition" },
+    { re: /(konjunksjon|conjunction|союз|сполуч)/i,           cls: "pos--conj",   key: "conjunction" },
+    { re: /(pronomen|pronoun|местоим|займен)/i,               cls: "pos--pron",   key: "pronoun" },
+    { re: /(determinativ|determiner|артикл|определит)/i,      cls: "pos--det",    key: "determiner" },
+    { re: /(tallord|numeral|числит|числ)/i,                    cls: "pos--num",    key: "numeral" },
+    { re: /(interjeksjon|interjection|междомет|виг)/i,        cls: "pos--intj",   key: "interjection" },
     { re: /(phrase|uttrykk|фраза|setning|fraz)/i,             cls: "pos--phrase", key: "phrase" },
 ];
+
+// Справочник частей речи: короткая подпись (чип), название, что означает, норвежский пример.
+export const POS_INFO = {
+    noun:         { short: "сущ.",    name: "Существительное", desc: "Предмет, существо, явление или понятие.", ex: "hund (собака), frihet (свобода)" },
+    verb:         { short: "гл.",     name: "Глагол",          desc: "Действие или состояние.",                 ex: "å snakke (говорить), være (быть)" },
+    adj:          { short: "прил.",   name: "Прилагательное",  desc: "Признак предмета (какой?).",              ex: "stor (большой), god (хороший)" },
+    adverb:       { short: "нареч.",  name: "Наречие",         desc: "Как, где или когда происходит действие.", ex: "fort (быстро), her (здесь), alltid (всегда)" },
+    preposition:  { short: "предл.",  name: "Предлог",         desc: "Связь слов: место, время, отношение.",    ex: "på (на), i (в), til (к)" },
+    conjunction:  { short: "союз",    name: "Союз",            desc: "Соединяет слова и предложения.",          ex: "og (и), men (но), fordi (потому что)" },
+    pronoun:      { short: "мест.",   name: "Местоимение",     desc: "Заменяет существительное.",               ex: "han (он), den (это/тот), seg (себя)" },
+    determiner:   { short: "детерм.", name: "Детерминатив",    desc: "Определяет существительное: артикль, притяжательные, указательные.", ex: "denne (этот), min (мой), noen (некоторые)" },
+    numeral:      { short: "числ.",   name: "Числительное",    desc: "Число или порядок.",                      ex: "tre (три), første (первый)" },
+    interjection: { short: "межд.",   name: "Междометие",      desc: "Возглас, эмоция или оклик.",              ex: "hei (привет), au (ой), ja (да)" },
+    phrase:       { short: "фраза",   name: "Устойчивое выражение", desc: "Несколько слов как единое выражение.", ex: "på grunn av (из-за)" },
+    other:        { short: "проч.",   name: "Не определено",   desc: "Часть речи ещё не размечена.",            ex: "" },
+};
+
+// Порядок категорий для фильтра/справочника (без other — это «не размечено»).
+export const POS_ORDER = ["noun", "verb", "adj", "adverb", "preposition", "conjunction", "pronoun", "determiner", "numeral", "interjection", "phrase"];
+
+// Ключ части речи на бэкенде (для фильтра ?pos=): у прилагательного бэкенд ждёт "adjective".
+export const posApiKey = (key) => (key === "adj" ? "adjective" : key);
 
 // Возвращает { cls, key, raw }. raw — исходное значение (фолбэк, если перевода нет).
 export const posMeta = (pos) => {
@@ -17,7 +46,7 @@ export const posMeta = (pos) => {
 // Локализованная короткая метка части речи.
 export const posLabel = (pos, t) => {
     const { key, raw } = posMeta(pos);
-    return t?.pos?.[key] || (key === "other" ? (raw ? raw.slice(0, 8) : "") : key);
+    return t?.pos?.[key] || POS_INFO[key]?.short || (key === "other" ? (raw ? raw.slice(0, 8) : "") : key);
 };
 
 export default posMeta;

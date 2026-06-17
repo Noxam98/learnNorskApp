@@ -64,7 +64,7 @@ export const StatsPage = () => {
             <div className="pgrid" style={{ display: "grid", gap: "var(--sp-4)", gridTemplateColumns: "1fr 1fr" }}>
                 <div className="card" style={{ padding: "var(--sp-5)", gridColumn: "1 / -1" }}>
                     <div className="label" style={{ marginBottom: "var(--sp-4)" }}>Фоновые задачи</div>
-                    {[["autofill", "Добавление слов"], ["embed", "Эмбеддинги"], ["describe", "Описания"]].map(([key, name]) => {
+                    {[["autofill", "Добавление слов"], ["embed", "Эмбеддинги"], ["describe", "Описания"], ["pos", "Части речи"], ["forms", "Грамм. формы"]].map(([key, name]) => {
                         const paused = control?.[key];
                         return (
                             <div key={key} className="row between" style={{ padding: "6px 0", fontSize: "var(--fs-14)" }}>
@@ -93,6 +93,7 @@ export const StatsPage = () => {
                     <Bar value={p.tts} total={p.total} label="С озвучкой" />
                     <Bar value={p.classified} total={p.total} label="Классифицировано (уровень)" />
                     <Bar value={p.description} total={p.total} label="С описанием" />
+                    <Bar value={p.forms} total={p.total} label="С грамм. формами" />
                 </div>
 
                 <div className="card" style={{ padding: "var(--sp-5)" }}>

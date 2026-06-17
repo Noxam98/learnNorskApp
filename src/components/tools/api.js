@@ -190,12 +190,13 @@ class ApiService {
         return this._send('GET', `/words/${wordId}/synonyms?n=${n}&lang=${encodeURIComponent(lang)}`);
     }
     searchPool(q) { return this._send('GET', `/pool/search?q=${encodeURIComponent(q)}`); }
-    getPool({ q = "", limit = 60, offset = 0, topics = [], level = "", sort = "alpha", order = "asc", missing = "" } = {}) {
+    getPool({ q = "", limit = 60, offset = 0, topics = [], level = "", sort = "alpha", order = "asc", missing = "", pos = "" } = {}) {
         const qs = new URLSearchParams({ limit, offset, sort, order });
         if (q) qs.set("q", q);
         if (topics && topics.length) qs.set("topics", topics.join(","));
         if (level) qs.set("level", level);
         if (missing) qs.set("missing", missing);
+        if (pos) qs.set("pos", pos);
         return this._send('GET', `/pool?${qs.toString()}`);
     }
     setUserTheme(theme) { return this._send('POST', '/me/theme', { theme }); }

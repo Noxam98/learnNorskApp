@@ -10,7 +10,7 @@ import { Modal } from "../components/ui/Modal.jsx";
 import { WordInfoModal } from "../components/ui/WordInfoModal.jsx";
 import { BtnSpinner, SkeletonWordlist } from "../components/ui/Spinner.jsx";
 import { SearchBox } from "../components/ui/SearchBox.jsx";
-import { posMeta, posLabel } from "../components/ui/pos.js";
+import { posMeta, posLabel, POS_INFO, POS_ORDER, posApiKey } from "../components/ui/pos.js";
 import { SpeakButton } from "../components/ui/SpeakButton.jsx";
 import { ttsLang } from "../components/ui/tts.js";
 
@@ -20,6 +20,16 @@ const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const TOPICS_TOGGLE = { ru: "Темы", ukr: "Теми", en: "Topics", pl: "Tematy", lt: "Temos" };
 
 const topicLabel = (t, key) => t.topics?.[key] || key;
+
+// Компактная строка грамматических форм слова (по части речи).
+const formsLine = (w) => {
+    const f = w.forms;
+    if (!f) return "";
+    if (f.pos === "noun") return [f.gender && `${f.gender} ${w.word}`, f.indef_pl].filter(Boolean).join(" · ");
+    if (f.pos === "verb") return [`å ${w.word}`, f.present, f.past, f.perfect].filter(Boolean).join(" · ");
+    if (f.pos === "adjective") return [f.comparative, f.superlative].filter(Boolean).join(" · ");
+    return "";
+};
 
 // Окно номеров страниц вокруг текущей.
 const pageWindow = (page, totalPages) => {
@@ -50,7 +60,9 @@ export const PoolPage = () => {
     const [level, setLevel] = useState("");
     const [sort, setSort] = useState("alpha");
     const [order, setOrder] = useState("asc");
-    const [missing, setMissing] = useState(""); // админ: "" | embedding | description | tts | meta
+    const [missing, setMissing] = useState(""); // админ: "" | embedding | description | tts | meta | forms
+    const [pos, setPos] = useState("");          // фильтр по части речи (ключ pos.js: noun/verb/adj/...)
+    const [posRefOpen, setPosRefOpen] = useState(false); // справочник частей речи
     const [loading, setLoading] = useState(true);
     const [searchPhase, setSearchPhase] = useState("idle"); // idle | counting | searching
     const [addingId, setAddingId] = useState(null);
@@ -83,7 +95,7 @@ export const PoolPage = () => {
         let cancelled = false;
         setLoading(true);
         setSearchPhase((p) => (p === "counting" ? "searching" : p));
-        api.getPool({ q: appliedQ, limit: pageSize, offset: (page - 1) * pageSize, topics, level, sort, order, missing })
+        api.getPool({ q: appliedQ, limit: pageSize, offset: (page - 1) * pageSize, topics, level, sort, order, missing, pos: posApiKey(pos) })
             .then((res) => {
                 if (cancelled) return;
                 setItems(res.words || []);
@@ -98,7 +110,7 @@ export const PoolPage = () => {
             .catch(() => { if (!cancelled) setItems([]); })
             .finally(() => { if (!cancelled) { setLoading(false); setSearchPhase("idle"); } });
         return () => { cancelled = true; };
-    }, [appliedQ, page, pageSize, topics, level, sort, order, missing]);
+    }, [appliedQ, page, pageSize, topics, level, sort, order, missing, pos]);
 
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
     useEffect(() => { if (page > totalPages) setPage(totalPages); }, [totalPages]); // eslint-disable-line
@@ -109,9 +121,10 @@ export const PoolPage = () => {
     };
     const pickLevel = (lv) => { setPage(1); setLevel((cur) => (cur === lv ? "" : lv)); };
     const pickMissing = (val) => { setPage(1); setMissing((cur) => (cur === val ? "" : val)); };
+    const pickPos = (key) => { setPage(1); setPos((cur) => (cur === key ? "" : key)); };
     const onSort = (s) => { setPage(1); setSort(s); };
     const onPageSize = (n) => { setPage(1); setPageSize(n); };
-    const clearFilters = () => { setPage(1); setTopics([]); setLevel(""); setMissing(""); };
+    const clearFilters = () => { setPage(1); setTopics([]); setLevel(""); setMissing(""); setPos(""); };
 
     const onAdd = async (word) => {
         setAddingId(word);
@@ -139,7 +152,7 @@ export const PoolPage = () => {
         } catch { /* ignore */ }
     };
 
-    const hasFilters = topics.length > 0 || !!level || !!missing;
+    const hasFilters = topics.length > 0 || !!level || !!missing || !!pos;
 
     // Имя нового словаря по фильтрам (с возможностью переписать вручную).
     const autoDictName = () => {
@@ -219,15 +232,41 @@ export const PoolPage = () => {
                     </div>
                 )}
 
+                <div className="poolbar__row" style={{ flexWrap: "wrap", gap: "var(--sp-2)" }}>
+                    <span className="muted" style={{ fontSize: "var(--fs-13)" }}>Часть речи:</span>
+                    {POS_ORDER.map((key) => (
+                        <button key={key} className={`fchip${pos === key ? " is-on" : ""}`} onClick={() => pickPos(key)}>
+                            {posLabel(posApiKey(key), t)}
+                        </button>
+                    ))}
+                    <button className="fchip fchip--toggle" onClick={() => setPosRefOpen((o) => !o)} title="Что значат части речи">
+                        <Icon n="info" sm /> справка
+                    </button>
+                </div>
+                {posRefOpen && (
+                    <div className="card" style={{ padding: "var(--sp-4)", marginBottom: "var(--sp-2)" }}>
+                        <div className="label" style={{ marginBottom: "var(--sp-3)" }}>Части речи — кратко</div>
+                        {POS_ORDER.map((key) => {
+                            const info = POS_INFO[key];
+                            return (
+                                <div key={key} style={{ fontSize: "var(--fs-13)", padding: "5px 0", borderBottom: "1px solid var(--surface-3)" }}>
+                                    <b>{info.name}</b> <span className="chip pos" style={{ fontSize: "var(--fs-11)" }}>{posLabel(posApiKey(key), t)}</span>
+                                    <div className="muted">{info.desc}{info.ex && <> · напр.: {info.ex}</>}</div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
                 {isAdmin && (
                     <div className="poolbar__row" style={{ flexWrap: "wrap", gap: "var(--sp-2)" }}>
                         <span className="muted" style={{ fontSize: "var(--fs-13)" }}>Админ · без:</span>
-                        {[["embedding", "эмбеддинга"], ["description", "описания"], ["tts", "озвучки"], ["meta", "уровня/тем"]].map(([val, name]) => (
+                        {[["embedding", "эмбеддинга"], ["description", "описания"], ["tts", "озвучки"], ["meta", "уровня/тем"], ["forms", "форм"]].map(([val, name]) => (
                             <button key={val} className={`fchip${missing === val ? " is-on" : ""}`} onClick={() => pickMissing(val)}>
                                 {name}
                             </button>
                         ))}
-                        {missing && <span className="muted" style={{ fontSize: "var(--fs-13)" }}>найдено: <b>{total}</b></span>}
+                        {(missing || pos) && <span className="muted" style={{ fontSize: "var(--fs-13)" }}>найдено: <b>{total}</b></span>}
                     </div>
                 )}
 
@@ -278,6 +317,7 @@ export const PoolPage = () => {
                                         {isAdmin && !w.hasTts && <span className="chip" style={{ background: "#e0e7ff", color: "#3730a3" }} title="нет озвучки">tts</span>}
                                     </span>
                                     <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
+                                    {formsLine(w) && <span className="muted" style={{ fontSize: "var(--fs-12)" }}>{formsLine(w)}</span>}
                                 </div>
                                 <div className="wcard__actions" onClick={(e) => e.stopPropagation()}>
                                     <button className="iconbtn" aria-label={t.description} title={t.description}
