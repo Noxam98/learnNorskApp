@@ -4,7 +4,7 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { wordCount } from "../tools/plural.js";
-import { posMeta, posLabel } from "../ui/pos.js";
+import { posMeta, posLabel, chipPrefix } from "../ui/pos.js";
 
 const MIN_WORDS = 10;       // для режимов с проверкой ответа
 const MIN_WORDS_STUDY = 1;  // для флешкарт достаточно одного
@@ -55,6 +55,8 @@ const SETUP_TITLE = {
 
 const DictGroup = ({ dictItem, currentLanguage, t, defaultOpen }) => {
     const [open, setOpen] = useState(defaultOpen);
+    const showArticles = useSystemStore((s) => s.showArticles);
+    const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
     const selectFullDictToGame = useWordsStore((s) => s.selectFullDictToGame);
     const words = dictItem.words;
@@ -82,11 +84,15 @@ const DictGroup = ({ dictItem, currentLanguage, t, defaultOpen }) => {
             <div className="dgroup__body">
                 {words.map((w) => {
                     const on = !!w?.gameData?.isChoosedToGame;
-                    const { cls } = posMeta(w.part_of_speech);
+                    const { cls, key } = posMeta(w.part_of_speech);
+                    const prefix = chipPrefix(key, w.forms, { articles: showArticles, verbAa: showVerbAa });
                     return (
                         <div key={w.id} className={`wcard${on ? " is-selected" : ""}`} onClick={() => toggleChooseToGame(w.id)}>
                             <div className="wcard__body">
-                                <span className="wcard__word">{w.translate?.no?.[0]}</span>
+                                <span className="wcard__word">
+                                    {prefix && <span className="muted" style={{ fontWeight: 400 }}>{prefix} </span>}
+                                    {w.translate?.no?.[0]}
+                                </span>
                                 <span className="wcard__meta"><span className={`chip pos ${cls}`}>{posLabel(w.part_of_speech, t)}</span></span>
                                 <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
                             </div>

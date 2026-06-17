@@ -7,7 +7,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { BrandMark } from "../ui/BrandMark.jsx";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { posLabel } from "../ui/pos.js";
+import { posLabel, posMeta, chipPrefix } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
@@ -26,6 +26,8 @@ const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] 
 
 export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
+    const showArticles = useSystemStore((s) => s.showArticles);
+    const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const dictList = useWordsStore((s) => s.dictList);
     const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
     const t = interfaceTranslate[currentLanguage];
@@ -88,8 +90,11 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
     const cur = finished ? null : words[idx];
     const no = cur ? (cur.translate?.no?.[0] || "") : "";
     const tr = cur ? (cur.translate?.[currentLanguage] || []).filter(Boolean).join(", ") : "";
-    const front = isNo2Int ? no : tr;
-    const back = isNo2Int ? tr : no;
+    // Артикль/«å» — только на видимой норвежской стороне (озвучка читает лемму без них).
+    const prefix = cur ? chipPrefix(posMeta(cur.part_of_speech).key, cur.forms, { articles: showArticles, verbAa: showVerbAa }) : "";
+    const noDisp = prefix ? `${prefix} ${no}` : no;
+    const front = isNo2Int ? noDisp : tr;
+    const back = isNo2Int ? tr : noDisp;
     const frontLang = hyLang(currentLanguage, isNo2Int);   // лицевая: норвежская при no2int
     const backLang = hyLang(currentLanguage, !isNo2Int);
     const posText = cur ? posLabel(cur.part_of_speech, t) : "";
