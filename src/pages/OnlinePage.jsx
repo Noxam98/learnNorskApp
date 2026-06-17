@@ -28,8 +28,8 @@ function choiceStyle(kind) {
     };
     if (kind === "correct") return { ...base, borderColor: "var(--success)", color: "var(--success)", background: "var(--success-bg)" };
     if (kind === "wrong") return { ...base, borderColor: "var(--danger)", color: "var(--danger)", background: "var(--danger-bg)" };
-    if (kind === "dim") return { ...base, opacity: 0.45 };
-    if (kind === "selected") return { ...base, borderColor: "var(--ink-3)" };
+    if (kind === "dim") return { ...base, opacity: 0.7 };   // остаётся видимым, лишь приглушён
+    if (kind === "selected") return { ...base, borderColor: "var(--ember-600)", background: "var(--surface-3)", boxShadow: "0 0 0 2px var(--ember-600) inset" };
     return base;
 }
 
@@ -86,6 +86,7 @@ export const OnlinePage = () => {
     const [reveal, setReveal] = useState(null);
     const [podium, setPodium] = useState(null);
     const [createOpen, setCreateOpen] = useState(false);
+    const [editOpen, setEditOpen] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);   // секунды до конца вопроса (визуальный таймер)
 
     const send = useCallback((obj) => {
@@ -246,7 +247,7 @@ export const OnlinePage = () => {
                                     const revAnim = !reveal ? undefined
                                         : kind === "correct" ? { scale: [1, 1.12, 1], boxShadow: ["0 0 0 rgba(0,0,0,0)", "0 0 28px var(--success)", "0 0 0 rgba(0,0,0,0)"] }
                                             : kind === "wrong" ? { x: [0, -9, 9, -6, 6, 0] }
-                                                : { opacity: 0.4, scale: 0.96 };
+                                                : { opacity: 0.7 };
                                     return <motion.button key={i} variants={OPT_ITEM} animate={revAnim}
                                         whileTap={!reveal && chosen == null ? { scale: 0.94 } : undefined}
                                         transition={{ duration: 0.5 }} style={choiceStyle(kind)}
@@ -285,6 +286,7 @@ export const OnlinePage = () => {
         }
         // Лобби
         const s = room.settings;
+        const amHost = !!room.players.find((p) => p.isYou)?.isHost;
         return <main className="shell prof-main">
             <div className="phead">
                 <div className="phead__meta">
@@ -294,8 +296,18 @@ export const OnlinePage = () => {
                         {s.level ? ` · ${s.level}` : ""}{s.topic ? ` · ${t.topics?.[s.topic] || s.topic}` : ""}
                     </div>
                 </div>
+                {amHost && <button className="btn btn--ghost" onClick={() => setEditOpen(true)} title={to.roomSettings || "Настройки комнаты"}><Icon n="settings" sm /></button>}
                 <button className="btn btn--outline" onClick={() => send({ type: "leave" })}><Icon n="arrow-left" sm /> {to.leave || "Выйти"}</button>
             </div>
+
+            <RoomForm open={editOpen} onClose={() => setEditOpen(false)} t={t} to={to}
+                title={to.roomSettings || "Настройки комнаты"} confirmLabel={t.save}
+                initial={s} initialName={room.name}
+                onConfirm={(name, settings) => {
+                    send({ type: "update_settings", name, settings });
+                    api.setOnlinePrefs(settings).catch(() => {});
+                    setEditOpen(false);
+                }} />
             <div className="panel">
                 <div className="panel__head"><span className="panel__title">{to.players || "Игроки"} {room.players.length}/{s.maxPlayers}</span></div>
                 <div className="panel__body">
@@ -346,8 +358,8 @@ export const OnlinePage = () => {
             </div></div>
         ) : <p className="muted" style={{ textAlign: "center", marginTop: "var(--sp-5)" }}>{to.noRooms || "Пока нет открытых комнат"}</p>}
 
-        <CreateRoom open={createOpen} onClose={() => setCreateOpen(false)} t={t} to={to}
-            initial={savedPrefs} onCreate={(name, settings) => {
+        <RoomForm open={createOpen} onClose={() => setCreateOpen(false)} t={t} to={to}
+            initial={savedPrefs} onConfirm={(name, settings) => {
                 send({ type: "create", name, settings });
                 api.setOnlinePrefs(settings).catch(() => {});
                 setCreateOpen(false);
@@ -355,16 +367,16 @@ export const OnlinePage = () => {
     </main>;
 };
 
-const CreateRoom = ({ open, onClose, t, to, initial, onCreate }) => {
-    const [name, setName] = useState("");
+const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, confirmLabel, onConfirm }) => {
+    const [name, setName] = useState(initialName);
     const [s, setS] = useState({ ...DEFAULT_SETTINGS, ...(initial || {}) });
-    useEffect(() => { if (open) setS({ ...DEFAULT_SETTINGS, ...(initial || {}) }); }, [open]); // eslint-disable-line
+    useEffect(() => { if (open) { setS({ ...DEFAULT_SETTINGS, ...(initial || {}) }); setName(initialName); } }, [open]); // eslint-disable-line
     const set = (k, v) => setS((p) => ({ ...p, [k]: v }));
     const topics = t.topics || {};
 
-    return <Modal open={open} onClose={onClose} title={to.create || "Создать комнату"} footer={<>
+    return <Modal open={open} onClose={onClose} title={title || to.create || "Создать комнату"} footer={<>
         <button className="btn btn--ghost" onClick={onClose}>{t.cancel}</button>
-        <button className="btn btn--accent" onClick={() => onCreate(name, s)}>{to.create || "Создать"}</button>
+        <button className="btn btn--accent" onClick={() => onConfirm(name, s)}>{confirmLabel || to.create || "Создать"}</button>
     </>}>
         <div className="field"><label className="label">{to.roomName || "Название"}</label>
             <input className="input" value={name} maxLength={40} placeholder={to.roomName || "Название"} onChange={(e) => setName(e.target.value)} /></div>
