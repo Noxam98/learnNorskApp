@@ -73,7 +73,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
-        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts } : v)).catch(() => {});
+        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts, translate: m?.translate || null } : v)).catch(() => {});
     };
 
     useEffect(() => {
@@ -100,11 +100,25 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             {view?.no || word || ""}
             <SpeakButton text={view?.no || word} hasTts={view?.hasTts}
                 ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
+            <button
+                className={`iconbtn${inDict ? " is-added" : ""}`}
+                disabled={dictBusy || !currentDictName}
+                aria-label={inDict ? t.removeFromDict : t.addToDict}
+                title={!currentDictName ? t.addToDict : (inDict ? t.removeFromDict : t.addToDict)}
+                onClick={toggleDict}
+            >
+                {dictBusy ? <BtnSpinner /> : <Icon n={inDict ? "check" : "plus"} />}
+            </button>
         </span>
     );
 
     return (
         <Modal open={open} onClose={onClose} title={titleNode}>
+            {view?.translate?.[lang]?.length > 0 && (
+                <p style={{ margin: "0 0 var(--sp-3)", fontSize: "var(--fs-16)", fontWeight: 600, color: "var(--ink)" }}>
+                    {view.translate[lang].join(", ")}
+                </p>
+            )}
             {(view?.level || view?.topics?.length > 0) && (
                 <div className="row wrap" style={{ gap: "6px", marginBottom: "var(--sp-3)" }}>
                     {view.level && <span className="chip lvl">{view.level}</span>}
@@ -172,17 +186,6 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                     )}
                 </div>
             )}
-
-            <div style={{ marginTop: "var(--sp-5)" }}>
-                <button
-                    className={`btn ${inDict ? "btn--danger-ghost" : "btn--primary"}`}
-                    disabled={dictBusy || !currentDictName}
-                    onClick={toggleDict}
-                >
-                    {dictBusy ? <BtnSpinner /> : <Icon n={inDict ? "trash" : "plus"} sm />}
-                    {" "}{inDict ? t.removeFromDict : t.addToDict}
-                </button>
-            </div>
 
             {view?.synonyms === null && !view?.descLoading && (
                 <div className="row" style={{ gap: "var(--sp-3)", marginTop: "var(--sp-5)", color: "var(--ink-3)" }}>
