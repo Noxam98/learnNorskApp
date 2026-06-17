@@ -185,6 +185,7 @@ class ApiService {
     linkGoogle(credential) { return this._send('POST', '/me/link_google', { credential }); }
     unlinkGoogle() { return this._send('POST', '/me/unlink_google'); }
     setPassword(password) { return this._send('POST', '/me/set_password', { password }); }
+    setName(name) { return this._send('POST', '/me/name', { name }); }
 
     async getProtectedData() {
         const response = await this.apiRequest('/me');

@@ -10,7 +10,7 @@ import { Modal } from "../components/ui/Modal.jsx";
 import { WordInfoModal } from "../components/ui/WordInfoModal.jsx";
 import { BtnSpinner, SkeletonWordlist } from "../components/ui/Spinner.jsx";
 import { SearchBox } from "../components/ui/SearchBox.jsx";
-import { posMeta, posLabel, POS_INFO, POS_ORDER, posApiKey, nounArticle } from "../components/ui/pos.js";
+import { posMeta, posLabel, POS_INFO, POS_ORDER, posApiKey, chipPrefix } from "../components/ui/pos.js";
 import { SpeakButton } from "../components/ui/SpeakButton.jsx";
 import { ttsLang } from "../components/ui/tts.js";
 
@@ -33,6 +33,8 @@ const pageWindow = (page, totalPages) => {
 
 export const PoolPage = () => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
+    const showArticles = useSystemStore((s) => s.showArticles);
+    const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const t = interfaceTranslate[currentLanguage];
     const addFromPool = useWordsStore((s) => s.addFromPool);
     const removeFromDict = useWordsStore((s) => s.removeFromDict);
@@ -279,14 +281,14 @@ export const PoolPage = () => {
             {items.length ? (
                 <div className="wordlist">
                     {items.map((w) => {
-                        const { cls } = posMeta(w.part_of_speech);
-                        const article = nounArticle(w.forms);
+                        const { cls, key } = posMeta(w.part_of_speech);
+                        const prefix = chipPrefix(key, w.forms, { articles: showArticles, verbAa: showVerbAa });
                         return (
                             <div className={`wcard${added[w.word] ? " is-added" : ""}`} key={w.word}
                                 onClick={() => (added[w.word] ? onRemove(w.word) : onAdd(w.word))}>
                                 <div className="wcard__body">
                                     <span className="wcard__word">
-                                        {article && <span className="muted" style={{ fontWeight: 400 }}>{article} </span>}
+                                        {prefix && <span className="muted" style={{ fontWeight: 400 }}>{prefix} </span>}
                                         {w.word}
                                     </span>
                                     <span className="wcard__meta">

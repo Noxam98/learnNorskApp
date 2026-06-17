@@ -6,13 +6,15 @@ import { Icon } from "../ui/Icon.jsx";
 import { Modal } from "../ui/Modal.jsx";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { ttsLang } from "../ui/tts.js";
-import { posMeta, posLabel, nounArticle } from "../ui/pos.js";
+import { posMeta, posLabel, chipPrefix } from "../ui/pos.js";
 
 export const Card = ({ wordItem, languageTranslate, onInfo }) => {
     const choseWord = useWordsStore((state) => state.choseWord);
     const editWord = useWordsStore((state) => state.editWord);
     const reportWord = useWordsStore((state) => state.reportWord);
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
+    const showArticles = useSystemStore((state) => state.showArticles);
+    const showVerbAa = useSystemStore((state) => state.showVerbAa);
     const t = interfaceTranslate[currentLanguage];
 
     const [editOpen, setEditOpen] = useState(false);
@@ -20,9 +22,9 @@ export const Card = ({ wordItem, languageTranslate, onInfo }) => {
 
     const no = wordItem.translate?.no?.[0] || "";
     const translation = wordItem.translate?.[languageTranslate]?.join(", ") || "";
-    const { cls } = posMeta(wordItem.part_of_speech);
+    const { cls, key } = posMeta(wordItem.part_of_speech);
     const label = posLabel(wordItem.part_of_speech, t);
-    const article = nounArticle(wordItem.forms);
+    const prefix = chipPrefix(key, wordItem.forms, { articles: showArticles, verbAa: showVerbAa });
     const isSelected = !!wordItem?.techData?.isSelected;
 
     const openEdit = (e) => {
@@ -47,7 +49,7 @@ export const Card = ({ wordItem, languageTranslate, onInfo }) => {
             <div className={`wcard${isSelected ? " is-selected" : ""}`} onClick={() => choseWord(wordItem.id)}>
                 <div className="wcard__body">
                     <span className="wcard__word">
-                        {article && <span className="muted" style={{ fontWeight: 400 }}>{article} </span>}
+                        {prefix && <span className="muted" style={{ fontWeight: 400 }}>{prefix} </span>}
                         {no.toLowerCase()}
                     </span>
                     <span className="wcard__meta">

@@ -33,6 +33,19 @@ const MyPage = () => {
         });
     };
 
+    // Отображаемое имя (персонализация).
+    const [nameOpen, setNameOpen] = useState(false);
+    const [nameValue, setNameValue] = useState("");
+    const [nameSaving, setNameSaving] = useState(false);
+    const openName = () => { setNameValue(user?.name || ""); setNameOpen(true); };
+    const closeName = () => { if (!nameSaving) setNameOpen(false); };
+    const saveName = async () => {
+        setNameSaving(true);
+        try { await api.setName(nameValue.trim()); await refreshMe(); setNameOpen(false); }
+        catch { /* тост покажет api.js */ }
+        setNameSaving(false);
+    };
+
     // Задать/сменить пароль (в т.ч. первый пароль для Google-аккаунта).
     const [pwOpen, setPwOpen] = useState(false);
     const [pwValue, setPwValue] = useState("");
@@ -50,6 +63,8 @@ const MyPage = () => {
         setPwSaving(false);
     };
     const theme = useSystemStore((state) => state.theme);
+    const showArticles = useSystemStore((state) => state.showArticles);
+    const showVerbAa = useSystemStore((state) => state.showVerbAa);
     const dictList = useWordsStore((state) => state.dictList);
 
     const [tts, setTts] = useState(true);
@@ -69,7 +84,8 @@ const MyPage = () => {
     }, [dictList]);
 
     const username = user?.username || "guest";
-    const avatar = username.charAt(0).toUpperCase();
+    const displayName = (user?.name || "").trim() || username;
+    const avatar = displayName.charAt(0).toUpperCase();
 
     const logOut = () => { logout(); navigate("/authorization"); };
 
@@ -78,8 +94,8 @@ const MyPage = () => {
             <div className="phead">
                 <div className="pavatar">{avatar}</div>
                 <div className="phead__meta">
-                    <div className="phead__name">{username}</div>
-                    <div className="phead__sub">Lære Norsk · {dictCount(stats.dicts, currentLanguage)} · {wordCount(stats.total, currentLanguage)}</div>
+                    <div className="phead__name">{displayName}</div>
+                    <div className="phead__sub">{user?.name ? `@${username} · ` : ""}{dictCount(stats.dicts, currentLanguage)} · {wordCount(stats.total, currentLanguage)}</div>
                 </div>
                 <button className="btn btn--outline" onClick={logOut}><Icon n="logout" sm /> {t.logout}</button>
             </div>
@@ -148,6 +164,14 @@ const MyPage = () => {
                             <span className={`toggle${theme === "dark" ? " is-on" : ""}`} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} />
                         </div>
                         <div className="setrow">
+                            <span className="setrow__ic"><Icon n="user" sm /></span>
+                            <span className="setrow__meta">
+                                <span className="setrow__t">{t.displayName}</span>
+                                <span className="setrow__d">{(user?.name || "").trim() || t.notSet}</span>
+                            </span>
+                            <button className="btn btn--ghost" onClick={openName}>{t.edit}</button>
+                        </div>
+                        <div className="setrow">
                             <span className="setrow__ic"><Icon n="lock" sm /></span>
                             <span className="setrow__meta">
                                 <span className="setrow__t">{t.password}</span>
@@ -179,9 +203,41 @@ const MyPage = () => {
                             <span className="setrow__meta"><span className="setrow__t">{t.darkGame}</span><span className="setrow__d">{t.darkGameDesc}</span></span>
                             <span className={`toggle${darkGame ? " is-on" : ""}`} onClick={() => setDarkGame((p) => !p)} />
                         </div>
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="type" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{t.showArticles}</span><span className="setrow__d">{t.showArticlesDesc}</span></span>
+                            <span className={`toggle${showArticles ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setShowArticles(!showArticles)} />
+                        </div>
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="type" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{t.showVerbAa}</span><span className="setrow__d">{t.showVerbAaDesc}</span></span>
+                            <span className={`toggle${showVerbAa ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setShowVerbAa(!showVerbAa)} />
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <Modal
+                open={nameOpen}
+                onClose={closeName}
+                title={t.displayName}
+                footer={<>
+                    <button className="btn btn--ghost" disabled={nameSaving} onClick={closeName}>{t.cancel}</button>
+                    <button className="btn btn--accent" disabled={nameSaving} onClick={saveName}>
+                        {nameSaving ? <BtnSpinner /> : t.save}
+                    </button>
+                </>}
+            >
+                <div className="field">
+                    <div className="input-icon">
+                        <Icon n="user" sm />
+                        <input className="input" type="text" autoFocus value={nameValue} maxLength={40}
+                            placeholder={t.displayNamePlaceholder}
+                            onChange={(e) => setNameValue(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") saveName(); }} />
+                    </div>
+                </div>
+            </Modal>
 
             <Modal
                 open={pwOpen}

@@ -63,6 +63,14 @@ export const posMeta = (pos) => {
 export const nounArticle = (forms) =>
     (forms && forms.pos === "noun" && forms.gender) ? forms.gender : "";
 
+// Приставка перед словом на чипе: артикль (en/ei/et) у сущ. и «å» у глаголов.
+// Управляется настройками (articles / verbAa). posKey — нормализованный ключ из posMeta.
+export const chipPrefix = (posKey, forms, { articles = true, verbAa = true } = {}) => {
+    if (posKey === "noun" && forms?.gender) return articles ? forms.gender : "";
+    if (posKey === "verb") return verbAa ? "å" : "";
+    return "";
+};
+
 // Полный набор грамматических форм слова → [{label, value}] для подробного показа.
 // word — само норвежское слово (нужно для неопр. формы ед.ч. сущ. и инфинитива гл.).
 export const posFormsRows = (word, forms) => {

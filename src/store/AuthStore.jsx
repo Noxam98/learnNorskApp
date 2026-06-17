@@ -29,6 +29,7 @@ const getError = (error, currentLanguage) => {
 // Привести ответ /me к объекту user в сторе (включая email/привязку Google для настроек).
 const _userFrom = (me) => ({
     username: me.username,
+    name: me.name || null,
     isAdmin: !!me.is_admin,
     gamePrefs: me.gamePrefs || null,
     email: me.email || null,
