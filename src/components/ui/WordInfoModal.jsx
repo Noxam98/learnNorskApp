@@ -33,6 +33,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const [editBusy, setEditBusy] = useState(false);
     const [moreOpen, setMoreOpen] = useState(false); // раскрыть остальные языки
     const [review, setReview] = useState(null);      // вердикт ревью: { approved, reason }
+    const [hint, setHint] = useState("");            // подсказка пользователя (часть речи и т.п.)
 
     const LANG_LABEL = { ru: t.russian, ukr: t.ukrainian, en: t.english, pl: t.polish, lt: t.lithuanian };
 
@@ -43,7 +44,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             no: join(tr.no) || view?.no || "",
             ru: join(tr.ru), ukr: join(tr.ukr), en: join(tr.en), pl: join(tr.pl), lt: join(tr.lt),
         });
-        setMoreOpen(false); setReview(null);
+        setMoreOpen(false); setReview(null); setHint("");
         setEditOpen(true);
     };
 
@@ -57,11 +58,11 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
         }
         setEditBusy(true); setReview(null);
         try {
-            const r = await api.editPoolWord(view.no, translate, lang);   // ревью + правка общего пула
+            const r = await api.editPoolWord(view.no, translate, lang, hint);   // ревью + правка общего пула
             setReview({ approved: !!r.approved, reason: r.reason || "" });
-            if (r.approved) {  // одобрено и применено — обновляем вид и словарь
-                const newNo = translate.no?.[0] || view.no;
-                setView((v) => (v ? { ...v, no: newNo, translate: { ...(v.translate || {}), ...translate } } : v));
+            if (r.approved) {  // одобрено: нейросеть вернула стандартизованное слово — берём его
+                const newNo = r.no || translate.no?.[0] || view.no;
+                setView((v) => (v ? { ...v, no: newNo, translate: r.translate || { ...(v.translate || {}), ...translate } } : v));
                 loadData?.(true);
             }
         } catch (e) {
@@ -337,6 +338,11 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                             <Icon n="plus" sm /> {t.more || "Дополнительно"}
                         </button>
                     )}
+                    <div className="field">
+                        <label className="label">{t.editHintLabel || "Подсказка (необязательно)"}</label>
+                        <input className="input" value={hint} placeholder={t.editHintPlaceholder || "напр.: это глагол, не существительное"}
+                            onChange={(e) => setHint(e.target.value)} />
+                    </div>
                     {review && (
                         <div style={{
                             display: "flex", gap: 8, alignItems: "flex-start", padding: "10px 12px", borderRadius: 10,

@@ -189,7 +189,7 @@ class ApiService {
     setOnlinePrefs(prefs) { return this._send('POST', '/me/online_prefs', prefs); }
     setGameMode(mode) { return this._send('POST', '/me/game_mode', { mode }); }
     // Правка слова в общем пуле (норвежское + переводы) — для всех, через ревью нейросети.
-    editPoolWord(word, translate, lang) { return this._send('POST', `/pool/${encodeURIComponent(word)}/edit`, { translate, lang }); }
+    editPoolWord(word, translate, lang, hint) { return this._send('POST', `/pool/${encodeURIComponent(word)}/edit`, { translate, lang, hint }); }
 
     // URL WebSocket-а онлайн-раздела (токен и язык — в query, т.к. браузерный WS без заголовков).
     onlineSocketUrl(lang) {
