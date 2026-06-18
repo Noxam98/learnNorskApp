@@ -1,0 +1,49 @@
+- generic [ref=e3]:
+  - button "Язык интерфейса" [ref=e6] [cursor=pointer]:
+    - img [ref=e7]
+    - generic [ref=e9]: Українська
+    - img [ref=e10]
+  - complementary [ref=e12]:
+    - link "Lære·Norsk" [ref=e13] [cursor=pointer]:
+      - /url: "#/words"
+      - img [ref=e15]
+      - generic [ref=e37]: Lære·Norsk
+    - generic [ref=e38]:
+      - heading "Почніть свій словник сьогодні." [level=2] [ref=e39]
+      - paragraph [ref=e40]: Додавайте норвезькі слова, а переклади й частину мови підбере ШІ. Тренуйтеся у грі, коли назбираєте десяток.
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e44]: på den andre siden
+          - generic [ref=e45]: з іншого боку
+        - generic [ref=e46]:
+          - generic [ref=e48]: nøkkel
+          - generic [ref=e49]: ключ
+    - generic [ref=e50]: © 2026 Lære Norsk · t.me/progtt
+  - main [ref=e51]:
+    - generic [ref=e52]:
+      - generic [ref=e53]: Створити акаунт
+      - heading "Реєстрація" [level=1] [ref=e54]
+      - paragraph [ref=e55]: Лише ім'я користувача та пароль — пошта не потрібна.
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]: Ім'я користувача
+          - generic [ref=e59]:
+            - img [ref=e60]
+            - textbox "Ім'я користувача" [ref=e62]
+        - generic [ref=e63]:
+          - generic [ref=e64]: Пароль
+          - generic [ref=e65]:
+            - img [ref=e66]
+            - textbox "Пароль" [ref=e68]:
+              - /placeholder: ••••••••
+          - generic [ref=e69]:
+            - img [ref=e70]
+            - text: Пароль повинен містити щонайменше 6 символів
+        - button "Зареєструватися" [ref=e72] [cursor=pointer]:
+          - text: Зареєструватися
+          - img [ref=e73]
+      - generic [ref=e75]: або
+      - paragraph [ref=e79]:
+        - text: Вже є акаунт?
+        - link "Увійти" [ref=e80] [cursor=pointer]:
+          - /url: "#/authorization"

@@ -51,12 +51,14 @@ function fireConfetti() {
 // из верхнего ряда на кнопку при показе ответов.
 function PlayerChip({ name, bright }) {
     return (
-        <motion.div layoutId={`pc-${name}`} transition={{ type: "spring", stiffness: 500, damping: 34 }}
+        <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 520, damping: 28 }}
             style={{
                 padding: "3px 10px", borderRadius: 999, fontSize: "var(--fs-12)", fontWeight: 700,
                 whiteSpace: "nowrap", border: "1px solid var(--border)",
                 background: bright ? "var(--ember-600)" : "var(--surface-3)",
                 color: bright ? "#fff" : "var(--ink-3)",
+                boxShadow: bright ? "0 2px 6px rgba(0,0,0,.2)" : "none",
             }}>
             {name}
         </motion.div>

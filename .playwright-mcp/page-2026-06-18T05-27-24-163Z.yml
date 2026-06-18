@@ -1,0 +1,134 @@
+- generic [ref=e83]:
+  - banner [ref=e84]:
+    - generic [ref=e85]:
+      - link "Lære·Norsk" [ref=e86] [cursor=pointer]:
+        - /url: "#/words"
+        - img [ref=e88]
+        - generic [ref=e110]: Lære·Norsk
+      - navigation [ref=e111]:
+        - link "Мій словник" [ref=e112] [cursor=pointer]:
+          - /url: "#/words"
+          - img [ref=e113]
+          - generic [ref=e115]: Мій словник
+        - link "Гра" [ref=e116] [cursor=pointer]:
+          - /url: "#/game"
+          - img [ref=e117]
+          - generic [ref=e119]: Гра
+        - link "База слів" [ref=e120] [cursor=pointer]:
+          - /url: "#/pool"
+          - img [ref=e121]
+          - generic [ref=e123]: База слів
+        - link "Онлайн" [ref=e124] [cursor=pointer]:
+          - /url: "#/online"
+          - img [ref=e125]
+          - generic [ref=e127]: Онлайн
+      - button "theme" [ref=e128] [cursor=pointer]:
+        - img [ref=e129]
+      - button "Язык интерфейса" [ref=e133] [cursor=pointer]:
+        - img [ref=e134]
+        - generic [ref=e136]: Українська
+        - img [ref=e137]
+      - link "Профіль" [ref=e139] [cursor=pointer]:
+        - /url: "#/mypage"
+        - text: P
+  - main [ref=e140]:
+    - generic [ref=e141]:
+      - generic [ref=e142]: P
+      - generic [ref=e143]:
+        - generic [ref=e144]: pwtest_qz0618
+        - generic [ref=e145]: 1 словник · 0 слів
+      - button "Вийти" [ref=e146] [cursor=pointer]:
+        - img [ref=e147]
+        - text: Вийти
+    - generic [ref=e149]:
+      - generic [ref=e150]:
+        - img [ref=e152]
+        - generic [ref=e154]: "0"
+        - generic [ref=e155]: Слів усього
+      - generic [ref=e156]:
+        - img [ref=e158]
+        - generic [ref=e160]: "1"
+        - generic [ref=e161]: Словників
+      - generic [ref=e162]:
+        - img [ref=e164]
+        - generic [ref=e166]: Вибрано у гру
+      - generic [ref=e167]:
+        - img [ref=e169]
+        - generic [ref=e171]: З описом
+    - generic [ref=e172]:
+      - generic [ref=e173]:
+        - generic [ref=e174]:
+          - generic [ref=e175]: Словники
+          - generic [ref=e176]: слово
+        - generic [ref=e179]:
+          - generic [ref=e180]: Словник за замовчуванням
+          - generic [ref=e181]: "0"
+      - generic [ref=e183]:
+        - generic [ref=e185]: Налаштування
+        - generic [ref=e186]:
+          - generic [ref=e187]:
+            - img [ref=e189]
+            - generic [ref=e191]:
+              - generic [ref=e192]: Мова інтерфейсу
+              - generic [ref=e193]: Мова перекладів і меню
+            - combobox [ref=e194] [cursor=pointer]:
+              - option "Українська" [selected]
+              - option "Русский"
+              - option "English"
+              - option "Polski"
+              - option "Lietuvių"
+          - generic [ref=e195]:
+            - img [ref=e197]
+            - generic [ref=e199]:
+              - generic [ref=e200]: Темна тема
+              - generic [ref=e201]: Оформлення всього застосунку
+          - generic [ref=e203]:
+            - img [ref=e205]
+            - generic [ref=e207]:
+              - generic [ref=e208]: Ім'я
+              - generic [ref=e209]: Не задано
+            - button "Змінити" [ref=e210] [cursor=pointer]
+          - generic [ref=e211]:
+            - img [ref=e213]
+            - generic [ref=e215]:
+              - generic [ref=e216]: Пароль
+              - generic [ref=e217]: Пароль задано
+            - button "Змінити пароль" [ref=e218] [cursor=pointer]
+          - generic [ref=e219]:
+            - img [ref=e221]
+            - generic [ref=e223]:
+              - generic [ref=e224]: Акаунт Google
+              - generic [ref=e225]: Вхід через Google
+            - generic [ref=e227]:
+              - button "Вход с аккаунтом Google. Откроется в новой вкладке." [ref=e229] [cursor=pointer]:
+                - generic [ref=e231]:
+                  - img [ref=e233]
+                  - generic [ref=e240]: Вход с аккаунтом Google
+              - iframe
+          - generic [ref=e241]:
+            - img [ref=e243]
+            - generic [ref=e245]:
+              - generic [ref=e246]: Артиклі іменників
+              - generic [ref=e247]: en/ei/et перед словом на чипах
+          - generic [ref=e249]:
+            - img [ref=e251]
+            - generic [ref=e253]:
+              - generic [ref=e254]: «å» перед дієсловами
+              - generic [ref=e255]: Частка інфінітива на чипах
+          - generic [ref=e257]:
+            - img [ref=e259]
+            - generic [ref=e261]:
+              - generic [ref=e262]: Звуки гри
+              - generic [ref=e263]: Звуковий супровід в онлайн-режимі
+  - contentinfo [ref=e265]:
+    - generic [ref=e266]:
+      - generic [ref=e268]: © 2026 Lære Norsk
+      - generic [ref=e269]:
+        - generic [ref=e270]: Знайшли баг або є ідеї?
+        - generic [ref=e271]:
+          - link "Telegram" [ref=e272] [cursor=pointer]:
+            - /url: https://t.me/progtt
+          - link "e-mail" [ref=e273] [cursor=pointer]:
+            - /url: mailto:meliqq98@gmail.com
+  - generic:
+    - img

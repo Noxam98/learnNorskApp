@@ -1,0 +1,117 @@
+- generic [ref=e83]:
+  - banner [ref=e84]:
+    - generic [ref=e85]:
+      - link "Lære·Norsk" [ref=e86] [cursor=pointer]:
+        - /url: "#/words"
+        - img [ref=e88]
+        - generic [ref=e110]: Lære·Norsk
+      - navigation [ref=e111]:
+        - link "Мій словник" [ref=e112] [cursor=pointer]:
+          - /url: "#/words"
+          - img [ref=e113]
+          - generic [ref=e115]: Мій словник
+        - link "Гра" [ref=e116] [cursor=pointer]:
+          - /url: "#/game"
+          - img [ref=e117]
+          - generic [ref=e119]: Гра
+        - link "База слів" [ref=e120] [cursor=pointer]:
+          - /url: "#/pool"
+          - img [ref=e121]
+          - generic [ref=e123]: База слів
+        - link "Онлайн" [ref=e124] [cursor=pointer]:
+          - /url: "#/online"
+          - img [ref=e125]
+          - generic [ref=e127]: Онлайн
+      - button "theme" [ref=e128] [cursor=pointer]:
+        - img [ref=e129]
+      - button "Язык интерфейса" [ref=e133] [cursor=pointer]:
+        - img [ref=e134]
+        - generic [ref=e136]: Українська
+        - img [ref=e137]
+      - link "Профіль" [ref=e139] [cursor=pointer]:
+        - /url: "#/mypage"
+        - text: P
+  - main [ref=e274]:
+    - generic [ref=e276]:
+      - generic [ref=e277]:
+        - generic [ref=e278]: Онлайн
+        - generic [ref=e279]: 0 кімнат
+      - button "Створити кімнату" [active] [ref=e280] [cursor=pointer]:
+        - img [ref=e281]
+        - text: Створити кімнату
+    - paragraph [ref=e283]: Поки немає відкритих кімнат
+    - generic [ref=e285]:
+      - generic [ref=e286]:
+        - generic [ref=e287]: Створити кімнату
+        - button "Закрыть" [ref=e288] [cursor=pointer]:
+          - img [ref=e289]
+      - generic [ref=e291]:
+        - generic [ref=e292]:
+          - generic [ref=e293]: Назва
+          - textbox "Назва" [ref=e294]
+        - generic [ref=e295]:
+          - generic [ref=e296]: Напрямок
+          - combobox [ref=e297]:
+            - option "Норвезьке → переклад" [selected]
+            - option "Переклад → норвезьке"
+        - generic [ref=e298]:
+          - generic [ref=e299]: Джерело слів
+          - combobox [ref=e300]:
+            - option "Спільний пул" [selected]
+            - option "Мої словники"
+            - option "AI-підбір"
+        - generic [ref=e301]:
+          - generic [ref=e302]: Рівень
+          - combobox [ref=e303]:
+            - option "Будь-який" [selected]
+            - option "A1"
+            - option "A2"
+            - option "B1"
+            - option "B2"
+            - option "C1"
+            - option "C2"
+        - generic [ref=e304]:
+          - generic [ref=e305]: Тема
+          - combobox [ref=e306]:
+            - option "Будь-яка" [selected]
+            - option "Сім'я"
+            - option "Їжа"
+            - option "Дім"
+            - option "Робота"
+            - option "Навчання"
+            - option "Подорожі"
+            - option "Здоров'я"
+            - option "Тіло"
+            - option "Одяг"
+            - option "Природа"
+            - option "Тварини"
+            - option "Погода"
+            - option "Місто"
+            - option "Транспорт"
+            - option "Покупки"
+            - option "Час"
+            - option "Спорт"
+            - option "Хобі"
+            - option "Технології"
+            - option "Спілкування"
+            - option "Емоції"
+            - option "Свята"
+            - option "Суспільство"
+            - option "Інше"
+        - generic [ref=e307]:
+          - generic [ref=e308]: "Слів: 7"
+          - slider [ref=e309]: "7"
+        - generic [ref=e310]:
+          - generic [ref=e311]: "Час на питання: 15с"
+          - slider [ref=e312]: "15"
+        - generic [ref=e313]:
+          - generic [ref=e314]: "Макс. гравців: 4"
+          - slider [ref=e315]: "4"
+        - generic [ref=e317]:
+          - generic [ref=e318]: Приватна
+          - generic [ref=e319]: Не показувати у списку
+      - generic [ref=e321]:
+        - button "Скасувати" [ref=e322] [cursor=pointer]
+        - button "Створити кімнату" [ref=e323] [cursor=pointer]
+  - generic:
+    - img
