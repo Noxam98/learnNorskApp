@@ -162,7 +162,7 @@ export const interfaceTranslate = {
             aiGenerating: "Нейросеть подбирает слова…", aiIndexing: "Индексация слов…", aiError: "Ошибка генерации", aiRetry: "Повторить генерацию",
             dictionary: "Словарь", allDicts: "Все словари", startNow: "Старт (хост)",
             games: { quiz: "Викторина", race: "Гонка слов" }, genericError: "Ошибка",
-            chooseRunner: "Выбери бегуна", gameType: "Режим игры", answerMode: "Ответ", answerType: "Печать", answerChoice: "Выбор",
+            chooseRunner: "Выбери бегуна", secWhat: "Что играем", secWords: "Откуда слова", secParty: "Параметры партии", quizDesc: "Все отвечают синхронно, 4 варианта", raceDesc: "Гонка зверей на скорость", aiHint: "ИИ подберёт слова по теме", gameType: "Режим игры", answerMode: "Ответ", answerType: "Печать", answerChoice: "Выбор",
             room_not_found: "Комната не найдена", room_in_game: "Игра уже идёт",
             room_full: "Комната заполнена", not_enough_words: "Недостаточно слов для этих настроек",
         }
@@ -332,7 +332,7 @@ export const interfaceTranslate = {
             aiGenerating: "AI is picking words…", aiIndexing: "Indexing words…", aiError: "Generation error", aiRetry: "Retry generation",
             dictionary: "Dictionary", allDicts: "All dictionaries", startNow: "Start (host)",
             games: { quiz: "Quiz", race: "Word Race" }, genericError: "Error",
-            chooseRunner: "Choose your runner", gameType: "Game mode", answerMode: "Answer", answerType: "Typing", answerChoice: "Choice",
+            chooseRunner: "Choose your runner", secWhat: "What we play", secWords: "Word source", secParty: "Match settings", quizDesc: "Everyone answers in sync, 4 options", raceDesc: "Animals race for speed", aiHint: "AI picks words by topic", gameType: "Game mode", answerMode: "Answer", answerType: "Typing", answerChoice: "Choice",
             room_not_found: "Room not found", room_in_game: "Game already started",
             room_full: "Room is full", not_enough_words: "Not enough words for these settings",
         }
@@ -501,7 +501,7 @@ export const interfaceTranslate = {
             aiGenerating: "Нейромережа добирає слова…", aiIndexing: "Індексація слів…", aiError: "Помилка генерації", aiRetry: "Повторити генерацію",
             dictionary: "Словник", allDicts: "Усі словники", startNow: "Старт (хост)",
             games: { quiz: "Вікторина", race: "Гонка слів" }, genericError: "Помилка",
-            chooseRunner: "Обери бігуна", gameType: "Режим гри", answerMode: "Відповідь", answerType: "Друк", answerChoice: "Вибір",
+            chooseRunner: "Обери бігуна", secWhat: "Що граємо", secWords: "Звідки слова", secParty: "Параметри партії", quizDesc: "Усі відповідають синхронно, 4 варіанти", raceDesc: "Гонка звірів на швидкість", aiHint: "ШІ добере слова за темою", gameType: "Режим гри", answerMode: "Відповідь", answerType: "Друк", answerChoice: "Вибір",
             room_not_found: "Кімнату не знайдено", room_in_game: "Гра вже триває",
             room_full: "Кімната заповнена", not_enough_words: "Недостатньо слів для цих налаштувань",
         }
@@ -670,7 +670,7 @@ export const interfaceTranslate = {
             aiGenerating: "AI dobiera słowa…", aiIndexing: "Indeksowanie słów…", aiError: "Błąd generacji", aiRetry: "Ponów generację",
             dictionary: "Słownik", allDicts: "Wszystkie słowniki", startNow: "Start (host)",
             games: { quiz: "Quiz", race: "Wyścig słów" }, genericError: "Błąd",
-            chooseRunner: "Wybierz biegacza", gameType: "Tryb gry", answerMode: "Odpowiedź", answerType: "Pisanie", answerChoice: "Wybór",
+            chooseRunner: "Wybierz biegacza", secWhat: "Co gramy", secWords: "Źródło słów", secParty: "Ustawienia gry", quizDesc: "Wszyscy odpowiadają naraz, 4 opcje", raceDesc: "Wyścig zwierząt na czas", aiHint: "AI dobierze słowa wg tematu", gameType: "Tryb gry", answerMode: "Odpowiedź", answerType: "Pisanie", answerChoice: "Wybór",
             room_not_found: "Nie znaleziono pokoju", room_in_game: "Gra już trwa",
             room_full: "Pokój pełny", not_enough_words: "Za mało słów dla tych ustawień",
         }
@@ -835,7 +835,7 @@ export const interfaceTranslate = {
             aiGenerating: "DI parenka žodžius…", aiIndexing: "Žodžių indeksavimas…", aiError: "Generavimo klaida", aiRetry: "Kartoti generavimą",
             dictionary: "Žodynas", allDicts: "Visi žodynai", startNow: "Pradėti (host)",
             games: { quiz: "Viktorina", race: "Žodžių lenktynės" }, genericError: "Klaida",
-            chooseRunner: "Pasirink bėgiką", gameType: "Žaidimo režimas", answerMode: "Atsakymas", answerType: "Rašymas", answerChoice: "Pasirinkimas",
+            chooseRunner: "Pasirink bėgiką", secWhat: "Ką žaidžiame", secWords: "Žodžių šaltinis", secParty: "Partijos nustatymai", quizDesc: "Visi atsako sinchroniškai, 4 variantai", raceDesc: "Gyvūnų greičio lenktynės", aiHint: "DI parinks žodžius pagal temą", gameType: "Žaidimo režimas", answerMode: "Atsakymas", answerType: "Rašymas", answerChoice: "Pasirinkimas",
             room_not_found: "Kambarys nerastas", room_in_game: "Žaidimas jau prasidėjo",
             room_full: "Kambarys pilnas", not_enough_words: "Per mažai žodžių šiems nustatymams",
         }

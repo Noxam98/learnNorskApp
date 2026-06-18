@@ -6,7 +6,6 @@ import { useSystemStore } from "../store/systemStore.jsx";
 import { useAuthStore } from "../store/AuthStore.jsx";
 import { useWordsStore } from "../store/wordStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
-import { Modal } from "../components/ui/Modal.jsx";
 import { StageTimer } from "../components/online/StageTimer.jsx";
 import { Countdown } from "../components/online/Countdown.jsx";
 import { PlayerTag } from "../components/online/PlayerTag.jsx";
@@ -18,7 +17,6 @@ import { hyphenate, hyLang } from "../components/ui/hyphenate.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const DEFAULT_SETTINGS = { game: "quiz", answer: "type", dir: "no2int", source: "pool", dictId: "", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
-const GAME_TYPES = ["quiz", "race"];
 
 // Полноэкранный игровой контейнер в теме приложения (а не в тёмной теме обычных игр).
 const SCREEN = {
@@ -357,7 +355,7 @@ export const OnlinePage = () => {
                 <button className="btn btn--outline" onClick={() => send({ type: "leave" })}><Icon n="arrow-left" sm /> {to.leave || "Выйти"}</button>
             </div>
 
-            <RoomForm open={editOpen} onClose={() => setEditOpen(false)} t={t} to={to} dicts={dictList}
+            <RoomForm open={editOpen} onClose={() => setEditOpen(false)} theme={theme} t={t} to={to} dicts={dictList}
                 title={to.roomSettings || "Настройки комнаты"} confirmLabel={t.save}
                 initial={s} initialName={room.name}
                 onConfirm={(name, settings) => {
@@ -470,7 +468,7 @@ export const OnlinePage = () => {
             </div></div>
         ) : <p className="muted" style={{ textAlign: "center", marginTop: "var(--sp-5)" }}>{to.noRooms || "Пока нет открытых комнат"}</p>}
 
-        <RoomForm open={createOpen} onClose={() => setCreateOpen(false)} t={t} to={to} dicts={dictList}
+        <RoomForm open={createOpen} onClose={() => setCreateOpen(false)} theme={theme} t={t} to={to} dicts={dictList}
             initial={savedPrefs} onConfirm={(name, settings) => {
                 send({ type: "create", name, settings });
                 api.setOnlinePrefs(settings).catch(() => {});
@@ -479,96 +477,258 @@ export const OnlinePage = () => {
     </main>;
 };
 
-const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, confirmLabel, onConfirm, dicts = [] }) => {
+// ---------- Контролы окна создания комнаты (адаптация дизайн-макета room-modal) ----------
+const Field = ({ label, hint, dep, children }) => (
+    <div className={"rf" + (dep ? " rf--dep" : "")}>
+        <div className="rf__lbl">{dep && <span className="rf__link" aria-hidden="true">↳</span>}<span className="rf__lbltxt">{label}</span>{hint && <span className="rf__hint">{hint}</span>}</div>
+        {children}
+    </div>
+);
+
+const Seg = ({ value, options, onChange }) => (
+    <div className="seg" role="radiogroup">
+        {options.map((o) => (
+            <button key={o.value} type="button" role="radio" aria-checked={o.value === value}
+                className={"seg__btn" + (o.value === value ? " is-on" : "")} onClick={() => onChange(o.value)}>
+                {o.icon && <span className="seg__i" aria-hidden="true">{o.icon}</span>}<span className="seg__t">{o.label}</span>
+            </button>
+        ))}
+    </div>
+);
+
+const ModeSeg = ({ value, onChange, cards }) => (
+    <div className="modeseg" role="radiogroup">
+        {cards.map((c) => (
+            <button key={c.value} type="button" role="radio" aria-checked={c.value === value}
+                className={"modeseg__card" + (c.value === value ? " is-on" : "")} onClick={() => onChange(c.value)}>
+                <span className="modeseg__emoji" aria-hidden="true">{c.emoji}</span>
+                <span className="modeseg__body"><b>{c.label}</b><span>{c.desc}</span></span>
+                <span className="modeseg__tick" aria-hidden="true">✓</span>
+            </button>
+        ))}
+    </div>
+);
+
+const RSlider = ({ value, min, max, step = 1, unit, onChange }) => {
+    const pct = ((value - min) / (max - min)) * 100;
+    return (
+        <div className="rslider">
+            <input type="range" min={min} max={max} step={step} value={value} style={{ "--pct": pct + "%" }} onChange={(e) => onChange(Number(e.target.value))} />
+            <span className="rslider__val">{value}{unit ? <i>{unit}</i> : null}</span>
+        </div>
+    );
+};
+
+const RToggle = ({ value, onChange, label, desc }) => (
+    <button type="button" className="rtoggle" role="switch" aria-checked={value} onClick={() => onChange(!value)}>
+        <span className="rtoggle__txt"><b>{label}</b><span>{desc}</span></span>
+        <span className={"rtoggle__sw" + (value ? " is-on" : "")}><span className="rtoggle__knob" /></span>
+    </button>
+);
+
+const Reveal = ({ open, children }) => (
+    <div className={"reveal" + (open ? " is-open" : "")} aria-hidden={!open}><div className="reveal__in">{children}</div></div>
+);
+
+// Кастомный дропдаун с поповером (fixed — не режется overflow модалки)
+const Sel = ({ value, options, onChange, placeholder }) => {
+    const [open, setOpen] = useState(false);
+    const [active, setActive] = useState(0);
+    const [pop, setPop] = useState(null);
+    const ref = useRef(null);
+    const sel = options.find((o) => o.value === value);
+
+    useEffect(() => {
+        if (!open) { setPop(null); return; }
+        const place = () => {
+            const el = ref.current; if (!el) return;
+            const r = el.getBoundingClientRect();
+            const below = window.innerHeight - r.bottom - 12, above = r.top - 12;
+            const up = below < 220 && above > below;
+            setPop({ left: r.left, top: up ? r.top - 6 : r.bottom + 6, width: r.width, maxH: Math.min(280, Math.max(160, up ? above : below)), up });
+        };
+        place();
+        setActive(Math.max(0, options.findIndex((o) => o.value === value)));
+        const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target) && !e.target.closest(".dd__pop")) setOpen(false); };
+        const onScroll = () => setOpen(false);
+        document.addEventListener("mousedown", onDoc);
+        document.addEventListener("touchstart", onDoc);
+        window.addEventListener("scroll", onScroll, true);
+        window.addEventListener("resize", onScroll);
+        return () => {
+            document.removeEventListener("mousedown", onDoc);
+            document.removeEventListener("touchstart", onDoc);
+            window.removeEventListener("scroll", onScroll, true);
+            window.removeEventListener("resize", onScroll);
+        };
+    }, [open]); // eslint-disable-line
+
+    const choose = (v) => { onChange(v); setOpen(false); };
+    return (
+        <div className={"dd" + (open ? " is-open" : "")} ref={ref}>
+            <button type="button" className="dd__trigger" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+                <span className="dd__val">
+                    {sel ? <>{sel.emoji && <span className="dd__emoji">{sel.emoji}</span>}<span className="dd__valtxt">{sel.label}</span>{sel.sub && <span className="dd__valsub">{sel.sub}</span>}</>
+                        : <span className="dd__placeholder">{placeholder || "—"}</span>}
+                </span>
+                <span className="dd__chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2.5 4.5 L6 8 L9.5 4.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
+            </button>
+            {open && pop && (
+                <div className={"dd__pop" + (pop.up ? " dd__pop--up" : "")} role="listbox"
+                    style={{ left: pop.left, top: pop.top, width: pop.width, maxHeight: pop.maxH, transform: pop.up ? "translateY(-100%)" : "none" }}>
+                    {options.map((o, i) => (
+                        <button key={o.value} type="button" role="option" aria-selected={o.value === value}
+                            className={"dd__opt" + (o.value === value ? " is-sel" : "") + (i === active ? " is-active" : "")}
+                            onMouseEnter={() => setActive(i)} onClick={() => choose(o.value)}>
+                            {o.emoji && <span className="dd__optemoji">{o.emoji}</span>}
+                            <span className="dd__opttxt">{o.label}</span>
+                            {o.sub && <span className="dd__optsub">{o.sub}</span>}
+                            {o.value === value && <span className="dd__check" aria-hidden="true">✓</span>}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
+const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", title, confirmLabel, onConfirm, dicts = [] }) => {
     const [name, setName] = useState(initialName);
     const [s, setS] = useState({ ...DEFAULT_SETTINGS, ...(initial || {}) });
     const topics = t.topics || {};
-    // своя тема: s.topic держит уже финальное значение (свободный текст), customMode — только UI
+    // своя тема: s.topic держит финальное значение (свободный текст), customMode — только UI
     const [customMode, setCustomMode] = useState(false);
     useEffect(() => {
         if (open) {
             const init = { ...DEFAULT_SETTINGS, ...(initial || {}) };
             setS(init); setName(initialName);
-            setCustomMode(!!init.topic && !topics[init.topic]);   // тема не из списка → своя
+            setCustomMode(!!init.topic && !topics[init.topic]);
         }
     }, [open]); // eslint-disable-line
+    useEffect(() => {
+        if (!open) return;
+        const onKey = (e) => { if (e.key === "Escape") onClose(); };
+        document.addEventListener("keydown", onKey);
+        return () => document.removeEventListener("keydown", onKey);
+    }, [open]); // eslint-disable-line
+    if (!open) return null;
     const set = (k, v) => setS((p) => ({ ...p, [k]: v }));
+    const setSource = (v) => setS((p) => {
+        const next = { ...p, source: v };
+        if (v !== "ai" && customMode) { setCustomMode(false); next.topic = ""; }
+        return next;
+    });
 
-    return <Modal open={open} onClose={onClose} title={title || to.create || "Создать комнату"} footer={<>
-        <button className="btn btn--ghost" onClick={onClose}>{t.cancel}</button>
-        <button className="btn btn--accent" onClick={() => onConfirm(name, s)}>{confirmLabel || to.create || "Создать"}</button>
-    </>}>
-        <div className="field"><label className="label">{to.roomName || "Название"}</label>
-            <input className="input" value={name} maxLength={40} placeholder={to.roomName || "Название"} onChange={(e) => setName(e.target.value)} /></div>
-        <div className="field"><label className="label">{to.gameType || "Режим игры"}</label>
-            <select className="input" value={s.game} onChange={(e) => set("game", e.target.value)}>
-                {GAME_TYPES.map((g) => <option key={g} value={g}>{to.games?.[g] || g}</option>)}
-            </select></div>
-        {s.game === "race" && (
-            <div className="field"><label className="label">{to.answerMode || "Ответ"}</label>
-                <select className="input" value={s.answer} onChange={(e) => set("answer", e.target.value)}>
-                    <option value="type">{to.answerType || "Печать"}</option>
-                    <option value="choice">{to.answerChoice || "Выбор"}</option>
-                </select></div>
-        )}
-        <div className="field"><label className="label">{to.direction || "Направление"}</label>
-            <select className="input" value={s.dir} onChange={(e) => set("dir", e.target.value)}>
-                <option value="no2int">{to.dirNo2Int || "Норвежское → перевод"}</option>
-                <option value="int2no">{to.dirInt2No || "Перевод → норвежское"}</option>
-            </select></div>
-        <div className="field"><label className="label">{to.wordSource || "Источник слов"}</label>
-            <select className="input" value={s.source} onChange={(e) => {
-                const v = e.target.value;
-                if (v !== "ai" && customMode) { setCustomMode(false); set("topic", ""); }  // своя тема — только для AI
-                set("source", v);
-            }}>
-                <option value="pool">{to.sourcePool || "Общий пул"}</option>
-                <option value="dict">{to.sourceDict || "Мои словари"}</option>
-                <option value="ai">{to.sourceAi || "AI-подбор"}</option>
-            </select></div>
-        {s.source === "dict" && (
-            <div className="field"><label className="label">{to.dictionary || "Словарь"}</label>
-                <select className="input" value={s.dictId} onChange={(e) => set("dictId", e.target.value)}>
-                    <option value="">{to.allDicts || "Все словари"}</option>
-                    {dicts.map((d) => <option key={d.id} value={d.id}>{d.dictName === "default" ? t.defaultDict : d.dictName} ({d.words?.length || 0})</option>)}
-                </select></div>
-        )}
-        {s.source !== "dict" && <>
-            <div className="field"><label className="label">{to.level || "Уровень"}</label>
-                <select className="input" value={s.level} onChange={(e) => set("level", e.target.value)}>
-                    <option value="">{to.anyLevel || "Любой"}</option>
-                    {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-                </select></div>
-            <div className="field"><label className="label">{to.topic || "Тема"}</label>
-                <select className="input" value={customMode ? "__custom__" : s.topic}
-                    onChange={(e) => {
-                        const v = e.target.value;
-                        if (v === "__custom__") { setCustomMode(true); set("topic", ""); }
-                        else { setCustomMode(false); set("topic", v); }
-                    }}>
-                    <option value="">{to.anyTopic || "Любая"}</option>
-                    {Object.keys(topics).map((k) => <option key={k} value={k}>{topics[k]}</option>)}
-                    {s.source === "ai" && <option value="__custom__">{to.customTopic || "✏️ Своя тема"}</option>}
-                </select>
-                {customMode && s.source === "ai" && (
-                    <input className="input" type="text" value={s.topic} maxLength={60} autoFocus
-                        style={{ marginTop: 8 }} placeholder={to.customTopicPh || ""}
-                        onChange={(e) => set("topic", e.target.value)} />
-                )}</div>
-        </>}
-        <div className="field"><label className="label">{to.words || "Слов"}: {s.count}</label>
-            <input type="range" min={3} max={20} value={s.count} onChange={(e) => set("count", +e.target.value)} style={{ width: "100%" }} /></div>
-        {s.game !== "race" && (
-            <div className="field"><label className="label">{to.questionTime || "Время на вопрос"}: {s.qtime}{to.secUnit || "с"}</label>
-                <input type="range" min={5} max={30} value={s.qtime} onChange={(e) => set("qtime", +e.target.value)} style={{ width: "100%" }} /></div>
-        )}
-        <div className="field"><label className="label">{to.maxPlayers || "Макс. игроков"}: {s.maxPlayers}</label>
-            <input type="range" min={2} max={8} value={s.maxPlayers} onChange={(e) => set("maxPlayers", +e.target.value)} style={{ width: "100%" }} /></div>
-        <div className="setrow">
-            <span className="setrow__meta"><span className="setrow__t">{to.private || "Приватная"}</span><span className="setrow__d">{to.privateDesc || "Не показывать в списке"}</span></span>
-            <span className={`toggle${s.private ? " is-on" : ""}`} onClick={() => set("private", !s.private)} />
+    const showLevelTheme = s.source !== "dict";
+    const isAI = s.source === "ai";
+    const invalid = customMode && isAI && !s.topic.trim();
+
+    const levelOpts = [{ value: "", label: to.anyLevel || "Любой" }, ...LEVELS.map((l) => ({ value: l, label: l }))];
+    const themeOpts = [{ value: "", label: to.anyTopic || "Любая" },
+        ...Object.keys(topics).map((k) => ({ value: k, label: topics[k] })),
+        ...(isAI ? [{ value: "__custom__", label: (to.customTopic || "Своя тема").replace("✏️ ", ""), emoji: "✏️" }] : [])];
+    const dictOpts = [{ value: "", label: to.allDicts || "Все словари" },
+        ...dicts.map((d) => ({ value: String(d.id), label: d.dictName === "default" ? t.defaultDict : d.dictName, sub: `${d.words?.length || 0} ${to.wordsShort || "сл."}` }))];
+
+    return (
+        <div className="roomwrap" data-theme={theme} style={{ zIndex: 100 }}>
+            <div className="scrim" onClick={onClose} />
+            <div className="modal" role="dialog" aria-modal="true">
+                <div className="modal__head">
+                    <h2 className="modal__title">{title || to.create || "Создать комнату"}</h2>
+                    <button className="modal__x" aria-label={t.cancel} onClick={onClose}>✕</button>
+                </div>
+                <div className="modal__body">
+                    {/* Группа 1 — что играем */}
+                    <section className="grpwrap">
+                        <div className="grp__h">{to.secWhat || "Что играем"}</div>
+                        <div className="grp">
+                            <Field label={to.roomName || "Название"}>
+                                <input className="rtext" maxLength={40} placeholder={to.roomName || "Название"} value={name} onChange={(e) => setName(e.target.value)} />
+                                <span className="rtext__count">{name.length}/40</span>
+                            </Field>
+                            <Field label={to.gameType || "Режим игры"}>
+                                <ModeSeg value={s.game} onChange={(v) => set("game", v)} cards={[
+                                    { value: "quiz", emoji: "🎯", label: to.games?.quiz || "Викторина", desc: to.quizDesc || "" },
+                                    { value: "race", emoji: "🦊", label: to.games?.race || "Гонка слов", desc: to.raceDesc || "" },
+                                ]} />
+                            </Field>
+                            <Reveal open={s.game === "race"}>
+                                <Field label={to.answerMode || "Ответ"} dep>
+                                    <Seg value={s.answer} onChange={(v) => set("answer", v)} options={[
+                                        { value: "type", label: to.answerType || "Печать", icon: "⌨" },
+                                        { value: "choice", label: to.answerChoice || "Выбор", icon: "☰" },
+                                    ]} />
+                                </Field>
+                            </Reveal>
+                            <Field label={to.direction || "Направление"}>
+                                <Seg value={s.dir} onChange={(v) => set("dir", v)} options={[
+                                    { value: "no2int", label: to.dirNo2Int || "Норв. → перевод", icon: "🇳🇴" },
+                                    { value: "int2no", label: to.dirInt2No || "Перевод → норв.", icon: "🔤" },
+                                ]} />
+                            </Field>
+                        </div>
+                    </section>
+
+                    {/* Группа 2 — откуда слова */}
+                    <section className="grpwrap">
+                        <div className="grp__h">{to.secWords || "Откуда слова"}</div>
+                        <div className="grp">
+                            <Field label={to.wordSource || "Источник слов"}>
+                                <Seg value={s.source} onChange={setSource} options={[
+                                    { value: "pool", label: to.sourcePool || "Пул", icon: "🌐" },
+                                    { value: "dict", label: to.sourceDict || "Словари", icon: "📚" },
+                                    { value: "ai", label: to.sourceAi || "AI", icon: "✨" },
+                                ]} />
+                            </Field>
+                            <Reveal open={s.source === "dict"}>
+                                <Field label={to.dictionary || "Словарь"} dep>
+                                    <Sel value={String(s.dictId || "")} options={dictOpts} onChange={(v) => set("dictId", v)} />
+                                </Field>
+                            </Reveal>
+                            <Reveal open={showLevelTheme}>
+                                <div className="rf rf--dep">
+                                    <div className="rf__lbl"><span className="rf__link" aria-hidden="true">↳</span><span className="rf__lbltxt">{to.level || "Уровень"} · {to.topic || "Тема"}</span></div>
+                                    <div className="rcols">
+                                        <Sel value={s.level} options={levelOpts} onChange={(v) => set("level", v)} />
+                                        <Sel value={customMode ? "__custom__" : s.topic} options={themeOpts} onChange={(v) => {
+                                            if (v === "__custom__") { setCustomMode(true); set("topic", ""); }
+                                            else { setCustomMode(false); set("topic", v); }
+                                        }} />
+                                    </div>
+                                    <Reveal open={customMode && isAI}>
+                                        <div className="rcustom">
+                                            <input className={"rtext" + (invalid ? " is-invalid" : "")} maxLength={60} placeholder={to.customTopicPh || ""}
+                                                value={s.topic} onChange={(e) => set("topic", e.target.value)} />
+                                            <span className="rtext__count">{s.topic.length}/60</span>
+                                            <div className="rcustom__hint">✨ {to.aiHint || ""}</div>
+                                        </div>
+                                    </Reveal>
+                                </div>
+                            </Reveal>
+                        </div>
+                    </section>
+
+                    {/* Группа 3 — параметры партии */}
+                    <section className="grpwrap">
+                        <div className="grp__h">{to.secParty || "Параметры партии"}</div>
+                        <div className="grp">
+                            <Field label={to.words || "Слов"}><RSlider value={s.count} min={3} max={20} onChange={(v) => set("count", v)} /></Field>
+                            <Reveal open={s.game !== "race"}>
+                                <Field label={to.questionTime || "Время на вопрос"} dep><RSlider value={s.qtime} min={5} max={30} unit={to.secUnit || "с"} onChange={(v) => set("qtime", v)} /></Field>
+                            </Reveal>
+                            <Field label={to.maxPlayers || "Макс. игроков"}><RSlider value={s.maxPlayers} min={2} max={8} onChange={(v) => set("maxPlayers", v)} /></Field>
+                            <RToggle value={s.private} onChange={(v) => set("private", v)} label={to.private || "Приватная"} desc={to.privateDesc || "Не показывать в списке"} />
+                        </div>
+                    </section>
+                </div>
+                <div className="modal__foot">
+                    <button className="btn btn--ghost" onClick={onClose}>{t.cancel}</button>
+                    <button className="btn btn--primary" disabled={invalid} onClick={() => !invalid && onConfirm(name, s)}>{confirmLabel || to.create || "Создать"}</button>
+                </div>
+            </div>
         </div>
-    </Modal>;
+    );
 };
 
 export default OnlinePage;
