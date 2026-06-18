@@ -276,13 +276,13 @@ export const OnlinePage = () => {
             const promptLang = hyLang(lang, !optIsNo);
             return <main style={{ ...SCREEN, justifyContent: "flex-start", paddingTop: "var(--sp-7)" }}>
                 <LayoutGroup><div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
-                    {!reveal && <TimerBar total={question.time || 15} left={timeLeft} />}
-                    {/* Ряд игроков под таймером: серые → ярче при ответе. На reveal — переедут на кнопки. */}
-                    {!reveal && (
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: "var(--sp-5)", minHeight: 26 }}>
-                            {(room.players || []).map((p) => <PlayerChip key={p.name} name={p.name} bright={answered.includes(p.name)} />)}
-                        </div>
-                    )}
+                    {/* Таймер и ряд игроков РЕЗЕРВИРУЮТ высоту и на reveal — чтобы вопрос/варианты не прыгали. */}
+                    <div style={{ opacity: reveal ? 0 : 1, pointerEvents: reveal ? "none" : "auto" }}>
+                        <TimerBar total={question.time || 15} left={reveal ? 0 : timeLeft} />
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: "var(--sp-5)", minHeight: 26 }}>
+                        {!reveal && (room.players || []).map((p) => <PlayerChip key={p.name} name={p.name} bright={answered.includes(p.name)} />)}
+                    </div>
                     <AnimatePresence mode="wait">
                         <motion.div key={question.i}
                             initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.04 }}
@@ -321,12 +321,12 @@ export const OnlinePage = () => {
                                             disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>{hyphenate(opt, optLang)}</motion.button>
                                         {/* чипы голосов — по центру бордера кнопки (не накрывают слово) */}
                                         {reveal && topV.length > 0 && (
-                                            <div style={chipRow({ top: 0, transform: "translateY(-50%)" })}>
+                                            <div style={chipRow({ top: -11 })}>
                                                 {topV.map((n) => <PlayerChip key={n} name={n} bright />)}
                                             </div>
                                         )}
                                         {reveal && botV.length > 0 && (
-                                            <div style={chipRow({ bottom: 0, transform: "translateY(50%)" })}>
+                                            <div style={chipRow({ bottom: -11 })}>
                                                 {botV.map((n) => <PlayerChip key={n} name={n} bright />)}
                                             </div>
                                         )}
