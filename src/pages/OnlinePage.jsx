@@ -13,6 +13,7 @@ import RaceScreen, { RacePodium } from "../components/online/RaceScreen.jsx";
 import { RaceRunner, ANIMAL_LIST, ANIMAL_COLORS, animalLabel } from "../components/online/RaceRunner.jsx";
 import api from "../components/tools/api.js";
 import { playSound, playWin, preloadSounds } from "../components/tools/sound.js";
+import { startRaceMusic, stopRaceMusic, playGallop, playFall } from "../components/tools/raceAudio.js";
 import { hyphenate, hyLang } from "../components/ui/hyphenate.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -109,6 +110,7 @@ export const OnlinePage = () => {
                     if (m.room.state === "lobby") {
                         setCountdown(null); setQuestion(null); setReveal(null); setPreparing(false);
                         setRaceWord(null); setRacePos([]); setRaceGrace(null); setRaceGo(false); setRaceFeedback(null); setRaceStreak(0);
+                        stopRaceMusic();
                     }
                     break;
                 case "countdown": setCountdown(m.sec); playSound(m.sec === 1 ? "start" : "tick"); break;
@@ -130,14 +132,14 @@ export const OnlinePage = () => {
                 // --- гонка ---
                 case "race_go":
                     setRaceTotal(m.total); setPreparing(false); setCountdown(null);
-                    setRaceGo(true); playSound("start");
+                    setRaceGo(true); startRaceMusic();   // звук старта уже сыграл отсчёт на «1»
                     setTimeout(() => setRaceGo(false), 1100);
                     break;
                 case "race_word": setRaceWord(m); break;
                 case "race_result": {
                     setRaceFeedback(m.correct ? "right" : "wrong");
                     setRaceStreak((s) => (m.correct ? s + 1 : 0));
-                    playSound(m.correct ? "correct" : "wrong");
+                    if (m.correct) playGallop(); else playFall();   // топот / падение
                     if (fbTimer.current) clearTimeout(fbTimer.current);
                     fbTimer.current = setTimeout(() => setRaceFeedback(null), 600);
                     break;
@@ -147,18 +149,18 @@ export const OnlinePage = () => {
                 case "ended":
                     setPodium(m.podium); setPodiumGame(m.game || "quiz");
                     setQuestion(null); setReveal(null); setPreparing(false);
-                    setRaceWord(null); setRaceGrace(null); setRaceGo(false);
+                    setRaceWord(null); setRaceGrace(null); setRaceGo(false); stopRaceMusic();
                     break;
                 case "left":
                     setRoom(null); setQuestion(null); setReveal(null); setPodium(null); setCountdown(null); setPreparing(false);
-                    setRaceWord(null); setRacePos([]); setRaceGrace(null); setRaceGo(false);
+                    setRaceWord(null); setRacePos([]); setRaceGrace(null); setRaceGo(false); stopRaceMusic();
                     break;
                 case "error": case "game_error":
                     useSystemStore.getState().showToast(to[m.msg] || to.genericError || "—"); break;
                 default: break;
             }
         };
-        return () => { try { ws.close(); } catch { /* no-op */ } };
+        return () => { stopRaceMusic(); try { ws.close(); } catch { /* no-op */ } };
     }, [lang]); // eslint-disable-line
 
     const myReady = room?.players?.find((p) => p.isYou)?.ready;
@@ -199,7 +201,7 @@ export const OnlinePage = () => {
     // Подиум гонки — собственный визуал (зверюшки/места по прогрессу)
     if (room && podium && podiumGame === "race") {
         const meName = room.players?.find((p) => p.isYou)?.name;
-        return <RacePodium podium={podium} lang={lang} meName={meName} onLobby={() => { setPodium(null); }} />;
+        return <RacePodium podium={podium} lang={lang} theme={theme} meName={meName} onLobby={() => { setPodium(null); }} />;
     }
     // Подиум (конец игры) — поверх всего
     if (room && podium) {

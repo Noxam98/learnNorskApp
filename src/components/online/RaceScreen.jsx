@@ -3,6 +3,7 @@
    общается с сервером через onAnswer. Визуал портирован из дизайн-макета (race-*). */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { RaceRunner, ANIMAL_LIST, ANIMAL_COLORS } from "./RaceRunner.jsx";
+import { playYawn } from "../tools/raceAudio.js";
 
 // Язык интерфейса игрока (для лейблов «Переведите на …») + строки гонки на 5 языках.
 const LANG_NAME = { ru: "русский", en: "English", ukr: "українську", pl: "polski", lt: "lietuvių" };
@@ -174,7 +175,7 @@ function FinishBanner({ leader, T, secs, total }) {
 }
 
 // Подиум гонки (используется из OnlinePage). podium: [{name, place, progress, total, finished}]
-export function RacePodium({ podium, lang, meName, onLobby }) {
+export function RacePodium({ podium, lang, theme, meName, onLobby }) {
     const T = RACE_I18N[lang] || RACE_I18N.ru;
     const ranked = (podium || []).map((p) => ({ ...p, isYou: p.name === meName }));
     const top3 = ranked.slice(0, 3);
@@ -183,6 +184,7 @@ export function RacePodium({ podium, lang, meName, onLobby }) {
     const palette = ["#CE4A21", "#3C7A4E", "#2A6A74", "#A9781A", "#5E54B8", "#C24E8E"];
     const colorOf = (p) => ANIMAL_COLORS[p.animal] || palette[ranked.indexOf(p) % palette.length];
     return (
+        <div className="race" data-theme={theme} style={{ position: "fixed", inset: 0, zIndex: 95 }}>
         <div className="ov ov-podium" style={{ pointerEvents: "auto" }}>
             <div className="ov-scrim" />
             <div className="podium">
@@ -211,9 +213,13 @@ export function RacePodium({ podium, lang, meName, onLobby }) {
                     ))}
                 </div>
                 <div className="podium__cta">
-                    <button className="race__chip" onClick={onLobby} style={{ padding: "11px 18px" }}>{T.toLobby}</button>
+                    <button className="az__check" onClick={onLobby} style={{ height: 48, padding: "0 28px", fontSize: "var(--fs-16)" }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M11 18l-6-6 6-6" /></svg>
+                        {T.toLobby}
+                    </button>
                 </div>
             </div>
+        </div>
         </div>
     );
 }
@@ -256,6 +262,14 @@ export default function RaceScreen({ positions, total, word, feedback, streak, g
         return undefined;
     }, [positions]);
     useEffect(() => () => { Object.values(timers.current).forEach(clearTimeout); }, []);
+
+    // зевки на простое — редкие, со случайными паузами, пока идёт гонка
+    useEffect(() => {
+        let id;
+        const loop = () => { id = setTimeout(() => { playYawn(); loop(); }, 7000 + Math.random() * 7000); };
+        loop();
+        return () => clearTimeout(id);
+    }, []);
 
     const lanes = base.map((p) => ({ ...p, state: p.finished ? "finished" : (disp[p.id] || p.state) }));
     const others = lanes.filter((p) => !p.isYou);
