@@ -65,18 +65,23 @@ const SOURCE_LABELS = {
 };
 const AI_LABELS = {
     ru:  { level: "Уровень", anyLevel: "Любой", topic: "Тема", anyTopic: "Любая", count: "Слов",
+           custom: "✏️ Своя тема", customPh: "Например: космос, кулинария, IT…",
            sub: "Нейросеть подберёт слова по уровню и теме — сыграй и сразу проверь себя",
            gen: "Сгенерировать и играть", generating: "Генерирую слова…", err: "Не удалось — попробуй ещё раз" },
     ukr: { level: "Рівень", anyLevel: "Будь-який", topic: "Тема", anyTopic: "Будь-яка", count: "Слів",
+           custom: "✏️ Своя тема", customPh: "Наприклад: космос, кулінарія, IT…",
            sub: "Нейромережа підбере слова за рівнем і темою — зіграй і одразу перевір себе",
            gen: "Згенерувати і грати", generating: "Генерую слова…", err: "Не вдалося — спробуй ще раз" },
     en:  { level: "Level", anyLevel: "Any", topic: "Topic", anyTopic: "Any", count: "Words",
+           custom: "✏️ Custom topic", customPh: "e.g. space, cooking, IT…",
            sub: "AI picks words by level and topic — play and test yourself right away",
            gen: "Generate & play", generating: "Generating words…", err: "Failed — try again" },
     pl:  { level: "Poziom", anyLevel: "Dowolny", topic: "Temat", anyTopic: "Dowolny", count: "Słów",
+           custom: "✏️ Własny temat", customPh: "np. kosmos, gotowanie, IT…",
            sub: "AI dobierze słowa według poziomu i tematu — zagraj i od razu się sprawdź",
            gen: "Generuj i graj", generating: "Generuję słowa…", err: "Nie udało się — spróbuj ponownie" },
     lt:  { level: "Lygis", anyLevel: "Bet koks", topic: "Tema", anyTopic: "Bet kokia", count: "Žodžių",
+           custom: "✏️ Sava tema", customPh: "pvz.: kosmosas, kulinarija, IT…",
            sub: "DI parinks žodžius pagal lygį ir temą — žaisk ir iškart pasitikrink",
            gen: "Generuoti ir žaisti", generating: "Generuoju žodžius…", err: "Nepavyko — bandyk dar kartą" },
 };
@@ -152,7 +157,8 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
     // Источник слов и параметры AI-подбора
     const [source, setSource] = useState("dict"); // dict | ai
     const [aiLevel, setAiLevel] = useState("");
-    const [aiTopic, setAiTopic] = useState("");
+    const [aiTopic, setAiTopic] = useState("");        // ключ темы из списка или "__custom__"
+    const [aiTopicCustom, setAiTopicCustom] = useState(""); // свободная тема
     const [aiCount, setAiCount] = useState(10);
     const [aiBusy, setAiBusy] = useState(false);
     const [aiErr, setAiErr] = useState(false);
@@ -160,11 +166,15 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
     // При входе в выбор слов сбрасываем прежний AI-набор (вернулись из игры).
     useEffect(() => { clearAiPlayWords(); }, []); // eslint-disable-line
 
+    const aiCustomEmpty = aiTopic === "__custom__" && !aiTopicCustom.trim();
+
     const generateAndPlay = async () => {
         if (aiBusy) return;
         setAiBusy(true); setAiErr(false);
+        // своя тема → шлём свободный текст; иначе — ключ из списка (бэкенд маппит/принимает как есть)
+        const topic = aiTopic === "__custom__" ? aiTopicCustom.trim() : aiTopic;
         try {
-            const res = await api.gamesAiWords({ level: aiLevel, topic: aiTopic, count: aiCount, lang: currentLanguage });
+            const res = await api.gamesAiWords({ level: aiLevel, topic, count: aiCount, lang: currentLanguage });
             const words = (res?.words || []).map((w, i) => ({
                 id: `ai-${i}`,
                 translate: w.translate,
@@ -274,7 +284,13 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
                                 <select className="input" value={aiTopic} disabled={aiBusy} onChange={(e) => setAiTopic(e.target.value)}>
                                     <option value="">{aiL.anyTopic}</option>
                                     {Object.keys(topicsMap).map((k) => <option key={k} value={k}>{topicsMap[k]}</option>)}
+                                    <option value="__custom__">{aiL.custom}</option>
                                 </select>
+                                {aiTopic === "__custom__" && (
+                                    <input className="input" type="text" value={aiTopicCustom} disabled={aiBusy}
+                                        placeholder={aiL.customPh} maxLength={60} autoFocus
+                                        style={{ marginTop: 8 }} onChange={(e) => setAiTopicCustom(e.target.value)} />
+                                )}
                             </div>
                             <div className="gsetup__block">
                                 <span className="gsetup__lbl">{aiL.count}: {aiCount}</span>
@@ -293,7 +309,8 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
                             {aiBusy ? aiL.generating : aiL.sub}
                         </span>
                         <div className="grow hide-mobile" />
-                        <button className={`btn btn--accent btn--lg${aiBusy ? " is-disabled" : ""}`} onClick={generateAndPlay}>
+                        <button className={`btn btn--accent btn--lg${(aiBusy || aiCustomEmpty) ? " is-disabled" : ""}`}
+                            onClick={() => !aiCustomEmpty && generateAndPlay()}>
                             {aiBusy
                                 ? <><BtnSpinner /> {aiL.generating}</>
                                 : <><Icon n="sparkles" sm /> {aiL.gen}</>}
