@@ -281,6 +281,13 @@ export const OnlinePage = () => {
         // Лобби
         const s = room.settings;
         const amHost = !!room.players.find((p) => p.isYou)?.isHost;
+        // AI-набор готовится → «Готов»/старт заблокированы, на кнопке статус + лоадер
+        const aiBusy = s.source === "ai" && room.aiStatus && room.aiStatus !== "ready";
+        const aiStatusLabel = room.aiStatus === "indexing" ? (to.aiIndexing || "Индексация слов…")
+            : room.aiStatus === "error" ? (to.aiError || "Ошибка генерации")
+                : (to.aiGenerating || "Нейросеть подбирает слова…");
+        const spinner = <motion.span animate={{ rotate: 360 }} transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
+            style={{ width: 16, height: 16, borderRadius: "50%", border: "2px solid rgba(255,255,255,.4)", borderTopColor: "#fff", display: "inline-block", verticalAlign: "-3px" }} />;
         return <main className="shell prof-main">
             <div className="phead">
                 <div className="phead__meta">
@@ -316,13 +323,18 @@ export const OnlinePage = () => {
                     ))}
                 </div>
             </div>
-            <button className={`btn btn--block btn--lg ${myReady ? "btn--ghost" : "btn--accent"}`} style={{ marginTop: "var(--sp-4)" }}
-                onClick={() => send({ type: "ready", ready: !myReady })}>
-                {myReady ? (to.cancelReady || "Не готов") : (to.imReady || "Я готов")}
+            <button className={`btn btn--block btn--lg ${aiBusy ? "btn--accent" : myReady ? "btn--ghost" : "btn--accent"}`}
+                style={{ marginTop: "var(--sp-4)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                disabled={aiBusy}
+                onClick={() => !aiBusy && send({ type: "ready", ready: !myReady })}>
+                {aiBusy
+                    ? <>{room.aiStatus !== "error" && spinner} {aiStatusLabel}</>
+                    : (myReady ? (to.cancelReady || "Не готов") : (to.imReady || "Я готов"))}
             </button>
             {amHost && (
                 <button className="btn btn--primary btn--block" style={{ marginTop: "var(--sp-3)" }}
-                    onClick={() => send({ type: "force_start" })}>
+                    disabled={aiBusy}
+                    onClick={() => !aiBusy && send({ type: "force_start" })}>
                     <Icon n="play" sm /> {to.startNow || "Старт (хост)"}
                 </button>
             )}
