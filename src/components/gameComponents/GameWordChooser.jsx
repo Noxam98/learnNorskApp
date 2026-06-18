@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useWordsStore } from "../../store/wordStore.jsx";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
+import { BtnSpinner } from "../ui/Spinner.jsx";
 import { wordCount } from "../tools/plural.js";
 import { posMeta, posLabel, chipPrefix } from "../ui/pos.js";
+import api from "../tools/api.js";
 
 const MIN_WORDS = 10;       // для режимов с проверкой ответа
 const MIN_WORDS_STUDY = 1;  // для флешкарт достаточно одного
@@ -51,6 +53,32 @@ const STEP_WORDS = {
 const SETUP_TITLE = {
     ru: "Настройка игры", ukr: "Налаштування гри", en: "Game setup",
     pl: "Ustawienia gry", lt: "Žaidimo nustatymai",
+};
+const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
+// Источник слов: из словаря пользователя или AI-подбор по уровню/теме
+const SOURCE_LABELS = {
+    ru:  { dict: "Из словаря", ai: "AI-подбор" },
+    ukr: { dict: "Зі словника", ai: "AI-підбір" },
+    en:  { dict: "From dictionary", ai: "AI selection" },
+    pl:  { dict: "Ze słownika", ai: "Dobór AI" },
+    lt:  { dict: "Iš žodyno", ai: "AI parinkimas" },
+};
+const AI_LABELS = {
+    ru:  { level: "Уровень", anyLevel: "Любой", topic: "Тема", anyTopic: "Любая", count: "Слов",
+           sub: "Нейросеть подберёт слова по уровню и теме — сыграй и сразу проверь себя",
+           gen: "Сгенерировать и играть", generating: "Генерирую слова…", err: "Не удалось — попробуй ещё раз" },
+    ukr: { level: "Рівень", anyLevel: "Будь-який", topic: "Тема", anyTopic: "Будь-яка", count: "Слів",
+           sub: "Нейромережа підбере слова за рівнем і темою — зіграй і одразу перевір себе",
+           gen: "Згенерувати і грати", generating: "Генерую слова…", err: "Не вдалося — спробуй ще раз" },
+    en:  { level: "Level", anyLevel: "Any", topic: "Topic", anyTopic: "Any", count: "Words",
+           sub: "AI picks words by level and topic — play and test yourself right away",
+           gen: "Generate & play", generating: "Generating words…", err: "Failed — try again" },
+    pl:  { level: "Poziom", anyLevel: "Dowolny", topic: "Temat", anyTopic: "Dowolny", count: "Słów",
+           sub: "AI dobierze słowa według poziomu i tematu — zagraj i od razu się sprawdź",
+           gen: "Generuj i graj", generating: "Generuję słowa…", err: "Nie udało się — spróbuj ponownie" },
+    lt:  { level: "Lygis", anyLevel: "Bet koks", topic: "Tema", anyTopic: "Bet kokia", count: "Žodžių",
+           sub: "DI parinks žodžius pagal lygį ir temą — žaisk ir iškart pasitikrink",
+           gen: "Generuoti ir žaisti", generating: "Generuoju žodžius…", err: "Nepavyko — bandyk dar kartą" },
 };
 
 const DictGroup = ({ dictItem, currentLanguage, t, defaultOpen }) => {
@@ -106,6 +134,8 @@ const DictGroup = ({ dictItem, currentLanguage, t, defaultOpen }) => {
 
 export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGameType, sound, setSound }) => {
     const dictList = useWordsStore((state) => state.dictList);
+    const setAiPlayWords = useWordsStore((s) => s.setAiPlayWords);
+    const clearAiPlayWords = useWordsStore((s) => s.clearAiPlayWords);
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
     const endonym = ENDONYM[currentLanguage] || currentLanguage;
@@ -115,6 +145,43 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
     const stepMode = STEP_MODE[currentLanguage] || STEP_MODE.en;
     const stepWords = STEP_WORDS[currentLanguage] || STEP_WORDS.en;
     const setupTitle = SETUP_TITLE[currentLanguage] || SETUP_TITLE.en;
+    const srcL = SOURCE_LABELS[currentLanguage] || SOURCE_LABELS.en;
+    const aiL = AI_LABELS[currentLanguage] || AI_LABELS.en;
+    const topicsMap = t.topics || {};
+
+    // Источник слов и параметры AI-подбора
+    const [source, setSource] = useState("dict"); // dict | ai
+    const [aiLevel, setAiLevel] = useState("");
+    const [aiTopic, setAiTopic] = useState("");
+    const [aiCount, setAiCount] = useState(10);
+    const [aiBusy, setAiBusy] = useState(false);
+    const [aiErr, setAiErr] = useState(false);
+
+    // При входе в выбор слов сбрасываем прежний AI-набор (вернулись из игры).
+    useEffect(() => { clearAiPlayWords(); }, []); // eslint-disable-line
+
+    const generateAndPlay = async () => {
+        if (aiBusy) return;
+        setAiBusy(true); setAiErr(false);
+        try {
+            const res = await api.gamesAiWords({ level: aiLevel, topic: aiTopic, count: aiCount, lang: currentLanguage });
+            const words = (res?.words || []).map((w, i) => ({
+                id: `ai-${i}`,
+                translate: w.translate,
+                part_of_speech: "",
+                forms: null,
+                description: null,
+                hasTts: false,
+                gameData: { correctFirstTry: 0, incorrectFirstTry: 0, isChoosedToGame: true },
+                techData: {},
+            }));
+            if (!words.length) { setAiErr(true); setAiBusy(false); return; }
+            setAiPlayWords(words);
+            setGameState("playing");
+        } catch {
+            setAiErr(true); setAiBusy(false);
+        }
+    };
 
     const minWords = gameType === "study" ? MIN_WORDS_STUDY : MIN_WORDS;
     const chosen = useMemo(
@@ -177,31 +244,79 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
                 {/* Шаг 2 — слова */}
                 <section className="sel-section">
                     <h2 className="sel-section__title"><span className="sel-section__num">2</span> {stepWords}</h2>
-                    <div className="dictgroups">
-                        {dictList.map((dictItem, i) => (
-                            <DictGroup key={dictItem.dictName} dictItem={dictItem} currentLanguage={currentLanguage} t={t} defaultOpen={i === firstWithWords} />
-                        ))}
+                    <div className="modeseg" role="tablist" style={{ marginBottom: 16 }}>
+                        <button className={`modeseg__btn${source === "dict" ? " is-on" : ""}`} onClick={() => setSource("dict")}>
+                            <Icon n="layers" sm className="modeseg__arrow" /> {srcL.dict}
+                        </button>
+                        <button className={`modeseg__btn${source === "ai" ? " is-on" : ""}`} onClick={() => setSource("ai")}>
+                            <Icon n="sparkles" sm className="modeseg__arrow" /> {srcL.ai}
+                        </button>
                     </div>
+
+                    {source === "dict" ? (
+                        <div className="dictgroups">
+                            {dictList.map((dictItem, i) => (
+                                <DictGroup key={dictItem.dictName} dictItem={dictItem} currentLanguage={currentLanguage} t={t} defaultOpen={i === firstWithWords} />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="gsetup">
+                            <p className="sel-section__sub">{aiL.sub}</p>
+                            <div className="gsetup__block">
+                                <span className="gsetup__lbl">{aiL.level}</span>
+                                <select className="input" value={aiLevel} disabled={aiBusy} onChange={(e) => setAiLevel(e.target.value)}>
+                                    <option value="">{aiL.anyLevel}</option>
+                                    {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
+                                </select>
+                            </div>
+                            <div className="gsetup__block">
+                                <span className="gsetup__lbl">{aiL.topic}</span>
+                                <select className="input" value={aiTopic} disabled={aiBusy} onChange={(e) => setAiTopic(e.target.value)}>
+                                    <option value="">{aiL.anyTopic}</option>
+                                    {Object.keys(topicsMap).map((k) => <option key={k} value={k}>{topicsMap[k]}</option>)}
+                                </select>
+                            </div>
+                            <div className="gsetup__block">
+                                <span className="gsetup__lbl">{aiL.count}: {aiCount}</span>
+                                <input type="range" min={3} max={20} value={aiCount} disabled={aiBusy} onChange={(e) => setAiCount(+e.target.value)} style={{ width: "100%" }} />
+                            </div>
+                            {aiErr && <p className="sel-section__sub" style={{ color: "var(--danger, #e5484d)" }}>{aiL.err}</p>}
+                        </div>
+                    )}
                 </section>
             </main>
 
             <div className="startbar">
-                <div className="shell startbar__row">
-                    <div className="progress">
-                        <div className="progress__top">
-                            <span className="muted">{t.selectedWords}</span>
-                            <span><b>{chosen}</b> / {t.minimumWord} {minWords}</span>
-                        </div>
-                        <div className="progress__bar"><span className={`progress__fill${ready ? " is-ready" : ""}`} style={{ width: `${pct}%` }} /></div>
+                {source === "ai" ? (
+                    <div className="shell startbar__row">
+                        <span className="startbar__hint">
+                            {aiBusy ? aiL.generating : aiL.sub}
+                        </span>
+                        <div className="grow hide-mobile" />
+                        <button className={`btn btn--accent btn--lg${aiBusy ? " is-disabled" : ""}`} onClick={generateAndPlay}>
+                            {aiBusy
+                                ? <><BtnSpinner /> {aiL.generating}</>
+                                : <><Icon n="sparkles" sm /> {aiL.gen}</>}
+                        </button>
                     </div>
-                    <span className="startbar__hint">
-                        {ready ? t.canStart : `${t.chooseMore} ${Math.max(0, minWords - chosen)}`}
-                    </span>
-                    <div className="grow hide-mobile" />
-                    <button className={`btn btn--accent btn--lg${ready ? "" : " is-disabled"}`} onClick={() => ready && setGameState("playing")}>
-                        <Icon n="play" sm /> {t.startGame}
-                    </button>
-                </div>
+                ) : (
+                    <div className="shell startbar__row">
+                        <div className="progress">
+                            <div className="progress__top">
+                                <span className="muted">{t.selectedWords}</span>
+                                <span><b>{chosen}</b> / {t.minimumWord} {minWords}</span>
+                            </div>
+                            <div className="progress__bar"><span className={`progress__fill${ready ? " is-ready" : ""}`} style={{ width: `${pct}%` }} /></div>
+                        </div>
+                        <span className="startbar__hint">
+                            {ready ? t.canStart : `${t.chooseMore} ${Math.max(0, minWords - chosen)}`}
+                        </span>
+                        <div className="grow hide-mobile" />
+                        <button className={`btn btn--accent btn--lg${ready ? "" : " is-disabled"}`} onClick={() => ready && setGameState("playing")}>
+                            <Icon n="play" sm /> {t.startGame}
+                        </button>
+                    </div>
+                )}
             </div>
         </>
     );

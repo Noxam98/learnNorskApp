@@ -10,6 +10,10 @@ export const useWordsStore = create((set, get) => ({
     currentDictName: null,
     isLoading: false,
     loaded: false,
+    aiPlayWords: null,   // транзитный AI-набор для одиночной игры (не из словаря)
+
+    setAiPlayWords: (words) => set({ aiPlayWords: words }),
+    clearAiPlayWords: () => set({ aiPlayWords: null }),
 
     // Загрузка всех словарей пользователя с сервера.
     // silent=true — без полноэкранного лоадера (обновление после мутаций).
@@ -198,6 +202,7 @@ export const useWordsStore = create((set, get) => ({
 
     // Результат игры: пишем на сервер и сразу отражаем локально.
     recordGameResult: (wordId, isCorrect) => {
+        if (typeof wordId === "string" && wordId.startsWith("ai-")) return; // AI-набор — статистику не пишем
         get()._setWord(wordId, (w) => {
             if (isCorrect) w.gameData.correctFirstTry = (w.gameData.correctFirstTry || 0) + 1;
             else w.gameData.incorrectFirstTry = (w.gameData.incorrectFirstTry || 0) + 1;

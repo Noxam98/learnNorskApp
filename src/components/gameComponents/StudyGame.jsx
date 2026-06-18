@@ -29,11 +29,12 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const dictList = useWordsStore((s) => s.dictList);
+    const aiPlay = useWordsStore((s) => s.aiPlayWords);
     const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
     const t = interfaceTranslate[currentLanguage];
     const h = HINTS[currentLanguage] || HINTS.en;
 
-    const words = useMemo(() => shuffle(filterChosenWords(dictList)), []);
+    const words = useMemo(() => shuffle(aiPlay || filterChosenWords(dictList)), []);
     const total = words.length;
     const isNo2Int = mode !== "int2no";
 

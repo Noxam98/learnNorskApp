@@ -15,11 +15,12 @@ import { ENDONYM, PLAY_STYLE, filterChosenWords, shuffle, uniq, PlayTopBar, Prog
 export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const dictList = useWordsStore((s) => s.dictList);
+    const aiPlay = useWordsStore((s) => s.aiPlayWords);
     const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
     const recordGameResult = useWordsStore((s) => s.recordGameResult);
     const t = interfaceTranslate[currentLanguage];
 
-    const wordsToGame = useMemo(() => filterChosenWords(dictList), []);
+    const wordsToGame = useMemo(() => aiPlay || filterChosenWords(dictList), []);
     const total = wordsToGame.length;
     const isNo2Int = mode !== "int2no";
 

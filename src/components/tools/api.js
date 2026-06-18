@@ -75,6 +75,7 @@ class ApiService {
 
             if (!response.access_token) {
                 throw new Error('Invalid token response');
+                
             }
 
             this._setTokens(response.access_token, response.refresh_token);
@@ -191,6 +192,7 @@ class ApiService {
     // Правка слова в общем пуле (норвежское + переводы) — для всех, через ревью нейросети.
     editPoolWord(word, translate, lang, hint) { return this._send('POST', `/pool/${encodeURIComponent(word)}/edit`, { translate, lang, hint }); }
     adminDeletePoolWord(word) { return this._send('DELETE', `/admin/pool/${encodeURIComponent(word)}`); }
+    gamesAiWords(opts) { return this._send('POST', '/games/ai_words', opts); }
 
     // URL WebSocket-а онлайн-раздела (токен и язык — в query, т.к. браузерный WS без заголовков).
     onlineSocketUrl(lang) {
