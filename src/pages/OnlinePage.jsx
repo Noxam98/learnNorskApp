@@ -11,6 +11,7 @@ import { StageTimer } from "../components/online/StageTimer.jsx";
 import { Countdown } from "../components/online/Countdown.jsx";
 import { PlayerTag } from "../components/online/PlayerTag.jsx";
 import RaceScreen, { RacePodium } from "../components/online/RaceScreen.jsx";
+import { RaceRunner, ANIMAL_LIST, ANIMAL_COLORS, animalLabel } from "../components/online/RaceRunner.jsx";
 import api from "../components/tools/api.js";
 import { playSound, playWin, preloadSounds } from "../components/tools/sound.js";
 import { hyphenate, hyLang } from "../components/ui/hyphenate.js";
@@ -369,15 +370,51 @@ export const OnlinePage = () => {
                 <div className="panel__body">
                     {room.players.map((p) => (
                         <div className="setrow" key={p.name + (p.isYou ? "_you" : "")}>
-                            <span className="setrow__ic"><Icon n={p.ready ? "check" : "user"} sm /></span>
+                            <span className="setrow__ic">
+                                {s.game === "race" && p.animal
+                                    ? <span style={{ width: 22, height: 22, display: "inline-grid", placeItems: "center", borderRadius: 7, background: ANIMAL_COLORS[p.animal], color: "#fff", fontSize: 11, fontWeight: 800 }}>{(p.name || "·").charAt(0).toUpperCase()}</span>
+                                    : <Icon n={p.ready ? "check" : "user"} sm />}
+                            </span>
                             <span className="setrow__meta">
-                                <span className="setrow__t">{p.name}{p.isYou ? ` (${to.you || "вы"})` : ""}{p.isHost ? " ★" : ""}</span>
+                                <span className="setrow__t">{p.name}{p.isYou ? ` (${to.you || "вы"})` : ""}{p.isHost ? " ★" : ""}{s.game === "race" && p.animal ? ` · ${animalLabel(p.animal, lang)}` : ""}</span>
                                 <span className="setrow__d">{p.ready ? (to.ready || "готов") : (to.notReady || "не готов")}</span>
                             </span>
                         </div>
                     ))}
                 </div>
             </div>
+
+            {s.game === "race" && (() => {
+                const myAnimal = room.players.find((p) => p.isYou)?.animal;
+                return (
+                    <div className="panel" style={{ marginTop: "var(--sp-3)" }}>
+                        <div className="panel__head"><span className="panel__title">{to.chooseRunner || "Выбери бегуна"}</span></div>
+                        <div className="panel__body">
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+                                {ANIMAL_LIST.map((a) => {
+                                    const sel = a === myAnimal;
+                                    return (
+                                        <button key={a} onClick={() => send({ type: "pick_animal", animal: a })}
+                                            style={{
+                                                position: "relative", display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                                                padding: "12px 6px 8px", borderRadius: 14, cursor: "pointer",
+                                                background: "var(--surface)", color: "var(--ink-2)",
+                                                border: `2px solid ${sel ? "var(--ember-600)" : "var(--border)"}`,
+                                                boxShadow: sel ? "0 0 0 3px color-mix(in srgb, var(--ember-600) 22%, transparent)" : "none",
+                                            }}>
+                                            <span style={{ height: 44, display: "flex", alignItems: "flex-end" }}>
+                                                <RaceRunner state="neutral" animal={a} color={ANIMAL_COLORS[a]} />
+                                            </span>
+                                            <span style={{ fontSize: "var(--fs-13)", fontWeight: 700, color: sel ? "var(--ink)" : "var(--ink-2)" }}>{animalLabel(a, lang)}</span>
+                                            {sel && <span style={{ position: "absolute", top: 6, right: 6, width: 18, height: 18, borderRadius: "50%", background: "var(--ember-600)", color: "#fff", fontSize: 11, fontWeight: 800, display: "grid", placeItems: "center" }}>✓</span>}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
             {room.aiStatus === "error" && amHost ? (
                 // ошибка генерации → хост может повторить
                 <button className="btn btn--accent btn--block btn--lg" style={{ marginTop: "var(--sp-4)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}

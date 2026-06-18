@@ -38,10 +38,10 @@ function speak(word) {
     try { const u = new SpeechSynthesisUtterance(word); u.lang = "nb-NO"; u.rate = 0.9; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch { /* no-op */ }
 }
 
-// детерминированно: зверь и цвет по позиции игрока в списке (одинаково у всех клиентов)
+// зверь приходит с сервера (выбор игрока); фолбэк — по позиции в списке
 function decorate(positions) {
     return positions.map((p, i) => {
-        const animal = ANIMAL_LIST[i % ANIMAL_LIST.length];
+        const animal = p.animal || ANIMAL_LIST[i % ANIMAL_LIST.length];
         return { ...p, animal, color: ANIMAL_COLORS[animal] };
     });
 }
@@ -181,7 +181,7 @@ export function RacePodium({ podium, lang, meName, onLobby }) {
     const order = [top3[1], top3[0], top3[2]].filter(Boolean); // визуально 2-1-3
     const me = ranked.find((p) => p.isYou);
     const palette = ["#CE4A21", "#3C7A4E", "#2A6A74", "#A9781A", "#5E54B8", "#C24E8E"];
-    const colorOf = (p) => palette[ranked.indexOf(p) % palette.length];
+    const colorOf = (p) => ANIMAL_COLORS[p.animal] || palette[ranked.indexOf(p) % palette.length];
     return (
         <div className="ov ov-podium" style={{ pointerEvents: "auto" }}>
             <div className="ov-scrim" />
