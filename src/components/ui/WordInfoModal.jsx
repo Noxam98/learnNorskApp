@@ -16,7 +16,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const currentDictName = useWordsStore((s) => s.currentDictName);
     const addFromPool = useWordsStore((s) => s.addFromPool);
     const removeFromDict = useWordsStore((s) => s.removeFromDict);
-    const editWord = useWordsStore((s) => s.editWord);
+    const loadData = useWordsStore((s) => s.loadData);
 
     const [view, setView] = useState(null); // { no, desc, descLoading, synonyms }
     const [formsOpen, setFormsOpen] = useState(false); // аккордеон грамм. форм (скрыт по умолчанию)
@@ -32,36 +32,39 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const [edit, setEdit] = useState(null);          // { no, ru, ukr, en, pl, lt } — строки через запятую
     const [editBusy, setEditBusy] = useState(false);
     const [moreOpen, setMoreOpen] = useState(false); // раскрыть остальные языки
+    const [editErr, setEditErr] = useState("");
 
     const LANG_LABEL = { ru: t.russian, ukr: t.ukrainian, en: t.english, pl: t.polish, lt: t.lithuanian };
 
     const openEdit = () => {
-        const tr = member?.translate || view?.translate || {};
+        const tr = view?.translate || member?.translate || {};
         const join = (a) => (Array.isArray(a) ? a.join(", ") : "");
         setEdit({
             no: join(tr.no) || view?.no || "",
             ru: join(tr.ru), ukr: join(tr.ukr), en: join(tr.en), pl: join(tr.pl), lt: join(tr.lt),
         });
-        setMoreOpen(false);
+        setMoreOpen(false); setEditErr("");
         setEditOpen(true);
     };
 
     const saveEdit = async () => {
-        const editId = wordId || member?.id;
-        if (!editId || editBusy || !edit) return;
+        if (editBusy || !edit || !view) return;
         const parse = (s) => (s || "").split(",").map((x) => x.trim()).filter(Boolean);
         const translate = {};
         for (const k of ["no", "ru", "ukr", "en", "pl", "lt"]) {
             const v = parse(edit[k]);
             if (v.length) translate[k] = v;
         }
-        setEditBusy(true);
+        setEditBusy(true); setEditErr("");
         try {
-            await editWord(editId, { translate });
-            const newNo = translate.no?.[0] || view?.no;
+            await api.editPoolWord(view.no, translate);   // правка общего пула — для всех
+            const newNo = translate.no?.[0] || view.no;
             setView((v) => (v ? { ...v, no: newNo, translate: { ...(v.translate || {}), ...translate } } : v));
+            loadData?.(true);   // общие данные сменились — подтянуть словарь
             setEditOpen(false);
-        } catch { /* офлайн/ошибка — оставляем форму */ }
+        } catch (e) {
+            setEditErr(String(e?.message || "").toLowerCase().includes("exist") ? (t.dictExistsError || t.editWord) : (t.unexpectedError || "—"));
+        }
         setEditBusy(false);
     };
 
@@ -157,7 +160,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                     {view.translate[lang].join(", ")}
                 </p>
             )}
-            {view && (wordId || member?.id) && (
+            {view && !view.descLoading && (
                 <button className="diff-link" onClick={openEdit} style={{ marginBottom: "var(--sp-3)" }}>
                     <Icon n="edit" sm /> {t.editWord || "Изменить слово"}
                 </button>
@@ -331,6 +334,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                             <Icon n="plus" sm /> {t.more || "Дополнительно"}
                         </button>
                     )}
+                    {editErr && <span className="alert"><Icon n="x" sm /> {editErr}</span>}
                 </div>
             )}
         </Modal>
