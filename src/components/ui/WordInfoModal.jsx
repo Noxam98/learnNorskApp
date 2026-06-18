@@ -16,6 +16,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const currentDictName = useWordsStore((s) => s.currentDictName);
     const addFromPool = useWordsStore((s) => s.addFromPool);
     const removeFromDict = useWordsStore((s) => s.removeFromDict);
+    const editWord = useWordsStore((s) => s.editWord);
 
     const [view, setView] = useState(null); // { no, desc, descLoading, synonyms }
     const [formsOpen, setFormsOpen] = useState(false); // аккордеон грамм. форм (скрыт по умолчанию)
@@ -27,6 +28,42 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const [dfixOpen, setDfixOpen] = useState(false); // форма исправления разницы
     const [dfixHint, setDfixHint] = useState("");
     const [dfixBusy, setDfixBusy] = useState(false);
+    const [editOpen, setEditOpen] = useState(false); // модал правки слова и переводов
+    const [edit, setEdit] = useState(null);          // { no, ru, ukr, en, pl, lt } — строки через запятую
+    const [editBusy, setEditBusy] = useState(false);
+    const [moreOpen, setMoreOpen] = useState(false); // раскрыть остальные языки
+
+    const LANG_LABEL = { ru: t.russian, ukr: t.ukrainian, en: t.english, pl: t.polish, lt: t.lithuanian };
+
+    const openEdit = () => {
+        const tr = member?.translate || view?.translate || {};
+        const join = (a) => (Array.isArray(a) ? a.join(", ") : "");
+        setEdit({
+            no: join(tr.no) || view?.no || "",
+            ru: join(tr.ru), ukr: join(tr.ukr), en: join(tr.en), pl: join(tr.pl), lt: join(tr.lt),
+        });
+        setMoreOpen(false);
+        setEditOpen(true);
+    };
+
+    const saveEdit = async () => {
+        const editId = wordId || member?.id;
+        if (!editId || editBusy || !edit) return;
+        const parse = (s) => (s || "").split(",").map((x) => x.trim()).filter(Boolean);
+        const translate = {};
+        for (const k of ["no", "ru", "ukr", "en", "pl", "lt"]) {
+            const v = parse(edit[k]);
+            if (v.length) translate[k] = v;
+        }
+        setEditBusy(true);
+        try {
+            await editWord(editId, { translate });
+            const newNo = translate.no?.[0] || view?.no;
+            setView((v) => (v ? { ...v, no: newNo, translate: { ...(v.translate || {}), ...translate } } : v));
+            setEditOpen(false);
+        } catch { /* офлайн/ошибка — оставляем форму */ }
+        setEditBusy(false);
+    };
 
     const submitRediff = async () => {
         if (!diff || !view || dfixBusy) return;
@@ -78,7 +115,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     useEffect(() => {
         if (open && word) loadWord(word, wordId);
-        if (!open) { setView(null); setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); }
+        if (!open) { setView(null); setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); setEditOpen(false); }
     }, [open, word, wordId]); // eslint-disable-line
 
     const curDict = dictList.find((d) => d.dictName === currentDictName);
@@ -113,11 +150,17 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     );
 
     return (
+        <>
         <Modal open={open} onClose={onClose} title={titleNode}>
             {view?.translate?.[lang]?.length > 0 && (
                 <p style={{ margin: "calc(-1 * var(--sp-3)) 0 var(--sp-4)", fontSize: "var(--fs-13)", color: "var(--ink-3)" }}>
                     {view.translate[lang].join(", ")}
                 </p>
+            )}
+            {view && (wordId || member?.id) && (
+                <button className="diff-link" onClick={openEdit} style={{ marginBottom: "var(--sp-3)" }}>
+                    <Icon n="edit" sm /> {t.editWord || "Изменить слово"}
+                </button>
             )}
             {(view?.level || view?.topics?.length > 0) && (
                 <div className="row wrap" style={{ gap: "6px", marginBottom: "var(--sp-3)" }}>
@@ -255,6 +298,43 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                 </div>
             )}
         </Modal>
+
+        {/* Отдельный модал правки: норвежское слово + перевод на твой язык; «Дополнительно» — остальные языки. */}
+        <Modal open={editOpen} onClose={() => !editBusy && setEditOpen(false)} title={t.editWord || "Изменить слово"}
+            footer={<>
+                <button className="btn btn--ghost" disabled={editBusy} onClick={() => setEditOpen(false)}>{t.cancel}</button>
+                <button className="btn btn--primary" disabled={editBusy} onClick={saveEdit}>{editBusy ? <BtnSpinner /> : t.save}</button>
+            </>}>
+            {edit && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-3)" }}>
+                    <div className="field">
+                        <label className="label">{t.norwegianWord || "Норвежское слово"}</label>
+                        <input className="input" value={edit.no} autoFocus
+                            onChange={(e) => setEdit((s) => ({ ...s, no: e.target.value }))} />
+                    </div>
+                    <div className="field">
+                        <label className="label">{LANG_LABEL[lang] || lang}</label>
+                        <input className="input" value={edit[lang] || ""} placeholder={t.translate}
+                            onChange={(e) => setEdit((s) => ({ ...s, [lang]: e.target.value }))} />
+                        <span className="input-hint">{t.multipleVariantsHint}</span>
+                    </div>
+                    {moreOpen ? (
+                        Object.keys(LANG_LABEL).filter((k) => k !== lang).map((k) => (
+                            <div className="field" key={k}>
+                                <label className="label">{LANG_LABEL[k]}</label>
+                                <input className="input" value={edit[k] || ""}
+                                    onChange={(e) => setEdit((s) => ({ ...s, [k]: e.target.value }))} />
+                            </div>
+                        ))
+                    ) : (
+                        <button className="diff-link" onClick={() => setMoreOpen(true)}>
+                            <Icon n="plus" sm /> {t.more || "Дополнительно"}
+                        </button>
+                    )}
+                </div>
+            )}
+        </Modal>
+        </>
     );
 };
 
