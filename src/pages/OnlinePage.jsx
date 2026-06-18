@@ -47,24 +47,20 @@ function fireConfetti() {
     })();
 }
 
-// Аватарка игрока: кружок с инициалом, цвет по имени. dim — пока не ответил (серый).
-const AV_COLORS = ["#F2A65A", "#62C083", "#5AA9E6", "#E67A6A", "#9D7AE6", "#F6C453", "#4FB0AE", "#E86AA6"];
-function avatarColor(name) {
-    let h = 0;
-    for (const ch of (name || "")) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-    return AV_COLORS[h % AV_COLORS.length];
-}
-function Avatar({ name, dim }) {
+// Метка игрока с ПОЛНЫМ именем (пилюля). dim — серый (ещё не ответил). Несколько меток
+// в полосе под словом переносятся по строкам.
+function NameTag({ name, dim }) {
     return (
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 26 }}
-            title={name}
+        <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 520, damping: 28 }}
             style={{
-                width: 26, height: 26, borderRadius: "50%", display: "grid", placeItems: "center",
-                fontSize: 11, fontWeight: 800, color: "#fff", flexShrink: 0, lineHeight: 1,
-                background: dim ? "var(--ink-3)" : avatarColor(name), opacity: dim ? 0.45 : 1,
-                boxShadow: dim ? "none" : "0 1px 3px rgba(0,0,0,.25)",
+                padding: "2px 9px", borderRadius: 999, fontSize: 11, fontWeight: 700, lineHeight: 1.6,
+                whiteSpace: "nowrap", maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis",
+                background: dim ? "var(--surface-3)" : "var(--ember-600)", color: dim ? "var(--ink-3)" : "#fff",
+                border: dim ? "1px solid var(--border)" : "none",
+                boxShadow: dim ? "none" : "0 1px 4px rgba(0,0,0,.2)",
             }}>
-            {(name || "?").charAt(0).toUpperCase()}
+            {name}
         </motion.div>
     );
 }
@@ -284,8 +280,8 @@ export const OnlinePage = () => {
                     <div style={{ opacity: reveal ? 0 : 1, pointerEvents: reveal ? "none" : "auto" }}>
                         <TimerBar total={question.time || 15} left={reveal ? 0 : timeLeft} />
                     </div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: "var(--sp-5)", minHeight: 28 }}>
-                        {!reveal && (room.players || []).map((p) => <Avatar key={p.name} name={p.name} dim={!answered.includes(p.name)} />)}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: "var(--sp-5)", minHeight: 26 }}>
+                        {!reveal && (room.players || []).map((p) => <NameTag key={p.name} name={p.name} dim={!answered.includes(p.name)} />)}
                     </div>
                     <AnimatePresence mode="wait">
                         <motion.div key={question.i}
@@ -319,8 +315,8 @@ export const OnlinePage = () => {
                                         style={{ ...choiceStyle(kind), display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 72 }}
                                         disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>
                                         <span style={{ flex: 1, display: "flex", alignItems: "center" }}>{hyphenate(opt, optLang)}</span>
-                                        <span style={{ display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "center", alignItems: "center", minHeight: 26 }}>
-                                            {reveal && voters.map((n) => <Avatar key={n} name={n} />)}
+                                        <span style={{ display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "center", alignItems: "center", minHeight: 24, width: "100%" }}>
+                                            {reveal && voters.map((n) => <NameTag key={n} name={n} />)}
                                         </span>
                                     </motion.button>;
                                 })}
