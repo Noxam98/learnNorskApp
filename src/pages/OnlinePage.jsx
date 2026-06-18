@@ -240,23 +240,16 @@ export const OnlinePage = () => {
         // Обратный отсчёт — пружинный пульс с расходящимся кольцом
         if (countdown != null) {
             return <main style={SCREEN}>
-                <div style={{ textAlign: "center", position: "relative" }}>
+                <div style={{ textAlign: "center" }}>
                     <div className="muted" style={{ marginBottom: "var(--sp-3)" }}>{to.starting || "Старт через"}</div>
-                    <div style={{ position: "relative", display: "inline-grid", placeItems: "center" }}>
-                        <motion.span key={`ring${countdown}`}
-                            initial={{ scale: 0.6, opacity: 0.6 }} animate={{ scale: 2.2, opacity: 0 }} transition={{ duration: 0.9, ease: "easeOut" }}
-                            style={{ position: "absolute", width: 160, height: 160, borderRadius: "50%", border: "4px solid var(--ember-600)" }} />
-                        <AnimatePresence mode="wait">
-                            <motion.div key={countdown}
-                                initial={{ scale: 0.2, opacity: 0, rotate: -25 }}
-                                animate={{ scale: [1.5, 1], opacity: 1, rotate: 0 }}
-                                exit={{ scale: 2.2, opacity: 0 }}
-                                transition={{ type: "spring", stiffness: 320, damping: 14 }}
-                                style={{ fontSize: 150, fontWeight: 900, lineHeight: 1, color: "var(--ember-600)" }}>
-                                {countdown}
-                            </motion.div>
-                        </AnimatePresence>
-                    </div>
+                    {/* без AnimatePresence/exit и без ремаунта кольца — иначе мерцает (пустые кадры).
+                        Цифра просто мягко «впрыгивает» при смене key, всегда видима. */}
+                    <motion.div key={countdown}
+                        initial={{ scale: 0.7, opacity: 0.2 }} animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.25, ease: "easeOut" }}
+                        style={{ fontSize: 150, fontWeight: 900, lineHeight: 1, color: "var(--ember-600)" }}>
+                        {countdown}
+                    </motion.div>
                 </div>
             </main>;
         }
