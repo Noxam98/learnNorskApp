@@ -242,14 +242,21 @@ export const OnlinePage = () => {
             return <main style={SCREEN}>
                 <div style={{ textAlign: "center" }}>
                     <div className="muted" style={{ marginBottom: "var(--sp-3)" }}>{to.starting || "Старт через"}</div>
-                    {/* без AnimatePresence/exit и без ремаунта кольца — иначе мерцает (пустые кадры).
-                        Цифра просто мягко «впрыгивает» при смене key, всегда видима. */}
-                    <motion.div key={countdown}
-                        initial={{ scale: 0.7, opacity: 0.2 }} animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.25, ease: "easeOut" }}
-                        style={{ fontSize: 150, fontWeight: 900, lineHeight: 1, color: "var(--ember-600)" }}>
-                        {countdown}
-                    </motion.div>
+                    <div style={{ position: "relative", display: "inline-grid", placeItems: "center" }}>
+                        {/* Кольцо: пульс-расхождение каждую секунду (ремаунт по key). */}
+                        <motion.span key={`ring${countdown}`}
+                            initial={{ scale: 0.5, opacity: 0.7 }} animate={{ scale: 2.3, opacity: 0 }}
+                            transition={{ duration: 0.85, ease: "easeOut" }}
+                            style={{ position: "absolute", width: 170, height: 170, borderRadius: "50%", border: "4px solid var(--ember-600)" }} />
+                        {/* Цифра: всегда видима (без exit/AnimatePresence → нет мерцания), болтается по сторонам. */}
+                        <motion.div key={countdown}
+                            initial={{ scale: 0.6, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1, rotate: [-14, 11, -7, 4, 0] }}
+                            transition={{ duration: 0.5, ease: "easeOut" }}
+                            style={{ fontSize: 150, fontWeight: 900, lineHeight: 1, color: "var(--ember-600)" }}>
+                            {countdown}
+                        </motion.div>
+                    </div>
                 </div>
             </main>;
         }
