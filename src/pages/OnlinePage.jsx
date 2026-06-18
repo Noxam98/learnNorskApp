@@ -47,20 +47,24 @@ function fireConfetti() {
     })();
 }
 
-// Чип игрока: серый, пока не ответил; ярче — когда ответил. layoutId → плавно переезжает
-// из верхнего ряда на кнопку при показе ответов.
-function PlayerChip({ name, bright }) {
+// Аватарка игрока: кружок с инициалом, цвет по имени. dim — пока не ответил (серый).
+const AV_COLORS = ["#F2A65A", "#62C083", "#5AA9E6", "#E67A6A", "#9D7AE6", "#F6C453", "#4FB0AE", "#E86AA6"];
+function avatarColor(name) {
+    let h = 0;
+    for (const ch of (name || "")) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    return AV_COLORS[h % AV_COLORS.length];
+}
+function Avatar({ name, dim }) {
     return (
-        <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 520, damping: 28 }}
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 26 }}
+            title={name}
             style={{
-                padding: "3px 10px", borderRadius: 999, fontSize: "var(--fs-12)", fontWeight: 700,
-                whiteSpace: "nowrap", border: "1px solid var(--border)",
-                background: bright ? "var(--ember-600)" : "var(--surface-3)",
-                color: bright ? "#fff" : "var(--ink-3)",
-                boxShadow: bright ? "0 2px 6px rgba(0,0,0,.2)" : "none",
+                width: 26, height: 26, borderRadius: "50%", display: "grid", placeItems: "center",
+                fontSize: 11, fontWeight: 800, color: "#fff", flexShrink: 0, lineHeight: 1,
+                background: dim ? "var(--ink-3)" : avatarColor(name), opacity: dim ? 0.45 : 1,
+                boxShadow: dim ? "none" : "0 1px 3px rgba(0,0,0,.25)",
             }}>
-            {name}
+            {(name || "?").charAt(0).toUpperCase()}
         </motion.div>
     );
 }
@@ -280,8 +284,8 @@ export const OnlinePage = () => {
                     <div style={{ opacity: reveal ? 0 : 1, pointerEvents: reveal ? "none" : "auto" }}>
                         <TimerBar total={question.time || 15} left={reveal ? 0 : timeLeft} />
                     </div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: "var(--sp-5)", minHeight: 26 }}>
-                        {!reveal && (room.players || []).map((p) => <PlayerChip key={p.name} name={p.name} bright={answered.includes(p.name)} />)}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: "var(--sp-5)", minHeight: 28 }}>
+                        {!reveal && (room.players || []).map((p) => <Avatar key={p.name} name={p.name} dim={!answered.includes(p.name)} />)}
                     </div>
                     <AnimatePresence mode="wait">
                         <motion.div key={question.i}
@@ -297,40 +301,28 @@ export const OnlinePage = () => {
                                 {hyphenate(question.prompt, promptLang)}
                             </motion.h1>
                             <motion.div variants={OPT_LIST} initial="hidden" animate="show"
-                                style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--sp-3)", rowGap: 40 }}>
+                                style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--sp-3)" }}>
                                 {opts.map((opt, i) => {
                                     let kind = "idle";
                                     if (reveal) kind = i === reveal.correct ? "correct" : (i === chosen ? "wrong" : "dim");
                                     else if (i === chosen) kind = "selected";
-                                    // opacity задаём явно, чтобы текст верного/выбранного не гас при reveal
                                     const revAnim = !reveal ? undefined
-                                        : kind === "correct" ? { opacity: 1, scale: [1, 1.08, 1], boxShadow: ["0 0 0 rgba(0,0,0,0)", "0 0 28px var(--success)", "0 0 0 rgba(0,0,0,0)"] }
-                                            : kind === "wrong" ? { opacity: 1, x: [0, -9, 9, -6, 6, 0] }
-                                                : { opacity: 0.65 };
+                                        : kind === "correct" ? { opacity: 1, scale: [1, 1.05, 1], boxShadow: ["0 0 0 rgba(0,0,0,0)", "0 0 24px var(--success)", "0 0 0 rgba(0,0,0,0)"] }
+                                            : kind === "wrong" ? { opacity: 1, x: [0, -8, 8, -5, 5, 0] }
+                                                : { opacity: 0.6 };
                                     const voters = reveal ? (reveal.votes?.[question.keys?.[i]] || []) : [];
-                                    const topV = voters.slice(0, 2);   // первые 2 — по верхнему бордеру
-                                    const botV = voters.slice(2);      // 3-й, 4-й… — по нижнему бордеру
-                                    const chipRow = (extra) => ({
-                                        position: "absolute", left: 0, right: 0, display: "flex", flexWrap: "wrap",
-                                        gap: 4, justifyContent: "center", pointerEvents: "none", ...extra,
-                                    });
-                                    return <div key={i} style={{ position: "relative" }}>
-                                        <motion.button variants={OPT_ITEM} animate={revAnim} lang={optLang}
-                                            whileTap={!reveal && chosen == null ? { scale: 0.94 } : undefined}
-                                            transition={{ duration: 0.5 }} style={choiceStyle(kind)}
-                                            disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>{hyphenate(opt, optLang)}</motion.button>
-                                        {/* чипы голосов — по центру бордера кнопки (не накрывают слово) */}
-                                        {reveal && topV.length > 0 && (
-                                            <div style={chipRow({ top: 0, transform: "translateY(-50%)" })}>
-                                                {topV.map((n) => <PlayerChip key={n} name={n} bright />)}
-                                            </div>
-                                        )}
-                                        {reveal && botV.length > 0 && (
-                                            <div style={chipRow({ bottom: 0, transform: "translateY(50%)" })}>
-                                                {botV.map((n) => <PlayerChip key={n} name={n} bright />)}
-                                            </div>
-                                        )}
-                                    </div>;
+                                    // Слово — сверху; аватарки выбравших — в зарезервированной полосе СНИЗУ кнопки
+                                    // (всегда есть, поэтому высота кнопки постоянна и ничего не прыгает; слово не перекрыто).
+                                    return <motion.button key={i} variants={OPT_ITEM} animate={revAnim} lang={optLang}
+                                        whileTap={!reveal && chosen == null ? { scale: 0.94 } : undefined}
+                                        transition={{ duration: 0.5 }}
+                                        style={{ ...choiceStyle(kind), display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 72 }}
+                                        disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>
+                                        <span style={{ flex: 1, display: "flex", alignItems: "center" }}>{hyphenate(opt, optLang)}</span>
+                                        <span style={{ display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "center", alignItems: "center", minHeight: 26 }}>
+                                            {reveal && voters.map((n) => <Avatar key={n} name={n} />)}
+                                        </span>
+                                    </motion.button>;
                                 })}
                             </motion.div>
                         </motion.div>
