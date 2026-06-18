@@ -161,7 +161,8 @@ export const interfaceTranslate = {
             preparing: "AI готовит набор слов…",
             aiGenerating: "Нейросеть подбирает слова…", aiIndexing: "Индексация слов…", aiError: "Ошибка генерации", aiRetry: "Повторить генерацию",
             dictionary: "Словарь", allDicts: "Все словари", startNow: "Старт (хост)",
-            games: { quiz: "Викторина" }, genericError: "Ошибка",
+            games: { quiz: "Викторина", race: "Гонка слов" }, genericError: "Ошибка",
+            gameType: "Режим игры", answerMode: "Ответ", answerType: "Печать", answerChoice: "Выбор",
             room_not_found: "Комната не найдена", room_in_game: "Игра уже идёт",
             room_full: "Комната заполнена", not_enough_words: "Недостаточно слов для этих настроек",
         }
@@ -330,7 +331,8 @@ export const interfaceTranslate = {
             preparing: "AI is preparing the set…",
             aiGenerating: "AI is picking words…", aiIndexing: "Indexing words…", aiError: "Generation error", aiRetry: "Retry generation",
             dictionary: "Dictionary", allDicts: "All dictionaries", startNow: "Start (host)",
-            games: { quiz: "Quiz" }, genericError: "Error",
+            games: { quiz: "Quiz", race: "Word Race" }, genericError: "Error",
+            gameType: "Game mode", answerMode: "Answer", answerType: "Typing", answerChoice: "Choice",
             room_not_found: "Room not found", room_in_game: "Game already started",
             room_full: "Room is full", not_enough_words: "Not enough words for these settings",
         }
@@ -498,7 +500,8 @@ export const interfaceTranslate = {
             preparing: "AI готує набір слів…",
             aiGenerating: "Нейромережа добирає слова…", aiIndexing: "Індексація слів…", aiError: "Помилка генерації", aiRetry: "Повторити генерацію",
             dictionary: "Словник", allDicts: "Усі словники", startNow: "Старт (хост)",
-            games: { quiz: "Вікторина" }, genericError: "Помилка",
+            games: { quiz: "Вікторина", race: "Гонка слів" }, genericError: "Помилка",
+            gameType: "Режим гри", answerMode: "Відповідь", answerType: "Друк", answerChoice: "Вибір",
             room_not_found: "Кімнату не знайдено", room_in_game: "Гра вже триває",
             room_full: "Кімната заповнена", not_enough_words: "Недостатньо слів для цих налаштувань",
         }
@@ -666,7 +669,8 @@ export const interfaceTranslate = {
             preparing: "AI przygotowuje zestaw…",
             aiGenerating: "AI dobiera słowa…", aiIndexing: "Indeksowanie słów…", aiError: "Błąd generacji", aiRetry: "Ponów generację",
             dictionary: "Słownik", allDicts: "Wszystkie słowniki", startNow: "Start (host)",
-            games: { quiz: "Quiz" }, genericError: "Błąd",
+            games: { quiz: "Quiz", race: "Wyścig słów" }, genericError: "Błąd",
+            gameType: "Tryb gry", answerMode: "Odpowiedź", answerType: "Pisanie", answerChoice: "Wybór",
             room_not_found: "Nie znaleziono pokoju", room_in_game: "Gra już trwa",
             room_full: "Pokój pełny", not_enough_words: "Za mało słów dla tych ustawień",
         }
@@ -830,7 +834,8 @@ export const interfaceTranslate = {
             preparing: "AI ruošia rinkinį…",
             aiGenerating: "DI parenka žodžius…", aiIndexing: "Žodžių indeksavimas…", aiError: "Generavimo klaida", aiRetry: "Kartoti generavimą",
             dictionary: "Žodynas", allDicts: "Visi žodynai", startNow: "Pradėti (host)",
-            games: { quiz: "Viktorina" }, genericError: "Klaida",
+            games: { quiz: "Viktorina", race: "Žodžių lenktynės" }, genericError: "Klaida",
+            gameType: "Žaidimo režimas", answerMode: "Atsakymas", answerType: "Rašymas", answerChoice: "Pasirinkimas",
             room_not_found: "Kambarys nerastas", room_in_game: "Žaidimas jau prasidėjo",
             room_full: "Kambarys pilnas", not_enough_words: "Per mažai žodžių šiems nustatymams",
         }

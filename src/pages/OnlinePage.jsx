@@ -10,12 +10,14 @@ import { Modal } from "../components/ui/Modal.jsx";
 import { StageTimer } from "../components/online/StageTimer.jsx";
 import { Countdown } from "../components/online/Countdown.jsx";
 import { PlayerTag } from "../components/online/PlayerTag.jsx";
+import RaceScreen, { RacePodium } from "../components/online/RaceScreen.jsx";
 import api from "../components/tools/api.js";
 import { playSound, playWin, preloadSounds } from "../components/tools/sound.js";
 import { hyphenate, hyLang } from "../components/ui/hyphenate.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
-const DEFAULT_SETTINGS = { game: "quiz", dir: "no2int", source: "pool", dictId: "", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
+const DEFAULT_SETTINGS = { game: "quiz", answer: "type", dir: "no2int", source: "pool", dictId: "", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
+const GAME_TYPES = ["quiz", "race"];
 
 // Полноэкранный игровой контейнер в теме приложения (а не в тёмной теме обычных игр).
 const SCREEN = {
@@ -56,6 +58,7 @@ const OPT_ITEM = { hidden: { opacity: 0, y: 28, scale: 0.9 }, show: { opacity: 1
 
 export const OnlinePage = () => {
     const lang = useSystemStore((s) => s.currentLanguage);
+    const theme = useSystemStore((s) => s.theme);
     const t = interfaceTranslate[lang];
     const to = t.online || {};
     const savedPrefs = useAuthStore((s) => s.user?.onlinePrefs);
@@ -76,6 +79,16 @@ export const OnlinePage = () => {
     const [answered, setAnswered] = useState([]);  // имена ответивших на текущий вопрос
     const answeredRef = useRef([]);
     const roomRef = useRef(null);                   // актуальная комната для колбэков WS
+    const [podiumGame, setPodiumGame] = useState("quiz"); // тип игры для подиума
+    // --- состояние гонки ---
+    const [racePos, setRacePos] = useState([]);     // позиции машин/зверей всех игроков
+    const [raceWord, setRaceWord] = useState(null); // моё текущее слово
+    const [raceTotal, setRaceTotal] = useState(0);
+    const [raceFeedback, setRaceFeedback] = useState(null); // 'right' | 'wrong' | null (вспышка)
+    const [raceStreak, setRaceStreak] = useState(0);
+    const [raceGrace, setRaceGrace] = useState(null); // {sec, leader} — окно добивания
+    const [raceGo, setRaceGo] = useState(false);    // вспышка «Поехали!»
+    const fbTimer = useRef(null);
 
     const send = useCallback((obj) => {
         const ws = wsRef.current;
@@ -94,7 +107,10 @@ export const OnlinePage = () => {
                 case "room":
                     roomRef.current = m.room;
                     setRoom(m.room);
-                    if (m.room.state === "lobby") { setCountdown(null); setQuestion(null); setReveal(null); setPreparing(false); }
+                    if (m.room.state === "lobby") {
+                        setCountdown(null); setQuestion(null); setReveal(null); setPreparing(false);
+                        setRaceWord(null); setRacePos([]); setRaceGrace(null); setRaceGo(false); setRaceFeedback(null); setRaceStreak(0);
+                    }
                     break;
                 case "countdown": setCountdown(m.sec); playSound(m.sec === 1 ? "start" : "tick"); break;
                 case "preparing": setPreparing(true); break;
@@ -112,8 +128,32 @@ export const OnlinePage = () => {
                     break;
                 }
                 case "reveal": setReveal(m); playSound(m.gained > 0 ? "correct" : "wrong"); break;
-                case "ended": setPodium(m.podium); setQuestion(null); setReveal(null); setPreparing(false); break;
-                case "left": setRoom(null); setQuestion(null); setReveal(null); setPodium(null); setCountdown(null); setPreparing(false); break;
+                // --- гонка ---
+                case "race_go":
+                    setRaceTotal(m.total); setPreparing(false); setCountdown(null);
+                    setRaceGo(true); playSound("start");
+                    setTimeout(() => setRaceGo(false), 1100);
+                    break;
+                case "race_word": setRaceWord(m); break;
+                case "race_result": {
+                    setRaceFeedback(m.correct ? "right" : "wrong");
+                    setRaceStreak((s) => (m.correct ? s + 1 : 0));
+                    playSound(m.correct ? "correct" : "wrong");
+                    if (fbTimer.current) clearTimeout(fbTimer.current);
+                    fbTimer.current = setTimeout(() => setRaceFeedback(null), 600);
+                    break;
+                }
+                case "race_pos": setRacePos(m.positions || []); break;
+                case "race_grace": setRaceGrace({ sec: m.sec, leader: m.leader, total: m.total || 25 }); break;
+                case "ended":
+                    setPodium(m.podium); setPodiumGame(m.game || "quiz");
+                    setQuestion(null); setReveal(null); setPreparing(false);
+                    setRaceWord(null); setRaceGrace(null); setRaceGo(false);
+                    break;
+                case "left":
+                    setRoom(null); setQuestion(null); setReveal(null); setPodium(null); setCountdown(null); setPreparing(false);
+                    setRaceWord(null); setRacePos([]); setRaceGrace(null); setRaceGo(false);
+                    break;
                 case "error": case "game_error":
                     useSystemStore.getState().showToast(to[m.msg] || to.genericError || "—"); break;
                 default: break;
@@ -131,6 +171,9 @@ export const OnlinePage = () => {
         setChosen(i);
         send({ type: "answer", q: question.i, choice: i });
     };
+
+    // Ответ в гонке: payload {token, text} (печать) или {token, choice} (выбор)
+    const answerRace = useCallback((payload) => { send({ type: "answer", ...payload }); }, [send]);
 
     // Аудио предзагружаем при входе в комнату — к старту игры всё закешировано.
     useEffect(() => { if (room) preloadSounds(); }, [room?.id]); // eslint-disable-line
@@ -154,6 +197,11 @@ export const OnlinePage = () => {
         </main>;
     }
 
+    // Подиум гонки — собственный визуал (зверюшки/места по прогрессу)
+    if (room && podium && podiumGame === "race") {
+        const meName = room.players?.find((p) => p.isYou)?.name;
+        return <RacePodium podium={podium} lang={lang} meName={meName} onLobby={() => { setPodium(null); }} />;
+    }
     // Подиум (конец игры) — поверх всего
     if (room && podium) {
         const medals = ["🥇", "🥈", "🥉"];
@@ -186,6 +234,13 @@ export const OnlinePage = () => {
         // Обратный отсчёт — переиспользуемый компонент
         if (countdown != null) {
             return <main style={SCREEN}><Countdown sec={countdown} label={to.starting || "Старт через"} /></main>;
+        }
+        // Гонка слов — отдельный экран (дорожки + поле ответа + оверлеи)
+        if (room.settings.game === "race" && (room.state === "playing" || raceGo) && (raceWord || racePos.length || raceGo)) {
+            return <RaceScreen positions={racePos} total={raceTotal} word={raceWord}
+                feedback={raceFeedback} streak={raceStreak} grace={raceGrace} goFlash={raceGo}
+                lang={lang} theme={theme} roomName={room.name}
+                onAnswer={answerRace} onExit={() => send({ type: "leave" })} />;
         }
         // Готовим набор слов (особенно AI-подбор)
         if (preparing && !question) {
@@ -408,6 +463,17 @@ const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, conf
     </>}>
         <div className="field"><label className="label">{to.roomName || "Название"}</label>
             <input className="input" value={name} maxLength={40} placeholder={to.roomName || "Название"} onChange={(e) => setName(e.target.value)} /></div>
+        <div className="field"><label className="label">{to.gameType || "Режим игры"}</label>
+            <select className="input" value={s.game} onChange={(e) => set("game", e.target.value)}>
+                {GAME_TYPES.map((g) => <option key={g} value={g}>{to.games?.[g] || g}</option>)}
+            </select></div>
+        {s.game === "race" && (
+            <div className="field"><label className="label">{to.answerMode || "Ответ"}</label>
+                <select className="input" value={s.answer} onChange={(e) => set("answer", e.target.value)}>
+                    <option value="type">{to.answerType || "Печать"}</option>
+                    <option value="choice">{to.answerChoice || "Выбор"}</option>
+                </select></div>
+        )}
         <div className="field"><label className="label">{to.direction || "Направление"}</label>
             <select className="input" value={s.dir} onChange={(e) => set("dir", e.target.value)}>
                 <option value="no2int">{to.dirNo2Int || "Норвежское → перевод"}</option>
@@ -455,8 +521,10 @@ const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, conf
         </>}
         <div className="field"><label className="label">{to.words || "Слов"}: {s.count}</label>
             <input type="range" min={3} max={20} value={s.count} onChange={(e) => set("count", +e.target.value)} style={{ width: "100%" }} /></div>
-        <div className="field"><label className="label">{to.questionTime || "Время на вопрос"}: {s.qtime}{to.secUnit || "с"}</label>
-            <input type="range" min={5} max={30} value={s.qtime} onChange={(e) => set("qtime", +e.target.value)} style={{ width: "100%" }} /></div>
+        {s.game !== "race" && (
+            <div className="field"><label className="label">{to.questionTime || "Время на вопрос"}: {s.qtime}{to.secUnit || "с"}</label>
+                <input type="range" min={5} max={30} value={s.qtime} onChange={(e) => set("qtime", +e.target.value)} style={{ width: "100%" }} /></div>
+        )}
         <div className="field"><label className="label">{to.maxPlayers || "Макс. игроков"}: {s.maxPlayers}</label>
             <input type="range" min={2} max={8} value={s.maxPlayers} onChange={(e) => set("maxPlayers", +e.target.value)} style={{ width: "100%" }} /></div>
         <div className="setrow">

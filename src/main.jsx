@@ -6,6 +6,7 @@ import './styles/components.css'
 import './styles/auth.css'
 import './styles/screens.css'
 import './styles/loader.css'
+import './styles/race.css'
 import './styles/app.css'
 import './styles/icons.js' // инжектит SVG-спрайт иконок в DOM (side-effect)
 import * as ReactDOM from "react-dom/client";
