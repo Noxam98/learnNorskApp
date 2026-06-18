@@ -32,7 +32,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const [edit, setEdit] = useState(null);          // { no, ru, ukr, en, pl, lt } — строки через запятую
     const [editBusy, setEditBusy] = useState(false);
     const [moreOpen, setMoreOpen] = useState(false); // раскрыть остальные языки
-    const [editErr, setEditErr] = useState("");
+    const [review, setReview] = useState(null);      // вердикт ревью: { approved, reason }
 
     const LANG_LABEL = { ru: t.russian, ukr: t.ukrainian, en: t.english, pl: t.polish, lt: t.lithuanian };
 
@@ -43,7 +43,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             no: join(tr.no) || view?.no || "",
             ru: join(tr.ru), ukr: join(tr.ukr), en: join(tr.en), pl: join(tr.pl), lt: join(tr.lt),
         });
-        setMoreOpen(false); setEditErr("");
+        setMoreOpen(false); setReview(null);
         setEditOpen(true);
     };
 
@@ -55,15 +55,18 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             const v = parse(edit[k]);
             if (v.length) translate[k] = v;
         }
-        setEditBusy(true); setEditErr("");
+        setEditBusy(true); setReview(null);
         try {
-            await api.editPoolWord(view.no, translate);   // правка общего пула — для всех
-            const newNo = translate.no?.[0] || view.no;
-            setView((v) => (v ? { ...v, no: newNo, translate: { ...(v.translate || {}), ...translate } } : v));
-            loadData?.(true);   // общие данные сменились — подтянуть словарь
-            setEditOpen(false);
+            const r = await api.editPoolWord(view.no, translate, lang);   // ревью + правка общего пула
+            setReview({ approved: !!r.approved, reason: r.reason || "" });
+            if (r.approved) {  // одобрено и применено — обновляем вид и словарь
+                const newNo = translate.no?.[0] || view.no;
+                setView((v) => (v ? { ...v, no: newNo, translate: { ...(v.translate || {}), ...translate } } : v));
+                loadData?.(true);
+            }
         } catch (e) {
-            setEditErr(String(e?.message || "").toLowerCase().includes("exist") ? (t.dictExistsError || t.editWord) : (t.unexpectedError || "—"));
+            const m = String(e?.message || "").toLowerCase();
+            setReview({ approved: false, reason: m.includes("exist") ? (t.dictExistsError || "") : m.includes("review") ? (t.reviewFailed || "Не удалось проверить правку, попробуйте позже") : (t.unexpectedError || "—") });
         }
         setEditBusy(false);
     };
@@ -306,7 +309,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
         <Modal open={editOpen} onClose={() => !editBusy && setEditOpen(false)} title={t.editWord || "Изменить слово"}
             footer={<>
                 <button className="btn btn--ghost" disabled={editBusy} onClick={() => setEditOpen(false)}>{t.cancel}</button>
-                <button className="btn btn--primary" disabled={editBusy} onClick={saveEdit}>{editBusy ? <BtnSpinner /> : t.save}</button>
+                <button className="btn btn--primary" disabled={editBusy} onClick={saveEdit}>{editBusy ? <><BtnSpinner /> {t.reviewing || "Проверка…"}</> : t.save}</button>
             </>}>
             {edit && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-3)" }}>
@@ -334,7 +337,17 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                             <Icon n="plus" sm /> {t.more || "Дополнительно"}
                         </button>
                     )}
-                    {editErr && <span className="alert"><Icon n="x" sm /> {editErr}</span>}
+                    {review && (
+                        <div style={{
+                            display: "flex", gap: 8, alignItems: "flex-start", padding: "10px 12px", borderRadius: 10,
+                            fontSize: "var(--fs-13)", lineHeight: "var(--lh-normal)",
+                            background: review.approved ? "var(--success-bg)" : "var(--danger-bg)",
+                            color: review.approved ? "var(--success)" : "var(--danger)",
+                        }}>
+                            <Icon n={review.approved ? "check" : "x"} sm style={{ flexShrink: 0, marginTop: 2 }} />
+                            <span><b>{review.approved ? (t.reviewApproved || "Одобрено") : (t.reviewRejected || "Отклонено")}.</b> {review.reason}</span>
+                        </div>
+                    )}
                 </div>
             )}
         </Modal>
