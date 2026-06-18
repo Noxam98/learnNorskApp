@@ -119,16 +119,29 @@ export function playYawn() {
     o.start(t); o.stop(t + 1.1);
 }
 
-// ---------------- фоновая музыка (зацикленный секвенсор) ----------------
+// ---------------- фоновая музыка (зацикленный секвенсор, 4 такта) ----------------
 let music = null;   // {gain, timer, step, until}
-const BPM = 124;
+const BPM = 126;
 const STEP = 60 / BPM / 4;               // 16-я нота
+const STEPS = 64;                        // 4 такта по 16
 const NOTE = (n) => 440 * Math.pow(2, (n - 69) / 12);   // midi → Гц
-// 2 такта: аккорды vi-IV-I-V (Am-F-C-G) — узнаваемый бодрый луп
-const BASS = [45, 45, 41, 41, 36, 36, 43, 43];          // по полутакту (8-я)
-const ARP = [
-    [57, 60, 64], [57, 60, 64], [53, 57, 60], [53, 57, 60],
-    [48, 52, 55], [48, 52, 55], [55, 59, 62], [55, 59, 62],
+// 8 полутактов: Am F C G | Am F Dm E — с разворотом доминанты в конце
+const CHORDS = [
+    { bass: 45, tones: [57, 60, 64] },   // Am
+    { bass: 41, tones: [53, 57, 60] },   // F
+    { bass: 36, tones: [48, 52, 55] },   // C
+    { bass: 43, tones: [55, 59, 62] },   // G
+    { bass: 45, tones: [57, 60, 64] },   // Am
+    { bass: 41, tones: [53, 57, 60] },   // F
+    { bass: 38, tones: [50, 53, 57] },   // Dm
+    { bass: 40, tones: [52, 56, 59] },   // E  (доминанта → обратно в Am)
+];
+// мелодия-мотив (midi или 0=пауза), оживает во 2-м и 4-м тактах
+const MEL = [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                  // т.1 — тихо
+    72, 0, 71, 0, 69, 0, 72, 0, 71, 0, 69, 0, 67, 0, 0, 0,           // т.2 — фраза
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                  // т.3 — тихо
+    69, 0, 72, 0, 76, 0, 74, 0, 72, 0, 71, 0, 69, 0, 67, 0,          // т.4 — взлёт + спуск
 ];
 
 function voice(c, dest, type, freq, t, dur, peak) {
@@ -142,29 +155,77 @@ function voice(c, dest, type, freq, t, dur, peak) {
     o.start(t); o.stop(t + dur + 0.02);
 }
 
+// синтез-ударные
+function kick(c, dest, t) {
+    const o = c.createOscillator(); o.type = "sine";
+    o.frequency.setValueAtTime(150, t);
+    o.frequency.exponentialRampToValueAtTime(48, t + 0.14);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.9, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+    o.connect(g).connect(dest); o.start(t); o.stop(t + 0.2);
+}
+function snare(c, dest, t) {
+    const n = noise(c);
+    const hp = c.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 1400;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.5, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+    n.connect(hp).connect(g).connect(dest); n.start(t); n.stop(t + 0.14);
+    const o = c.createOscillator(); o.type = "triangle"; o.frequency.value = 190;
+    const og = c.createGain();
+    og.gain.setValueAtTime(0.25, t); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+    o.connect(og).connect(dest); o.start(t); o.stop(t + 0.09);
+}
+function hat(c, dest, t, open) {
+    const n = noise(c);
+    const hp = c.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 8000;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.16, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + (open ? 0.12 : 0.035));
+    n.connect(hp).connect(g).connect(dest); n.start(t); n.stop(t + (open ? 0.13 : 0.04));
+}
+
 export function startRaceMusic() {
     if (music) return;
     const c = ac(); if (!c) return;
     const gain = c.createGain();
-    gain.gain.value = on() ? 0.14 : 0.0001;
+    gain.gain.value = on() ? 0.16 : 0.0001;
     gain.connect(c.destination);
     music = { gain, timer: null, step: 0, until: c.currentTime };
     const lookahead = 0.1;
     const tick = () => {
         if (!music) return;
         const cc = ac(); if (!cc) return;
-        // держим громкость в такт тумблеру
-        music.gain.gain.setTargetAtTime(on() ? 0.14 : 0.0001, cc.currentTime, 0.05);
+        music.gain.gain.setTargetAtTime(on() ? 0.16 : 0.0001, cc.currentTime, 0.05);
         while (music.until < cc.currentTime + lookahead) {
             const t = music.until;
-            const s = music.step % 32;
-            const half = Math.floor(s / 4) % 8;
-            if (s % 4 === 0) voice(cc, music.gain, "triangle", NOTE(BASS[half]) / 2, t, 0.28, 0.5);   // бас
-            if (s % 2 === 0) {                                                                          // арпеджио
-                const chord = ARP[half]; const n = chord[(s / 2) % chord.length];
-                voice(cc, music.gain, "square", NOTE(n), t, 0.16, 0.12);
+            const s = music.step % STEPS;
+            const bar = Math.floor(s / 16);                 // 0..3
+            const half = Math.floor(s / 8) % 8;             // полутакт → аккорд
+            const ch = CHORDS[half];
+            const beat = s % 4;
+
+            // бас: на доли, в конце фразы — проходящая нота
+            if (beat === 0) {
+                const last = bar === 3 && s % 16 >= 12;     // ходовая в финале лупа
+                const bn = last ? ch.bass + ((s % 16) - 12) : ch.bass;
+                voice(cc, music.gain, "triangle", NOTE(bn) / 2, t, 0.26, 0.55);
             }
-            if (s % 4 === 2) voice(cc, music.gain, "triangle", 2000, t, 0.03, 0.05);                   // хэт-щёлк
+            // арпеджио — 8-е, направление меняется по тактам
+            if (s % 2 === 0) {
+                const i = (s / 2) % ch.tones.length;
+                const idx = bar % 2 ? ch.tones.length - 1 - i : i;
+                voice(cc, music.gain, "square", NOTE(ch.tones[idx]), t, 0.15, 0.1);
+            }
+            // мелодия
+            if (MEL[s]) voice(cc, music.gain, "triangle", NOTE(MEL[s]), t, 0.26, 0.16);
+            // ударные
+            if (s % 8 === 0) kick(cc, music.gain, t);                 // 1 и 3 доля
+            if (s % 8 === 4) snare(cc, music.gain, t);                // 2 и 4 доля
+            if (bar === 3 && s % 16 >= 14) snare(cc, music.gain, t);  // фил в конце
+            if (s % 2 === 0) hat(cc, music.gain, t, s % 8 === 6);     // хэт, иногда открытый
+
             music.until += STEP; music.step++;
         }
     };
