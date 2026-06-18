@@ -390,9 +390,17 @@ export const OnlinePage = () => {
 const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, confirmLabel, onConfirm, dicts = [] }) => {
     const [name, setName] = useState(initialName);
     const [s, setS] = useState({ ...DEFAULT_SETTINGS, ...(initial || {}) });
-    useEffect(() => { if (open) { setS({ ...DEFAULT_SETTINGS, ...(initial || {}) }); setName(initialName); } }, [open]); // eslint-disable-line
-    const set = (k, v) => setS((p) => ({ ...p, [k]: v }));
     const topics = t.topics || {};
+    // своя тема: s.topic держит уже финальное значение (свободный текст), customMode — только UI
+    const [customMode, setCustomMode] = useState(false);
+    useEffect(() => {
+        if (open) {
+            const init = { ...DEFAULT_SETTINGS, ...(initial || {}) };
+            setS(init); setName(initialName);
+            setCustomMode(!!init.topic && !topics[init.topic]);   // тема не из списка → своя
+        }
+    }, [open]); // eslint-disable-line
+    const set = (k, v) => setS((p) => ({ ...p, [k]: v }));
 
     return <Modal open={open} onClose={onClose} title={title || to.create || "Создать комнату"} footer={<>
         <button className="btn btn--ghost" onClick={onClose}>{t.cancel}</button>
@@ -406,7 +414,11 @@ const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, conf
                 <option value="int2no">{to.dirInt2No || "Перевод → норвежское"}</option>
             </select></div>
         <div className="field"><label className="label">{to.wordSource || "Источник слов"}</label>
-            <select className="input" value={s.source} onChange={(e) => set("source", e.target.value)}>
+            <select className="input" value={s.source} onChange={(e) => {
+                const v = e.target.value;
+                if (v !== "ai" && customMode) { setCustomMode(false); set("topic", ""); }  // своя тема — только для AI
+                set("source", v);
+            }}>
                 <option value="pool">{to.sourcePool || "Общий пул"}</option>
                 <option value="dict">{to.sourceDict || "Мои словари"}</option>
                 <option value="ai">{to.sourceAi || "AI-подбор"}</option>
@@ -425,10 +437,21 @@ const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, conf
                     {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
                 </select></div>
             <div className="field"><label className="label">{to.topic || "Тема"}</label>
-                <select className="input" value={s.topic} onChange={(e) => set("topic", e.target.value)}>
+                <select className="input" value={customMode ? "__custom__" : s.topic}
+                    onChange={(e) => {
+                        const v = e.target.value;
+                        if (v === "__custom__") { setCustomMode(true); set("topic", ""); }
+                        else { setCustomMode(false); set("topic", v); }
+                    }}>
                     <option value="">{to.anyTopic || "Любая"}</option>
                     {Object.keys(topics).map((k) => <option key={k} value={k}>{topics[k]}</option>)}
-                </select></div>
+                    {s.source === "ai" && <option value="__custom__">{to.customTopic || "✏️ Своя тема"}</option>}
+                </select>
+                {customMode && s.source === "ai" && (
+                    <input className="input" type="text" value={s.topic} maxLength={60} autoFocus
+                        style={{ marginTop: 8 }} placeholder={to.customTopicPh || ""}
+                        onChange={(e) => set("topic", e.target.value)} />
+                )}</div>
         </>}
         <div className="field"><label className="label">{to.words || "Слов"}: {s.count}</label>
             <input type="range" min={3} max={20} value={s.count} onChange={(e) => set("count", +e.target.value)} style={{ width: "100%" }} /></div>
