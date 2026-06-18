@@ -486,24 +486,24 @@ const Field = ({ label, hint, dep, children }) => (
 );
 
 const Seg = ({ value, options, onChange }) => (
-    <div className="seg" role="radiogroup">
+    <div className="rmseg" role="radiogroup">
         {options.map((o) => (
             <button key={o.value} type="button" role="radio" aria-checked={o.value === value}
-                className={"seg__btn" + (o.value === value ? " is-on" : "")} onClick={() => onChange(o.value)}>
-                {o.icon && <span className="seg__i" aria-hidden="true">{o.icon}</span>}<span className="seg__t">{o.label}</span>
+                className={"rmseg__btn" + (o.value === value ? " is-on" : "")} onClick={() => onChange(o.value)}>
+                {o.icon && <span className="rmseg__i" aria-hidden="true">{o.icon}</span>}<span className="rmseg__t">{o.label}</span>
             </button>
         ))}
     </div>
 );
 
 const ModeSeg = ({ value, onChange, cards }) => (
-    <div className="modeseg" role="radiogroup">
+    <div className="rmmode" role="radiogroup">
         {cards.map((c) => (
             <button key={c.value} type="button" role="radio" aria-checked={c.value === value}
-                className={"modeseg__card" + (c.value === value ? " is-on" : "")} onClick={() => onChange(c.value)}>
-                <span className="modeseg__emoji" aria-hidden="true">{c.emoji}</span>
-                <span className="modeseg__body"><b>{c.label}</b><span>{c.desc}</span></span>
-                <span className="modeseg__tick" aria-hidden="true">✓</span>
+                className={"rmmode__card" + (c.value === value ? " is-on" : "")} onClick={() => onChange(c.value)}>
+                <span className="rmmode__emoji" aria-hidden="true">{c.emoji}</span>
+                <span className="rmmode__body"><b>{c.label}</b><span>{c.desc}</span></span>
+                <span className="rmmode__tick" aria-hidden="true">✓</span>
             </button>
         ))}
     </div>
@@ -550,16 +550,19 @@ const Sel = ({ value, options, onChange, placeholder }) => {
         place();
         setActive(Math.max(0, options.findIndex((o) => o.value === value)));
         const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target) && !e.target.closest(".dd__pop")) setOpen(false); };
-        const onScroll = () => setOpen(false);
+        // скролл страницы/тела модалки — двигаем поповер за триггером (не закрываем);
+        // скролл внутри самого списка игнорируем
+        const onScroll = (e) => { if (e.target?.closest?.(".dd__pop")) return; place(); };
+        const onResize = () => setOpen(false);
         document.addEventListener("mousedown", onDoc);
         document.addEventListener("touchstart", onDoc);
         window.addEventListener("scroll", onScroll, true);
-        window.addEventListener("resize", onScroll);
+        window.addEventListener("resize", onResize);
         return () => {
             document.removeEventListener("mousedown", onDoc);
             document.removeEventListener("touchstart", onDoc);
             window.removeEventListener("scroll", onScroll, true);
-            window.removeEventListener("resize", onScroll);
+            window.removeEventListener("resize", onResize);
         };
     }, [open]); // eslint-disable-line
 
@@ -723,8 +726,8 @@ const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", titl
                     </section>
                 </div>
                 <div className="modal__foot">
-                    <button className="btn btn--ghost" onClick={onClose}>{t.cancel}</button>
-                    <button className="btn btn--primary" disabled={invalid} onClick={() => !invalid && onConfirm(name, s)}>{confirmLabel || to.create || "Создать"}</button>
+                    <button className="rmbtn rmbtn--ghost" onClick={onClose}>{t.cancel}</button>
+                    <button className="rmbtn rmbtn--primary" disabled={invalid} onClick={() => !invalid && onConfirm(name, s)}>{confirmLabel || to.create || "Создать"}</button>
                 </div>
             </div>
         </div>
