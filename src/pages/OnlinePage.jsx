@@ -9,6 +9,7 @@ import { Icon } from "../components/ui/Icon.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
 import api from "../components/tools/api.js";
 import { playSound, playWin, preloadSounds } from "../components/tools/sound.js";
+import { hyphenate, hyLang } from "../components/ui/hyphenate.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const DEFAULT_SETTINGS = { game: "quiz", dir: "no2int", source: "pool", dictId: "", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
@@ -26,6 +27,7 @@ function choiceStyle(kind) {
         padding: "16px 14px", borderRadius: 14, border: "2px solid var(--border)",
         background: "var(--surface)", color: "var(--ink)", fontSize: "var(--fs-18)",
         fontWeight: 600, cursor: kind === "idle" || kind === "selected" ? "pointer" : "default", width: "100%",
+        overflowWrap: "break-word", hyphens: "manual", minWidth: 0,   // умный перенос длинных слов
     };
     if (kind === "correct") return { ...base, borderColor: "var(--success)", color: "var(--success)", background: "var(--success-bg)" };
     if (kind === "wrong") return { ...base, borderColor: "var(--danger)", color: "var(--danger)", background: "var(--danger-bg)" };
@@ -257,6 +259,9 @@ export const OnlinePage = () => {
         // Игра идёт — вопрос
         if (question) {
             const opts = question.options || [];
+            const optIsNo = question.dir === "int2no";          // варианты — норвежские слова
+            const optLang = hyLang(lang, optIsNo);
+            const promptLang = hyLang(lang, !optIsNo);
             return <main style={{ ...SCREEN, justifyContent: "flex-start", paddingTop: "var(--sp-7)" }}>
                 <LayoutGroup><div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
                     {!reveal && <TimerBar total={question.time || 15} left={timeLeft} />}
@@ -275,8 +280,9 @@ export const OnlinePage = () => {
                             </div>
                             <motion.h1 initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                                 transition={{ type: "spring", stiffness: 260, damping: 18 }}
-                                style={{ fontSize: "clamp(2rem,7vw,3rem)", margin: "var(--sp-3) 0 var(--sp-5)", textAlign: "center" }}>
-                                {question.prompt}
+                                lang={promptLang}
+                                style={{ fontSize: "clamp(2rem,7vw,3rem)", margin: "var(--sp-3) 0 var(--sp-5)", textAlign: "center", overflowWrap: "break-word", hyphens: "manual" }}>
+                                {hyphenate(question.prompt, promptLang)}
                             </motion.h1>
                             <motion.div variants={OPT_LIST} initial="hidden" animate="show"
                                 style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--sp-3)", rowGap: 40 }}>
@@ -290,15 +296,26 @@ export const OnlinePage = () => {
                                             : kind === "wrong" ? { opacity: 1, x: [0, -9, 9, -6, 6, 0] }
                                                 : { opacity: 0.65 };
                                     const voters = reveal ? (reveal.votes?.[question.keys?.[i]] || []) : [];
+                                    const topV = voters.slice(0, 2);   // первые 2 — по верхнему бордеру
+                                    const botV = voters.slice(2);      // 3-й, 4-й… — по нижнему бордеру
+                                    const chipRow = (extra) => ({
+                                        position: "absolute", left: 0, right: 0, display: "flex", flexWrap: "wrap",
+                                        gap: 4, justifyContent: "center", pointerEvents: "none", ...extra,
+                                    });
                                     return <div key={i} style={{ position: "relative" }}>
-                                        <motion.button variants={OPT_ITEM} animate={revAnim}
+                                        <motion.button variants={OPT_ITEM} animate={revAnim} lang={optLang}
                                             whileTap={!reveal && chosen == null ? { scale: 0.94 } : undefined}
                                             transition={{ duration: 0.5 }} style={choiceStyle(kind)}
-                                            disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>{opt}</motion.button>
-                                        {/* чипы голосов — оверлеем у ВЕРХНЕГО края кнопки (не по центру → слово не перекрыто) */}
-                                        {reveal && voters.length > 0 && (
-                                            <div style={{ position: "absolute", top: -11, left: 0, right: 0, display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "center", pointerEvents: "none" }}>
-                                                {voters.map((n) => <PlayerChip key={n} name={n} bright />)}
+                                            disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>{hyphenate(opt, optLang)}</motion.button>
+                                        {/* чипы голосов — по центру бордера кнопки (не накрывают слово) */}
+                                        {reveal && topV.length > 0 && (
+                                            <div style={chipRow({ top: 0, transform: "translateY(-50%)" })}>
+                                                {topV.map((n) => <PlayerChip key={n} name={n} bright />)}
+                                            </div>
+                                        )}
+                                        {reveal && botV.length > 0 && (
+                                            <div style={chipRow({ bottom: 0, transform: "translateY(50%)" })}>
+                                                {botV.map((n) => <PlayerChip key={n} name={n} bright />)}
                                             </div>
                                         )}
                                     </div>;
@@ -376,6 +393,12 @@ export const OnlinePage = () => {
                 onClick={() => send({ type: "ready", ready: !myReady })}>
                 {myReady ? (to.cancelReady || "Не готов") : (to.imReady || "Я готов")}
             </button>
+            {amHost && (
+                <button className="btn btn--primary btn--block" style={{ marginTop: "var(--sp-3)" }}
+                    onClick={() => send({ type: "force_start" })}>
+                    <Icon n="play" sm /> {to.startNow || "Старт (хост)"}
+                </button>
+            )}
             {room.players.length < 2 && <p className="muted" style={{ textAlign: "center", marginTop: "var(--sp-3)" }}>{to.needPlayers || "Нужно ≥2 игроков"}</p>}
         </main>;
     }
