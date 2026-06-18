@@ -39,7 +39,7 @@
 .roomwrap .modal__title { font-size: var(--fs-20); font-weight: 800; letter-spacing: var(--ls-tight); margin: 0; color: var(--m-ink); }
 .roomwrap .modal__x { width: 34px; height: 34px; border-radius: var(--r-full); border: 1px solid var(--m-border); background: var(--m-surface); color: var(--m-ink-2); cursor: pointer; font-size: 14px; flex: none; }
 .roomwrap .modal__x:hover { background: var(--m-surface-2); color: var(--m-ink); }
-.roomwrap .modal__body { padding: 16px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: var(--sp-5); background: var(--m-bg); }
+.roomwrap .modal__body { padding: 16px 18px; overflow-y: auto; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: var(--sp-5); background: var(--m-bg); -webkit-overflow-scrolling: touch; }
 .roomwrap .modal__foot { display: flex; gap: 10px; justify-content: flex-end; padding: 14px 20px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid var(--m-border); flex: none; background: var(--m-surface); position: relative; z-index: 2; }
 .roomwrap .grpwrap { display: flex; flex-direction: column; gap: 8px; }
 .roomwrap .grp__h { font-size: var(--fs-12); font-weight: 800; letter-spacing: var(--ls-wider); text-transform: uppercase; color: var(--m-ink-3); padding-left: 4px; }
@@ -59,8 +59,8 @@
 .roomwrap .rtext.is-invalid { border-color: var(--danger); box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 14%, transparent); }
 .roomwrap .rtext__count { position: absolute; top: 15px; right: 16px; font-size: var(--fs-11); color: var(--m-ink-3); pointer-events: none; }
 .roomwrap .rmseg { display: flex; gap: 4px; background: var(--m-surface-2); border: 1px solid var(--m-border); border-radius: var(--r-md); padding: 4px; }
-.roomwrap .rmseg__btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 8px; border: none; background: transparent; color: var(--m-ink-2); font-family: inherit; font-size: var(--fs-13); font-weight: 700; border-radius: var(--r-sm); cursor: pointer; white-space: nowrap; transition: background var(--dur), color var(--dur); min-width: 0; }
-.roomwrap .rmseg__t { overflow: hidden; text-overflow: ellipsis; }
+.roomwrap .rmseg__btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 6px; border: none; background: transparent; color: var(--m-ink-2); font-family: inherit; font-size: var(--fs-13); font-weight: 700; line-height: 1.15; border-radius: var(--r-sm); cursor: pointer; text-align: center; transition: background var(--dur), color var(--dur); min-width: 0; }
+.roomwrap .rmseg__t { min-width: 0; }
 .roomwrap .rmseg__i { flex: none; font-size: 14px; }
 .roomwrap .rmseg__btn:hover { color: var(--m-ink); }
 .roomwrap .rmseg__btn.is-on { background: var(--m-surface); color: var(--m-ink); box-shadow: var(--shadow-xs); }
@@ -72,7 +72,7 @@
 .roomwrap .rmmode__emoji { font-size: 26px; flex: none; }
 .roomwrap .rmmode__body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .roomwrap .rmmode__body b { font-size: var(--fs-15); font-weight: 800; color: var(--m-ink); }
-.roomwrap .rmmode__body span { font-size: var(--fs-12); color: var(--m-ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.roomwrap .rmmode__body span { font-size: var(--fs-12); color: var(--m-ink-3); line-height: 1.2; }
 .roomwrap .rmmode__tick { position: absolute; top: 9px; right: 10px; width: 19px; height: 19px; border-radius: 50%; background: var(--m-accent); color: var(--m-accent-ink); font-size: 11px; font-weight: 900; display: grid; place-items: center; opacity: 0; transform: scale(.5); transition: opacity var(--dur), transform var(--dur); }
 .roomwrap .rmmode__card.is-on .rmmode__tick { opacity: 1; transform: scale(1); }
 .roomwrap .dd { position: relative; }
