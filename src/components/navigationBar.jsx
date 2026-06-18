@@ -25,14 +25,11 @@ export const NavigationBar = () => {
                     <Link className={`nav__link${pathname === "/words" ? " is-active" : ""}`} to="/words">
                         <Icon n="bookmark" sm /> <span>{t.navBar.words}</span>
                     </Link>
-                    <Link className={`nav__link${pathname === "/game" ? " is-active" : ""}`} to="/game">
-                        <Icon n="play" sm /> <span>{t.navBar.game}</span>
+                    <Link className={`nav__link${["/games", "/game", "/online"].includes(pathname) ? " is-active" : ""}`} to="/games">
+                        <Icon n="gamepad" sm /> <span>{t.navBar.games || "Игры"}</span>
                     </Link>
                     <Link className={`nav__link${pathname === "/pool" ? " is-active" : ""}`} to="/pool">
                         <Icon n="library" sm /> <span>{t.navBar.base}</span>
-                    </Link>
-                    <Link className={`nav__link${pathname === "/online" ? " is-active" : ""}`} to="/online">
-                        <Icon n="gamepad" sm /> <span>{t.navBar.online || "Онлайн"}</span>
                     </Link>
                 </nav>
                 <div className="nav__spacer" />

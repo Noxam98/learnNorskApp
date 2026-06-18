@@ -187,6 +187,7 @@ class ApiService {
     setPassword(password) { return this._send('POST', '/me/set_password', { password }); }
     setName(name) { return this._send('POST', '/me/name', { name }); }
     setOnlinePrefs(prefs) { return this._send('POST', '/me/online_prefs', prefs); }
+    setGameMode(mode) { return this._send('POST', '/me/game_mode', { mode }); }
 
     // URL WebSocket-а онлайн-раздела (токен и язык — в query, т.к. браузерный WS без заголовков).
     onlineSocketUrl(lang) {
