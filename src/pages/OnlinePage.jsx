@@ -234,8 +234,10 @@ export const OnlinePage = () => {
         if (countdown != null) {
             return <main style={SCREEN}><Countdown sec={countdown} label={to.starting || "Старт через"} /></main>;
         }
-        // Гонка слов — отдельный экран (дорожки + поле ответа + оверлеи)
-        if (room.settings.game === "race" && (room.state === "playing" || raceGo) && (raceWord || racePos.length || raceGo)) {
+        // Гонка слов — отдельный экран (дорожки + поле ответа + оверлеи).
+        // Не завязываемся на room.state: сервер для играющих не шлёт room-detail
+        // со state=playing (только список комнат) — ориентируемся на данные гонки.
+        if (room.settings.game === "race" && (raceWord || racePos.length || raceGo)) {
             return <RaceScreen positions={racePos} total={raceTotal} word={raceWord}
                 feedback={raceFeedback} streak={raceStreak} grace={raceGrace} goFlash={raceGo}
                 lang={lang} theme={theme} roomName={room.name}
@@ -624,7 +626,8 @@ const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", titl
 
     const showLevelTheme = s.source !== "dict";
     const isAI = s.source === "ai";
-    const invalid = customMode && isAI && !s.topic.trim();
+    const topicVal = s.topic || "";   // бэкенд может вернуть null
+    const invalid = customMode && isAI && !topicVal.trim();
 
     const levelOpts = [{ value: "", label: to.anyLevel || "Любой" }, ...LEVELS.map((l) => ({ value: l, label: l }))];
     const themeOpts = [{ value: "", label: to.anyTopic || "Любая" },
@@ -693,8 +696,8 @@ const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", titl
                                 <div className="rf rf--dep">
                                     <div className="rf__lbl"><span className="rf__link" aria-hidden="true">↳</span><span className="rf__lbltxt">{to.level || "Уровень"} · {to.topic || "Тема"}</span></div>
                                     <div className="rcols">
-                                        <Sel value={s.level} options={levelOpts} onChange={(v) => set("level", v)} />
-                                        <Sel value={customMode ? "__custom__" : s.topic} options={themeOpts} onChange={(v) => {
+                                        <Sel value={s.level || ""} options={levelOpts} onChange={(v) => set("level", v)} />
+                                        <Sel value={customMode ? "__custom__" : topicVal} options={themeOpts} onChange={(v) => {
                                             if (v === "__custom__") { setCustomMode(true); set("topic", ""); }
                                             else { setCustomMode(false); set("topic", v); }
                                         }} />
@@ -702,8 +705,8 @@ const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", titl
                                     <Reveal open={customMode && isAI}>
                                         <div className="rcustom">
                                             <input className={"rtext" + (invalid ? " is-invalid" : "")} maxLength={60} placeholder={to.customTopicPh || ""}
-                                                value={s.topic} onChange={(e) => set("topic", e.target.value)} />
-                                            <span className="rtext__count">{s.topic.length}/60</span>
+                                                value={topicVal} onChange={(e) => set("topic", e.target.value)} />
+                                            <span className="rtext__count">{topicVal.length}/60</span>
                                             <div className="rcustom__hint">✨ {to.aiHint || ""}</div>
                                         </div>
                                     </Reveal>

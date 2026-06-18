@@ -220,7 +220,44 @@ export function RacePodium({ podium, lang, meName, onLobby }) {
 
 export default function RaceScreen({ positions, total, word, feedback, streak, grace, goFlash, lang, theme, roomName, onAnswer, onExit }) {
     const T = RACE_I18N[lang] || RACE_I18N.ru;
-    const lanes = useMemo(() => decorate(positions || []), [positions]);
+    const base = useMemo(() => decorate(positions || []), [positions]);
+
+    // Состояния зверя живут на клиенте: сервер шлёт moving/stalled как событие и не
+    // возвращает в neutral. Мы делаем рывок/падение кратким, затем возвращаем в neutral —
+    // тогда возобновляются холостые анимации (кувырки/прыжки) и каждый новый рывок
+    // (рост progress) перезапускает галоп с пылью, а ошибка — падение → подъём.
+    const [disp, setDisp] = useState({});       // id -> отображаемое состояние
+    const dispRef = useRef({});
+    const prevProg = useRef({});
+    const timers = useRef({});
+    useEffect(() => { dispRef.current = disp; }, [disp]);
+    useEffect(() => {
+        const cur = { ...dispRef.current };
+        const arm = (id, state, hold, then) => {
+            cur[id] = state;
+            clearTimeout(timers.current[id]);
+            timers.current[id] = setTimeout(() => {
+                if (then) { setDisp((d) => ({ ...d, [id]: then.state })); clearTimeout(timers.current[id]);
+                    timers.current[id] = setTimeout(() => setDisp((d) => ({ ...d, [id]: "neutral" })), then.hold); }
+                else setDisp((d) => ({ ...d, [id]: "neutral" }));
+            }, hold);
+        };
+        (positions || []).forEach((p) => {
+            const pp = prevProg.current[p.id];
+            if (p.finished) { cur[p.id] = "finished"; clearTimeout(timers.current[p.id]); }
+            else if (p.state === "dnf") { cur[p.id] = "dnf"; clearTimeout(timers.current[p.id]); }
+            else if (pp != null && p.progress > pp) arm(p.id, "moving", 620);          // доехал на слово → рывок
+            else if (p.state === "stalled" && cur[p.id] !== "stalled" && cur[p.id] !== "restarting" && (pp == null || p.progress === pp))
+                arm(p.id, "stalled", 720, { state: "restarting", hold: 460 });          // ошибка → падение → подъём
+            else if (cur[p.id] == null) cur[p.id] = "neutral";
+            prevProg.current[p.id] = p.progress;
+        });
+        setDisp(cur);
+        return undefined;
+    }, [positions]);
+    useEffect(() => () => { Object.values(timers.current).forEach(clearTimeout); }, []);
+
+    const lanes = base.map((p) => ({ ...p, state: p.finished ? "finished" : (disp[p.id] || p.state) }));
     const others = lanes.filter((p) => !p.isYou);
     const you = lanes.find((p) => p.isYou);
     const hasAnswer = !!word && !(you && you.state === "finished");
