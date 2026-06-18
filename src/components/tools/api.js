@@ -190,6 +190,7 @@ class ApiService {
     setGameMode(mode) { return this._send('POST', '/me/game_mode', { mode }); }
     // Правка слова в общем пуле (норвежское + переводы) — для всех, через ревью нейросети.
     editPoolWord(word, translate, lang, hint) { return this._send('POST', `/pool/${encodeURIComponent(word)}/edit`, { translate, lang, hint }); }
+    adminDeletePoolWord(word) { return this._send('DELETE', `/admin/pool/${encodeURIComponent(word)}`); }
 
     // URL WebSocket-а онлайн-раздела (токен и язык — в query, т.к. браузерный WS без заголовков).
     onlineSocketUrl(lang) {

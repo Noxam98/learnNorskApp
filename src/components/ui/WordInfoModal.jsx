@@ -5,6 +5,7 @@ import { SpeakButton } from "./SpeakButton.jsx";
 import { posFormsRows } from "./pos.js";
 import { BtnSpinner, Dots } from "./Spinner.jsx";
 import { useWordsStore } from "../../store/wordStore.jsx";
+import { useAuthStore } from "../../store/AuthStore.jsx";
 import api from "../tools/api.js";
 
 // Описание слова + похожие слова (кликабельные — навигация по пулу) +
@@ -17,6 +18,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const addFromPool = useWordsStore((s) => s.addFromPool);
     const removeFromDict = useWordsStore((s) => s.removeFromDict);
     const loadData = useWordsStore((s) => s.loadData);
+    const isAdmin = useAuthStore((s) => s.user?.isAdmin);
 
     const [view, setView] = useState(null); // { no, desc, descLoading, synonyms }
     const [formsOpen, setFormsOpen] = useState(false); // аккордеон грамм. форм (скрыт по умолчанию)
@@ -34,6 +36,19 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const [moreOpen, setMoreOpen] = useState(false); // раскрыть остальные языки
     const [review, setReview] = useState(null);      // вердикт ревью: { approved, reason }
     const [hint, setHint] = useState("");            // подсказка пользователя (часть речи и т.п.)
+    const [delConfirm, setDelConfirm] = useState(false); // подтверждение удаления слова из БД (админ)
+    const [delBusy, setDelBusy] = useState(false);
+
+    const doDelete = async () => {
+        if (!view || delBusy) return;
+        setDelBusy(true);
+        try {
+            await api.adminDeletePoolWord(view.no);
+            loadData?.(true);
+            onClose?.();
+        } catch { /* не вышло — оставляем окно */ }
+        setDelBusy(false);
+    };
 
     const LANG_LABEL = { ru: t.russian, ukr: t.ukrainian, en: t.english, pl: t.polish, lt: t.lithuanian };
 
@@ -109,7 +124,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     const loadWord = (no, id) => {
         setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null });
-        setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); setFormsOpen(false);
+        setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); setFormsOpen(false); setDelConfirm(false);
         const fresh = (v) => v && v.no === no; // игнорируем ответы устаревшей навигации
         const descP = id ? api.getWordDescription(id) : api.getPoolDescription(no);
         const synP = id ? api.getSynonyms(id, { lang }) : api.getPoolSynonyms(no, { lang });
@@ -122,7 +137,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     useEffect(() => {
         if (open && word) loadWord(word, wordId);
-        if (!open) { setView(null); setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); setEditOpen(false); }
+        if (!open) { setView(null); setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); setEditOpen(false); setDelConfirm(false); }
     }, [open, word, wordId]); // eslint-disable-line
 
     const curDict = dictList.find((d) => d.dictName === currentDictName);
@@ -165,9 +180,22 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                 </p>
             )}
             {view && !view.descLoading && (
-                <button className="diff-link" onClick={openEdit} style={{ marginBottom: "var(--sp-3)" }}>
-                    <Icon n="edit" sm /> {t.editWord || "Изменить слово"}
-                </button>
+                <div className="row wrap" style={{ gap: "var(--sp-3)", alignItems: "center", marginBottom: "var(--sp-3)" }}>
+                    <button className="diff-link" onClick={openEdit}>
+                        <Icon n="edit" sm /> {t.editWord || "Изменить слово"}
+                    </button>
+                    {isAdmin && (delConfirm ? (
+                        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
+                            <span className="muted" style={{ fontSize: "var(--fs-13)" }}>{t.deleteFromBaseConfirm || "Удалить из базы для всех?"}</span>
+                            <button className="btn btn--danger-ghost btn--sm" disabled={delBusy} onClick={doDelete}>{delBusy ? <BtnSpinner /> : t.yes}</button>
+                            <button className="btn btn--ghost btn--sm" disabled={delBusy} onClick={() => setDelConfirm(false)}>{t.no}</button>
+                        </span>
+                    ) : (
+                        <button className="diff-link" style={{ color: "var(--danger)" }} onClick={() => setDelConfirm(true)}>
+                            <Icon n="trash" sm /> {t.deleteFromBase || "Удалить из базы"}
+                        </button>
+                    ))}
+                </div>
             )}
             {(view?.level || view?.topics?.length > 0) && (
                 <div className="row wrap" style={{ gap: "6px", marginBottom: "var(--sp-3)" }}>
