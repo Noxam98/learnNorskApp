@@ -323,14 +323,22 @@ export const OnlinePage = () => {
                     ))}
                 </div>
             </div>
-            <button className={`btn btn--block btn--lg ${aiBusy ? "btn--accent" : myReady ? "btn--ghost" : "btn--accent"}`}
-                style={{ marginTop: "var(--sp-4)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}
-                disabled={aiBusy}
-                onClick={() => !aiBusy && send({ type: "ready", ready: !myReady })}>
-                {aiBusy
-                    ? <>{room.aiStatus !== "error" && spinner} {aiStatusLabel}</>
-                    : (myReady ? (to.cancelReady || "Не готов") : (to.imReady || "Я готов"))}
-            </button>
+            {room.aiStatus === "error" && amHost ? (
+                // ошибка генерации → хост может повторить
+                <button className="btn btn--accent btn--block btn--lg" style={{ marginTop: "var(--sp-4)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                    onClick={() => send({ type: "retry_ai" })}>
+                    <Icon n="play" sm /> {to.aiRetry || "Повторить генерацию"}
+                </button>
+            ) : (
+                <button className={`btn btn--block btn--lg ${aiBusy ? "btn--accent" : myReady ? "btn--ghost" : "btn--accent"}`}
+                    style={{ marginTop: "var(--sp-4)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                    disabled={aiBusy}
+                    onClick={() => !aiBusy && send({ type: "ready", ready: !myReady })}>
+                    {aiBusy
+                        ? <>{room.aiStatus !== "error" && spinner} {aiStatusLabel}</>
+                        : (myReady ? (to.cancelReady || "Не готов") : (to.imReady || "Я готов"))}
+                </button>
+            )}
             {amHost && (
                 <button className="btn btn--primary btn--block" style={{ marginTop: "var(--sp-3)" }}
                     disabled={aiBusy}
