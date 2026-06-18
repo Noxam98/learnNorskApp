@@ -108,6 +108,7 @@ export const OnlinePage = () => {
     const [createOpen, setCreateOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);   // секунды до конца вопроса (визуальный таймер)
+    const [preparing, setPreparing] = useState(false);  // сервер готовит набор слов (AI-подбор)
     const [answered, setAnswered] = useState([]);  // имена ответивших на текущий вопрос
     const answeredRef = useRef([]);
     const roomRef = useRef(null);                   // актуальная комната для колбэков WS
@@ -129,11 +130,12 @@ export const OnlinePage = () => {
                 case "room":
                     roomRef.current = m.room;
                     setRoom(m.room);
-                    if (m.room.state === "lobby") { setCountdown(null); setQuestion(null); setReveal(null); }
+                    if (m.room.state === "lobby") { setCountdown(null); setQuestion(null); setReveal(null); setPreparing(false); }
                     break;
                 case "countdown": setCountdown(m.sec); playSound(m.sec === 1 ? "start" : "tick"); break;
+                case "preparing": setPreparing(true); break;
                 case "question":
-                    setQuestion(m); setChosen(null); setReveal(null); setPodium(null); setCountdown(null);
+                    setQuestion(m); setChosen(null); setReveal(null); setPodium(null); setCountdown(null); setPreparing(false);
                     answeredRef.current = []; setAnswered([]);
                     playSound("question");
                     break;
@@ -146,8 +148,8 @@ export const OnlinePage = () => {
                     break;
                 }
                 case "reveal": setReveal(m); playSound(m.gained > 0 ? "correct" : "wrong"); break;
-                case "ended": setPodium(m.podium); setQuestion(null); setReveal(null); break;
-                case "left": setRoom(null); setQuestion(null); setReveal(null); setPodium(null); setCountdown(null); break;
+                case "ended": setPodium(m.podium); setQuestion(null); setReveal(null); setPreparing(false); break;
+                case "left": setRoom(null); setQuestion(null); setReveal(null); setPodium(null); setCountdown(null); setPreparing(false); break;
                 case "error": case "game_error":
                     useSystemStore.getState().showToast(to[m.msg] || to.genericError || "—"); break;
                 default: break;
@@ -256,6 +258,14 @@ export const OnlinePage = () => {
                 </div>
             </main>;
         }
+        // Готовим набор слов (особенно AI-подбор)
+        if (preparing && !question) {
+            return <main style={SCREEN}>
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.1, repeat: Infinity, ease: "linear" }}
+                    style={{ width: 46, height: 46, borderRadius: "50%", border: "4px solid var(--border)", borderTopColor: "var(--ember-600)", marginBottom: "var(--sp-4)" }} />
+                <div className="muted">{to.preparing || "Готовим набор слов…"}</div>
+            </main>;
+        }
         // Игра идёт — вопрос
         if (question) {
             const opts = question.options || [];
@@ -360,7 +370,7 @@ export const OnlinePage = () => {
                     <div className="phead__name">{room.name}</div>
                     <div className="phead__sub">
                         {(to.games?.[s.game]) || s.game} · {s.dir === "int2no" ? (to.dirInt2No || "перевод → норв.") : (to.dirNo2Int || "норв. → перевод")} · {s.count} {to.wordsShort || "сл."}
-                        {s.source === "dict" ? ` · ${to.sourceDict || "мои словари"}` : `${s.level ? ` · ${s.level}` : ""}${s.topic ? ` · ${t.topics?.[s.topic] || s.topic}` : ""}`}
+                        {s.source === "dict" ? ` · ${to.sourceDict || "мои словари"}` : `${s.source === "ai" ? ` · ${to.sourceAi || "AI"}` : ""}${s.level ? ` · ${s.level}` : ""}${s.topic ? ` · ${t.topics?.[s.topic] || s.topic}` : ""}`}
                     </div>
                 </div>
                 {amHost && <button className="btn btn--ghost" onClick={() => setEditOpen(true)} title={to.roomSettings || "Настройки комнаты"}><Icon n="settings" sm /></button>}
@@ -421,7 +431,7 @@ export const OnlinePage = () => {
                         <span className="setrow__meta">
                             <span className="setrow__t">{r.name}</span>
                             <span className="setrow__d">
-                                {(to.games?.[r.game]) || r.game} · {r.count} {to.wordsShort || "сл."}{r.source === "dict" ? ` · ${to.sourceDict || "мои словари"}` : `${r.level ? ` · ${r.level}` : ""}${r.topic ? ` · ${t.topics?.[r.topic] || r.topic}` : ""}`}
+                                {(to.games?.[r.game]) || r.game} · {r.count} {to.wordsShort || "сл."}{r.source === "dict" ? ` · ${to.sourceDict || "мои словари"}` : `${r.source === "ai" ? ` · ${to.sourceAi || "AI"}` : ""}${r.level ? ` · ${r.level}` : ""}${r.topic ? ` · ${t.topics?.[r.topic] || r.topic}` : ""}`}
                                 {r.state !== "lobby" ? ` · ${to.inGame || "идёт игра"}` : ""}
                             </span>
                         </span>
@@ -462,6 +472,7 @@ const RoomForm = ({ open, onClose, t, to, initial, initialName = "", title, conf
             <select className="input" value={s.source} onChange={(e) => set("source", e.target.value)}>
                 <option value="pool">{to.sourcePool || "Общий пул"}</option>
                 <option value="dict">{to.sourceDict || "Мои словари"}</option>
+                <option value="ai">{to.sourceAi || "AI-подбор"}</option>
             </select></div>
         {s.source === "dict" && (
             <div className="field"><label className="label">{to.dictionary || "Словарь"}</label>
