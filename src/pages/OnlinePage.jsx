@@ -321,12 +321,12 @@ export const OnlinePage = () => {
                                             disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>{hyphenate(opt, optLang)}</motion.button>
                                         {/* чипы голосов — по центру бордера кнопки (не накрывают слово) */}
                                         {reveal && topV.length > 0 && (
-                                            <div style={chipRow({ top: -11 })}>
+                                            <div style={chipRow({ top: 0, transform: "translateY(-50%)" })}>
                                                 {topV.map((n) => <PlayerChip key={n} name={n} bright />)}
                                             </div>
                                         )}
                                         {reveal && botV.length > 0 && (
-                                            <div style={chipRow({ bottom: -11 })}>
+                                            <div style={chipRow({ bottom: 0, transform: "translateY(50%)" })}>
                                                 {botV.map((n) => <PlayerChip key={n} name={n} bright />)}
                                             </div>
                                         )}
