@@ -7,6 +7,9 @@ import { useAuthStore } from "../store/AuthStore.jsx";
 import { useWordsStore } from "../store/wordStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
+import { StageTimer } from "../components/online/StageTimer.jsx";
+import { Countdown } from "../components/online/Countdown.jsx";
+import { PlayerTag } from "../components/online/PlayerTag.jsx";
 import api from "../components/tools/api.js";
 import { playSound, playWin, preloadSounds } from "../components/tools/sound.js";
 import { hyphenate, hyLang } from "../components/ui/hyphenate.js";
@@ -47,46 +50,6 @@ function fireConfetti() {
     })();
 }
 
-// Метка игрока с ПОЛНЫМ именем (пилюля). dim — серый (ещё не ответил). Несколько меток
-// в полосе под словом переносятся по строкам.
-function NameTag({ name, dim }) {
-    return (
-        <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 520, damping: 28 }}
-            style={{
-                padding: "2px 9px", borderRadius: 999, fontSize: 11, fontWeight: 700, lineHeight: 1.6,
-                whiteSpace: "nowrap", maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis",
-                background: dim ? "var(--surface-3)" : "var(--ember-600)", color: dim ? "var(--ink-3)" : "#fff",
-                border: dim ? "1px solid var(--border)" : "none",
-                boxShadow: dim ? "none" : "0 1px 4px rgba(0,0,0,.2)",
-            }}>
-            {name}
-        </motion.div>
-    );
-}
-
-// Таймер вопроса: секционная полоса (по секунде на секцию) + цифра, едущая вслед за фронтом.
-function TimerBar({ total, left }) {
-    const pct = total ? (left / total) * 100 : 0;
-    return (
-        <div style={{ position: "relative", width: "100%", maxWidth: 600, margin: "0 auto var(--sp-6)" }}>
-            <div style={{ display: "flex", gap: 3, height: 8 }}>
-                {Array.from({ length: total }).map((_, i) => (
-                    <span key={i} style={{
-                        flex: 1, borderRadius: 2,
-                        background: i < left ? "var(--ember-600)" : "var(--border)",
-                        transition: "background .25s linear",
-                    }} />
-                ))}
-            </div>
-            <motion.div animate={{ left: `${pct}%` }} transition={{ ease: "linear", duration: 0.12 }}
-                style={{ position: "absolute", top: 11, transform: "translateX(-50%)", fontWeight: 800, fontSize: "var(--fs-14)", color: "var(--ember-600)" }}>
-                {Math.ceil(left)}
-            </motion.div>
-        </div>
-    );
-}
-
 // Варианты для «игровых» анимаций: стаггер-появление карточек вариантов.
 const OPT_LIST = { hidden: {}, show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } } };
 const OPT_ITEM = { hidden: { opacity: 0, y: 28, scale: 0.9 }, show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 320, damping: 22 } } };
@@ -109,7 +72,6 @@ export const OnlinePage = () => {
     const [podium, setPodium] = useState(null);
     const [createOpen, setCreateOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(0);   // секунды до конца вопроса (визуальный таймер)
     const [preparing, setPreparing] = useState(false);  // сервер готовит набор слов (AI-подбор)
     const [answered, setAnswered] = useState([]);  // имена ответивших на текущий вопрос
     const answeredRef = useRef([]);
@@ -178,22 +140,6 @@ export const OnlinePage = () => {
         if (question && document.activeElement?.blur) document.activeElement.blur();
     }, [question?.i]);
 
-    // Визуальный таймер вопроса (полоса сверху + бегущая цифра). Останавливается на reveal.
-    useEffect(() => {
-        if (!question || reveal) return;
-        const total = question.time || 15;
-        const start = performance.now();
-        setTimeLeft(total);
-        let raf;
-        const tick = () => {
-            const left = Math.max(0, total - (performance.now() - start) / 1000);
-            setTimeLeft(left);
-            if (left > 0) raf = requestAnimationFrame(tick);
-        };
-        raf = requestAnimationFrame(tick);
-        return () => cancelAnimationFrame(raf);
-    }, [question?.i, reveal]); // eslint-disable-line
-
     // Салют синхронно с выездом первого места на подиуме (строки появляются со стаггером).
     useEffect(() => {
         if (!podium) return;
@@ -237,28 +183,9 @@ export const OnlinePage = () => {
 
     // В комнате
     if (room) {
-        // Обратный отсчёт — пружинный пульс с расходящимся кольцом
+        // Обратный отсчёт — переиспользуемый компонент
         if (countdown != null) {
-            return <main style={SCREEN}>
-                <div style={{ textAlign: "center" }}>
-                    <div className="muted" style={{ marginBottom: "var(--sp-3)" }}>{to.starting || "Старт через"}</div>
-                    <div style={{ position: "relative", display: "inline-grid", placeItems: "center" }}>
-                        {/* Кольцо: пульс-расхождение каждую секунду (ремаунт по key). */}
-                        <motion.span key={`ring${countdown}`}
-                            initial={{ scale: 0.5, opacity: 0.7 }} animate={{ scale: 2.3, opacity: 0 }}
-                            transition={{ duration: 0.85, ease: "easeOut" }}
-                            style={{ position: "absolute", width: 170, height: 170, borderRadius: "50%", border: "4px solid var(--ember-600)" }} />
-                        {/* Цифра: всегда видима (без exit/AnimatePresence → нет мерцания), болтается по сторонам. */}
-                        <motion.div key={countdown}
-                            initial={{ scale: 0.6, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1, rotate: [-14, 11, -7, 4, 0] }}
-                            transition={{ duration: 0.5, ease: "easeOut" }}
-                            style={{ fontSize: 150, fontWeight: 900, lineHeight: 1, color: "var(--ember-600)" }}>
-                            {countdown}
-                        </motion.div>
-                    </div>
-                </div>
-            </main>;
+            return <main style={SCREEN}><Countdown sec={countdown} label={to.starting || "Старт через"} /></main>;
         }
         // Готовим набор слов (особенно AI-подбор)
         if (preparing && !question) {
@@ -278,10 +205,10 @@ export const OnlinePage = () => {
                 <LayoutGroup><div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
                     {/* Таймер и ряд игроков РЕЗЕРВИРУЮТ высоту и на reveal — чтобы вопрос/варианты не прыгали. */}
                     <div style={{ opacity: reveal ? 0 : 1, pointerEvents: reveal ? "none" : "auto" }}>
-                        <TimerBar total={question.time || 15} left={reveal ? 0 : timeLeft} />
+                        <StageTimer seconds={question.time || 15} runKey={question.i} paused={!!reveal} />
                     </div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: "var(--sp-5)", minHeight: 26 }}>
-                        {!reveal && (room.players || []).map((p) => <NameTag key={p.name} name={p.name} dim={!answered.includes(p.name)} />)}
+                        {!reveal && (room.players || []).map((p) => <PlayerTag key={p.name} name={p.name} dim={!answered.includes(p.name)} />)}
                     </div>
                     <AnimatePresence mode="wait">
                         <motion.div key={question.i}
@@ -316,7 +243,7 @@ export const OnlinePage = () => {
                                         disabled={chosen != null || !!reveal} onClick={(e) => answer(i, e)}>
                                         <span style={{ flex: 1, display: "flex", alignItems: "center" }}>{hyphenate(opt, optLang)}</span>
                                         <span style={{ display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "center", alignItems: "center", minHeight: 24, width: "100%" }}>
-                                            {reveal && voters.map((n) => <NameTag key={n} name={n} />)}
+                                            {reveal && voters.map((n) => <PlayerTag key={n} name={n} />)}
                                         </span>
                                     </motion.button>;
                                 })}
