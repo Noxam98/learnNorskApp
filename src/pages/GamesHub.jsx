@@ -1,29 +1,31 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { useLocation, useNavigate, Navigate } from "react-router-dom";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { useAuthStore } from "../store/AuthStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import api from "../components/tools/api.js";
-import { GamePage } from "./GamePage.jsx";
-import { OnlinePage } from "./OnlinePage.jsx";
 
-// Хаб «Игры»: сегмент-переключатель Тренировка ↔ Онлайн (один клик). Активный подраздел
-// рендерится тут же. Последний выбор сохраняется в БД (gameMode) → открывается при заходе.
-export const GamesHub = () => {
+// Подразделы — отдельные роуты (/game, /online), чтобы URL отражал вкладку и был
+// шарабельным. Общий переключатель сверху; активная вкладка определяется адресом.
+// Последний режим сохраняется в БД (gameMode) → /games редиректит на него.
+const PATH = { solo: "/game", online: "/online" };
+
+export const GamesLayout = ({ children }) => {
     const lang = useSystemStore((s) => s.currentLanguage);
     const t = interfaceTranslate[lang];
-    const saved = useAuthStore((s) => s.user?.gameMode);
-    const [mode, setMode] = useState(saved === "online" ? "online" : "solo");
+    const { pathname } = useLocation();
+    const navigate = useNavigate();
+    const mode = pathname === "/online" ? "online" : "solo";
 
-    const choose = (m) => {
-        if (m === mode) return;
-        setMode(m);
-        useAuthStore.setState((s) => ({ user: s.user ? { ...s.user, gameMode: m } : s.user }));
-        api.setGameMode(m).catch(() => {});
-    };
+    // Запоминаем последний открытый режим (и при клике, и при заходе по прямой ссылке).
+    useEffect(() => {
+        useAuthStore.setState((s) => (s.user ? { user: { ...s.user, gameMode: mode } } : {}));
+        api.setGameMode(mode).catch(() => {});
+    }, [mode]);
 
     const seg = (m, icon, label) => (
-        <button key={m} onClick={() => choose(m)}
+        <button key={m} onClick={() => { if (mode !== m) navigate(PATH[m]); }}
             style={{
                 flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
                 padding: "9px 12px", borderRadius: 999, border: "none", cursor: "pointer",
@@ -45,9 +47,13 @@ export const GamesHub = () => {
                     {seg("online", "gamepad", t.hubOnline || "Онлайн")}
                 </div>
             </div>
-            {mode === "solo" ? <GamePage /> : <OnlinePage />}
+            {children}
         </>
     );
 };
 
-export default GamesHub;
+// /games → открыть последний выбранный режим (или соло по умолчанию).
+export const GamesRedirect = () => {
+    const mode = useAuthStore((s) => s.user?.gameMode);
+    return <Navigate to={mode === "online" ? "/online" : "/game"} replace />;
+};
