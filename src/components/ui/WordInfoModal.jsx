@@ -22,7 +22,6 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const isAdmin = useAuthStore((s) => s.user?.isAdmin);
 
     const [view, setView] = useState(null); // { no, desc, descLoading, synonyms }
-    const [formsOpen, setFormsOpen] = useState(false); // аккордеон грамм. форм (скрыт по умолчанию)
     const [dictBusy, setDictBusy] = useState(false);
     const [diff, setDiff] = useState(null); // { with, loading, data } — разбор разницы с близким словом
     const [fixOpen, setFixOpen] = useState(false); // форма исправления описания
@@ -140,7 +139,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     const loadWord = (no, id) => {
         setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null });
-        setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); setFormsOpen(false); setDelConfirm(false);
+        setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); setDelConfirm(false);
         setAskOpen(false); setAskQ(""); setAskA(""); setAskBusy(false);
         const fresh = (v) => v && v.no === no; // игнорируем ответы устаревшей навигации
         const descP = id ? api.getWordDescription(id) : api.getPoolDescription(no);
@@ -186,12 +185,9 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     };
 
     const titleNode = (
-        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "nowrap", minWidth: 0 }}>
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{view?.no || word || ""}</span>
-            <SpeakButton text={view?.no || word} hasTts={view?.hasTts}
-                ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
-            {posText && <span className={`chip pos ${posMeta(posKey).cls}`} style={{ fontWeight: 600, flexShrink: 0 }}>{posText}</span>}
-        </span>
+        posText
+            ? <span className={`chip pos ${posMeta(posKey).cls}`} style={{ fontWeight: 600 }}>{posText}</span>
+            : <span />
     );
 
     // Меню «Действия» — в шапке модалки справа, у крестика
@@ -209,8 +205,14 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     return (
         <>
         <Modal open={open} onClose={onClose} title={titleNode} headerExtra={actionsNode} cornerClose>
+            {/* Само слово + озвучка — крупно, слитно; под ним перевод. Подтянуто к части речи сверху. */}
+            <div className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "nowrap", minWidth: 0, marginTop: "calc(-1 * var(--sp-3))", marginBottom: view?.translate?.[lang]?.length ? "var(--sp-1)" : "var(--sp-4)" }}>
+                <span style={{ fontSize: "var(--fs-24)", fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{view?.no || word || ""}</span>
+                <SpeakButton text={view?.no || word} hasTts={view?.hasTts}
+                    ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
+            </div>
             {view?.translate?.[lang]?.length > 0 && (
-                <p style={{ margin: "calc(-1 * var(--sp-3)) 0 var(--sp-4)", fontSize: "var(--fs-13)", color: "var(--ink-3)" }}>
+                <p style={{ margin: "0 0 var(--sp-4)", fontSize: "var(--fs-13)", color: "var(--ink-3)" }}>
                     {view.translate[lang].join(", ")}
                 </p>
             )}
@@ -246,26 +248,17 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
             {view?.forms && posFormsRows(view.no, view.forms).length > 0 && (
                 <div style={{ marginTop: "var(--sp-5)" }}>
-                    <button
-                        className="forms-acc__head"
-                        onClick={() => setFormsOpen((o) => !o)}
-                        aria-expanded={formsOpen}
-                    >
-                        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
-                            <Icon n="type" sm /> {t.grammForms || "Грамматические формы"}
-                        </span>
-                        <Icon n="chevron-down" sm style={{ transition: "transform .18s", transform: formsOpen ? "rotate(180deg)" : "none" }} />
-                    </button>
-                    {formsOpen && (
-                        <div className="forms-tbl">
-                            {posFormsRows(view.no, view.forms).map(({ label, value }) => (
-                                <div key={label} className="forms-tbl__row">
-                                    <span className="forms-tbl__label">{label}</span>
-                                    <span className="forms-tbl__val">{value}</span>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                    <div className="label row" style={{ gap: "var(--sp-2)", alignItems: "center", marginBottom: "var(--sp-2)" }}>
+                        <Icon n="type" sm /> {t.grammForms || "Грамматические формы"}
+                    </div>
+                    <div className="forms-tbl">
+                        {posFormsRows(view.no, view.forms).map(({ label, value }) => (
+                            <div key={label} className="forms-tbl__row">
+                                <span className="forms-tbl__label">{label}</span>
+                                <span className="forms-tbl__val">{value}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
 
