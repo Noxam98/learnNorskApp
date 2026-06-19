@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "./Icon.jsx";
 
 // Лёгкий модал в стиле дизайн-системы.
-export const Modal = ({ open, onClose, title, children, footer, maxWidth = 460 }) => {
+export const Modal = ({ open, onClose, title, children, footer, headerExtra, maxWidth = 460 }) => {
     // Пока модалка открыта — блокируем прокрутку фона (свайп под модалкой).
     useEffect(() => {
         if (!open) return;
@@ -40,7 +40,10 @@ export const Modal = ({ open, onClose, title, children, footer, maxWidth = 460 }
                 >
                     <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "var(--sp-5) var(--sp-5) 0" }}>
                         <span className="panel__title" style={{ fontSize: "var(--fs-18)", fontWeight: 700 }}>{title}</span>
-                        <button className="iconbtn" onClick={onClose} aria-label="Закрыть"><Icon n="x" /></button>
+                        <span style={{ display: "flex", alignItems: "center", gap: "var(--sp-2)", flexShrink: 0 }}>
+                            {headerExtra}
+                            <button className="iconbtn" onClick={onClose} aria-label="Закрыть"><Icon n="x" /></button>
+                        </span>
                     </div>
                     <div style={{ padding: "var(--sp-5)", overflowY: "auto", overscrollBehavior: "contain", flex: "1 1 auto", minHeight: 0 }}>{children}</div>
                     {footer && (

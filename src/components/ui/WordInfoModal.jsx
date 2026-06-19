@@ -178,49 +178,35 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             {view?.no || word || ""}
             <SpeakButton text={view?.no || word} hasTts={view?.hasTts}
                 ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
-            <button
-                className={`btn btn--sm ${inDict ? "btn--danger-ghost" : "btn--primary"}`}
-                disabled={dictBusy || !currentDictName}
-                title={!currentDictName ? t.addToDict : (inDict ? t.removeFromDict : t.addToDict)}
-                onClick={toggleDict}
-            >
-                {dictBusy ? <BtnSpinner /> : <Icon n={inDict ? "trash" : "plus"} sm />}
-                {" "}{inDict ? t.removeFromDict : t.addToDict}
-            </button>
+            {posText && <span className={`chip pos ${posMeta(posKey).cls}`} style={{ fontWeight: 600 }}>{posText}</span>}
         </span>
     );
 
+    // Меню «Действия» — в шапке модалки справа, у крестика
+    const actionsNode = view ? (
+        <ActionMenu label={t.actions || "Действия"} align="right" items={[
+            { key: "dict", label: inDict ? (t.removeFromDict || "Из словаря") : (t.addToDict || "В словарь"),
+              icon: inDict ? "trash" : "plus", danger: inDict, disabled: dictBusy || !currentDictName, busy: dictBusy, onClick: toggleDict },
+            { key: "edit", label: t.editWord || "Изменить слово", icon: "edit", onClick: openEdit },
+            { key: "ask", label: t.askWord || "Спросить о слове", icon: "info", onClick: () => { setAskOpen(true); setFixOpen(false); } },
+            (!view.descLoading ? { key: "fix", label: t.fixDesc, icon: "edit", onClick: () => { setFixOpen(true); setAskOpen(false); } } : null),
+            (isAdmin ? { key: "del", label: t.deleteFromBase || "Удалить из базы", icon: "trash", danger: true, onClick: () => setDelConfirm(true) } : null),
+        ]} />
+    ) : null;
+
     return (
         <>
-        <Modal open={open} onClose={onClose} title={titleNode}>
-            {/* Часть речи — абсолютным чипом в правом верхнем углу тела, у самого слова, не мешая разметке */}
-            {posText && (
-                <div style={{ position: "relative", height: 0 }} aria-hidden="true">
-                    <span className={`chip pos ${posMeta(posKey).cls}`} style={{ position: "absolute", top: -2, right: 0 }}>{posText}</span>
-                </div>
-            )}
+        <Modal open={open} onClose={onClose} title={titleNode} headerExtra={actionsNode}>
             {view?.translate?.[lang]?.length > 0 && (
                 <p style={{ margin: "calc(-1 * var(--sp-3)) 0 var(--sp-4)", fontSize: "var(--fs-13)", color: "var(--ink-3)" }}>
                     {view.translate[lang].join(", ")}
                 </p>
             )}
-            {view && (
-                <div className="row wrap" style={{ gap: "var(--sp-3)", alignItems: "center", marginBottom: "var(--sp-3)" }}>
-                    <ActionMenu label={t.actions || "Действия"} items={[
-                        { key: "dict", label: inDict ? (t.removeFromDict || "Из словаря") : (t.addToDict || "В словарь"),
-                          icon: inDict ? "trash" : "plus", danger: inDict, disabled: dictBusy || !currentDictName, busy: dictBusy, onClick: toggleDict },
-                        { key: "edit", label: t.editWord || "Изменить слово", icon: "edit", onClick: openEdit },
-                        { key: "ask", label: t.askWord || "Спросить о слове", icon: "info", onClick: () => { setAskOpen(true); setFixOpen(false); } },
-                        (!view.descLoading ? { key: "fix", label: t.fixDesc, icon: "edit", onClick: () => { setFixOpen(true); setAskOpen(false); } } : null),
-                        (isAdmin ? { key: "del", label: t.deleteFromBase || "Удалить из базы", icon: "trash", danger: true, onClick: () => setDelConfirm(true) } : null),
-                    ]} />
-                    {delConfirm && (
-                        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
-                            <span className="muted" style={{ fontSize: "var(--fs-13)" }}>{t.deleteFromBaseConfirm || "Удалить из базы для всех?"}</span>
-                            <button className="btn btn--danger-ghost btn--sm" disabled={delBusy} onClick={doDelete}>{delBusy ? <BtnSpinner /> : t.yes}</button>
-                            <button className="btn btn--ghost btn--sm" disabled={delBusy} onClick={() => setDelConfirm(false)}>{t.no}</button>
-                        </span>
-                    )}
+            {delConfirm && (
+                <div className="row wrap" style={{ gap: "var(--sp-2)", alignItems: "center", marginBottom: "var(--sp-3)" }}>
+                    <span className="muted" style={{ fontSize: "var(--fs-13)" }}>{t.deleteFromBaseConfirm || "Удалить из базы для всех?"}</span>
+                    <button className="btn btn--danger-ghost btn--sm" disabled={delBusy} onClick={doDelete}>{delBusy ? <BtnSpinner /> : t.yes}</button>
+                    <button className="btn btn--ghost btn--sm" disabled={delBusy} onClick={() => setDelConfirm(false)}>{t.no}</button>
                 </div>
             )}
             {(view?.level || view?.topics?.length > 0) && (
