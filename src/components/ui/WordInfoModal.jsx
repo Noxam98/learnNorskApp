@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "./Modal.jsx";
 import { Icon } from "./Icon.jsx";
 import { SpeakButton } from "./SpeakButton.jsx";
+import { speakText } from "./tts.js";
 import { posFormsRows, posLabelFull, posMeta } from "./pos.js";
 import { ActionMenu } from "./Dropdown.jsx";
 import { BtnSpinner, Dots } from "./Spinner.jsx";
@@ -43,6 +44,19 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const [askQ, setAskQ] = useState("");
     const [askA, setAskA] = useState("");
     const [askBusy, setAskBusy] = useState(false);
+
+    const [revoiceBusy, setRevoiceBusy] = useState(false);
+    const revoice = async () => {
+        if (!view || revoiceBusy) return;
+        setRevoiceBusy(true);
+        try {
+            await api.revoiceWord(view.no);
+            // обновляем кэш браузера (аудио кэшируется на 7 дней) и проигрываем заново
+            try { await fetch(api.ttsUrl(view.no), { cache: "reload" }); } catch { /* no-op */ }
+            speakText(view.no).catch(() => {});
+        } catch { /* не вышло — тихо */ }
+        setRevoiceBusy(false);
+    };
 
     const submitAsk = async () => {
         const q = askQ.trim();
@@ -201,6 +215,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
               icon: inDict ? "trash" : "plus", danger: inDict, disabled: dictBusy || !currentDictName, busy: dictBusy, onClick: toggleDict },
             { key: "edit", label: t.editWord || "Изменить слово", icon: "edit", onClick: openEdit },
             { key: "ask", label: t.askWord || "Спросить о слове", icon: "info", onClick: () => { setAskOpen(true); setFixOpen(false); } },
+            { key: "revoice", label: t.revoice || "Переозвучить", icon: "volume", busy: revoiceBusy, disabled: revoiceBusy, onClick: revoice },
             (!view.descLoading ? { key: "fix", label: t.fixDesc, icon: "edit", onClick: () => { setFixOpen(true); setAskOpen(false); } } : null),
             (isAdmin ? { key: "del", label: t.deleteFromBase || "Удалить из базы", icon: "trash", danger: true, onClick: () => setDelConfirm(true) } : null),
         ]} />

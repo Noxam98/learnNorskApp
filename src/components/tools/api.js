@@ -272,6 +272,7 @@ class ApiService {
     redescribe(word, hint) { return this._send('POST', `/pool/${encodeURIComponent(word)}/redescribe`, { hint }); }
     getPoolMeta(word) { return this._send('GET', `/pool/${encodeURIComponent(word)}/meta`); }
     askWord(word, question, lang = "ru") { return this._send('POST', `/pool/${encodeURIComponent(word)}/ask`, { question, lang }); }
+    revoiceWord(word) { return this._send('POST', `/pool/${encodeURIComponent(word)}/revoice`); }
     rediff(a, b, lang, hint) { return this._send('POST', '/pool/rediff', { a, b, lang, hint }); }
     ttsUrl(word, lang) { return `${this.baseUrl}/tts?word=${encodeURIComponent(word)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`; }
 
