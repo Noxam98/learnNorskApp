@@ -245,23 +245,6 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                 </p>
             )}
 
-            {view && !view.descLoading && fixOpen && (
-                <div style={{ marginTop: "var(--sp-3)", display: "flex", flexDirection: "column", gap: "var(--sp-2)" }}>
-                    <div className="label">{t.fixDesc}</div>
-                    <textarea className="input" rows={2} value={fixHint} autoFocus
-                        onChange={(e) => setFixHint(e.target.value)} placeholder={t.fixHintPlaceholder} />
-                    <div className="row" style={{ gap: "var(--sp-2)" }}>
-                        <button className="btn btn--primary btn--sm" disabled={fixBusy} onClick={submitFix}>
-                            {fixBusy ? <BtnSpinner /> : <Icon n="sparkles" sm />} {t.regenerate}
-                        </button>
-                        <button className="btn btn--ghost btn--sm" disabled={fixBusy} onClick={() => { setFixOpen(false); setFixHint(""); }}>
-                            {t.cancel}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Вопрос о слове нейросети — доступен сразу, не дожидаясь описания */}
 
             {view?.forms && posFormsRows(view.no, view.forms).length > 0 && (
                 <div style={{ marginTop: "var(--sp-5)" }}>
@@ -355,6 +338,21 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                     )}
                 </div>
             )}
+        </Modal>
+
+        {/* Отдельный модал «Исправить описание» */}
+        <Modal open={fixOpen} onClose={() => !fixBusy && (setFixOpen(false), setFixHint(""))} title={t.fixDesc || "Исправить описание"}
+            footer={<>
+                <button className="btn btn--ghost" disabled={fixBusy} onClick={() => { setFixOpen(false); setFixHint(""); }}>{t.cancel}</button>
+                <button className="btn btn--primary" disabled={fixBusy} onClick={submitFix}>
+                    {fixBusy ? <><BtnSpinner /> {t.asking || "…"}</> : <><Icon n="sparkles" sm /> {t.regenerate}</>}
+                </button>
+            </>}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-3)" }}>
+                <div className="muted" style={{ fontSize: "var(--fs-13)" }}><b style={{ color: "var(--ink)" }}>{view?.no}</b></div>
+                <textarea className="input" rows={3} value={fixHint} autoFocus
+                    onChange={(e) => setFixHint(e.target.value)} placeholder={t.fixHintPlaceholder} />
+            </div>
         </Modal>
 
         {/* Отдельный модал «Спросить о слове» */}
