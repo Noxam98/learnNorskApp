@@ -96,6 +96,13 @@
   --game-correct:   #62C083;
   --game-incorrect: #E67A52;
 
+  /* ---- Статусы слов «Учёбы» ---- */
+  --st-new:    #5E7A86;
+  --st-learn:  #B07A14;
+  --st-review: #2A6A74;
+  --st-master: #3C7A4E;
+  --st-weak:   #B23A2E;
+
   /* ---- Radii ---- */
   --r-xs: 6px;
   --r-sm: 8px;
@@ -161,6 +168,12 @@
   --success:    #62C083;  --success-bg: #163026;
   --danger:     #E67A6A;  --danger-bg:  #38211E;
   --warning:    #D8A53E;  --warning-bg: #332B16;
+
+  --st-new:    #9FBAC6;
+  --st-learn:  #E2BB5C;
+  --st-review: #6FBAC4;
+  --st-master: #6FC089;
+  --st-weak:   #E5917F;
 
   --pos-phrase: #5FC6D4;  --pos-phrase-bg: #133339;
   --pos-noun:   #6FC78A;  --pos-noun-bg:   #173326;

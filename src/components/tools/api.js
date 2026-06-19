@@ -273,6 +273,25 @@ class ApiService {
     getPoolMeta(word) { return this._send('GET', `/pool/${encodeURIComponent(word)}/meta`); }
     askWord(word, question, lang = "ru") { return this._send('POST', `/pool/${encodeURIComponent(word)}/ask`, { question, lang }); }
     revoiceWord(word) { return this._send('POST', `/pool/${encodeURIComponent(word)}/revoice`); }
+
+    // --- «Учёба» (интервальные повторения) ---
+    learningList({ status, level, topic, q, sort = "strength", limit = 500, offset = 0 } = {}) {
+        const qs = new URLSearchParams();
+        if (status) qs.set("status", status);
+        if (level) qs.set("level", level);
+        if (topic) qs.set("topic", topic);
+        if (q) qs.set("q", q);
+        if (sort) qs.set("sort", sort);
+        qs.set("limit", limit); qs.set("offset", offset);
+        return this._send('GET', `/learning?${qs.toString()}`);
+    }
+    learningStats() { return this._send('GET', '/learning/stats'); }
+    learningDue(limit = 20) { return this._send('GET', `/learning/due?limit=${limit}`); }
+    learningAnswer({ pool_id, correct, elapsed = null, mode = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode }); }
+    learningStatus(poolId, action) { return this._send('POST', `/learning/${poolId}/status`, { action }); }
+    learningSuggest({ count = 10, level = "" } = {}) { return this._send('POST', '/learning/suggest', { count, level }); }
+    placementGet(lang = "ru", per = 4) { return this._send('GET', `/learning/placement?lang=${encodeURIComponent(lang)}&per=${per}`); }
+    placementGrade({ lang = "ru", answers = [] }) { return this._send('POST', '/learning/placement', { lang, answers }); }
     rediff(a, b, lang, hint) { return this._send('POST', '/pool/rediff', { a, b, lang, hint }); }
     ttsUrl(word, lang) { return `${this.baseUrl}/tts?word=${encodeURIComponent(word)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`; }
 

@@ -25,6 +25,9 @@ export const NavigationBar = () => {
                     <Link className={`nav__link${pathname === "/words" ? " is-active" : ""}`} to="/words">
                         <Icon n="bookmark" sm /> <span>{t.navBar.words}</span>
                     </Link>
+                    <Link className={`nav__link${pathname === "/learning" ? " is-active" : ""}`} to="/learning">
+                        <Icon n="graduation" sm /> <span>{t.navBar.study || "Учёба"}</span>
+                    </Link>
                     <Link className={`nav__link${["/games", "/game", "/online"].includes(pathname) ? " is-active" : ""}`} to="/games">
                         <Icon n="gamepad" sm /> <span>{t.navBar.games || "Игры"}</span>
                     </Link>
