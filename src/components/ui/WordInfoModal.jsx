@@ -3,6 +3,7 @@ import { Modal } from "./Modal.jsx";
 import { Icon } from "./Icon.jsx";
 import { SpeakButton } from "./SpeakButton.jsx";
 import { posFormsRows, posLabel, posMeta } from "./pos.js";
+import { ActionMenu } from "./Dropdown.jsx";
 import { BtnSpinner, Dots } from "./Spinner.jsx";
 import { useWordsStore } from "../../store/wordStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
@@ -203,22 +204,21 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                     {view.translate[lang].join(", ")}
                 </p>
             )}
-            {view && !view.descLoading && (
+            {view && (
                 <div className="row wrap" style={{ gap: "var(--sp-3)", alignItems: "center", marginBottom: "var(--sp-3)" }}>
-                    <button className="diff-link" onClick={openEdit}>
-                        <Icon n="edit" sm /> {t.editWord || "Изменить слово"}
-                    </button>
-                    {isAdmin && (delConfirm ? (
+                    <ActionMenu label={t.actions || "Действия"} items={[
+                        { key: "edit", label: t.editWord || "Изменить слово", icon: "edit", onClick: openEdit },
+                        { key: "ask", label: t.askWord || "Спросить о слове", icon: "info", onClick: () => { setAskOpen(true); setFixOpen(false); } },
+                        (!view.descLoading ? { key: "fix", label: t.fixDesc, icon: "edit", onClick: () => { setFixOpen(true); setAskOpen(false); } } : null),
+                        (isAdmin ? { key: "del", label: t.deleteFromBase || "Удалить из базы", icon: "trash", danger: true, onClick: () => setDelConfirm(true) } : null),
+                    ]} />
+                    {delConfirm && (
                         <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
                             <span className="muted" style={{ fontSize: "var(--fs-13)" }}>{t.deleteFromBaseConfirm || "Удалить из базы для всех?"}</span>
                             <button className="btn btn--danger-ghost btn--sm" disabled={delBusy} onClick={doDelete}>{delBusy ? <BtnSpinner /> : t.yes}</button>
                             <button className="btn btn--ghost btn--sm" disabled={delBusy} onClick={() => setDelConfirm(false)}>{t.no}</button>
                         </span>
-                    ) : (
-                        <button className="diff-link" style={{ color: "var(--danger)" }} onClick={() => setDelConfirm(true)}>
-                            <Icon n="trash" sm /> {t.deleteFromBase || "Удалить из базы"}
-                        </button>
-                    ))}
+                    )}
                 </div>
             )}
             {(view?.level || view?.topics?.length > 0) && (
@@ -243,53 +243,41 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                 </p>
             )}
 
-            {view && !view.descLoading && (
-                fixOpen ? (
-                    <div style={{ marginTop: "var(--sp-3)", display: "flex", flexDirection: "column", gap: "var(--sp-2)" }}>
-                        <textarea className="input" rows={2} value={fixHint} autoFocus
-                            onChange={(e) => setFixHint(e.target.value)} placeholder={t.fixHintPlaceholder} />
-                        <div className="row" style={{ gap: "var(--sp-2)" }}>
-                            <button className="btn btn--primary btn--sm" disabled={fixBusy} onClick={submitFix}>
-                                {fixBusy ? <BtnSpinner /> : <Icon n="sparkles" sm />} {t.regenerate}
-                            </button>
-                            <button className="btn btn--ghost btn--sm" disabled={fixBusy} onClick={() => { setFixOpen(false); setFixHint(""); }}>
-                                {t.cancel}
-                            </button>
-                        </div>
+            {view && !view.descLoading && fixOpen && (
+                <div style={{ marginTop: "var(--sp-3)", display: "flex", flexDirection: "column", gap: "var(--sp-2)" }}>
+                    <div className="label">{t.fixDesc}</div>
+                    <textarea className="input" rows={2} value={fixHint} autoFocus
+                        onChange={(e) => setFixHint(e.target.value)} placeholder={t.fixHintPlaceholder} />
+                    <div className="row" style={{ gap: "var(--sp-2)" }}>
+                        <button className="btn btn--primary btn--sm" disabled={fixBusy} onClick={submitFix}>
+                            {fixBusy ? <BtnSpinner /> : <Icon n="sparkles" sm />} {t.regenerate}
+                        </button>
+                        <button className="btn btn--ghost btn--sm" disabled={fixBusy} onClick={() => { setFixOpen(false); setFixHint(""); }}>
+                            {t.cancel}
+                        </button>
                     </div>
-                ) : (
-                    <button className="diff-link" onClick={() => setFixOpen(true)} style={{ marginTop: "var(--sp-2)" }}>
-                        <Icon n="edit" sm /> {t.fixDesc}
-                    </button>
-                )
+                </div>
             )}
 
-            {/* Вопрос о слове нейросети */}
-            {view && !view.descLoading && (
-                <div style={{ marginTop: "var(--sp-3)" }}>
-                    {askOpen ? (
-                        <form style={{ display: "flex", flexDirection: "column", gap: "var(--sp-2)" }}
-                            onSubmit={(e) => { e.preventDefault(); submitAsk(); }}>
-                            <input className="input" value={askQ} autoFocus type="text"
-                                placeholder={t.askPlaceholder} onChange={(e) => setAskQ(e.target.value)} />
-                            <div className="row" style={{ gap: "var(--sp-2)" }}>
-                                <button type="submit" className="btn btn--primary btn--sm" disabled={askBusy || !askQ.trim()}>
-                                    {askBusy ? <><BtnSpinner /> {t.asking}</> : <><Icon n="sparkles" sm /> {t.askSend}</>}
-                                </button>
-                                <button type="button" className="btn btn--ghost btn--sm" disabled={askBusy} onClick={() => { setAskOpen(false); setAskQ(""); setAskA(""); }}>
-                                    {t.cancel}
-                                </button>
-                            </div>
-                            {askA && (
-                                <p className="muted" style={{ margin: "var(--sp-1) 0 0", lineHeight: "var(--lh-normal)", whiteSpace: "pre-wrap" }}>{askA}</p>
-                            )}
-                        </form>
-                    ) : (
-                        <button className="diff-link" onClick={() => setAskOpen(true)}>
-                            <Icon n="info" sm /> {t.askWord}
+            {/* Вопрос о слове нейросети — доступен сразу, не дожидаясь описания */}
+            {view && askOpen && (
+                <form style={{ marginTop: "var(--sp-3)", display: "flex", flexDirection: "column", gap: "var(--sp-2)" }}
+                    onSubmit={(e) => { e.preventDefault(); submitAsk(); }}>
+                    <div className="label">{t.askWord}</div>
+                    <input className="input" value={askQ} autoFocus type="text"
+                        placeholder={t.askPlaceholder} onChange={(e) => setAskQ(e.target.value)} />
+                    <div className="row" style={{ gap: "var(--sp-2)" }}>
+                        <button type="submit" className="btn btn--primary btn--sm" disabled={askBusy || !askQ.trim()}>
+                            {askBusy ? <><BtnSpinner /> {t.asking}</> : <><Icon n="sparkles" sm /> {t.askSend}</>}
                         </button>
+                        <button type="button" className="btn btn--ghost btn--sm" disabled={askBusy} onClick={() => { setAskOpen(false); setAskQ(""); setAskA(""); }}>
+                            {t.cancel}
+                        </button>
+                    </div>
+                    {askA && (
+                        <p className="muted" style={{ margin: "var(--sp-1) 0 0", lineHeight: "var(--lh-normal)", whiteSpace: "pre-wrap" }}>{askA}</p>
                     )}
-                </div>
+                </form>
             )}
 
             {view?.forms && posFormsRows(view.no, view.forms).length > 0 && (

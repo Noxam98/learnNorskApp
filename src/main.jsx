@@ -8,6 +8,7 @@ import './styles/screens.css'
 import './styles/loader.css'
 import './styles/race.css'
 import './styles/room.css'
+import './styles/dropdown.css'
 import './styles/app.css'
 import './styles/icons.js' // инжектит SVG-спрайт иконок в DOM (side-effect)
 import * as ReactDOM from "react-dom/client";

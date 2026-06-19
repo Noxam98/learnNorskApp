@@ -11,6 +11,7 @@ import { Countdown } from "../components/online/Countdown.jsx";
 import { PlayerTag } from "../components/online/PlayerTag.jsx";
 import RaceScreen, { RacePodium } from "../components/online/RaceScreen.jsx";
 import { RaceRunner, ANIMAL_LIST, ANIMAL_COLORS, animalLabel } from "../components/online/RaceRunner.jsx";
+import { Dropdown } from "../components/ui/Dropdown.jsx";
 import api from "../components/tools/api.js";
 import { playSound, playWin, preloadSounds } from "../components/tools/sound.js";
 import { startRaceMusic, stopRaceMusic, playGallop, playFall } from "../components/tools/raceAudio.js";
@@ -534,70 +535,6 @@ const Reveal = ({ open, children }) => (
     <div className={"reveal" + (open ? " is-open" : "")} aria-hidden={!open}><div className="reveal__in">{children}</div></div>
 );
 
-// Кастомный дропдаун с поповером (fixed — не режется overflow модалки)
-const Sel = ({ value, options, onChange, placeholder }) => {
-    const [open, setOpen] = useState(false);
-    const [active, setActive] = useState(0);
-    const [pop, setPop] = useState(null);
-    const ref = useRef(null);
-    const sel = options.find((o) => o.value === value);
-
-    useEffect(() => {
-        if (!open) { setPop(null); return; }
-        const place = () => {
-            const el = ref.current; if (!el) return;
-            const r = el.getBoundingClientRect();
-            const below = window.innerHeight - r.bottom - 12, above = r.top - 12;
-            const up = below < 220 && above > below;
-            setPop({ left: r.left, top: up ? r.top - 6 : r.bottom + 6, width: r.width, maxH: Math.min(280, Math.max(160, up ? above : below)), up });
-        };
-        place();
-        setActive(Math.max(0, options.findIndex((o) => o.value === value)));
-        const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target) && !e.target.closest(".dd__pop")) setOpen(false); };
-        // скролл страницы/тела модалки — двигаем поповер за триггером (не закрываем);
-        // скролл внутри самого списка игнорируем
-        const onScroll = (e) => { if (e.target?.closest?.(".dd__pop")) return; place(); };
-        const onResize = () => setOpen(false);
-        document.addEventListener("mousedown", onDoc);
-        document.addEventListener("touchstart", onDoc);
-        window.addEventListener("scroll", onScroll, true);
-        window.addEventListener("resize", onResize);
-        return () => {
-            document.removeEventListener("mousedown", onDoc);
-            document.removeEventListener("touchstart", onDoc);
-            window.removeEventListener("scroll", onScroll, true);
-            window.removeEventListener("resize", onResize);
-        };
-    }, [open]); // eslint-disable-line
-
-    const choose = (v) => { onChange(v); setOpen(false); };
-    return (
-        <div className={"dd" + (open ? " is-open" : "")} ref={ref}>
-            <button type="button" className="dd__trigger" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-                <span className="dd__val">
-                    {sel ? <>{sel.emoji && <span className="dd__emoji">{sel.emoji}</span>}<span className="dd__valtxt">{sel.label}</span>{sel.sub && <span className="dd__valsub">{sel.sub}</span>}</>
-                        : <span className="dd__placeholder">{placeholder || "—"}</span>}
-                </span>
-                <span className="dd__chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2.5 4.5 L6 8 L9.5 4.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
-            </button>
-            {open && pop && (
-                <div className={"dd__pop" + (pop.up ? " dd__pop--up" : "")} role="listbox"
-                    style={{ left: pop.left, top: pop.top, width: pop.width, maxHeight: pop.maxH, transform: pop.up ? "translateY(-100%)" : "none" }}>
-                    {options.map((o, i) => (
-                        <button key={o.value} type="button" role="option" aria-selected={o.value === value}
-                            className={"dd__opt" + (o.value === value ? " is-sel" : "") + (i === active ? " is-active" : "")}
-                            onMouseEnter={() => setActive(i)} onClick={() => choose(o.value)}>
-                            {o.emoji && <span className="dd__optemoji">{o.emoji}</span>}
-                            <span className="dd__opttxt">{o.label}</span>
-                            {o.sub && <span className="dd__optsub">{o.sub}</span>}
-                            {o.value === value && <span className="dd__check" aria-hidden="true">✓</span>}
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
 
 const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", title, confirmLabel, onConfirm, dicts = [] }) => {
     const [name, setName] = useState(initialName);
@@ -691,15 +628,15 @@ const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", titl
                             </Field>
                             <Reveal open={s.source === "dict"}>
                                 <Field label={to.dictionary || "Словарь"} dep>
-                                    <Sel value={String(s.dictId || "")} options={dictOpts} onChange={(v) => set("dictId", v)} />
+                                    <Dropdown value={String(s.dictId || "")} options={dictOpts} onChange={(v) => set("dictId", v)} />
                                 </Field>
                             </Reveal>
                             <Reveal open={showLevelTheme}>
                                 <div className="rf rf--dep">
                                     <div className="rf__lbl"><span className="rf__link" aria-hidden="true">↳</span><span className="rf__lbltxt">{to.level || "Уровень"} · {to.topic || "Тема"}</span></div>
                                     <div className="rcols">
-                                        <Sel value={s.level || ""} options={levelOpts} onChange={(v) => set("level", v)} />
-                                        <Sel value={customMode ? "__custom__" : topicVal} options={themeOpts} onChange={(v) => {
+                                        <Dropdown value={s.level || ""} options={levelOpts} onChange={(v) => set("level", v)} />
+                                        <Dropdown value={customMode ? "__custom__" : topicVal} options={themeOpts} onChange={(v) => {
                                             if (v === "__custom__") { setCustomMode(true); set("topic", ""); }
                                             else { setCustomMode(false); set("topic", v); }
                                         }} />
