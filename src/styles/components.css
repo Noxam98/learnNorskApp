@@ -308,3 +308,7 @@
 .actionsmenu__item:hover:not(:disabled) { background: var(--surface-3); }
 .actionsmenu__item:disabled { opacity: .4; cursor: default; }
 .actionsmenu__item.is-danger { color: var(--danger); }
+
+/* Верхний паддинг шапки модалки (через класс — чтобы уменьшать на мобилке) */
+.modalhead { padding-top: var(--sp-5); }
+@media (max-width: 560px) { .modalhead { padding-top: calc(var(--sp-5) / 1.5); } }

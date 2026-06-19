@@ -46,7 +46,7 @@ export const Modal = ({ open, onClose, title, children, footer, headerExtra, cor
                         style={cornerClose
                             ? { position: "absolute", top: "var(--sp-5)", right: "var(--sp-5)", transform: "translate(100%, -100%)", zIndex: 3, background: "var(--surface)", boxShadow: "var(--shadow-sm)" }
                             : { position: "absolute", top: "var(--sp-4)", right: "var(--sp-4)", zIndex: 2 }}><Icon n="x" /></button>
-                    <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", padding: cornerClose ? "var(--sp-5) var(--sp-5) 0" : "var(--sp-5) calc(var(--sp-5) + 40px) 0 var(--sp-5)" }}>
+                    <div className="modalhead" style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", paddingBottom: 0, paddingLeft: "var(--sp-5)", paddingRight: cornerClose ? "var(--sp-5)" : "calc(var(--sp-5) + 40px)" }}>
                         <span className="panel__title" style={{ fontSize: "var(--fs-18)", fontWeight: 700, minWidth: 0 }}>{title}</span>
                         {headerExtra && <span style={{ flexShrink: 0 }}>{headerExtra}</span>}
                     </div>
