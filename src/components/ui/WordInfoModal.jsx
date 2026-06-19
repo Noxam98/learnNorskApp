@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "./Modal.jsx";
 import { Icon } from "./Icon.jsx";
 import { SpeakButton } from "./SpeakButton.jsx";
-import { posFormsRows } from "./pos.js";
+import { posFormsRows, posLabel, posMeta } from "./pos.js";
 import { BtnSpinner, Dots } from "./Spinner.jsx";
 import { useWordsStore } from "../../store/wordStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
@@ -38,6 +38,21 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const [hint, setHint] = useState("");            // подсказка пользователя (часть речи и т.п.)
     const [delConfirm, setDelConfirm] = useState(false); // подтверждение удаления слова из БД (админ)
     const [delBusy, setDelBusy] = useState(false);
+    const [askOpen, setAskOpen] = useState(false);   // вопрос о слове нейросети
+    const [askQ, setAskQ] = useState("");
+    const [askA, setAskA] = useState("");
+    const [askBusy, setAskBusy] = useState(false);
+
+    const submitAsk = async () => {
+        const q = askQ.trim();
+        if (!q || askBusy || !view) return;
+        setAskBusy(true); setAskA("");
+        try {
+            const r = await api.askWord(view.no, q, lang);
+            setAskA(r?.answer || t.descUnavailable || "—");
+        } catch { setAskA(t.unexpectedError || "—"); }
+        setAskBusy(false);
+    };
 
     const doDelete = async () => {
         if (!view || delBusy) return;
@@ -125,6 +140,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const loadWord = (no, id) => {
         setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null });
         setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); setFormsOpen(false); setDelConfirm(false);
+        setAskOpen(false); setAskQ(""); setAskA(""); setAskBusy(false);
         const fresh = (v) => v && v.no === no; // игнорируем ответы устаревшей навигации
         const descP = id ? api.getWordDescription(id) : api.getPoolDescription(no);
         const synP = id ? api.getSynonyms(id, { lang }) : api.getPoolSynonyms(no, { lang });
@@ -132,7 +148,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
-        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts, translate: m?.translate || null } : v)).catch(() => {});
+        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null } : v)).catch(() => {});
     };
 
     useEffect(() => {
@@ -143,6 +159,8 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const curDict = dictList.find((d) => d.dictName === currentDictName);
     const member = curDict?.words.find((w) => (w.translate?.no?.[0] || "").toLowerCase() === (view?.no || "").toLowerCase());
     const inDict = !!member;
+    const posKey = view?.part_of_speech ?? member?.part_of_speech;   // часть речи (из пула или словаря)
+    const posText = posKey ? posLabel(posKey, t) : "";
 
     const toggleDict = async () => {
         if (!view || dictBusy) return;
@@ -174,6 +192,12 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     return (
         <>
         <Modal open={open} onClose={onClose} title={titleNode}>
+            {/* Часть речи — абсолютным чипом в правом верхнем углу тела, у самого слова, не мешая разметке */}
+            {posText && (
+                <div style={{ position: "relative", height: 0 }} aria-hidden="true">
+                    <span className={`chip pos ${posMeta(posKey).cls}`} style={{ position: "absolute", top: -2, right: 0 }}>{posText}</span>
+                </div>
+            )}
             {view?.translate?.[lang]?.length > 0 && (
                 <p style={{ margin: "calc(-1 * var(--sp-3)) 0 var(--sp-4)", fontSize: "var(--fs-13)", color: "var(--ink-3)" }}>
                     {view.translate[lang].join(", ")}
@@ -238,6 +262,34 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                         <Icon n="edit" sm /> {t.fixDesc}
                     </button>
                 )
+            )}
+
+            {/* Вопрос о слове нейросети */}
+            {view && !view.descLoading && (
+                <div style={{ marginTop: "var(--sp-3)" }}>
+                    {askOpen ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-2)" }}>
+                            <textarea className="input" rows={2} value={askQ} autoFocus
+                                placeholder={t.askPlaceholder} onChange={(e) => setAskQ(e.target.value)}
+                                onKeyDown={(e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) submitAsk(); }} />
+                            <div className="row" style={{ gap: "var(--sp-2)" }}>
+                                <button className="btn btn--primary btn--sm" disabled={askBusy || !askQ.trim()} onClick={submitAsk}>
+                                    {askBusy ? <><BtnSpinner /> {t.asking}</> : <><Icon n="sparkles" sm /> {t.askSend}</>}
+                                </button>
+                                <button className="btn btn--ghost btn--sm" disabled={askBusy} onClick={() => { setAskOpen(false); setAskQ(""); setAskA(""); }}>
+                                    {t.cancel}
+                                </button>
+                            </div>
+                            {askA && (
+                                <p className="muted" style={{ margin: "var(--sp-1) 0 0", lineHeight: "var(--lh-normal)", whiteSpace: "pre-wrap" }}>{askA}</p>
+                            )}
+                        </div>
+                    ) : (
+                        <button className="diff-link" onClick={() => setAskOpen(true)}>
+                            <Icon n="info" sm /> {t.askWord}
+                        </button>
+                    )}
+                </div>
             )}
 
             {view?.forms && posFormsRows(view.no, view.forms).length > 0 && (

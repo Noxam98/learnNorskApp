@@ -138,7 +138,8 @@ export const WordListPage = () => {
             const d = POS_ORDER.indexOf(posMeta(a.part_of_speech).key) - POS_ORDER.indexOf(posMeta(b.part_of_speech).key);
             return d || byNo(a, b);
         });
-        return arr; // "added" — исходный порядок добавления
+        else arr.reverse(); // "added" — новые слова сверху (порядок добавления — по возрастанию)
+        return arr;
     }, [wordList, sort, search]);
 
     const handleAdd = async () => {
