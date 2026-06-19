@@ -1,3 +1,0 @@
-Game sound effects: Kenney "Interface Sounds" — CC0 (public domain).
-Source: https://kenney.nl/assets/interface-sounds
-Files: tick, select, correct, wrong, start, question (from confirmation/error/maximize/pluck/select/tick).

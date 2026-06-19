@@ -11,6 +11,7 @@ import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
 import { ENDONYM, PLAY_STYLE, filterChosenWords, pickWord, shuffle, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { playSound, playWin } from "../tools/sound.js";
 
 export const InputGame = ({ setGameState, mode = "no2int", sound = false }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
@@ -66,11 +67,13 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false }) => {
     }, [status]); // eslint-disable-line
 
     const applyResult = (ok) => {
+        playSound(ok ? "correct" : "wrong");
         if (ok) {
             if (!missed.includes(current.id)) recordGameResult(current.id, true);
             const ng = [...guessed, current.id];
             setGuessed(ng);
-            setStatus(ng.length === total ? "FINISHED" : "CORRECT");
+            if (ng.length === total) { setStatus("FINISHED"); playWin(); }
+            else setStatus("CORRECT");
         } else {
             if (!missed.includes(current.id)) {
                 setMissed([...missed, current.id]);

@@ -4,33 +4,7 @@
 //   • падение — при ошибке (зверь спотыкается)
 //   • зевок — на простое (холостые звери)
 // Всё глушится глобальным тумблером soundOn.
-import { useSystemStore } from "../../store/systemStore.jsx";
-
-let ctx = null;
-function ac() {
-    if (typeof window === "undefined") return null;
-    if (!ctx) {
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) return null;
-        ctx = new AC();
-    }
-    if (ctx.state === "suspended") ctx.resume().catch(() => {});
-    return ctx;
-}
-const on = () => { try { return useSystemStore.getState().soundOn; } catch { return false; } };
-
-// короткий шумовой буфер для перкуссии (топот/падение)
-let noiseBuf = null;
-function noise(c) {
-    if (!noiseBuf) {
-        noiseBuf = c.createBuffer(1, c.sampleRate * 0.5, c.sampleRate);
-        const d = noiseBuf.getChannelData(0);
-        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    }
-    const s = c.createBufferSource();
-    s.buffer = noiseBuf;
-    return s;
-}
+import { ac, noise, soundEnabled as on } from "./audioCore.js";
 
 // один «цок» копыта: тело-синус с быстрым спадом высоты + щелчок шума
 function hoof(c, t, dest, freq, gain) {

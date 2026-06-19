@@ -9,6 +9,7 @@ import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
 import { posLabel, posMeta, chipPrefix } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
+import { playSound } from "../tools/sound.js";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 const HINTS = {
@@ -82,9 +83,9 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
 
     const finished = idx >= total;
     const advance = () => {
-        if (!flipped) { setFlipped(true); return; }
+        if (!flipped) { setFlipped(true); playSound("flip"); return; }
         if (idx + 1 < total) { setIdx(idx + 1); setFlipped(false); }
-        else setIdx(total); // финиш
+        else { setIdx(total); playSound("finish"); } // финиш
     };
     const restart = () => { setIdx(0); setFlipped(false); };
 

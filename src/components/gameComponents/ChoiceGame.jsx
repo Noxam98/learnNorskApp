@@ -11,6 +11,7 @@ import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { speakText, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
 import { ENDONYM, PLAY_STYLE, filterChosenWords, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { playSound, playWin } from "../tools/sound.js";
 
 export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
@@ -74,7 +75,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false }) => 
     }, [status, current, currentLanguage, mode]); // eslint-disable-line
 
     const goNext = () => {
-        if (qpos + 1 >= total) { setStatus("FINISHED"); return; }
+        if (qpos + 1 >= total) { setStatus("FINISHED"); playWin(); return; }
         setQpos(qpos + 1);
         setChosen(null);
         setStatus("ASKING");
@@ -83,6 +84,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false }) => 
     const choose = (opt) => {
         if (status !== "ASKING") return;
         const ok = opt === correctPrimary;
+        playSound(ok ? "correct" : "wrong");
         setChosen(opt);
         recordGameResult(current.id, ok);
         setResults((rs) => [...rs, { id: current.id, ok }]);
