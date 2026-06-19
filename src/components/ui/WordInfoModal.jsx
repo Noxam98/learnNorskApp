@@ -268,22 +268,22 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             {view && !view.descLoading && (
                 <div style={{ marginTop: "var(--sp-3)" }}>
                     {askOpen ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-2)" }}>
-                            <textarea className="input" rows={2} value={askQ} autoFocus
-                                placeholder={t.askPlaceholder} onChange={(e) => setAskQ(e.target.value)}
-                                onKeyDown={(e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) submitAsk(); }} />
+                        <form style={{ display: "flex", flexDirection: "column", gap: "var(--sp-2)" }}
+                            onSubmit={(e) => { e.preventDefault(); submitAsk(); }}>
+                            <input className="input" value={askQ} autoFocus type="text"
+                                placeholder={t.askPlaceholder} onChange={(e) => setAskQ(e.target.value)} />
                             <div className="row" style={{ gap: "var(--sp-2)" }}>
-                                <button className="btn btn--primary btn--sm" disabled={askBusy || !askQ.trim()} onClick={submitAsk}>
+                                <button type="submit" className="btn btn--primary btn--sm" disabled={askBusy || !askQ.trim()}>
                                     {askBusy ? <><BtnSpinner /> {t.asking}</> : <><Icon n="sparkles" sm /> {t.askSend}</>}
                                 </button>
-                                <button className="btn btn--ghost btn--sm" disabled={askBusy} onClick={() => { setAskOpen(false); setAskQ(""); setAskA(""); }}>
+                                <button type="button" className="btn btn--ghost btn--sm" disabled={askBusy} onClick={() => { setAskOpen(false); setAskQ(""); setAskA(""); }}>
                                     {t.cancel}
                                 </button>
                             </div>
                             {askA && (
                                 <p className="muted" style={{ margin: "var(--sp-1) 0 0", lineHeight: "var(--lh-normal)", whiteSpace: "pre-wrap" }}>{askA}</p>
                             )}
-                        </div>
+                        </form>
                     ) : (
                         <button className="diff-link" onClick={() => setAskOpen(true)}>
                             <Icon n="info" sm /> {t.askWord}
