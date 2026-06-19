@@ -196,7 +196,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     // Меню «Действия» — в шапке модалки справа, у крестика
     const actionsNode = view ? (
-        <ActionMenu label={t.actions || "Действия"} align="right" items={[
+        <ActionMenu label={t.actions || "Действия"} align="right" iconRight iconLg items={[
             { key: "dict", label: inDict ? (t.removeFromDict || "Из словаря") : (t.addToDict || "В словарь"),
               icon: inDict ? "trash" : "plus", danger: inDict, disabled: dictBusy || !currentDictName, busy: dictBusy, onClick: toggleDict },
             { key: "edit", label: t.editWord || "Изменить слово", icon: "edit", onClick: openEdit },
@@ -208,7 +208,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     return (
         <>
-        <Modal open={open} onClose={onClose} title={titleNode} headerExtra={actionsNode}>
+        <Modal open={open} onClose={onClose} title={titleNode} headerExtra={actionsNode} cornerClose>
             {view?.translate?.[lang]?.length > 0 && (
                 <p style={{ margin: "calc(-1 * var(--sp-3)) 0 var(--sp-4)", fontSize: "var(--fs-13)", color: "var(--ink-3)" }}>
                     {view.translate[lang].join(", ")}

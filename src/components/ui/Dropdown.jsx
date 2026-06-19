@@ -71,12 +71,13 @@ export function Dropdown({ value, options, onChange, placeholder }) {
 
 // Меню действий — тот же поповер, что в списках слов (.tool + .actionsmenu).
 // items = [{ key, label, icon, onClick, danger, disabled, busy }]. align: "left" | "right".
-export function ActionMenu({ label, icon = "dots", items = [], align = "left" }) {
+export function ActionMenu({ label, icon = "dots", items = [], align = "left", iconRight = false, iconLg = false }) {
     const [open, setOpen] = useState(false);
+    const ic = <Icon n={icon} sm={!iconLg} lg={iconLg} />;
     return (
         <div style={{ position: "relative" }}>
             <button type="button" className="tool" onClick={() => setOpen((p) => !p)} aria-haspopup="menu" aria-expanded={open}>
-                <Icon n={icon} sm /> {label}
+                {iconRight ? <>{label} {ic}</> : <>{ic} {label}</>}
             </button>
             {open && (
                 <>

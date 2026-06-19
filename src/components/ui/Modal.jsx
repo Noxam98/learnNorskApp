@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "./Icon.jsx";
 
 // Лёгкий модал в стиле дизайн-системы.
-export const Modal = ({ open, onClose, title, children, footer, headerExtra, maxWidth = 460 }) => {
+export const Modal = ({ open, onClose, title, children, footer, headerExtra, cornerClose = false, maxWidth = 460 }) => {
     // Пока модалка открыта — блокируем прокрутку фона (свайп под модалкой).
     useEffect(() => {
         if (!open) return;
@@ -35,13 +35,18 @@ export const Modal = ({ open, onClose, title, children, footer, headerExtra, max
                     style={{
                         width: "100%", maxWidth, boxShadow: "var(--shadow-lg)",
                         display: "flex", flexDirection: "column", position: "relative",
-                        maxHeight: "calc(100dvh - 2 * var(--sp-5))", overflow: "hidden",
+                        maxHeight: "calc(100dvh - 2 * var(--sp-5))",
+                        // cornerClose: крестик «выносится» за угол → не обрезаем
+                        overflow: cornerClose ? "visible" : "hidden",
+                        borderRadius: "var(--r-lg)",
                     }}
                 >
-                    {/* Крестик — абсолютно в правом верхнем углу (в паддинге), вне потока шапки */}
+                    {/* Крестик — абсолютно в правом верхнем углу. В режиме cornerClose вынесен за угол transform-ом. */}
                     <button className="iconbtn" onClick={onClose} aria-label="Закрыть"
-                        style={{ position: "absolute", top: "var(--sp-4)", right: "var(--sp-4)", zIndex: 2 }}><Icon n="x" /></button>
-                    <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", padding: "var(--sp-5) calc(var(--sp-5) + 40px) 0 var(--sp-5)" }}>
+                        style={cornerClose
+                            ? { position: "absolute", top: "var(--sp-5)", right: "var(--sp-5)", transform: "translate(100%, -100%)", zIndex: 3, background: "var(--surface)", boxShadow: "var(--shadow-sm)" }
+                            : { position: "absolute", top: "var(--sp-4)", right: "var(--sp-4)", zIndex: 2 }}><Icon n="x" /></button>
+                    <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", padding: cornerClose ? "var(--sp-5) var(--sp-5) 0" : "var(--sp-5) calc(var(--sp-5) + 40px) 0 var(--sp-5)" }}>
                         <span className="panel__title" style={{ fontSize: "var(--fs-18)", fontWeight: 700, minWidth: 0 }}>{title}</span>
                         {headerExtra && <span style={{ flexShrink: 0 }}>{headerExtra}</span>}
                     </div>
