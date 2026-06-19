@@ -103,4 +103,11 @@ export const posLabel = (pos, t) => {
     return t?.pos?.[key] || POS_INFO[key]?.short || (key === "other" ? (raw ? raw.slice(0, 8) : "") : key);
 };
 
+// Полная (несокращённая) метка части речи — для мест, где хватает места (модалки).
+export const posLabelFull = (pos, t) => {
+    const { key } = posMeta(pos);
+    if (key === "other") return "";
+    return t?.posFull?.[key] || POS_INFO[key]?.name || posLabel(pos, t);
+};
+
 export default posMeta;

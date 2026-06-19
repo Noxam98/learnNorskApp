@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "./Modal.jsx";
 import { Icon } from "./Icon.jsx";
 import { SpeakButton } from "./SpeakButton.jsx";
-import { posFormsRows, posLabel, posMeta } from "./pos.js";
+import { posFormsRows, posLabelFull, posMeta } from "./pos.js";
 import { ActionMenu } from "./Dropdown.jsx";
 import { BtnSpinner, Dots } from "./Spinner.jsx";
 import { useWordsStore } from "../../store/wordStore.jsx";
@@ -161,7 +161,19 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const member = curDict?.words.find((w) => (w.translate?.no?.[0] || "").toLowerCase() === (view?.no || "").toLowerCase());
     const inDict = !!member;
     const posKey = view?.part_of_speech ?? member?.part_of_speech;   // часть речи (из пула или словаря)
-    const posText = posKey ? posLabel(posKey, t) : "";
+    const posText = posKey ? posLabelFull(posKey, t) : "";
+
+    // Шапка слова для под-модалок: слово + озвучка + часть речи + перевод (как в основной модалке)
+    const wordRefNode = view ? (
+        <div className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "wrap", marginBottom: "var(--sp-1)" }}>
+            <b style={{ fontSize: "var(--fs-18)" }}>{view.no}</b>
+            <SpeakButton text={view.no} hasTts={view.hasTts} ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
+            {posText && <span className={`chip pos ${posMeta(posKey).cls}`}>{posText}</span>}
+            {view.translate?.[lang]?.length > 0 && (
+                <span className="muted" style={{ fontSize: "var(--fs-13)" }}>{view.translate[lang].join(", ")}</span>
+            )}
+        </div>
+    ) : null;
 
     const toggleDict = async () => {
         if (!view || dictBusy) return;
@@ -335,7 +347,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                 </button>
             </>}>
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-3)" }}>
-                <div className="muted" style={{ fontSize: "var(--fs-13)" }}><b style={{ color: "var(--ink)" }}>{view?.no}</b></div>
+                {wordRefNode}
                 <textarea className="input" rows={3} value={fixHint} autoFocus
                     onChange={(e) => setFixHint(e.target.value)} placeholder={t.fixHintPlaceholder} />
             </div>
@@ -350,7 +362,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                 </button>
             </>}>
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-3)" }}>
-                <div className="muted" style={{ fontSize: "var(--fs-13)" }}><b style={{ color: "var(--ink)" }}>{view?.no}</b></div>
+                {wordRefNode}
                 <form onSubmit={(e) => { e.preventDefault(); submitAsk(); }}>
                     <input className="input" value={askQ} autoFocus type="text"
                         placeholder={t.askPlaceholder} onChange={(e) => setAskQ(e.target.value)} />
@@ -369,6 +381,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             </>}>
             {edit && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-3)" }}>
+                    {wordRefNode}
                     <div className="field">
                         <label className="label">{t.norwegianWord || "Норвежское слово"}</label>
                         <input className="input" value={edit.no} autoFocus
