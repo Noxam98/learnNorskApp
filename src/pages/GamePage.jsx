@@ -13,6 +13,19 @@ export const GamePage = () => {
     const [gameType, setGameType] = useState(["study", "input", "choice"].includes(prefs.type) ? prefs.type : "study");
     const [sound, setSound] = useState(!!prefs.sound);          // озвучивать слова
 
+    // Восстановление настроек прошлой сессии из БД: user (а с ним gamePrefs) может
+    // загрузиться ПОСЛЕ монтирования — тогда синхронизируем состояние из prefs один раз.
+    const synced = useRef(false);
+    useEffect(() => {
+        if (synced.current) return;
+        if (prefs.type || prefs.dir || prefs.sound !== undefined) {
+            synced.current = true;
+            if (prefs.dir) setMode(prefs.dir === "int2no" ? "int2no" : "no2int");
+            if (["study", "input", "choice"].includes(prefs.type)) setGameType(prefs.type);
+            if (prefs.sound !== undefined) setSound(!!prefs.sound);
+        }
+    }, [prefs.type, prefs.dir, prefs.sound]);
+
     // Запоминаем последние настройки игры на бэкенде (кроме самого первого рендера).
     const first = useRef(true);
     useEffect(() => {
