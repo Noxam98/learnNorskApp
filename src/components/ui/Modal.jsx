@@ -34,16 +34,16 @@ export const Modal = ({ open, onClose, title, children, footer, headerExtra, max
                     onClick={(e) => e.stopPropagation()}
                     style={{
                         width: "100%", maxWidth, boxShadow: "var(--shadow-lg)",
-                        display: "flex", flexDirection: "column",
+                        display: "flex", flexDirection: "column", position: "relative",
                         maxHeight: "calc(100dvh - 2 * var(--sp-5))", overflow: "hidden",
                     }}
                 >
-                    <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "var(--sp-5) var(--sp-5) 0" }}>
-                        <span className="panel__title" style={{ fontSize: "var(--fs-18)", fontWeight: 700 }}>{title}</span>
-                        <span style={{ display: "flex", alignItems: "center", gap: "var(--sp-2)", flexShrink: 0 }}>
-                            {headerExtra}
-                            <button className="iconbtn" onClick={onClose} aria-label="Закрыть"><Icon n="x" /></button>
-                        </span>
+                    {/* Крестик — абсолютно в правом верхнем углу (в паддинге), вне потока шапки */}
+                    <button className="iconbtn" onClick={onClose} aria-label="Закрыть"
+                        style={{ position: "absolute", top: "var(--sp-4)", right: "var(--sp-4)", zIndex: 2 }}><Icon n="x" /></button>
+                    <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", padding: "var(--sp-5) calc(var(--sp-5) + 40px) 0 var(--sp-5)" }}>
+                        <span className="panel__title" style={{ fontSize: "var(--fs-18)", fontWeight: 700, minWidth: 0 }}>{title}</span>
+                        {headerExtra && <span style={{ flexShrink: 0 }}>{headerExtra}</span>}
                     </div>
                     <div style={{ padding: "var(--sp-5)", overflowY: "auto", overscrollBehavior: "contain", flex: "1 1 auto", minHeight: 0 }}>{children}</div>
                     {footer && (

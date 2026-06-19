@@ -186,11 +186,11 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     };
 
     const titleNode = (
-        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "wrap" }}>
-            {view?.no || word || ""}
+        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "nowrap", minWidth: 0 }}>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{view?.no || word || ""}</span>
             <SpeakButton text={view?.no || word} hasTts={view?.hasTts}
                 ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
-            {posText && <span className={`chip pos ${posMeta(posKey).cls}`} style={{ fontWeight: 600 }}>{posText}</span>}
+            {posText && <span className={`chip pos ${posMeta(posKey).cls}`} style={{ fontWeight: 600, flexShrink: 0 }}>{posText}</span>}
         </span>
     );
 
