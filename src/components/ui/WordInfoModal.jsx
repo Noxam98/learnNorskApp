@@ -207,6 +207,8 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             {view && (
                 <div className="row wrap" style={{ gap: "var(--sp-3)", alignItems: "center", marginBottom: "var(--sp-3)" }}>
                     <ActionMenu label={t.actions || "Действия"} items={[
+                        { key: "dict", label: inDict ? (t.removeFromDict || "Из словаря") : (t.addToDict || "В словарь"),
+                          icon: inDict ? "trash" : "plus", danger: inDict, disabled: dictBusy || !currentDictName, busy: dictBusy, onClick: toggleDict },
                         { key: "edit", label: t.editWord || "Изменить слово", icon: "edit", onClick: openEdit },
                         { key: "ask", label: t.askWord || "Спросить о слове", icon: "info", onClick: () => { setAskOpen(true); setFixOpen(false); } },
                         (!view.descLoading ? { key: "fix", label: t.fixDesc, icon: "edit", onClick: () => { setFixOpen(true); setAskOpen(false); } } : null),
@@ -260,25 +262,6 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             )}
 
             {/* Вопрос о слове нейросети — доступен сразу, не дожидаясь описания */}
-            {view && askOpen && (
-                <form style={{ marginTop: "var(--sp-3)", display: "flex", flexDirection: "column", gap: "var(--sp-2)" }}
-                    onSubmit={(e) => { e.preventDefault(); submitAsk(); }}>
-                    <div className="label">{t.askWord}</div>
-                    <input className="input" value={askQ} autoFocus type="text"
-                        placeholder={t.askPlaceholder} onChange={(e) => setAskQ(e.target.value)} />
-                    <div className="row" style={{ gap: "var(--sp-2)" }}>
-                        <button type="submit" className="btn btn--primary btn--sm" disabled={askBusy || !askQ.trim()}>
-                            {askBusy ? <><BtnSpinner /> {t.asking}</> : <><Icon n="sparkles" sm /> {t.askSend}</>}
-                        </button>
-                        <button type="button" className="btn btn--ghost btn--sm" disabled={askBusy} onClick={() => { setAskOpen(false); setAskQ(""); setAskA(""); }}>
-                            {t.cancel}
-                        </button>
-                    </div>
-                    {askA && (
-                        <p className="muted" style={{ margin: "var(--sp-1) 0 0", lineHeight: "var(--lh-normal)", whiteSpace: "pre-wrap" }}>{askA}</p>
-                    )}
-                </form>
-            )}
 
             {view?.forms && posFormsRows(view.no, view.forms).length > 0 && (
                 <div style={{ marginTop: "var(--sp-5)" }}>
@@ -372,6 +355,26 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                     )}
                 </div>
             )}
+        </Modal>
+
+        {/* Отдельный модал «Спросить о слове» */}
+        <Modal open={askOpen} onClose={() => !askBusy && (setAskOpen(false), setAskQ(""), setAskA(""))} title={t.askWord || "Спросить о слове"}
+            footer={<>
+                <button className="btn btn--ghost" disabled={askBusy} onClick={() => { setAskOpen(false); setAskQ(""); setAskA(""); }}>{t.cancel}</button>
+                <button className="btn btn--primary" disabled={askBusy || !askQ.trim()} onClick={submitAsk}>
+                    {askBusy ? <><BtnSpinner /> {t.asking}</> : <><Icon n="sparkles" sm /> {t.askSend}</>}
+                </button>
+            </>}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-3)" }}>
+                <div className="muted" style={{ fontSize: "var(--fs-13)" }}><b style={{ color: "var(--ink)" }}>{view?.no}</b></div>
+                <form onSubmit={(e) => { e.preventDefault(); submitAsk(); }}>
+                    <input className="input" value={askQ} autoFocus type="text"
+                        placeholder={t.askPlaceholder} onChange={(e) => setAskQ(e.target.value)} />
+                </form>
+                {askA && (
+                    <p className="muted" style={{ margin: 0, lineHeight: "var(--lh-normal)", whiteSpace: "pre-wrap" }}>{askA}</p>
+                )}
+            </div>
         </Modal>
 
         {/* Отдельный модал правки: норвежское слово + перевод на твой язык; «Дополнительно» — остальные языки. */}
