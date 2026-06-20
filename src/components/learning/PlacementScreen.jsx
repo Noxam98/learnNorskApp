@@ -20,7 +20,7 @@ const T = {
         start: "Начать тест", self: "Оценить себя сам", skip: "Пропустить — калибровать в фоне",
         selfTitle: "Выбери уровень сам", selfHint: "уточним в фоне за первые сессии", save: "Сохранить и начать",
         footer: "Тест можно пройти позже или переоценить уровень в любой момент — в «Профиле».",
-        loading: "Готовим вопросы…", dir: "Норвежский → ", whats: "Что это значит?", dontKnow: "Не знаю — пропустить",
+        loading: "Готовим вопросы…", dir: "Норвежский → ", dirIn: " → Норвежский", whats: "Что это значит?", dontKnow: "Не знаю — пропустить",
         grading: "Считаем результат…", passed: "Тест пройден", resTitle: "Уровень определён предварительно",
         resDesc: "Будем уточнять его по ходу — точность вырастет за первые сессии. Слова и сложность уже настроены.",
         yourLevel: "твой уровень", confLow: "низкая", confMid: "средняя", confHigh: "высокая",
@@ -38,7 +38,7 @@ const T = {
         start: "Start test", self: "Self-assess", skip: "Skip — calibrate in background",
         selfTitle: "Pick your level", selfHint: "we'll refine it over first sessions", save: "Save and start",
         footer: "You can take the test later or re-assess your level anytime in Profile.",
-        loading: "Preparing questions…", dir: "Norwegian → ", whats: "What does it mean?", dontKnow: "Don't know — skip",
+        loading: "Preparing questions…", dir: "Norwegian → ", dirIn: " → Norwegian", whats: "What does it mean?", dontKnow: "Don't know — skip",
         grading: "Calculating…", passed: "Test complete", resTitle: "Level set provisionally",
         resDesc: "We'll refine it as you go — accuracy grows over your first sessions. Words and difficulty are tuned.",
         yourLevel: "your level", confLow: "low", confMid: "medium", confHigh: "high",
@@ -56,7 +56,7 @@ const T = {
         start: "Почати тест", self: "Оцінити себе сам", skip: "Пропустити — калібрувати у фоні",
         selfTitle: "Обери рівень сам", selfHint: "уточнимо за перші сесії", save: "Зберегти й почати",
         footer: "Тест можна пройти пізніше або переоцінити рівень будь-коли — у «Профілі».",
-        loading: "Готуємо питання…", dir: "Норвезька → ", whats: "Що це означає?", dontKnow: "Не знаю — пропустити",
+        loading: "Готуємо питання…", dir: "Норвезька → ", dirIn: " → Норвезька", whats: "Що це означає?", dontKnow: "Не знаю — пропустити",
         grading: "Рахуємо…", passed: "Тест пройдено", resTitle: "Рівень визначено попередньо",
         resDesc: "Уточнюватимемо далі — точність зросте за перші сесії.",
         yourLevel: "твій рівень", confLow: "низька", confMid: "середня", confHigh: "висока",
@@ -74,7 +74,7 @@ const T = {
         start: "Zacznij test", self: "Oceń się sam", skip: "Pomiń — kalibracja w tle",
         selfTitle: "Wybierz poziom sam", selfHint: "doprecyzujemy przez pierwsze sesje", save: "Zapisz i zacznij",
         footer: "Test możesz wykonać później lub zmienić poziom w dowolnej chwili w „Profilu”.",
-        loading: "Przygotowujemy pytania…", dir: "Norweski → ", whats: "Co to znaczy?", dontKnow: "Nie wiem — pomiń",
+        loading: "Przygotowujemy pytania…", dir: "Norweski → ", dirIn: " → Norweski", whats: "Co to znaczy?", dontKnow: "Nie wiem — pomiń",
         grading: "Liczymy…", passed: "Test ukończony", resTitle: "Poziom ustalony wstępnie",
         resDesc: "Będziemy go doprecyzowywać — dokładność wzrośnie przez pierwsze sesje.",
         yourLevel: "twój poziom", confLow: "niska", confMid: "średnia", confHigh: "wysoka",
@@ -92,7 +92,7 @@ const T = {
         start: "Pradėti testą", self: "Įvertinti save", skip: "Praleisti — kalibruoti fone",
         selfTitle: "Pasirink lygį pats", selfHint: "patikslinsime per pirmas sesijas", save: "Išsaugoti ir pradėti",
         footer: "Testą gali atlikti vėliau arba bet kada perskaičiuoti lygį „Profilyje“.",
-        loading: "Ruošiame klausimus…", dir: "Norvegų → ", whats: "Ką tai reiškia?", dontKnow: "Nežinau — praleisti",
+        loading: "Ruošiame klausimus…", dir: "Norvegų → ", dirIn: " → Norvegų", whats: "Ką tai reiškia?", dontKnow: "Nežinau — praleisti",
         grading: "Skaičiuojame…", passed: "Testas baigtas", resTitle: "Lygis nustatytas preliminariai",
         resDesc: "Tikslinsime jį toliau — tikslumas augs per pirmas sesijas.",
         yourLevel: "tavo lygis", confLow: "žemas", confMid: "vidutinis", confHigh: "aukštas",
@@ -243,7 +243,7 @@ export default function PlacementScreen({ lang = "ru", onClose }) {
                                 promptLang={lang}
                                 lang={lang}
                                 onSubmit={(text) => answer(text)}
-                                hint={<><Icon n="globe" sm /> {t.dir}{ENDONYM[lang] || lang}</>}
+                                hint={<><Icon n="globe" sm /> {ENDONYM[lang] || lang}{t.dirIn}</>}
                             >
                                 <button className="plc-skip" onClick={() => answer("")}><Icon n="arrow-right" sm /> {t.dontKnow}</button>
                             </InputQuestion>
