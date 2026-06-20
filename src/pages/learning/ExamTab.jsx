@@ -7,6 +7,7 @@
 import { useEffect, useState } from "react";
 import api from "../../components/tools/api.js";
 import { Icon } from "../../components/ui/Icon.jsx";
+import { ChoiceQuestion } from "../../components/gameComponents/ChoiceQuestion.jsx";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 
@@ -304,15 +305,14 @@ export default function ExamTab({ lang, go, refresh }) {
                                 <Icon n={kind === "audit" ? "rotate" : "graduation"} sm />{" "}
                                 {kind === "audit" ? t.auditTitle : t.openTitle}
                             </span>
-                            <div>
-                                <div className="plc-q__prompt" lang="no">{cur.no}</div>
-                                <div className="plc-q__sub">{t.dir}{ENDONYM[lang] || lang}</div>
-                            </div>
-                            <div className="plc-opts">
-                                {(cur.options || []).map((opt) => (
-                                    <button key={opt} className="plc-opt" onClick={() => answer(opt)}>{opt}</button>
-                                ))}
-                            </div>
+                            <ChoiceQuestion
+                                prompt={cur.no}
+                                promptLang="no"
+                                options={cur.options || []}
+                                onPick={answer}
+                                reveal={false}
+                                hint={`${t.dir}${ENDONYM[lang] || lang}`}
+                            />
                         </div>
                     </div>
                 </div>

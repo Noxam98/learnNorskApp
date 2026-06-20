@@ -3,6 +3,7 @@
 // Обёрнут в .study-root, чтобы работали scoped-стили .plc-*/.ladder/.lvl-chip/.conf.
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
+import { ChoiceQuestion } from "../gameComponents/ChoiceQuestion.jsx";
 import api from "../tools/api.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -234,19 +235,16 @@ export default function PlacementScreen({ lang = "ru", onClose }) {
                         })}
                     </div>
                     <div className="plc-q">
-                        <div className="plc-q__card">
-                            <span className="plc-q__dir"><Icon n="globe" sm /> {t.dir}{ENDONYM[lang] || lang}</span>
-                            <div>
-                                <div className="plc-q__prompt" lang="no">{cur?.no}</div>
-                                <div className="plc-q__sub">{t.whats}</div>
-                            </div>
-                            <div className="plc-opts">
-                                {(cur?.options || []).map((opt) => (
-                                    <button key={opt} className="plc-opt" onClick={() => answer(opt)}>{opt}</button>
-                                ))}
-                            </div>
+                        <ChoiceQuestion
+                            prompt={cur?.no}
+                            promptLang="no"
+                            options={cur?.options || []}
+                            reveal={false}
+                            onPick={(opt) => answer(opt)}
+                            hint={<><Icon n="globe" sm /> {t.dir}{ENDONYM[lang] || lang}</>}
+                        >
                             <button className="plc-skip" onClick={() => answer("")}><Icon n="arrow-right" sm /> {t.dontKnow}</button>
-                        </div>
+                        </ChoiceQuestion>
                     </div>
                 </div>
             </div>
