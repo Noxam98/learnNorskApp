@@ -12,7 +12,7 @@ import { StatusDot, statusLabel, STATUS_ORDER } from "../../components/learning/
 const T = {
     ru: {
         smartReview: "Smart Review · на сегодня",
-        readyA: "слов", readyB: "готовы\nк повторению",
+        readyA: "слов", readyB: "готовы\nна сегодня",
         reviewDesc: "Просроченные интервалы, слабые слова и немного новых — система собрала оптимальную сессию.",
         chReview: "повторить", chWeak: "слабых", chNew: "новое",
         startReview: "К повторению",
@@ -49,7 +49,7 @@ const T = {
     },
     en: {
         smartReview: "Smart Review · for today",
-        readyA: "words", readyB: "ready\nfor review",
+        readyA: "words", readyB: "ready\nfor today",
         reviewDesc: "Overdue intervals, weak words and a few new ones — an optimal session.",
         chReview: "review", chWeak: "weak", chNew: "new",
         startReview: "Start review",
@@ -86,7 +86,7 @@ const T = {
     },
     ukr: {
         smartReview: "Smart Review · на сьогодні",
-        readyA: "слів", readyB: "готові\nдо повторення",
+        readyA: "слів", readyB: "готові\nна сьогодні",
         reviewDesc: "Прострочені інтервали, слабкі слова й трохи нових — оптимальна сесія.",
         chReview: "повторити", chWeak: "слабких", chNew: "нове",
         startReview: "До повторення",
@@ -123,7 +123,7 @@ const T = {
     },
     pl: {
         smartReview: "Smart Review · na dziś",
-        readyA: "słów", readyB: "gotowych\ndo powtórki",
+        readyA: "słów", readyB: "gotowych\nna dziś",
         reviewDesc: "Zaległe interwały, słabe słowa i kilka nowych — optymalna sesja.",
         chReview: "powtórka", chWeak: "słabych", chNew: "nowe",
         startReview: "Do powtórki",
@@ -160,7 +160,7 @@ const T = {
     },
     lt: {
         smartReview: "Smart Review · šiandienai",
-        readyA: "žodžių", readyB: "paruošta\nkartojimui",
+        readyA: "žodžių", readyB: "paruošta\nšiandienai",
         reviewDesc: "Pradelsti intervalai, silpni žodžiai ir keli nauji — optimali sesija.",
         chReview: "kartoti", chWeak: "silpnų", chNew: "nauja",
         startReview: "Kartoti",
@@ -243,9 +243,12 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const composition = useMemo(() => {
         const weak = by.weak || 0;
         const fresh = by.new || 0;
-        const review = Math.max(0, due - weak - fresh);
+        const review = Math.max(0, due - weak);   // просроченные не-слабые ≈ обычное повторение
         return { review, weak, fresh };
     }, [by.weak, by.new, due]);
+    // Что реально можно учить сейчас: просроченные + слабые + новые (как собирает get_due).
+    // ВАЖНО: новые слова из словаря имеют due=null, поэтому только по `due` их не видно.
+    const learnable = due + (by.new || 0) + (by.weak || 0);
 
     // Дневная цель: derive — цель 20, «сделано» ≈ повторённые сегодня неизвестны,
     // показываем review-слова как прокси прогресса (тактично, без выдуманной точности).
@@ -254,7 +257,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const streak = stats?.streak || 0;
     // «нет данных ≠ 0»: пока нет ни одной сессии (нет точности за 30 дней и нет стрика) — цель «—»
     const coldGoal = stats?.accuracy == null && !streak && goalDone === 0;
-    const goalComplete = !coldGoal && (goalDone >= goalTarget || (due === 0 && total > 0));
+    const goalComplete = !coldGoal && (goalDone >= goalTarget || (learnable === 0 && total > 0));
 
     // ---- запуск набора/сессии ----
     async function launch(key, fetcher, mode = "choice") {
@@ -307,7 +310,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
         );
     }
 
-    const isEmpty = total === 0 || due === 0;
+    const isEmpty = total === 0 || learnable === 0;
 
     // ---------- reusable blocks ----------
     const suggestCard = (descKey = "suggestD") => (
@@ -425,7 +428,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                             <div className="review-cta">
                                 <span className="review-cta__halo" /><span className="review-cta__halo2" />
                                 <span className="review-cta__eyebrow"><Icon n="repeat" sm /> {t.smartReview}</span>
-                                <div className="review-cta__big"><b>{due} {t.readyA}</b> {t.readyB.split("\n").map((l, i) => <span key={i}>{i ? <br /> : null}{l}</span>)}</div>
+                                <div className="review-cta__big"><b>{learnable} {t.readyA}</b> {t.readyB.split("\n").map((l, i) => <span key={i}>{i ? <br /> : null}{l}</span>)}</div>
                                 <p className="review-cta__desc">{t.reviewDesc}</p>
                                 <div className="review-cta__chips">
                                     <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-review)" }} />{composition.review} {t.chReview}</span>
