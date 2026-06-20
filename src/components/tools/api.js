@@ -287,6 +287,7 @@ class ApiService {
     }
     learningStats() { return this._send('GET', '/learning/stats'); }
     learningDue(limit = 20) { return this._send('GET', `/learning/due?limit=${limit}`); }
+    learningActivity(days = 119) { return this._send('GET', `/learning/activity?days=${days}`); }
     learningAnswer({ pool_id, correct, elapsed = null, mode = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode }); }
     learningStatus(poolId, action) { return this._send('POST', `/learning/${poolId}/status`, { action }); }
     learningSuggest({ count = 10, level = "" } = {}) { return this._send('POST', '/learning/suggest', { count, level }); }

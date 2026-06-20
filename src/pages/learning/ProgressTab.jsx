@@ -16,7 +16,7 @@ import { BrandLoader } from "../../components/ui/Spinner.jsx";
 const T = {
     ru: {
         sub: "Как растёт твой активный словарь",
-        masteredTotal: "Выучено всего", wordsTotal: "Всего слов", due: "К повторению", level: "Текущий уровень",
+        masteredTotal: "Выучено всего", wordsTotal: "Всего слов", due: "К повторению", level: "Текущий уровень", retention: "Удержание", accuracy: "Точность", streak: "Серия", streakDays: "дней", perWeek: "+{n} за неделю", activity: "Активность",
         byStatus: "Слова по статусам", words: "слова", totalOf: "всего",
         levels: "Прогресс по уровням CEFR",
         weak: "Твои слабые слова", almost: "Почти выучено",
@@ -25,7 +25,7 @@ const T = {
     },
     en: {
         sub: "How your active vocabulary grows",
-        masteredTotal: "Mastered total", wordsTotal: "Total words", due: "To review", level: "Current level",
+        masteredTotal: "Mastered total", wordsTotal: "Total words", due: "To review", level: "Current level", retention: "Retention", accuracy: "Accuracy", streak: "Streak", streakDays: "days", perWeek: "+{n} this week", activity: "Activity",
         byStatus: "Words by status", words: "words", totalOf: "total",
         levels: "CEFR level progress",
         weak: "Your weak words", almost: "Almost mastered",
@@ -34,7 +34,7 @@ const T = {
     },
     ukr: {
         sub: "Як росте твій активний словник",
-        masteredTotal: "Вивчено всього", wordsTotal: "Усього слів", due: "До повторення", level: "Поточний рівень",
+        masteredTotal: "Вивчено всього", wordsTotal: "Усього слів", due: "До повторення", level: "Поточний рівень", retention: "Утримання", accuracy: "Точність", streak: "Серія", streakDays: "днів", perWeek: "+{n} за тиждень", activity: "Активність",
         byStatus: "Слова за статусами", words: "слова", totalOf: "усього",
         levels: "Прогрес за рівнями CEFR",
         weak: "Твої слабкі слова", almost: "Майже вивчено",
@@ -43,7 +43,7 @@ const T = {
     },
     pl: {
         sub: "Jak rośnie Twój aktywny słownik",
-        masteredTotal: "Opanowane łącznie", wordsTotal: "Wszystkich słów", due: "Do powtórki", level: "Aktualny poziom",
+        masteredTotal: "Opanowane łącznie", wordsTotal: "Wszystkich słów", due: "Do powtórki", level: "Aktualny poziom", retention: "Utrzymanie", accuracy: "Celność", streak: "Seria", streakDays: "dni", perWeek: "+{n} w tym tyg.", activity: "Aktywność",
         byStatus: "Słowa wg statusu", words: "słowa", totalOf: "łącznie",
         levels: "Postęp wg poziomów CEFR",
         weak: "Twoje słabe słowa", almost: "Prawie opanowane",
@@ -52,7 +52,7 @@ const T = {
     },
     lt: {
         sub: "Kaip auga tavo aktyvusis žodynas",
-        masteredTotal: "Iš viso išmokta", wordsTotal: "Iš viso žodžių", due: "Kartoti", level: "Dabartinis lygis",
+        masteredTotal: "Iš viso išmokta", wordsTotal: "Iš viso žodžių", due: "Kartoti", level: "Dabartinis lygis", retention: "Išlaikymas", accuracy: "Tikslumas", streak: "Serija", streakDays: "d.", perWeek: "+{n} per savaitę", activity: "Aktyvumas",
         byStatus: "Žodžiai pagal būseną", words: "žodžiai", totalOf: "iš viso",
         levels: "CEFR lygių pažanga",
         weak: "Tavo silpni žodžiai", almost: "Beveik išmokta",
@@ -80,6 +80,7 @@ export default function ProgressTab({ lang, go, openSession, openWord, reloadKey
     const [stats, setStats] = useState(null);
     const [weak, setWeak] = useState([]);
     const [almost, setAlmost] = useState([]);
+    const [activity, setActivity] = useState([]);
 
     useEffect(() => {
         let on = true;
@@ -88,9 +89,11 @@ export default function ProgressTab({ lang, go, openSession, openWord, reloadKey
             api.learningStats().catch(() => null),
             api.learningList({ status: "weak", limit: 20 }).catch(() => ({ words: [] })),
             api.learningList({ status: "review", sort: "strength", limit: 50 }).catch(() => ({ words: [] })),
-        ]).then(([s, w, r]) => {
+            api.learningActivity(118).catch(() => ({ days: [] })),
+        ]).then(([s, w, r, act]) => {
             if (!on) return;
             setStats(s);
+            setActivity(act?.days || []);
             setWeak((w?.words || []).slice(0, 12));
             // «Почти выучено» — review с наибольшей силой; берём топ-8.
             const rev = (r?.words || []).slice().sort((a, b) => (b.strength || 0) - (a.strength || 0));
@@ -111,6 +114,10 @@ export default function ProgressTab({ lang, go, openSession, openWord, reloadKey
     const currentLevel = stats?.currentLevel || "—";
     const toNextLevel = stats?.toNextLevel;
     const masteredTotal = (byStatus.mastered || 0) + (byStatus.archived || 0);
+    const retention = stats?.retention;       // % или null
+    const accuracy = stats?.accuracy;         // % или null
+    const streak = stats?.streak || 0;
+    const masteredWeek = stats?.masteredWeek || 0;
 
     // --- Донат: conic-gradient из долей byStatus ---
     const segs = DONUT_ORDER
@@ -127,6 +134,21 @@ export default function ProgressTab({ lang, go, openSession, openWord, reloadKey
     const donutStyle = segTotal > 0
         ? { background: `conic-gradient(${stops.join(", ")})` }
         : { background: "var(--surface-3)" };
+
+    // --- Хитмап активности (последние 17 недель) ---
+    const actMap = {};
+    activity.forEach((d) => { actMap[d.day] = d.answers || 0; });
+    const HEAT_DAYS = 119;
+    const heatCells = [];
+    const _today = new Date();
+    for (let i = HEAT_DAYS - 1; i >= 0; i--) {
+        const dt = new Date(_today); dt.setDate(_today.getDate() - i);
+        const key = dt.toISOString().slice(0, 10);
+        heatCells.push({ key, n: actMap[key] || 0 });
+    }
+    const heatMax = Math.max(1, ...heatCells.map((c) => c.n));
+    const heatLvl = (n) => (n <= 0 ? 0 : n >= heatMax * 0.75 ? 4 : n >= heatMax * 0.5 ? 3 : n >= heatMax * 0.25 ? 2 : 1);
+    const heatColor = (l) => (l === 0 ? "var(--surface-3)" : `color-mix(in srgb, var(--fjord-600) ${l * 25}%, var(--surface-3))`);
 
     // Легенда: статусы с цветами в осмысленном порядке (без archived, если 0).
     const legendOrder = ["new", "learning", "review", "mastered", "weak", "archived"];
@@ -181,15 +203,14 @@ export default function ProgressTab({ lang, go, openSession, openWord, reloadKey
             <div className="statgrid"
                 style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "var(--sp-4)", marginBottom: "var(--sp-5)" }}>
                 <Tile icon="check-circle" bg="var(--success-bg)" color="var(--success)"
-                    n={masteredTotal} label={t.masteredTotal} />
-                <Tile icon="layers" bg="var(--fjord-50)" color="var(--fjord-600)"
-                    n={total} label={t.wordsTotal} />
-                <Tile icon="repeat" bg="var(--ember-50)" color="var(--ember-600)"
-                    n={due} label={t.due} go={due > 0 ? () => go("words") : null} />
-                <Tile icon="award" bg="var(--pos-adj-bg)" color="var(--pos-adj)"
-                    n={currentLevel}
-                    label={t.level}
-                    note={(toNextLevel != null && toNextLevel > 0) ? `${toNextLevel} ${t.toNext}` : null} />
+                    n={masteredTotal} label={t.masteredTotal}
+                    note={masteredWeek > 0 ? t.perWeek.replace("{n}", masteredWeek) : null} />
+                <Tile icon="award" bg="var(--fjord-50)" color="var(--fjord-600)"
+                    n={retention == null ? "—" : retention + "%"} label={t.retention} />
+                <Tile icon="flame" bg="var(--ember-50)" color="var(--ember-600)"
+                    n={streak} label={`${t.streak} · ${t.streakDays}`} />
+                <Tile icon="target" bg="var(--pos-adj-bg)" color="var(--pos-adj)"
+                    n={accuracy == null ? "—" : accuracy + "%"} label={t.accuracy} />
             </div>
 
             <div className="prog-grid">
@@ -255,6 +276,22 @@ export default function ProgressTab({ lang, go, openSession, openWord, reloadKey
                                     );
                                 })}
                                 {CEFR.every((lvl) => !byLevel[lvl]) && <div className="muted-3">{t.noData}</div>}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Активность — хитмап последних недель */}
+                    <div className="spanel">
+                        <div className="spanel__head">
+                            <span className="spanel__title">{t.activity}</span>
+                            <span className="streak-pill"><Icon n="flame" sm /> {streak} {t.streakDays}</span>
+                        </div>
+                        <div className="spanel__body">
+                            <div style={{ display: "grid", gridAutoFlow: "column", gridTemplateRows: "repeat(7, 1fr)", gap: 3, overflowX: "auto" }}>
+                                {heatCells.map((c) => (
+                                    <span key={c.key} title={`${c.key}: ${c.n}`}
+                                        style={{ width: 12, height: 12, borderRadius: 3, background: heatColor(heatLvl(c.n)) }} />
+                                ))}
                             </div>
                         </div>
                     </div>

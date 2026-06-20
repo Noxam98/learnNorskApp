@@ -243,8 +243,10 @@ export default function TodayTab({ lang, go, openSession, openWord, reloadKey, r
 
     // Дневная цель: derive — цель 20, «сделано» ≈ повторённые сегодня неизвестны,
     // показываем review-слова как прокси прогресса (тактично, без выдуманной точности).
-    const goalDone = Math.min(DAILY_GOAL, by.review || 0);
-    const goalComplete = due === 0 && total > 0;
+    const goalTarget = stats?.today?.goal || DAILY_GOAL;
+    const goalDone = Math.min(goalTarget, stats?.today?.done ?? (by.review || 0));
+    const goalComplete = goalDone >= goalTarget || (due === 0 && total > 0);
+    const streak = stats?.streak || 0;
 
     // ---- запуск набора/сессии ----
     async function launch(key, fetcher, mode = "choice") {
@@ -334,23 +336,23 @@ export default function TodayTab({ lang, go, openSession, openWord, reloadKey, r
         <div className="spanel">
             <div className="spanel__head">
                 <span className="spanel__title">{t.goal}</span>
-                <span className="streak-pill"><Icon n="flame" sm /> — {t.days}</span>
+                <span className="streak-pill"><Icon n="flame" sm /> {streak} {t.days}</span>
             </div>
             <div className="spanel__body">
                 <div className="goal-row">
-                    <div className="ring" style={{ "--p": Math.round((goalComplete ? 1 : goalDone / DAILY_GOAL) * 100) }}>
+                    <div className="ring" style={{ "--p": Math.round((goalComplete ? 1 : goalDone / goalTarget) * 100) }}>
                         <svg className="ring__svg" viewBox="0 0 120 120">
                             <circle className="ring__bg" cx="60" cy="60" r="52" />
                             <circle className="ring__fg" cx="60" cy="60" r="52"
                                 strokeDasharray="326.7"
-                                strokeDashoffset={(326.7 * (1 - (goalComplete ? 1 : goalDone / DAILY_GOAL))).toFixed(1)}
+                                strokeDashoffset={(326.7 * (1 - (goalComplete ? 1 : goalDone / goalTarget))).toFixed(1)}
                                 style={goalComplete ? { stroke: "var(--st-master)" } : undefined} />
                         </svg>
                         <span className="ring__label">
                             <span className="ring__num" style={goalComplete ? { color: "var(--st-master)" } : undefined}>
-                                {goalComplete ? DAILY_GOAL : goalDone}
+                                {goalComplete ? goalTarget : goalDone}
                             </span>
-                            <span className="ring__den">{fmt(t.goalNum, { n: DAILY_GOAL })}</span>
+                            <span className="ring__den">{fmt(t.goalNum, { n: goalTarget })}</span>
                         </span>
                     </div>
                     <div className="col" style={{ gap: 10 }}>
