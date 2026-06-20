@@ -5,9 +5,9 @@ import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
-import { BrandLoader } from "../ui/Spinner.jsx";
 import { posLabel } from "../ui/pos.js";
-import { hyphenate, hyLang } from "../ui/hyphenate.js";
+import { hyLang } from "../ui/hyphenate.js";
+import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
 import { ENDONYM, PLAY_STYLE, filterChosenWords, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
@@ -135,25 +135,21 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
 
             <div className="pstage" onClick={onStageClick}
                 style={(status === "CORRECT" || status === "INCORRECT") ? { cursor: "pointer" } : undefined}>
-                <div className="qcard">
-                    <div className="qcount">{t.word} {qIndex} / {total}</div>
-                    <div className="qprompt">{t.translateTo} {promptTarget}</div>
-                    <h1 className="qword" lang={qLang}>{hyphenate(question, qLang)}</h1>
-                    {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
-
-                    <div className="choices">
-                        {(options || []).map((opt) => {
-                            const reveal = status === "CORRECT" || status === "INCORRECT";
-                            const cls = reveal ? (opt === correctPrimary ? " is-correct" : (opt === chosen ? " is-wrong" : "")) : "";
-                            return (
-                                <button key={opt} className={`choice${cls}`} lang={aLang} disabled={status !== "ASKING"} onClick={() => choose(opt)}>
-                                    {hyphenate(opt, aLang)}
-                                </button>
-                            );
-                        })}
-                        {!options && <div style={{ gridColumn: "1 / -1" }}><BrandLoader dark /></div>}
-                    </div>
-
+                <ChoiceQuestion
+                    prompt={question}
+                    promptLang={qLang}
+                    options={options}
+                    optionLang={aLang}
+                    picked={chosen}
+                    correct={correctPrimary}
+                    reveal={status === "CORRECT" || status === "INCORRECT"}
+                    onPick={choose}
+                    posText={posText}
+                    hint={`${t.translateTo} ${promptTarget}`}
+                    countText={`${t.word} ${qIndex} / ${total}`}
+                    disabled={status !== "ASKING"}
+                    loading={!options}
+                >
                     {status === "INCORRECT" && descriptionText && (
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-line muted">{descriptionText}</div>
@@ -164,7 +160,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                         {(status === "CORRECT" || status === "INCORRECT") &&
                             <span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span>}
                     </div>
-                </div>
+                </ChoiceQuestion>
 
                 {status === "FINISHED" && !onFinish && (
                     <FinishScreen score={score} knownFirstTry={knownFirstTry} missedCount={wrongCount} total={total}

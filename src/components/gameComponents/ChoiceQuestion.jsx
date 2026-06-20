@@ -1,0 +1,62 @@
+// Презентационный компонент вопроса-выбора: слово + 4 варианта + подсветка.
+// Чистое отображение, без SRS/игровой логики — только рисует карточку в стиле игры
+// (классы .qcard/.qcount/.qprompt/.qword/.qpos/.choices/.choice + .is-correct/.is-wrong)
+// и зовёт onPick(opt) по клику. Переиспользуется игрой «Выбор» (и далее placement/exam).
+import { hyphenate } from "../ui/hyphenate.js";
+import { BrandLoader } from "../ui/Spinner.jsx";
+
+// props:
+//   prompt      — слово-вопрос (строка)
+//   promptLang  — язык вопроса (для lang= и переноса)
+//   options     — string[] вариантов
+//   optionLang  — язык вариантов
+//   picked      — выбранный вариант или null
+//   correct     — правильный вариант или null (для подсветки)
+//   reveal      — bool: показывать верно/неверно
+//   onPick(opt) — клик по варианту
+//   posText     — подпись части речи (опц.)
+//   hint        — узел-подсказка под вопросом (опц., напр. направление перевода)
+//   countText   — строка-счётчик «слово N / M» (опц.)
+//   disabled    — заблокировать выбор
+//   loading     — bool: показать лоадер вместо вариантов (когда options ещё грузятся)
+//   children    — доп. узлы под вариантами внутри карточки (фидбэк, подсказка «дальше»)
+export const ChoiceQuestion = ({
+    prompt, promptLang, options, optionLang,
+    picked = null, correct = null, reveal = false,
+    onPick, posText, hint, countText, disabled = false, loading = false, children,
+}) => (
+    <div className="qcard">
+        {countText && <div className="qcount">{countText}</div>}
+        {hint && <div className="qprompt">{hint}</div>}
+        <h1 className="qword" lang={promptLang}>{hyphenate(prompt, promptLang)}</h1>
+        {posText && (
+            <span className="qpos">
+                <span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}
+            </span>
+        )}
+
+        <div className="choices">
+            {(options || []).map((opt) => {
+                const cls = reveal
+                    ? (opt === correct ? " is-correct" : (opt === picked ? " is-wrong" : ""))
+                    : "";
+                return (
+                    <button
+                        key={opt}
+                        className={`choice${cls}`}
+                        lang={optionLang}
+                        disabled={disabled}
+                        onClick={() => onPick?.(opt)}
+                    >
+                        {hyphenate(opt, optionLang)}
+                    </button>
+                );
+            })}
+            {loading && <div style={{ gridColumn: "1 / -1" }}><BrandLoader dark /></div>}
+        </div>
+
+        {children}
+    </div>
+);
+
+export default ChoiceQuestion;
