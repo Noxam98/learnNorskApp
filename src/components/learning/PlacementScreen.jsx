@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { ChoiceQuestion } from "../gameComponents/ChoiceQuestion.jsx";
 import { InputQuestion } from "../gameComponents/InputQuestion.jsx";
+import { hyLang } from "../ui/hyphenate.js";
 import api from "../tools/api.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -240,7 +241,7 @@ export default function PlacementScreen({ lang = "ru", onClose }) {
                         {(cur?.type || "choice") === "input" ? (
                             <InputQuestion
                                 prompt={cur?.prompt}
-                                promptLang={lang}
+                                promptLang={hyLang(lang, false)}
                                 lang={lang}
                                 onSubmit={(text) => answer(text)}
                                 hint={<><Icon n="globe" sm /> {ENDONYM[lang] || lang}{t.dirIn}</>}
