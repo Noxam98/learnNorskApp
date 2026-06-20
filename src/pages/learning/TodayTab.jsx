@@ -461,16 +461,12 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                     <div className="empty__t">{t.emptyT}</div>
                                     <div className="empty__d">{t.emptyD}</div>
                                     <div className="empty__actions">
-                                        <button className="btn btn--accent btn--lg" onClick={doSuggest} disabled={suggesting}>
-                                            {suggesting ? <BtnSpinner /> : <Icon n="plus" sm />} {t.emptyAdd}
-                                        </button>
                                         <button className="btn btn--outline btn--lg" onClick={() => go("exam")}>
                                             <Icon n="award" sm /> {t.emptyExam}
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            {suggestCard()}
                         </>
                     ) : (
                         <>
@@ -516,7 +512,6 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                 {/* RIGHT */}
                 <div className="col" style={{ gap: "var(--sp-5)" }}>
                     {goalPanel}
-                    {!isEmpty && suggestCard()}
 
                     {/* Status snapshot */}
                     <div className="spanel">
