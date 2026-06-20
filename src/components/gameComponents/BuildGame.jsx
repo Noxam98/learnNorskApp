@@ -37,7 +37,10 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const knownFirstTry = guessed.filter((id) => !missed.includes(id)).length;
 
     const target = current?.translate?.no?.[0] || "";
-    const prompt = (current?.translate?.[currentLanguage] || []).filter(Boolean).join(", ") || target;
+    // подсказка — родной перевод; фолбэк на ru/en, но НИКОГДА на норвежский ответ (target)
+    const trArr = (current?.translate?.[currentLanguage]?.length ? current.translate[currentLanguage]
+        : (current?.translate?.ru?.length ? current.translate.ru : (current?.translate?.en || []))).filter(Boolean);
+    const prompt = trArr.join(", ") || "—";
     const tiles = useMemo(() => shuffle([...target].map((ch, i) => ({ ch, i }))), [current]); // фикс. раскладка на слово
     const built = picked.map((p) => tiles[p].ch).join("");
     const qLang = hyLang(currentLanguage, false);  // язык подсказки — родной
