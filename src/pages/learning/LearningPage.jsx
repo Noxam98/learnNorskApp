@@ -107,7 +107,9 @@ export default function LearningPage() {
         return () => { window.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); };
     }, []);
 
-    const openSession = (words, mode = "choice") => { if (words?.length) setSession({ words, mode }); };
+    // openSession() без слов → системная сессия (LearningSession сам тянет программу с бэка).
+    // openSession(words, mode) — легаси-путь с готовым набором (полки/«Слабые» из других вкладок).
+    const openSession = (words = null, mode = "choice") => setSession({ words, mode, system: !words?.length });
     const openWord = (no, wordId) => setInfo({ no, wordId });
     const closeSession = (didPractice) => { setSession(null); if (didPractice) setReloadKey((k) => k + 1); };
     const openPlacement = () => setPlacement(true);
@@ -143,7 +145,7 @@ export default function LearningPage() {
             {Active && <Active {...tabProps} />}
 
             {session && (
-                <LearningSession words={session.words} mode={session.mode} lang={lang} onClose={closeSession} />
+                <LearningSession words={session.words} mode={session.mode} system={session.system} lang={lang} onClose={closeSession} />
             )}
             <WordInfoModal open={!!info} word={info?.no} wordId={info?.wordId}
                 lang={lang} t={tg} onClose={() => { setInfo(null); }} />
