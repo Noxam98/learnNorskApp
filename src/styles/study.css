@@ -485,14 +485,26 @@
 .study-root .st-unlock__row { display:flex; align-items:center; gap:10px; font-size:var(--fs-13); color:var(--ink-2); }
 .study-root .st-unlock__row .ic { color:var(--ink-3); width:18px; height:18px; flex:none; }
 
-/* ============ Мобильная навигация раздела (≤760px) — глобально, только на /learning ============ */
+/* ============ Мобильная навигация раздела (≤760px): хедер на всю ширину, липкий ============
+   На десктопе сегмент живёт в .study-head; на мобиле — отдельный липкий хедер .study-navbar,
+   прямой потомок скролл-контейнера (чтобы залипал на всю страницу) и уезжающий по скроллу. */
+.study-root .study-navbar { display: none; }
 @media (max-width:760px){
   body.study-active .nav { display:none; }                 /* лого/профиль — в нижнем таб-баре */
-  .study-root .study-head { gap: var(--sp-3); }
-  .study-root .study-head .seg {
-    position: sticky; top: 0; z-index: 30;
-    background: var(--canvas); padding-top: var(--sp-2); padding-bottom: var(--sp-2);
-    margin: 0 calc(-1 * var(--sp-4)); padding-left: var(--sp-4); padding-right: var(--sp-4);
+  .study-root .study-main { padding-top: 0; }
+  .study-root .study-head { flex-direction: column; align-items: stretch; gap: var(--sp-3); margin: var(--sp-4) 0 var(--sp-4); }
+  .study-root .study-head .seg { display: none; }          /* сегмент — в липком хедере */
+
+  .study-root .study-navbar {
+    display: block; position: sticky; top: 0; z-index: 40;
+    width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw);
+    background: var(--canvas); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-xs);
+    padding: max(env(safe-area-inset-top), var(--sp-2)) var(--sp-3) var(--sp-2);
+    will-change: transform;
+  }
+  .study-root .study-navbar .seg {
+    width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+    background: transparent; border: none; border-radius: 0; padding: 0;
   }
 }
 
