@@ -15,16 +15,17 @@ const T = {
         readyA: "слов", readyB: "готовы\nна сегодня",
         reviewDesc: "Просроченные интервалы, слабые слова и немного новых — система собрала оптимальную сессию.",
         chReview: "повторить", chWeak: "слабых", chNew: "новое",
-        startReview: "К повторению",
+        startReview: "Заниматься",
         sets: "Наборы для практики", setsHint: "тап — запустить",
         setReview: "На повторении", setReviewD: "Интервал подошёл — закрепить, пока не забылось",
         setWeak: "Слабые слова", setWeakD: "Много ошибок — в приоритете",
         setNew: "Новые слова", setNewD: "Доступно под твой уровень — начни учить",
-        games: "Быстрый запуск игры",
-        gChoice: "Множественный выбор", gChoiceD: "по набору повторения",
-        gListen: "Аудирование", gListenD: "на слух",
-        gInput: "Перевод", gInputD: "ввод вручную",
-        gStudy: "Собери слово", gStudyD: "из букв",
+        gateOpenT: "Экзамен пачки готов",
+        gateOpenD: "Ты накопил пачку выученных слов. Сдай экзамен, чтобы открыть новые слова.",
+        gateOpenBtn: "К экзамену",
+        gateLockedNew: "Откроется после экзамена пачки",
+        gateLockedAdd: "Сначала сдай экзамен пачки",
+        gateProgress: "До экзамена пачки осталось {n}",
         goal: "Дневная цель", streak: "дней", days: "дней",
         goalNum: "из {n} слов", goalAlmost: "Почти у цели!", goalDone: "Цель выполнена!",
         goalDescAlmost: "Закрывай повторения — серия не прервётся.",
@@ -52,16 +53,17 @@ const T = {
         readyA: "words", readyB: "ready\nfor today",
         reviewDesc: "Overdue intervals, weak words and a few new ones — an optimal session.",
         chReview: "review", chWeak: "weak", chNew: "new",
-        startReview: "Start review",
+        startReview: "Study",
         sets: "Practice sets", setsHint: "tap to start",
         setReview: "Due for review", setReviewD: "The interval is up — reinforce before you forget",
         setWeak: "Weak words", setWeakD: "Many mistakes — priority",
         setNew: "New words", setNewD: "Available for your level — start learning",
-        games: "Quick game launch",
-        gChoice: "Multiple choice", gChoiceD: "from review set",
-        gListen: "Listening", gListenD: "by ear",
-        gInput: "Translation", gInputD: "type it in",
-        gStudy: "Build the word", gStudyD: "from letters",
+        gateOpenT: "Pack exam is ready",
+        gateOpenD: "You've gathered a pack of learned words. Pass the exam to unlock new words.",
+        gateOpenBtn: "To the exam",
+        gateLockedNew: "Unlocks after the pack exam",
+        gateLockedAdd: "Pass the pack exam first",
+        gateProgress: "{n} left until the pack exam",
         goal: "Daily goal", streak: "days", days: "days",
         goalNum: "of {n} words", goalAlmost: "Almost there!", goalDone: "Goal complete!",
         goalDescAlmost: "Close your reviews — the streak won't break.",
@@ -89,16 +91,17 @@ const T = {
         readyA: "слів", readyB: "готові\nна сьогодні",
         reviewDesc: "Прострочені інтервали, слабкі слова й трохи нових — оптимальна сесія.",
         chReview: "повторити", chWeak: "слабких", chNew: "нове",
-        startReview: "До повторення",
+        startReview: "Займатися",
         sets: "Набори для практики", setsHint: "тап — запустити",
         setReview: "На повторенні", setReviewD: "Інтервал підійшов — закріпи, поки не забулось",
         setWeak: "Слабкі слова", setWeakD: "Багато помилок — у пріоритеті",
         setNew: "Нові слова", setNewD: "Доступно під твій рівень — починай вчити",
-        games: "Швидкий запуск гри",
-        gChoice: "Множинний вибір", gChoiceD: "за набором повторення",
-        gListen: "Аудіювання", gListenD: "на слух",
-        gInput: "Переклад", gInputD: "ввід вручну",
-        gStudy: "Збери слово", gStudyD: "з літер",
+        gateOpenT: "Екзамен пачки готовий",
+        gateOpenD: "Ти накопичив пачку вивчених слів. Склади екзамен, щоб відкрити нові слова.",
+        gateOpenBtn: "До екзамену",
+        gateLockedNew: "Відкриється після екзамену пачки",
+        gateLockedAdd: "Спершу склади екзамен пачки",
+        gateProgress: "До екзамену пачки залишилось {n}",
         goal: "Денна ціль", streak: "днів", days: "днів",
         goalNum: "з {n} слів", goalAlmost: "Майже у цілі!", goalDone: "Ціль виконано!",
         goalDescAlmost: "Закривай повторення — серія не перерветься.",
@@ -126,16 +129,17 @@ const T = {
         readyA: "słów", readyB: "gotowych\nna dziś",
         reviewDesc: "Zaległe interwały, słabe słowa i kilka nowych — optymalna sesja.",
         chReview: "powtórka", chWeak: "słabych", chNew: "nowe",
-        startReview: "Do powtórki",
+        startReview: "Ucz się",
         sets: "Zestawy do ćwiczeń", setsHint: "dotknij — start",
         setReview: "Do powtórki", setReviewD: "Interwał minął — utrwal, zanim zapomnisz",
         setWeak: "Słabe słowa", setWeakD: "Dużo błędów — priorytet",
         setNew: "Nowe słowa", setNewD: "Dostępne dla twojego poziomu — zacznij się uczyć",
-        games: "Szybki start gry",
-        gChoice: "Wybór wielokrotny", gChoiceD: "z zestawu powtórki",
-        gListen: "Słuchanie", gListenD: "ze słuchu",
-        gInput: "Tłumaczenie", gInputD: "wpisz ręcznie",
-        gStudy: "Ułóż słowo", gStudyD: "z liter",
+        gateOpenT: "Egzamin paczki gotowy",
+        gateOpenD: "Nazbierałeś paczkę nauczonych słów. Zdaj egzamin, aby odblokować nowe słowa.",
+        gateOpenBtn: "Do egzaminu",
+        gateLockedNew: "Odblokuje się po egzaminie paczki",
+        gateLockedAdd: "Najpierw zdaj egzamin paczki",
+        gateProgress: "Do egzaminu paczki zostało {n}",
         goal: "Cel dzienny", streak: "dni", days: "dni",
         goalNum: "z {n} słów", goalAlmost: "Prawie cel!", goalDone: "Cel osiągnięty!",
         goalDescAlmost: "Domknij powtórki — seria się nie przerwie.",
@@ -163,16 +167,17 @@ const T = {
         readyA: "žodžių", readyB: "paruošta\nšiandienai",
         reviewDesc: "Pradelsti intervalai, silpni žodžiai ir keli nauji — optimali sesija.",
         chReview: "kartoti", chWeak: "silpnų", chNew: "nauja",
-        startReview: "Kartoti",
+        startReview: "Mokytis",
         sets: "Praktikos rinkiniai", setsHint: "bakstelėk — pradėk",
         setReview: "Kartojimui", setReviewD: "Intervalas atėjo — įtvirtink, kol nepamiršai",
         setWeak: "Silpni žodžiai", setWeakD: "Daug klaidų — prioritetas",
         setNew: "Nauji žodžiai", setNewD: "Prieinama tavo lygiui — pradėk mokytis",
-        games: "Greitas žaidimo startas",
-        gChoice: "Pasirinkimas", gChoiceD: "iš kartojimo rinkinio",
-        gListen: "Klausymas", gListenD: "iš klausos",
-        gInput: "Vertimas", gInputD: "įvesk ranka",
-        gStudy: "Sudėk žodį", gStudyD: "iš raidžių",
+        gateOpenT: "Pakuotės egzaminas paruoštas",
+        gateOpenD: "Sukaupei išmoktų žodžių pakuotę. Išlaikyk egzaminą, kad atrakintum naujus žodžius.",
+        gateOpenBtn: "Į egzaminą",
+        gateLockedNew: "Atsirakins po pakuotės egzamino",
+        gateLockedAdd: "Pirma išlaikyk pakuotės egzaminą",
+        gateProgress: "Iki pakuotės egzamino liko {n}",
         goal: "Dienos tikslas", streak: "d.", days: "d.",
         goalNum: "iš {n} žodžių", goalAlmost: "Beveik tikslas!", goalDone: "Tikslas pasiektas!",
         goalDescAlmost: "Užbaik kartojimus — serija nenutruks.",
@@ -216,6 +221,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const t = T[lang] || T.ru;
 
     const [stats, setStats] = useState(null);
+    const [gate, setGate] = useState(null);   // {pack, threshold, open} — ворота экзамена пачки
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
@@ -227,11 +233,18 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
         let on = true;
         setLoading(true);
         setError(false);
+        api.learningGate().then((g) => { if (on) setGate(g || null); }).catch(() => { if (on) setGate(null); });
         api.learningStats()
             .then((s) => { if (on) { setStats(s || null); setLoading(false); } })
             .catch(() => { if (on) { setError(true); setLoading(false); } });
         return () => { on = false; };
     }, [reloadKey]);
+
+    // Ворота экзамена пачки: open → можно/нужно сдавать экзамен (новые слова заблокированы).
+    const gateOpen = !!gate?.open;
+    const gatePack = gate?.pack || 0;
+    const gateThreshold = gate?.threshold || 0;
+    const gateLeft = Math.max(0, gateThreshold - gatePack);
 
     const by = stats?.byStatus || {};
     const due = stats?.due || 0;
@@ -271,13 +284,9 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
         finally { setBusy(""); }
     }
 
-    const runReview = () => launch("hero", () => api.learningDue(20), "choice");
+    // Главный CTA — системная сессия: режим/состав выбирает система (openSession без слов).
+    const runReview = () => openSession();
     const runSet = (status, key) => launch(key, () => api.learningList({ status, limit: 60 }), "choice");
-    const runGame = (mode) => launch("g-" + mode, async () => {
-        const due = await api.learningDue(20).catch(() => null);
-        if (due?.words?.length) return due;
-        return api.learningList({ limit: 30 });
-    }, mode);
 
     async function doSuggest() {
         if (suggesting) return;
@@ -331,10 +340,14 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                     <span className="fchip">{t.chPlus}</span>
                     <span className="fchip">{t.chTopic}</span>
                 </div>
-                <button className="btn btn--accent btn--block" onClick={doSuggest} disabled={suggesting}>
-                    {suggesting ? <BtnSpinner /> : <Icon n="plus" sm />} {t.suggestBtn}
+                <button className="btn btn--accent btn--block" onClick={doSuggest} disabled={suggesting || gateOpen}>
+                    {suggesting ? <BtnSpinner /> : <Icon n={gateOpen ? "lock" : "plus"} sm />} {t.suggestBtn}
                 </button>
-                {suggestMsg && (
+                {gateOpen ? (
+                    <div className="row" style={{ gap: 7, fontSize: "var(--fs-13)", fontWeight: 700, color: "var(--ink-3)" }}>
+                        <Icon n="lock" sm /> {t.gateLockedAdd}
+                    </div>
+                ) : suggestMsg && (
                     <div className="row" style={{ gap: 7, fontSize: "var(--fs-13)", fontWeight: 700, color: "var(--st-master)" }}>
                         <Icon n="check-circle" sm /> {suggestMsg}
                     </div>
@@ -342,6 +355,41 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
             </div>
         </div>
     );
+
+    // Баннер ворот: экзамен пачки готов → CTA на вкладку «Экзамен».
+    const gateBanner = gateOpen ? (
+        <div className="spanel" style={{ background: "var(--ember-50)", borderColor: "color-mix(in srgb,var(--ember-600) 30%,var(--surface))", marginBottom: "var(--sp-5)" }}>
+            <div className="spanel__body" style={{ display: "flex", alignItems: "center", gap: "var(--sp-4)", flexWrap: "wrap" }}>
+                <span className="setrow-link__ic" style={{ background: "var(--ember-600)", color: "#fff", flex: "none" }}>
+                    <Icon n="award" />
+                </span>
+                <div className="col" style={{ gap: 3, flex: 1, minWidth: 180 }}>
+                    <div style={{ fontSize: "var(--fs-16)", fontWeight: 800, letterSpacing: "var(--ls-tight)" }}>{t.gateOpenT}</div>
+                    <div className="muted" style={{ fontSize: "var(--fs-13)", lineHeight: 1.45 }}>{t.gateOpenD}</div>
+                </div>
+                <button className="btn btn--accent" onClick={() => go("exam")}>
+                    <Icon n="play" sm /> {t.gateOpenBtn}
+                </button>
+            </div>
+        </div>
+    ) : (gatePack > 0 && gateThreshold > 0) ? (
+        <div className="spanel" style={{ marginBottom: "var(--sp-5)" }}>
+            <div className="spanel__body" style={{ display: "flex", alignItems: "center", gap: "var(--sp-3)" }}>
+                <span className="setrow-link__ic" style={{ background: "color-mix(in srgb,var(--ember-600) 15%,var(--surface))", color: "var(--ember-600)", flex: "none" }}>
+                    <Icon n="award" />
+                </span>
+                <div className="col" style={{ gap: 6, flex: 1, minWidth: 0 }}>
+                    <div className="row" style={{ justifyContent: "space-between", gap: "var(--sp-2)" }}>
+                        <span style={{ fontSize: "var(--fs-14)", fontWeight: 700 }}>{fmt(t.gateProgress, { n: gateLeft })}</span>
+                        <span className="muted-3" style={{ fontSize: "var(--fs-13)", fontWeight: 700, flex: "none" }}>{gatePack}/{gateThreshold}</span>
+                    </div>
+                    <div style={{ height: 6, borderRadius: 4, background: "var(--border)", overflow: "hidden" }}>
+                        <div style={{ height: "100%", borderRadius: 4, background: "var(--ember-600)", width: `${Math.min(100, Math.round((gatePack / gateThreshold) * 100))}%` }} />
+                    </div>
+                </div>
+            </div>
+        </div>
+    ) : null;
 
     const gc = (GCOLD[lang] || GCOLD.ru);
     const ringFrac = goalComplete ? 1 : (coldGoal ? 0 : goalDone / goalTarget);
@@ -400,6 +448,8 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                 </div>
             )}
 
+            {gateBanner}
+
             <div className="today-grid">
                 {/* LEFT */}
                 <div className="col" style={{ gap: "var(--sp-5)" }}>
@@ -435,8 +485,8 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                     <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {t.chWeak}</span>
                                     <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-new)" }} />{composition.fresh} {t.chNew}</span>
                                 </div>
-                                <button className="review-cta__btn" onClick={runReview} disabled={!!busy}>
-                                    {busy === "hero" ? <BtnSpinner /> : <Icon n="play" />} {t.startReview}
+                                <button className="review-cta__btn" onClick={runReview}>
+                                    <Icon n="play" /> {t.startReview}
                                 </button>
                             </div>
 
@@ -452,20 +502,10 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                             n={by.review || 0} loading={busy === "s-review"} onClick={() => runSet("review", "s-review")} badge="review" />
                                         <SetRow icon="alert" color="--st-weak" title={t.setWeak} desc={t.setWeakD}
                                             n={by.weak || 0} loading={busy === "s-weak"} onClick={() => runSet("weak", "s-weak")} />
-                                        <SetRow icon="spark-dot" color="--st-new" title={t.setNew} desc={t.setNewD}
-                                            n={by.new || 0} loading={busy === "s-new"} onClick={() => runSet("new", "s-new")} />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Quick games */}
-                            <div className="spanel">
-                                <div className="spanel__head"><span className="spanel__title">{t.games}</span></div>
-                                <div className="spanel__body" style={{ paddingTop: "var(--sp-3)" }}>
-                                    <div className="qgames">
-                                        <QGame bg="var(--pos-noun)" icon="list" title={t.gChoice} desc={t.gChoiceD} loading={busy === "g-choice"} onClick={() => runGame("choice")} />
-                                        <QGame bg="var(--fjord-600)" icon="type" title={t.gInput} desc={t.gInputD} loading={busy === "g-input"} onClick={() => runGame("input")} />
-                                        <QGame bg="var(--ember-600)" icon="sparkles" title={t.gStudy} desc={t.gStudyD} loading={busy === "g-study"} onClick={() => runGame("study")} />
+                                        <SetRow icon="spark-dot" color="--st-new" title={t.setNew}
+                                            desc={gateOpen ? t.gateLockedNew : t.setNewD}
+                                            n={by.new || 0} loading={busy === "s-new"} locked={gateOpen}
+                                            onClick={() => runSet("new", "s-new")} />
                                     </div>
                                 </div>
                             </div>
@@ -508,10 +548,10 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
 }
 
 // ---------- sub-components ----------
-function SetRow({ icon, color, title, desc, n, badge, loading, onClick }) {
+function SetRow({ icon, color, title, desc, n, badge, loading, locked, onClick }) {
     return (
-        <button className="setrow-link" onClick={onClick} disabled={loading}
-            style={{ background: "none", border: "none", borderTop: "1px solid var(--border)", textAlign: "left", width: "100%", cursor: "pointer" }}>
+        <button className="setrow-link" onClick={onClick} disabled={loading || locked}
+            style={{ background: "none", border: "none", borderTop: "1px solid var(--border)", textAlign: "left", width: "100%", cursor: locked ? "not-allowed" : "pointer", opacity: locked ? 0.6 : 1 }}>
             <span className="setrow-link__ic" style={{ background: `color-mix(in srgb,var(${color}) 15%,var(--surface))`, color: `var(${color})` }}>
                 <Icon n={icon} />
             </span>
@@ -523,17 +563,7 @@ function SetRow({ icon, color, title, desc, n, badge, loading, onClick }) {
                 <span className="setrow-link__d">{desc}</span>
             </span>
             <span className="setrow-link__n">{n}</span>
-            <span className="setrow-link__go">{loading ? <BtnSpinner /> : <Icon n="arrow-right" />}</span>
-        </button>
-    );
-}
-
-function QGame({ bg, icon, title, desc, loading, onClick }) {
-    return (
-        <button className="qgame" onClick={onClick} disabled={loading}
-            style={{ textAlign: "left", width: "100%", cursor: "pointer", font: "inherit" }}>
-            <span className="qgame__ic" style={{ background: bg }}>{loading ? <BtnSpinner /> : <Icon n={icon} sm />}</span>
-            <span><span className="qgame__t" style={{ display: "block" }}>{title}</span><span className="qgame__d">{desc}</span></span>
+            <span className="setrow-link__go">{loading ? <BtnSpinner /> : <Icon n={locked ? "lock" : "arrow-right"} />}</span>
         </button>
     );
 }
