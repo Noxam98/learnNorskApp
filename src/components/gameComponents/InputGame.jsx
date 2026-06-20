@@ -10,18 +10,22 @@ import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { ENDONYM, PLAY_STYLE, filterChosenWords, pickWord, shuffle, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { ENDONYM, PLAY_STYLE, filterChosenWords, pickWord, shuffle, foldLoose, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
 
-export const InputGame = ({ setGameState, mode = "no2int", sound = false }) => {
+const GMODE = "input";
+
+// words/onResult/onExit передаёт «Учёба» (переиспользует игру). Без них — обычный режим «Игры».
+export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const dictList = useWordsStore((s) => s.dictList);
     const aiPlay = useWordsStore((s) => s.aiPlayWords);
     const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
     const recordGameResult = useWordsStore((s) => s.recordGameResult);
     const t = interfaceTranslate[currentLanguage];
+    const record = (w, ok) => { if (onResult) onResult(w, ok, GMODE); else recordGameResult(w.id, ok, GMODE); };
 
-    const wordsToGame = useMemo(() => aiPlay || filterChosenWords(dictList), []);
+    const wordsToGame = useMemo(() => wordsProp || aiPlay || filterChosenWords(dictList), []);
     const total = wordsToGame.length;
     const isNo2Int = mode !== "int2no";
 
@@ -69,7 +73,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false }) => {
     const applyResult = (ok) => {
         playSound(ok ? "correct" : "wrong");
         if (ok) {
-            if (!missed.includes(current.id)) recordGameResult(current.id, true);
+            if (!missed.includes(current.id)) record(current, true);
             const ng = [...guessed, current.id];
             setGuessed(ng);
             if (ng.length === total) { setStatus("FINISHED"); playWin(); }
@@ -77,7 +81,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false }) => {
         } else {
             if (!missed.includes(current.id)) {
                 setMissed([...missed, current.id]);
-                recordGameResult(current.id, false);
+                record(current, false);
             }
             setStatus("INCORRECT");
         }
@@ -96,8 +100,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false }) => {
         e?.preventDefault();
         if (status === "INCORRECT") { goNext(); return; }
         if (status !== "ASKING") return;
-        const answer = input.trim().toLowerCase();
-        applyResult(accepted.some((a) => a.toLowerCase() === answer));
+        const answer = foldLoose(input);
+        applyResult(accepted.some((a) => foldLoose(a) === answer));
     };
 
     const restart = () => {
@@ -107,15 +111,16 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false }) => {
     };
 
     const backToSelection = () => {
+        if (onExit) { onExit(); return; }
         wordsToGame.forEach((w) => { if (w?.gameData?.isChoosedToGame) toggleChooseToGame(w.id); });
         setGameState("chooseWords");
     };
 
-    if (total === 0 || !current) return <NoWords t={t} onBack={() => setGameState("chooseWords")} />;
+    if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
 
     const posText = posLabel(current.part_of_speech, t);
     const descriptionText = current.description?.description?.[currentLanguage] || "";
-    const otherAccepted = accepted.filter((a) => a.toLowerCase() !== input.trim().toLowerCase());
+    const otherAccepted = accepted.filter((a) => foldLoose(a) !== foldLoose(input));
     const score = total ? Math.round((knownFirstTry / total) * 100) : 0;
     const qIndex = Math.min(guessed.length + 1, total);
     const segs = Array.from({ length: total }, (_, i) => {

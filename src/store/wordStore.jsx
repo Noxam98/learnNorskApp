@@ -201,13 +201,14 @@ export const useWordsStore = create((set, get) => ({
     })),
 
     // Результат игры: пишем на сервер и сразу отражаем локально.
-    recordGameResult: (wordId, isCorrect) => {
+    recordGameResult: (wordId, isCorrect, mode = null) => {
         if (typeof wordId === "string" && wordId.startsWith("ai-")) return; // AI-набор — статистику не пишем
         get()._setWord(wordId, (w) => {
             if (isCorrect) w.gameData.correctFirstTry = (w.gameData.correctFirstTry || 0) + 1;
             else w.gameData.incorrectFirstTry = (w.gameData.incorrectFirstTry || 0) + 1;
         });
-        api.recordResult(wordId, isCorrect).catch(() => { /* офлайн — не критично */ });
+        // mode (choice/input) кормит SRS «Учёбы» серией «без ошибок» по виду игры
+        api.recordResult(wordId, isCorrect, mode).catch(() => { /* офлайн — не критично */ });
     },
 
     // Точечное обновление слова по id во всех словарях.

@@ -25,7 +25,8 @@ const filterChosenWords = (dictList) =>
 
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
-export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
+// words/onExit передаёт «Учёба» (переиспользует игру). Карточки — пассивный режим, в SRS не пишет.
+export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -35,7 +36,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
     const t = interfaceTranslate[currentLanguage];
     const h = HINTS[currentLanguage] || HINTS.en;
 
-    const words = useMemo(() => shuffle(aiPlay || filterChosenWords(dictList)), []);
+    const words = useMemo(() => shuffle(wordsProp || aiPlay || filterChosenWords(dictList)), []);
     const total = words.length;
     const isNo2Int = mode !== "int2no";
 
@@ -64,6 +65,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
     const playStyle = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };
 
     const backToSelection = () => {
+        if (onExit) { onExit(); return; }
         words.forEach((w) => { if (w?.gameData?.isChoosedToGame) toggleChooseToGame(w.id); });
         setGameState("chooseWords");
     };
@@ -73,7 +75,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false }) => {
             <div className="play" data-state="asking" style={playStyle}>
                 <div className="pstage">
                     <p className="qprompt">{t.noWordsToPlay}</p>
-                    <button className="gbtn gbtn--accent" onClick={() => setGameState("chooseWords")}>
+                    <button className="gbtn gbtn--accent" onClick={backToSelection}>
                         <Icon n="arrow-left" sm /> {t.backToWordSelection}
                     </button>
                 </div>

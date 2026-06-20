@@ -203,7 +203,16 @@ function fmt(s, vars) {
     return Object.keys(vars || {}).reduce((acc, k) => acc.replaceAll(`{${k}}`, vars[k]), s);
 }
 
-export default function TodayTab({ lang, go, openSession, openWord, reloadKey, refresh }) {
+// Холодная дневная цель — пока нет ни одной сессии («нет данных ≠ 0»).
+const GCOLD = {
+    ru:  ["Цель появится", "Подстроим дневную цель под тебя после первой сессии"],
+    en:  ["Goal will appear", "We'll tune your daily goal after the first session"],
+    ukr: ["Ціль з'явиться", "Підлаштуємо денну ціль після першої сесії"],
+    pl:  ["Cel się pojawi", "Dopasujemy dzienny cel po pierwszej sesji"],
+    lt:  ["Tikslas atsiras", "Pritaikysime dienos tikslą po pirmos sesijos"],
+};
+
+export default function TodayTab({ lang, go, openSession, openWord, openPlacement, reloadKey, refresh }) {
     const t = T[lang] || T.ru;
 
     const [stats, setStats] = useState(null);
@@ -213,9 +222,6 @@ export default function TodayTab({ lang, go, openSession, openWord, reloadKey, r
     const [busy, setBusy] = useState("");      // ключ запускаемого набора/игры → спиннер
     const [suggesting, setSuggesting] = useState(false);
     const [suggestMsg, setSuggestMsg] = useState("");
-
-    // ---- entry test (placement) ----
-    const [placeOpen, setPlaceOpen] = useState(false);
 
     useEffect(() => {
         let on = true;
@@ -244,9 +250,11 @@ export default function TodayTab({ lang, go, openSession, openWord, reloadKey, r
     // Дневная цель: derive — цель 20, «сделано» ≈ повторённые сегодня неизвестны,
     // показываем review-слова как прокси прогресса (тактично, без выдуманной точности).
     const goalTarget = stats?.today?.goal || DAILY_GOAL;
-    const goalDone = Math.min(goalTarget, stats?.today?.done ?? (by.review || 0));
-    const goalComplete = goalDone >= goalTarget || (due === 0 && total > 0);
+    const goalDone = Math.min(goalTarget, stats?.today?.done ?? 0);
     const streak = stats?.streak || 0;
+    // «нет данных ≠ 0»: пока нет ни одной сессии (нет точности за 30 дней и нет стрика) — цель «—»
+    const coldGoal = stats?.accuracy == null && !streak && goalDone === 0;
+    const goalComplete = !coldGoal && (goalDone >= goalTarget || (due === 0 && total > 0));
 
     // ---- запуск набора/сессии ----
     async function launch(key, fetcher, mode = "choice") {
@@ -332,6 +340,8 @@ export default function TodayTab({ lang, go, openSession, openWord, reloadKey, r
         </div>
     );
 
+    const gc = (GCOLD[lang] || GCOLD.ru);
+    const ringFrac = goalComplete ? 1 : (coldGoal ? 0 : goalDone / goalTarget);
     const goalPanel = (
         <div className="spanel">
             <div className="spanel__head">
@@ -340,27 +350,27 @@ export default function TodayTab({ lang, go, openSession, openWord, reloadKey, r
             </div>
             <div className="spanel__body">
                 <div className="goal-row">
-                    <div className="ring" style={{ "--p": Math.round((goalComplete ? 1 : goalDone / goalTarget) * 100) }}>
+                    <div className="ring" style={{ "--p": Math.round(ringFrac * 100) }}>
                         <svg className="ring__svg" viewBox="0 0 120 120">
                             <circle className="ring__bg" cx="60" cy="60" r="52" />
                             <circle className="ring__fg" cx="60" cy="60" r="52"
                                 strokeDasharray="326.7"
-                                strokeDashoffset={(326.7 * (1 - (goalComplete ? 1 : goalDone / goalTarget))).toFixed(1)}
+                                strokeDashoffset={(326.7 * (1 - ringFrac)).toFixed(1)}
                                 style={goalComplete ? { stroke: "var(--st-master)" } : undefined} />
                         </svg>
                         <span className="ring__label">
-                            <span className="ring__num" style={goalComplete ? { color: "var(--st-master)" } : undefined}>
-                                {goalComplete ? goalTarget : goalDone}
+                            <span className="ring__num" style={goalComplete ? { color: "var(--st-master)" } : (coldGoal ? { color: "var(--ink-3)" } : undefined)}>
+                                {coldGoal ? "—" : (goalComplete ? goalTarget : goalDone)}
                             </span>
-                            <span className="ring__den">{fmt(t.goalNum, { n: goalTarget })}</span>
+                            <span className="ring__den">{coldGoal ? "" : fmt(t.goalNum, { n: goalTarget })}</span>
                         </span>
                     </div>
                     <div className="col" style={{ gap: 10 }}>
                         <div style={{ fontSize: "var(--fs-15)", fontWeight: 700 }}>
-                            {goalComplete ? t.goalDone : t.goalAlmost}
+                            {coldGoal ? gc[0] : (goalComplete ? t.goalDone : t.goalAlmost)}
                         </div>
                         <div className="muted" style={{ fontSize: "var(--fs-13)", lineHeight: 1.45 }}>
-                            {goalComplete ? t.goalDescDone : t.goalDescAlmost}
+                            {coldGoal ? gc[1] : (goalComplete ? t.goalDescDone : t.goalDescAlmost)}
                         </div>
                     </div>
                 </div>
@@ -380,7 +390,7 @@ export default function TodayTab({ lang, go, openSession, openWord, reloadKey, r
                             <div style={{ fontSize: "var(--fs-16)", fontWeight: 800, letterSpacing: "var(--ls-tight)" }}>{t.placeT}</div>
                             <div className="muted" style={{ fontSize: "var(--fs-13)", lineHeight: 1.45 }}>{t.placeD}</div>
                         </div>
-                        <button className="btn btn--primary" onClick={() => setPlaceOpen(true)}>
+                        <button className="btn btn--primary" onClick={openPlacement}>
                             <Icon n="play" sm /> {t.placeBtn}
                         </button>
                     </div>
@@ -451,7 +461,6 @@ export default function TodayTab({ lang, go, openSession, openWord, reloadKey, r
                                 <div className="spanel__body" style={{ paddingTop: "var(--sp-3)" }}>
                                     <div className="qgames">
                                         <QGame bg="var(--pos-noun)" icon="list" title={t.gChoice} desc={t.gChoiceD} loading={busy === "g-choice"} onClick={() => runGame("choice")} />
-                                        <QGame bg="var(--pos-phrase)" icon="headphones" title={t.gListen} desc={t.gListenD} loading={busy === "g-listen"} onClick={() => runGame("listen")} />
                                         <QGame bg="var(--fjord-600)" icon="type" title={t.gInput} desc={t.gInputD} loading={busy === "g-input"} onClick={() => runGame("input")} />
                                         <QGame bg="var(--ember-600)" icon="sparkles" title={t.gStudy} desc={t.gStudyD} loading={busy === "g-study"} onClick={() => runGame("study")} />
                                     </div>
@@ -491,9 +500,6 @@ export default function TodayTab({ lang, go, openSession, openWord, reloadKey, r
                 </div>
             </div>
 
-            {placeOpen && (
-                <PlacementModal lang={lang} t={t} onClose={() => setPlaceOpen(false)} refresh={refresh} />
-            )}
         </>
     );
 }
@@ -529,80 +535,3 @@ function QGame({ bg, icon, title, desc, loading, onClick }) {
     );
 }
 
-function PlacementModal({ lang, t, onClose, refresh }) {
-    const [loading, setLoading] = useState(true);
-    const [questions, setQuestions] = useState([]);
-    const [answers, setAnswers] = useState({});   // { no: answer }
-    const [grading, setGrading] = useState(false);
-    const [result, setResult] = useState(null);   // { level }
-    const [err, setErr] = useState(false);
-
-    useEffect(() => {
-        let on = true;
-        api.placementGet(lang)
-            .then((r) => { if (on) { setQuestions(r?.questions || []); setLoading(false); } })
-            .catch(() => { if (on) { setErr(true); setLoading(false); } });
-        return () => { on = false; };
-    }, [lang]);
-
-    const allAnswered = questions.length > 0 && questions.every((q) => answers[q.no] != null);
-
-    async function submit() {
-        if (!allAnswered || grading) return;
-        setGrading(true);
-        try {
-            const payload = questions.map((q) => ({ no: q.no, level: q.level, answer: answers[q.no] }));
-            const r = await api.placementGrade({ lang, answers: payload });
-            setResult(r || {});
-            refresh();
-        } catch {
-            setErr(true);
-        } finally {
-            setGrading(false);
-        }
-    }
-
-    const footer = result
-        ? <button className="btn btn--primary" onClick={onClose}>{t.close}</button>
-        : <button className="btn btn--primary" onClick={submit} disabled={!allAnswered || grading}>
-            {grading ? <BtnSpinner /> : <Icon n="check" sm />} {t.placeSubmit}
-        </button>;
-
-    return (
-        <Modal open onClose={onClose} title={t.placeModalT} maxWidth={560} footer={footer}>
-            {loading ? (
-                <div style={{ padding: "var(--sp-6)" }}><BrandLoader /></div>
-            ) : err && !result ? (
-                <div className="muted" style={{ textAlign: "center", padding: "var(--sp-5)" }}>{t.err}</div>
-            ) : result ? (
-                <div className="col" style={{ alignItems: "center", gap: "var(--sp-4)", padding: "var(--sp-4) 0" }}>
-                    <span className="empty__ic"><Icon n="award" /></span>
-                    <div className="muted" style={{ fontSize: "var(--fs-14)" }}>{t.placeResult}</div>
-                    <div className="grade-cefr" style={{ fontSize: "var(--fs-24)" }}>{result.level || "—"}</div>
-                    <div className="muted" style={{ fontSize: "var(--fs-13)", textAlign: "center" }}>{t.placeDone}</div>
-                </div>
-            ) : (
-                <div className="col" style={{ gap: "var(--sp-5)" }}>
-                    {questions.map((q, qi) => (
-                        <div key={q.no} className="opt-group">
-                            <div className="row" style={{ gap: "var(--sp-2)", alignItems: "baseline" }}>
-                                <span style={{ fontSize: "var(--fs-18)", fontWeight: 800 }}>{qi + 1}. {q.no}</span>
-                                {q.level && <span className="sbadge sbadge--review" style={{ marginLeft: "auto" }}>{q.level}</span>}
-                            </div>
-                            <div className="opt-label" style={{ marginTop: -4 }}>{t.placeChoose}</div>
-                            <div className="opt-row">
-                                {(q.options || []).map((opt) => (
-                                    <button key={opt}
-                                        className={"opt" + (answers[q.no] === opt ? " is-on" : "")}
-                                        onClick={() => setAnswers((a) => ({ ...a, [q.no]: opt }))}>
-                                        {answers[q.no] === opt && <Icon n="check" />} {opt}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </Modal>
-    );
-}

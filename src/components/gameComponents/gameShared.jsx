@@ -18,6 +18,13 @@ export const pickWord = (pool, excludeIds) => {
 
 export const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
+// Снисходительная сверка ввода: å≈a, ø≈o, æ≈ae + срезаем прочие диакритики (é→e).
+// Норвежская раскладка не у всех — печать без спецсимволов засчитывается.
+export const foldLoose = (s) => (s || "").trim().toLowerCase()
+    .replace(/å/g, "a").replace(/ø/g, "o").replace(/æ/g, "ae")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ");
+
 export const uniq = (arr) => {
     const s = new Set();
     return arr.filter((x) => x && !s.has(x.toLowerCase()) && s.add(x.toLowerCase()));

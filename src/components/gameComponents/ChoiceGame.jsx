@@ -13,15 +13,19 @@ import api from "../tools/api.js";
 import { ENDONYM, PLAY_STYLE, filterChosenWords, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
 
-export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false }) => {
+const GMODE = "choice";
+
+// words/onResult/onExit передаёт «Учёба» (переиспользует игру). Без них — обычный режим «Игры».
+export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const dictList = useWordsStore((s) => s.dictList);
     const aiPlay = useWordsStore((s) => s.aiPlayWords);
     const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
     const recordGameResult = useWordsStore((s) => s.recordGameResult);
     const t = interfaceTranslate[currentLanguage];
+    const record = (w, ok) => { if (onResult) onResult(w, ok, GMODE); else recordGameResult(w.id, ok, GMODE); };
 
-    const wordsToGame = useMemo(() => aiPlay || filterChosenWords(dictList), []);
+    const wordsToGame = useMemo(() => wordsProp || aiPlay || filterChosenWords(dictList), []);
     const total = wordsToGame.length;
     const isNo2Int = mode !== "int2no";
 
@@ -63,14 +67,16 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false }) => 
         let cancelled = false;
         setOptions(null);
         setChosen(null);
+        const localOptions = () => {
+            const others = wordsToGame.filter((w) => w.id !== current.id)
+                .map((w) => (isNo2Int ? w.translate?.[currentLanguage]?.[0] : w.translate?.no?.[0]));
+            setOptions(shuffle(uniq([correctPrimary, ...shuffle(others).slice(0, 3)])));
+        };
+        // «Учёба» (переданный набор) строит варианты из своих слов, без запроса дистракторов.
+        if (wordsProp) { localOptions(); return () => { cancelled = true; }; }
         api.getDistractors(current.id, { n: 3, mode, lang: currentLanguage })
             .then((res) => { if (!cancelled) setOptions(shuffle(uniq([correctPrimary, ...(res.distractors || [])]))); })
-            .catch(() => {
-                if (cancelled) return;
-                const others = wordsToGame.filter((w) => w.id !== current.id)
-                    .map((w) => (isNo2Int ? w.translate?.[currentLanguage]?.[0] : w.translate?.no?.[0]));
-                setOptions(shuffle(uniq([correctPrimary, ...shuffle(others).slice(0, 3)])));
-            });
+            .catch(() => { if (!cancelled) localOptions(); });
         return () => { cancelled = true; };
     }, [status, current, currentLanguage, mode]); // eslint-disable-line
 
@@ -86,7 +92,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false }) => 
         const ok = opt === correctPrimary;
         playSound(ok ? "correct" : "wrong");
         setChosen(opt);
-        recordGameResult(current.id, ok);
+        record(current, ok);
         setResults((rs) => [...rs, { id: current.id, ok }]);
         setStatus(ok ? "CORRECT" : "INCORRECT");
     };
@@ -101,11 +107,12 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false }) => 
     };
 
     const backToSelection = () => {
+        if (onExit) { onExit(); return; }
         wordsToGame.forEach((w) => { if (w?.gameData?.isChoosedToGame) toggleChooseToGame(w.id); });
         setGameState("chooseWords");
     };
 
-    if (total === 0 || !current) return <NoWords t={t} onBack={() => setGameState("chooseWords")} />;
+    if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
 
     const posText = posLabel(current.part_of_speech, t);
     const descriptionText = current.description?.description?.[currentLanguage] || "";

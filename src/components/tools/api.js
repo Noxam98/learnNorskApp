@@ -238,7 +238,7 @@ class ApiService {
     moveWords(ids, dictId) { return this._send('POST', `/words/move`, { ids, dict_id: dictId }); }
     refineWords(ids, lang) { return this._send('POST', `/words/refine`, { ids, lang }); }
     editWord(wordId, override) { return this._send('PATCH', `/words/${wordId}`, override); }
-    recordResult(wordId, correct) { return this._send('POST', `/words/${wordId}/result`, { correct }); }
+    recordResult(wordId, correct, mode = null, elapsed = null) { return this._send('POST', `/words/${wordId}/result`, { correct, mode, elapsed }); }
     reportWord(wordId) { return this._send('POST', `/words/${wordId}/report`); }
     getWordDescription(wordId) { return this._send('GET', `/words/${wordId}/description`); }
     getDistractors(wordId, { n = 3, mode = 'no2int', lang = 'ru' } = {}) {
@@ -293,6 +293,7 @@ class ApiService {
     learningSuggest({ count = 10, level = "" } = {}) { return this._send('POST', '/learning/suggest', { count, level }); }
     placementGet(lang = "ru", per = 4) { return this._send('GET', `/learning/placement?lang=${encodeURIComponent(lang)}&per=${per}`); }
     placementGrade({ lang = "ru", answers = [] }) { return this._send('POST', '/learning/placement', { lang, answers }); }
+    placementLevel(level) { return this._send('POST', '/learning/level', { level }); }
     rediff(a, b, lang, hint) { return this._send('POST', '/pool/rediff', { a, b, lang, hint }); }
     ttsUrl(word, lang) { return `${this.baseUrl}/tts?word=${encodeURIComponent(word)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`; }
 

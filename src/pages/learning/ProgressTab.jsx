@@ -61,6 +61,15 @@ const T = {
     },
 };
 
+// Холодные состояния («нет данных ≠ 0»): баннер теста + что разблокируется.
+const COLD = {
+    ru:  { t: "Определим твой уровень", d: "Пройди вводный тест — подберём слова и сложность под тебя.", btn: "Пройти тест", unlock: "Метрики появятся после первых сессий", heat: "Начни сегодня — клетки активности заполнятся" },
+    en:  { t: "Let's find your level", d: "Take the placement test — we'll tailor words and difficulty.", btn: "Take test", unlock: "Metrics appear after your first sessions", heat: "Start today — activity cells will fill in" },
+    ukr: { t: "Визначимо твій рівень", d: "Пройди вступний тест — підберемо слова й складність.", btn: "Пройти тест", unlock: "Метрики з'являться після перших сесій", heat: "Почни сьогодні — клітинки активності заповняться" },
+    pl:  { t: "Określmy twój poziom", d: "Zrób test poziomujący — dobierzemy słowa i trudność.", btn: "Zrób test", unlock: "Metryki pojawią się po pierwszych sesjach", heat: "Zacznij dziś — komórki aktywności się wypełnią" },
+    lt:  { t: "Nustatykime tavo lygį", d: "Atlik lygio testą — pritaikysime žodžius ir sudėtingumą.", btn: "Atlikti testą", unlock: "Metrikos atsiras po pirmų sesijų", heat: "Pradėk šiandien — aktyvumo langeliai užsipildys" },
+};
+
 const STATUS_VAR = {
     new: "var(--st-new)", learning: "var(--st-learn)", review: "var(--st-review)",
     mastered: "var(--st-master)", weak: "var(--st-weak)", archived: "var(--st-master)",
@@ -74,8 +83,9 @@ function tr(word, lang) {
     return Array.isArray(arr) ? arr[0] || "" : arr;
 }
 
-export default function ProgressTab({ lang, go, openSession, openWord, reloadKey }) {
+export default function ProgressTab({ lang, go, openSession, openWord, openPlacement, placed, reloadKey }) {
     const t = T[lang] || T.ru;
+    const cold = COLD[lang] || COLD.ru;
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState(null);
     const [weak, setWeak] = useState([]);
@@ -198,6 +208,26 @@ export default function ProgressTab({ lang, go, openSession, openWord, reloadKey
         <div>
             <p className="study-sub" style={{ marginTop: 0, marginBottom: "var(--sp-5)" }}>{t.sub}</p>
 
+            {placed === false && (
+                <div className="spanel" style={{ background: "var(--fjord-50)", borderColor: "color-mix(in srgb,var(--fjord-600) 30%,var(--surface))", marginBottom: "var(--sp-5)" }}>
+                    <div className="spanel__body" style={{ display: "flex", alignItems: "center", gap: "var(--sp-4)", flexWrap: "wrap" }}>
+                        <span className="scard__ic" style={{ background: "var(--fjord-600)", color: "#fff", width: 38, height: 38, borderRadius: 10, display: "grid", placeItems: "center", flex: "none" }}>
+                            <Icon n="target" />
+                        </span>
+                        <div className="col" style={{ gap: 3, flex: 1, minWidth: 180 }}>
+                            <div style={{ fontSize: "var(--fs-16)", fontWeight: 800, letterSpacing: "var(--ls-tight)" }}>{cold.t}</div>
+                            <div className="st-cold-note">{cold.d}</div>
+                            <div className="st-cold-note" style={{ marginTop: 4 }}>{cold.unlock}</div>
+                        </div>
+                        {openPlacement && (
+                            <button className="btn btn--primary" onClick={openPlacement}>
+                                <Icon n="play" sm /> {cold.btn}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {/* Верхние плитки — только реальные данные.
                 .statgrid нет в проектном study.css — задаём сетку инлайном (адаптив 4→2→1). */}
             <div className="statgrid"
@@ -293,6 +323,7 @@ export default function ProgressTab({ lang, go, openSession, openWord, reloadKey
                                         style={{ width: 12, height: 12, borderRadius: 3, background: heatColor(heatLvl(c.n)) }} />
                                 ))}
                             </div>
+                            {activity.length === 0 && <div className="st-cold-note" style={{ marginTop: "var(--sp-3)" }}>{cold.heat}</div>}
                         </div>
                     </div>
 

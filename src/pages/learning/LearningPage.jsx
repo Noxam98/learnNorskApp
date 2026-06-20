@@ -7,7 +7,8 @@ import { useAuthStore } from "../../store/AuthStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { WordInfoModal } from "../../components/ui/WordInfoModal.jsx";
-import SessionRunner from "../../components/learning/SessionRunner.jsx";
+import LearningSession from "../../components/learning/LearningSession.jsx";
+import PlacementScreen from "../../components/learning/PlacementScreen.jsx";
 import api from "../../components/tools/api.js";
 import TodayTab from "./TodayTab.jsx";
 import WordsTab from "./WordsTab.jsx";
@@ -38,21 +39,31 @@ export default function LearningPage() {
     const go = (k) => setParams((p) => { p.set("tab", k); return p; }, { replace: false });
 
     const [level, setLevel] = useState(null);
+    const [placed, setPlaced] = useState(true);     // до загрузки считаем «откалибровано», чтобы не моргать тестом
     const [reloadKey, setReloadKey] = useState(0);
-    const [session, setSession] = useState(null);  // { words, mode }
+    const [session, setSession] = useState(null);   // { words, mode }
     const [info, setInfo] = useState(null);         // { no, wordId }
+    const [placement, setPlacement] = useState(false);
 
     useEffect(() => {
         let on = true;
-        api.learningStats().then((s) => { if (on) setLevel(s?.currentLevel || null); }).catch(() => {});
+        api.learningStats().then((s) => { if (on) { setLevel(s?.currentLevel || null); setPlaced(s?.placed !== false); } }).catch(() => {});
         return () => { on = false; };
     }, [reloadKey]);
+
+    // На мобилке прячем верхнюю шапку (лого/профиль) — навигация в нижнем таб-баре (CSS по body.study-active)
+    useEffect(() => {
+        document.body.classList.add("study-active");
+        return () => document.body.classList.remove("study-active");
+    }, []);
 
     const openSession = (words, mode = "choice") => { if (words?.length) setSession({ words, mode }); };
     const openWord = (no, wordId) => setInfo({ no, wordId });
     const closeSession = (didPractice) => { setSession(null); if (didPractice) setReloadKey((k) => k + 1); };
+    const openPlacement = () => setPlacement(true);
+    const closePlacement = (didPlace) => { setPlacement(false); if (didPlace) setReloadKey((k) => k + 1); };
 
-    const tabProps = { lang, go, openSession, openWord, reloadKey, refresh: () => setReloadKey((k) => k + 1) };
+    const tabProps = { lang, go, openSession, openWord, openPlacement, placed, reloadKey, refresh: () => setReloadKey((k) => k + 1) };
     const Active = { today: TodayTab, words: WordsTab, exam: ExamTab, progress: ProgressTab }[tab];
 
     return (
@@ -75,10 +86,11 @@ export default function LearningPage() {
             {Active && <Active {...tabProps} />}
 
             {session && (
-                <SessionRunner words={session.words} mode={session.mode} lang={lang} onClose={closeSession} />
+                <LearningSession words={session.words} mode={session.mode} lang={lang} onClose={closeSession} />
             )}
             <WordInfoModal open={!!info} word={info?.no} wordId={info?.wordId}
                 lang={lang} t={tg} onClose={() => { setInfo(null); }} />
+            {placement && <PlacementScreen lang={lang} onClose={closePlacement} />}
         </main>
     );
 }
