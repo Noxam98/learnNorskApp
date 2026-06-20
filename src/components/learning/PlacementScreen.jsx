@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { ChoiceQuestion } from "../gameComponents/ChoiceQuestion.jsx";
+import { InputQuestion } from "../gameComponents/InputQuestion.jsx";
 import api from "../tools/api.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -133,7 +134,8 @@ export default function PlacementScreen({ lang = "ru", onClose }) {
 
     const answer = (val) => {
         if (!cur) return;
-        const next = [...answers, { no: cur.no, level: cur.level, answer: val || "" }];
+        const type = cur.type || "choice"; // старый формат без type → choice (обратная совместимость)
+        const next = [...answers, { no: cur.no, level: cur.level, answer: val || "", type }];
         setAnswers(next);
         if (qi + 1 >= questions.length) grade(next);
         else setQi(qi + 1);
@@ -235,16 +237,28 @@ export default function PlacementScreen({ lang = "ru", onClose }) {
                         })}
                     </div>
                     <div className="plc-q">
-                        <ChoiceQuestion
-                            prompt={cur?.no}
-                            promptLang="no"
-                            options={cur?.options || []}
-                            reveal={false}
-                            onPick={(opt) => answer(opt)}
-                            hint={<><Icon n="globe" sm /> {t.dir}{ENDONYM[lang] || lang}</>}
-                        >
-                            <button className="plc-skip" onClick={() => answer("")}><Icon n="arrow-right" sm /> {t.dontKnow}</button>
-                        </ChoiceQuestion>
+                        {(cur?.type || "choice") === "input" ? (
+                            <InputQuestion
+                                prompt={cur?.prompt}
+                                promptLang={lang}
+                                lang={lang}
+                                onSubmit={(text) => answer(text)}
+                                hint={<><Icon n="globe" sm /> {t.dir}{ENDONYM[lang] || lang}</>}
+                            >
+                                <button className="plc-skip" onClick={() => answer("")}><Icon n="arrow-right" sm /> {t.dontKnow}</button>
+                            </InputQuestion>
+                        ) : (
+                            <ChoiceQuestion
+                                prompt={cur?.no}
+                                promptLang="no"
+                                options={cur?.options || []}
+                                reveal={false}
+                                onPick={(opt) => answer(opt)}
+                                hint={<><Icon n="globe" sm /> {t.dir}{ENDONYM[lang] || lang}</>}
+                            >
+                                <button className="plc-skip" onClick={() => answer("")}><Icon n="arrow-right" sm /> {t.dontKnow}</button>
+                            </ChoiceQuestion>
+                        )}
                     </div>
                 </div>
             </div>
