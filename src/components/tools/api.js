@@ -238,7 +238,7 @@ class ApiService {
     moveWords(ids, dictId) { return this._send('POST', `/words/move`, { ids, dict_id: dictId }); }
     refineWords(ids, lang) { return this._send('POST', `/words/refine`, { ids, lang }); }
     editWord(wordId, override) { return this._send('PATCH', `/words/${wordId}`, override); }
-    recordResult(wordId, correct, mode = null, elapsed = null) { return this._send('POST', `/words/${wordId}/result`, { correct, mode, elapsed }); }
+    recordResult(wordId, correct, mode = null, elapsed = null, direction = null) { return this._send('POST', `/words/${wordId}/result`, { correct, mode, elapsed, direction }); }
     reportWord(wordId) { return this._send('POST', `/words/${wordId}/report`); }
     getWordDescription(wordId) { return this._send('GET', `/words/${wordId}/description`); }
     getDistractors(wordId, { n = 3, mode = 'no2int', lang = 'ru' } = {}) {
@@ -288,7 +288,13 @@ class ApiService {
     learningStats() { return this._send('GET', '/learning/stats'); }
     learningDue(limit = 20) { return this._send('GET', `/learning/due?limit=${limit}`); }
     learningActivity(days = 119) { return this._send('GET', `/learning/activity?days=${days}`); }
-    learningAnswer({ pool_id, correct, elapsed = null, mode = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode }); }
+    learningAnswer({ pool_id, correct, elapsed = null, mode = null, direction = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode, direction }); }
+    learningSession(size = 20) { return this._send('GET', `/learning/session?size=${size}`); }
+    learningGate() { return this._send('GET', '/learning/gate'); }
+    learningGateExam(lang = "ru") { return this._send('GET', `/learning/gate/exam?lang=${encodeURIComponent(lang)}`); }
+    learningGateGrade({ lang = "ru", answers = [] }) { return this._send('POST', '/learning/gate/exam', { lang, answers }); }
+    learningAudit(lang = "ru") { return this._send('GET', `/learning/audit?lang=${encodeURIComponent(lang)}`); }
+    learningAuditGrade({ lang = "ru", answers = [] }) { return this._send('POST', '/learning/audit', { lang, answers }); }
     learningStatus(poolId, action) { return this._send('POST', `/learning/${poolId}/status`, { action }); }
     learningSuggest({ count = 10, level = "" } = {}) { return this._send('POST', '/learning/suggest', { count, level }); }
     placementGet(lang = "ru", per = 4) { return this._send('GET', `/learning/placement?lang=${encodeURIComponent(lang)}&per=${per}`); }
