@@ -781,15 +781,18 @@ const overlay = {
     background: "var(--game-bg)", color: "var(--game-ink)",
 };
 const stageBody = {
-    flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
-    justifyContent: "center", gap: "var(--sp-8)", padding: "var(--sp-6)", textAlign: "center",
+    flex: 1, minHeight: 0, width: "100%", overflowY: "auto",
+    display: "flex", flexDirection: "column", alignItems: "center",
+    justifyContent: "center", gap: "var(--sp-6)", padding: "var(--sp-6)", textAlign: "center",
 };
 const eyebrow = {
     fontSize: "var(--fs-12)", fontWeight: 700, letterSpacing: "var(--ls-wider)",
     textTransform: "uppercase", color: "var(--game-ink-2)", marginBottom: 14,
 };
 const bigWord = {
-    fontSize: "var(--fs-72)", fontWeight: 800, letterSpacing: "var(--ls-tight)", lineHeight: 1,
+    fontSize: "clamp(30px, 8.5vw, var(--fs-72))", fontWeight: 800,
+    letterSpacing: "var(--ls-tight)", lineHeight: 1.05,
+    overflowWrap: "anywhere", wordBreak: "break-word", maxWidth: "100%",
 };
 const speakerBtn = {
     width: 110, height: 110, borderRadius: 32, border: "1px solid var(--game-border)",
@@ -809,6 +812,7 @@ const choiceOpt = {
     background: "var(--game-surface)", border: "1px solid var(--game-border)",
     color: "var(--game-ink)", fontSize: "var(--fs-18)", fontWeight: 600,
     cursor: "pointer", transition: "border-color .15s ease",
+    overflowWrap: "anywhere", wordBreak: "break-word",
 };
 const inputWrap = {
     width: "100%", maxWidth: 460, display: "flex", flexDirection: "column", gap: "var(--sp-4)",

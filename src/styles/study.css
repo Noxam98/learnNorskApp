@@ -255,7 +255,7 @@
 .study-root .exam-sumrow__v { font-weight: 700; }
 .study-root .exam-stage {
   min-height: 100vh; background: var(--game-bg); color: var(--game-ink);
-  display: flex; flex-direction: column;
+  display: flex; flex-direction: column; overflow-y: auto;
 }
 .study-root .exam-bar { padding: var(--sp-5) var(--sp-6) 0; display: flex; align-items: center; gap: var(--sp-4); }
 .study-root .exam-bar__back { color: var(--game-ink-2); background: var(--game-surface); border: 1px solid var(--game-border); width: 40px; height: 40px; border-radius: var(--r-sm); display: grid; place-items: center; cursor: pointer; }
