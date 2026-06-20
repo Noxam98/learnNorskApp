@@ -289,6 +289,7 @@ class ApiService {
     learningDue(limit = 20) { return this._send('GET', `/learning/due?limit=${limit}`); }
     learningActivity(days = 119) { return this._send('GET', `/learning/activity?days=${days}`); }
     learningAnswer({ pool_id, correct, elapsed = null, mode = null, direction = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode, direction }); }
+    setDictStudying(dictId, studying) { return this._send('POST', `/dictionaries/${dictId}/studying`, { studying }); }
     learningSession(size = 20) { return this._send('GET', `/learning/session?size=${size}`); }
     learningGate() { return this._send('GET', '/learning/gate'); }
     learningGateExam(lang = "ru") { return this._send('GET', `/learning/gate/exam?lang=${encodeURIComponent(lang)}`); }

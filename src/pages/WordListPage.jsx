@@ -32,6 +32,7 @@ export const WordListPage = () => {
     const addWords = useWordsStore((state) => state.addWords);
     const addNewDict = useWordsStore((state) => state.addNewDict);
     const setCurrentDict = useWordsStore((state) => state.setCurrentDict);
+    const setDictStudying = useWordsStore((state) => state.setDictStudying);
     const removeDict = useWordsStore((state) => state.removeDict);
     const deleteChosedWords = useWordsStore((state) => state.deleteChosedWords);
     const moveChosenWords = useWordsStore((state) => state.moveChosenWords);
@@ -157,8 +158,24 @@ export const WordListPage = () => {
         wordList.forEach((w) => { if (allSelected || !w?.techData?.isSelected) choseWord(w.id); });
     };
 
+    // Флаг «Учить этот словарь» (studying): включает приток новых слов словаря в «Учёбу».
+    // По умолчанию выключен; начатые слова остаются в «Учёбе» даже после выключения.
+    const studying = currentDict.studying === true;
+    const STUDY_L = {
+        ru: { on: "Учить этот словарь", off: "Убрать из «Учёбы»", t: "Брать новые слова словаря в «Учёбу»" },
+        en: { on: "Study this dictionary", off: "Remove from Learning", t: "Feed this dictionary's new words into Learning" },
+        ukr: { on: "Вчити цей словник", off: "Прибрати з «Навчання»", t: "Брати нові слова словника в «Навчання»" },
+        pl: { on: "Ucz tego słownika", off: "Usuń z Nauki", t: "Dodawaj nowe słowa tego słownika do Nauki" },
+        lt: { on: "Mokytis šio žodyno", off: "Pašalinti iš Mokymosi", t: "Įtraukti naujus žodyno žodžius į Mokymąsi" },
+    }[currentLanguage] || { on: "Учить этот словарь", off: "Убрать из «Учёбы»", t: "" };
+
     // Действия словаря (рендерятся инлайн на десктопе и в попапе на мобильных).
     const actions = [
+        {
+            key: "studying", icon: "graduation", title: STUDY_L.t,
+            label: studying ? STUDY_L.off : STUDY_L.on, active: studying,
+            onClick: () => { if (currentDict.id) setDictStudying(currentDict.id, !studying); },
+        },
         { key: "newdict", icon: "plus", label: t.newDict.replace("..", ""), onClick: () => setDictOpen(true) },
         { key: "all", icon: "check-square", label: t.chooseAll, onClick: toggleSelectAll },
         {

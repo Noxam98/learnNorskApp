@@ -51,6 +51,16 @@ export const useWordsStore = create((set, get) => ({
 
     setCurrentDict: (dictName) => { set({ currentDictName: dictName }); api.saveCurrentDict(dictName).catch(() => {}); },
 
+    // Флаг «в обучении» словаря: оптимистично меняем локально + шлём на сервер.
+    // studying=0 → слова словаря выпадают из «Учёбы» (но остаются в «Мой словарь»).
+    setDictStudying: (dictId, studying) => {
+        set(produce((state) => {
+            const d = state.dictList.find((x) => x.id === dictId);
+            if (d) d.studying = studying;
+        }));
+        api.setDictStudying(dictId, studying).catch(() => {});
+    },
+
     // Добавление слов в текущий словарь через ИИ (генерация на сервере + общий пул).
     addWords: async (prompt) => {
         const dictId = get()._currentDictId();
