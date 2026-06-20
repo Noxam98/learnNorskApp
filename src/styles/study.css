@@ -495,3 +495,27 @@
     margin: 0 calc(-1 * var(--sp-4)); padding-left: var(--sp-4); padding-right: var(--sp-4);
   }
 }
+
+/* ============ Анти-overflow на узких экранах ============
+   grid/flex-дети по умолчанию min-width:auto и раздувают колонку под широкий контент
+   (донат, длинные слова, хитмап) — из-за этого блоки «не влазят» в телефон. */
+.study-root .prog-grid > *,
+.study-root .today-grid > *,
+.study-root .exam-grid > * { min-width: 0; }
+.study-root .spanel,
+.study-root .spanel__head,
+.study-root .spanel__body { min-width: 0; }
+.study-root .spanel__head > :first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.study-root .donut-wrap { min-width: 0; }
+.study-root .legend { min-width: 0; }
+.study-root .legend__name { min-width: 0; }
+/* На узких — донат и легенда в столбик, чтобы названия статусов помещались целиком */
+@media (max-width: 520px) {
+  .study-root .donut-wrap { flex-direction: column; align-items: center; gap: var(--sp-4); }
+  .study-root .legend { width: 100%; }
+}
+.study-root .shelf-row { min-width: 0; }
+.study-root .shelf-row__w { min-width: 0; overflow-wrap: anywhere; }
+.study-root .shelf-row__tr { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.study-root .lvlrow { min-width: 0; }
+.study-root .statgrid { min-width: 0; }
