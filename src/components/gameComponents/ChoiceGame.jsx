@@ -16,7 +16,7 @@ import { playSound, playWin } from "../tools/sound.js";
 const GMODE = "choice";
 
 // words/onResult/onExit передаёт «Учёба» (переиспользует игру). Без них — обычный режим «Игры».
-export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit }) => {
+export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const dictList = useWordsStore((s) => s.dictList);
     const aiPlay = useWordsStore((s) => s.aiPlayWords);
@@ -59,6 +59,10 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     // Озвучка правильного ответа после ответа.
     useEffect(() => {
         if (sound && (status === "CORRECT" || status === "INCORRECT") && correctPrimary) speakText(correctPrimary, aLang).catch(() => {});
+    }, [status]); // eslint-disable-line
+    // «Учёба» показывает свой итог сессии — отдаём результат наружу вместо своего финиша.
+    useEffect(() => {
+        if (status === "FINISHED" && onFinish) onFinish({ total, correct: results.filter((r) => r.ok).length });
     }, [status]); // eslint-disable-line
 
     // Подгрузка вариантов.
@@ -162,7 +166,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     </div>
                 </div>
 
-                {status === "FINISHED" && (
+                {status === "FINISHED" && !onFinish && (
                     <FinishScreen score={score} knownFirstTry={knownFirstTry} missedCount={wrongCount} total={total}
                         t={t} onRestart={restart} onExit={backToSelection} />
                 )}

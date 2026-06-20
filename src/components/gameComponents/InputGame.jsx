@@ -16,7 +16,7 @@ import { playSound, playWin } from "../tools/sound.js";
 const GMODE = "input";
 
 // words/onResult/onExit передаёт «Учёба» (переиспользует игру). Без них — обычный режим «Игры».
-export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit }) => {
+export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const dictList = useWordsStore((s) => s.dictList);
     const aiPlay = useWordsStore((s) => s.aiPlayWords);
@@ -68,6 +68,10 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
             const timer = setTimeout(() => goNext(), 1100);
             return () => clearTimeout(timer);
         }
+    }, [status]); // eslint-disable-line
+    // «Учёба» показывает свой итог сессии — отдаём результат наружу вместо своего финиша.
+    useEffect(() => {
+        if (status === "FINISHED" && onFinish) onFinish({ total, correct: guessed.filter((id) => !missed.includes(id)).length });
     }, [status]); // eslint-disable-line
 
     const applyResult = (ok) => {
@@ -173,7 +177,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     </div>
                 </div>
 
-                {status === "FINISHED" && (
+                {status === "FINISHED" && !onFinish && (
                     <FinishScreen score={score} knownFirstTry={knownFirstTry} missedCount={missed.length} total={total}
                         t={t} onRestart={restart} onExit={backToSelection} />
                 )}

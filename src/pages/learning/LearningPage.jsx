@@ -9,7 +9,11 @@ import { Icon } from "../../components/ui/Icon.jsx";
 import { WordInfoModal } from "../../components/ui/WordInfoModal.jsx";
 import LearningSession from "../../components/learning/LearningSession.jsx";
 import PlacementScreen from "../../components/learning/PlacementScreen.jsx";
+import LearningIntro from "../../components/learning/LearningIntro.jsx";
+import LevelUpToast from "../../components/learning/LevelUpToast.jsx";
 import api from "../../components/tools/api.js";
+
+const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 import TodayTab from "./TodayTab.jsx";
 import WordsTab from "./WordsTab.jsx";
 import ExamTab from "./ExamTab.jsx";
@@ -44,12 +48,32 @@ export default function LearningPage() {
     const [session, setSession] = useState(null);   // { words, mode }
     const [info, setInfo] = useState(null);         // { no, wordId }
     const [placement, setPlacement] = useState(false);
+    const [intro, setIntro] = useState(false);      // онбординг при первом заходе
+    const [levelUp, setLevelUp] = useState(null);   // { from, to } — празднование перехода уровня
+
+    useEffect(() => {
+        try { if (!localStorage.getItem("learn_onboarded")) setIntro(true); } catch { /* */ }
+    }, []);
 
     useEffect(() => {
         let on = true;
-        api.learningStats().then((s) => { if (on) { setLevel(s?.currentLevel || null); setPlaced(s?.placed !== false); } }).catch(() => {});
+        api.learningStats().then((s) => {
+            if (!on) return;
+            const lv = s?.currentLevel || null;
+            setLevel(lv); setPlaced(s?.placed !== false);
+            // переход уровня: сравниваем с запомненным; первый раз просто запоминаем (без салюта)
+            try {
+                const seen = localStorage.getItem("learn_level_seen");
+                if (lv) {
+                    if (seen && LEVELS.indexOf(lv) > LEVELS.indexOf(seen)) setLevelUp({ from: seen, to: lv });
+                    localStorage.setItem("learn_level_seen", lv);
+                }
+            } catch { /* */ }
+        }).catch(() => {});
         return () => { on = false; };
     }, [reloadKey]);
+
+    const closeIntro = () => { try { localStorage.setItem("learn_onboarded", "1"); } catch { /* */ } setIntro(false); if (placed === false) setPlacement(true); };
 
     // На мобилке прячем верхнюю шапку (лого/профиль) — навигация в нижнем таб-баре (CSS по body.study-active)
     useEffect(() => {
@@ -91,6 +115,8 @@ export default function LearningPage() {
             <WordInfoModal open={!!info} word={info?.no} wordId={info?.wordId}
                 lang={lang} t={tg} onClose={() => { setInfo(null); }} />
             {placement && <PlacementScreen lang={lang} onClose={closePlacement} />}
+            {intro && <LearningIntro lang={lang} onDone={closeIntro} />}
+            {levelUp && <LevelUpToast lang={lang} to={levelUp.to} onClose={() => setLevelUp(null)} />}
         </main>
     );
 }

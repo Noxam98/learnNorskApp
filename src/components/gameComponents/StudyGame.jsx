@@ -26,7 +26,7 @@ const filterChosenWords = (dictList) =>
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
 // words/onExit передаёт «Учёба» (переиспользует игру). Карточки — пассивный режим, в SRS не пишет.
-export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit }) => {
+export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -87,7 +87,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     const advance = () => {
         if (!flipped) { setFlipped(true); playSound("flip"); return; }
         if (idx + 1 < total) { setIdx(idx + 1); setFlipped(false); }
-        else { setIdx(total); playSound("finish"); } // финиш
+        else { setIdx(total); playSound("finish"); if (onFinish) onFinish({ total, correct: total }); } // финиш
     };
     const restart = () => { setIdx(0); setFlipped(false); };
 
@@ -122,7 +122,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
             </div>
 
             <div className="pstage">
-                {finished ? (
+                {finished && onFinish ? null : finished ? (
                     <div className="finish" style={{ display: "block" }}>
                         <div className="qcount">{t.gameFinished}</div>
                         <div className="finish__score">{total}</div>
