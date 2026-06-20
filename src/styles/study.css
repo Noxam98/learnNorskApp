@@ -519,3 +519,20 @@
 .study-root .shelf-row__tr { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .study-root .lvlrow { min-width: 0; }
 .study-root .statgrid { min-width: 0; }
+
+/* ============ Онбординг «Учим слова» — полноэкранный (особенно на телефонах) ============ */
+.study-root.intro-full {
+  position: fixed; inset: 0; z-index: 96; overflow-y: auto; display: flex;
+  color: #fff;
+  background: radial-gradient(130% 120% at 0% 0%, var(--fjord-600), var(--fjord-700) 70%);
+}
+.study-root.intro-full .intro-full__body {
+  position: relative; z-index: 1; margin: auto; width: 100%; max-width: 520px;
+  display: flex; flex-direction: column; gap: var(--sp-5);
+  padding: max(env(safe-area-inset-top), var(--sp-7, 28px)) var(--sp-5)
+           max(env(safe-area-inset-bottom), var(--sp-6)) var(--sp-5);
+}
+.study-root.intro-full .plc-hero__btn { align-self: stretch; justify-content: center; }
+@media (max-width: 760px) {
+  .study-root.intro-full .plc-hero__title { font-size: var(--fs-34); }
+}

@@ -53,30 +53,26 @@ export default function LearningIntro({ lang = "ru", onDone }) {
         { ic: "repeat", t: t.p3t, d: t.p3d },
     ];
     return (
-        <div className="study-root" style={{ position: "fixed", inset: 0, zIndex: 96, overflow: "auto", background: "var(--canvas)" }}>
-            <main className="shell study-main">
-                <div className="plc-wrap">
-                    <div className="plc-hero">
-                        <span className="plc-hero__halo" /><span className="plc-hero__halo2" />
-                        <span className="plc-hero__eyebrow"><Icon n="graduation" sm /> {t.eyebrow}</span>
-                        <div className="plc-hero__title">{t.title}</div>
-                        <div className="plc-detect" style={{ gridTemplateColumns: "1fr" }}>
-                            {rows.map((r) => (
-                                <div className="plc-detect__c" key={r.ic} style={{ flexDirection: "row", alignItems: "flex-start", gap: 12 }}>
-                                    <Icon n={r.ic} />
-                                    <span className="col" style={{ gap: 4 }}>
-                                        <span className="plc-detect__t">{r.t}</span>
-                                        <span className="plc-detect__d">{r.d}</span>
-                                    </span>
-                                </div>
-                            ))}
+        <div className="study-root intro-full">
+            <span className="plc-hero__halo" /><span className="plc-hero__halo2" />
+            <div className="intro-full__body">
+                <span className="plc-hero__eyebrow"><Icon n="graduation" sm /> {t.eyebrow}</span>
+                <div className="plc-hero__title">{t.title}</div>
+                <div className="plc-detect" style={{ gridTemplateColumns: "1fr" }}>
+                    {rows.map((r) => (
+                        <div className="plc-detect__c" key={r.ic} style={{ flexDirection: "row", alignItems: "flex-start", gap: 12 }}>
+                            <Icon n={r.ic} />
+                            <span className="col" style={{ gap: 4 }}>
+                                <span className="plc-detect__t">{r.t}</span>
+                                <span className="plc-detect__d">{r.d}</span>
+                            </span>
                         </div>
-                        <div className="plc-actions">
-                            <button className="plc-hero__btn" onClick={() => onDone?.()}><Icon n="play" /> {t.cta}</button>
-                        </div>
-                    </div>
+                    ))}
                 </div>
-            </main>
+                <div className="plc-actions">
+                    <button className="plc-hero__btn" onClick={() => onDone?.()}><Icon n="play" /> {t.cta}</button>
+                </div>
+            </div>
         </div>
     );
 }
