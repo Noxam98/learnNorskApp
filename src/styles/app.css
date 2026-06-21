@@ -298,12 +298,25 @@
     display: inline-flex; align-items: center; justify-content: center;
     border-radius: 9px; background: var(--game-accent); color: #fff; font-size: 11px; font-weight: 800;
 }
+/* Мобилка: клавиатура использует ВСЮ ширину экрана — снимаем кап ширины клавиш и
+   выходим за боковые паддинги .pstage (sp-5), клавиши крупнее и тянутся по ширине. */
+@media (max-width: 640px) {
+    .kbd {
+        margin-top: var(--sp-4); gap: 6px; max-width: none;
+        width: calc(100% + var(--sp-5) * 2);
+        margin-left: calc(var(--sp-5) * -1); margin-right: calc(var(--sp-5) * -1);
+        padding: 0 5px;
+    }
+    .kbd__row { gap: 5px; }
+    .kbd__key { flex: 1 1 0; max-width: none; height: 54px; font-size: var(--fs-20); border-radius: var(--r-sm); }
+    .kbd__key--wide { flex: 0 0 auto; min-width: 30%; }
+    .kbd__count { top: -5px; right: -5px; }
+}
 @media (max-width: 360px) {
     .build-line { margin-top: var(--sp-5); }
-    .kbd { margin-top: var(--sp-4); gap: 4px; }
-    .kbd__row { gap: 3px; }
-    .kbd__key { height: 42px; font-size: var(--fs-16); max-width: 40px; }
-    .kbd__key--wide { min-width: 72px; }
+    .kbd { gap: 4px; padding: 0 3px; }
+    .kbd__row { gap: 4px; }
+    .kbd__key { height: 48px; font-size: var(--fs-18); }
 }
 
 /* Нижняя панель старта игры на мобильных: прогресс на всю ширину, кнопка снизу */
