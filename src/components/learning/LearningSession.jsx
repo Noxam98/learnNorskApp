@@ -22,11 +22,11 @@ const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: Stu
 const LEGACY_DIR = "int2no";
 
 const T = {
-    ru: { done: "Сессия завершена", acc: "верно", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", examNote: "Готова пачка слов — сдай экзамен, чтобы открыть новые", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
-    en: { done: "Session complete", acc: "correct", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", examNote: "A word pack is ready — pass the exam to unlock new ones", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
-    ukr: { done: "Сесію завершено", acc: "правильно", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", examNote: "Пачка слів готова — склади екзамен, щоб відкрити нові", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
-    pl: { done: "Sesja zakończona", acc: "poprawnie", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", examNote: "Paczka słów gotowa — zdaj egzamin, aby odblokować nowe", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
-    lt: { done: "Sesija baigta", acc: "teisingai", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", examNote: "Žodžių paketas paruoštas — išlaikyk egzaminą, kad atrakintum naujus", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
+    ru: { done: "Сессия завершена", acc: "верно", cardsShown: "карточек показано", learned: "выучено за сессию", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", examNote: "Готова пачка слов — сдай экзамен, чтобы открыть новые", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
+    en: { done: "Session complete", acc: "correct", cardsShown: "cards shown", learned: "learned this session", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", examNote: "A word pack is ready — pass the exam to unlock new ones", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
+    ukr: { done: "Сесію завершено", acc: "правильно", cardsShown: "карток показано", learned: "вивчено за сесію", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", examNote: "Пачка слів готова — склади екзамен, щоб відкрити нові", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
+    pl: { done: "Sesja zakończona", acc: "poprawnie", cardsShown: "kart pokazano", learned: "nauczono w sesji", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", examNote: "Paczka słów gotowa — zdaj egzamin, aby odblokować nowe", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
+    lt: { done: "Sesija baigta", acc: "teisingai", cardsShown: "kortelių parodyta", learned: "išmokta sesijoje", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", examNote: "Žodžių paketas paruoštas — išlaikyk egzaminą, kad atrakintum naujus", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
 };
 
 const STAGE = { position: "fixed", inset: 0, zIndex: 95, background: "var(--game-bg)", color: "var(--game-ink)", display: "flex", flexDirection: "column", overflow: "auto" };
@@ -75,19 +75,23 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     // Легаси-набор: один режим на весь массив.
     const [legacyGw] = useState(() => toGameWords(words, lang));
 
-    // Общий прогресс сессии (суммируем по элементам/играм).
-    const [res, setRes] = useState({ correct: 0, total: 0 });
+    // Прогресс сессии: упражнения (ответы) и карточки считаем РАЗДЕЛЬНО.
+    const [res, setRes] = useState({ correct: 0, total: 0 }); // только упражнения
+    const [cards, setCards] = useState(0);                    // показано карточек-интро
     const [after, setAfter] = useState(null); // свежая статистика после сессии
+    const [before, setBefore] = useState(null); // базовая статистика на старте (для «выучено за сессию»)
     const [gate, setGate] = useState(null);   // состояние ворот экзамена (для итога системной сессии)
     const [busy, setBusy] = useState(false);
 
     // Подтянуть системную программу с бэка.
     const loadProgram = async () => {
         try {
+            // базовую «выучено» фиксируем ОДИН раз на старте сессии — для дельты в итоге
+            if (before == null) { try { setBefore(await api.learningStats()); } catch { /* */ } }
             const r = await api.learningSession(20);
             const list = Array.isArray(r) ? r : (r?.elements || r?.items || r?.words || []);
             const els = toElements(list, lang);
-            if (els.length) { setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setAfter(null); setPhase("play"); }
+            if (els.length) { setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setAfter(null); setPhase("play"); }
             else { setPhase("empty"); }
         } catch {
             setPhase("empty");
@@ -123,11 +127,12 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         if (isSystem) { try { setGate(await api.learningGate()); } catch { /* */ } }
     };
 
-    // Финиш одной игры. Системный путь: переходим к следующему элементу либо к итогу.
-    // Легаси: одна игра = вся сессия, сразу итог.
-    const onGameFinish = (stats) => {
+    // Финиш одной игры. isStudy=true — это была карточка-интро (НЕ ответ): считаем отдельно.
+    // Системный путь: переходим к следующему элементу либо к итогу. Легаси: сразу итог.
+    const onGameFinish = (stats, isStudy = false) => {
         const got = stats || { total: 0, correct: 0 };
-        setRes((p) => ({ correct: p.correct + (got.correct || 0), total: p.total + (got.total || 0) }));
+        if (isStudy) setCards((c) => c + (got.total || 1));
+        else setRes((p) => ({ correct: p.correct + (got.correct || 0), total: p.total + (got.total || 0) }));
         if (isSystem) {
             if (idx + 1 < elements.length) setIdx((n) => n + 1);
             else showSummary();
@@ -186,16 +191,26 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         const streak = after?.streak || 0;
         const noneLeft = left <= 0 || after?._empty;
         const examGate = isSystem && !!gate?.open;   // ворота экзамена открыты → нужен экзамен, не новые слова
+        // выучено за сессию = прирост mastered относительно старта
+        const learned = Math.max(0, (after?.byStatus?.mastered || 0) - (before?.byStatus?.mastered || 0));
         return (
             <div style={STAGE}>
                 <div style={{ margin: "auto", textAlign: "center", padding: "var(--sp-5)", maxWidth: 460, width: "100%" }}>
                     <div className="session-orb session-orb--ok" style={{ margin: "0 auto" }} />
                     <h1 style={{ fontSize: "var(--fs-28)", margin: "var(--sp-4) 0 var(--sp-2)" }}>{t.done}</h1>
-                    <div style={{ fontSize: "var(--fs-44)", fontWeight: 800 }}>{acc}%</div>
-                    <p style={{ opacity: .8, marginTop: 4 }}>{res.correct} / {res.total} {t.acc}</p>
+                    {res.total > 0 ? (
+                        <>
+                            <div style={{ fontSize: "var(--fs-44)", fontWeight: 800 }}>{acc}%</div>
+                            <p style={{ opacity: .8, marginTop: 4 }}>{res.correct} / {res.total} {t.acc}</p>
+                        </>
+                    ) : (
+                        <p style={{ opacity: .8, marginTop: 4 }}>{cards} {t.cardsShown}</p>
+                    )}
 
                     <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", margin: "var(--sp-5) 0" }}>
                         <span style={chip}><Icon n="flame" sm /> {streak} {t.days} · {t.streak}</span>
+                        {learned > 0 && <span style={chip}><Icon n="award" sm /> {learned} {t.learned}</span>}
+                        {cards > 0 && res.total > 0 && <span style={chip}><Icon n="layers" sm /> {cards} {t.cardsShown}</span>}
                         {!noneLeft && <span style={chip}><Icon n="repeat" sm /> {left} {t.left}</span>}
                     </div>
 
@@ -232,7 +247,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 // записываем по АВТОРИТЕТНОМУ шагу системы (el.mode/el.dir), а не по тому, что
                 // сообщит игра — иначе клетка рампы могла бы не совпасть и слово застряло бы
                 onResult={isStudy ? undefined : (w, ok) => onResult(w, ok, el.mode, el.dir)}
-                onFinish={isStudy ? (s) => { recordIntro(el.gw); onGameFinish(s); } : onGameFinish}
+                onFinish={isStudy ? (s) => { recordIntro(el.gw); onGameFinish(s, true); } : (s) => onGameFinish(s, false)}
                 onExit={() => onClose?.(true)}
                 setGameState={() => onClose?.(true)}
             />

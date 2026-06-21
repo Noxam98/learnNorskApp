@@ -34,6 +34,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     const [qpos, setQpos] = useState(0);
     const [results, setResults] = useState([]); // [{ id, ok }] в порядке ответов
     const [options, setOptions] = useState(null);
+    const [subOf, setSubOf] = useState({}); // вариант → второй перевод (вторая строка кнопки)
     const [chosen, setChosen] = useState(null);
 
     const current = order[qpos] || null;
@@ -69,12 +70,15 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     useEffect(() => {
         if (status !== "ASKING" || !current) return;
         let cancelled = false;
-        setOptions(null);
+        setOptions(null); setSubOf({});
         setChosen(null);
+        // второй перевод правильного слова — на вторую строку его кнопки
+        const correctSub = (isNo2Int && translations[1]) ? translations[1] : null;
         const localOptions = () => {
             const others = wordsToGame.filter((w) => w.id !== current.id)
                 .map((w) => (isNo2Int ? w.translate?.[currentLanguage]?.[0] : w.translate?.no?.[0]));
             setOptions(shuffle(uniq([correctPrimary, ...shuffle(others).slice(0, 3)])));
+            setSubOf(correctSub ? { [correctPrimary]: correctSub } : {});
         };
         // Дистракторы ВСЕГДА берём с бэка (семантически близкие из всего пула) — локальные из
         // мелкого набора слишком очевидны. По pool_id (если есть) — иначе по id слова словаря.
@@ -82,7 +86,14 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
             ? api.getPoolDistractors(current.pool_id, { n: 3, mode, lang: currentLanguage })
             : api.getDistractors(current.id, { n: 3, mode, lang: currentLanguage });
         req
-            .then((res) => { if (!cancelled) setOptions(shuffle(uniq([correctPrimary, ...(res.distractors || [])]))); })
+            .then((res) => {
+                if (cancelled) return;
+                const rich = res.options || (res.distractors || []).map((w) => ({ w, alt: null }));
+                setOptions(shuffle(uniq([correctPrimary, ...rich.map((d) => d.w)])));
+                const sub = correctSub ? { [correctPrimary]: correctSub } : {};
+                rich.forEach((d) => { if (d.w && d.alt) sub[d.w] = d.alt; });
+                setSubOf(sub);
+            })
             .catch(() => { if (!cancelled) localOptions(); });
         return () => { cancelled = true; };
     }, [status, current, currentLanguage, mode]); // eslint-disable-line
@@ -152,6 +163,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     prompt={question}
                     promptLang={qLang}
                     options={options}
+                    optionSub={subOf}
                     optionLang={aLang}
                     picked={chosen}
                     correct={correctPrimary}

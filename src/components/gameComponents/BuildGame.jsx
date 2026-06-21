@@ -9,11 +9,18 @@ import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, filterChosenWords, pickWord, shuffle, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, filterChosenWords, pickWord, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
 
 const GMODE = "build";
 const norm = (s) => (s || "").trim().toLowerCase();
+// Норвежская раскладка QWERTY (нижний регистр). Доп. символы слова (пробел/дефис) — отдельным рядом.
+const KBD_ROWS = [
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "å"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l", "ø", "æ"],
+    ["z", "x", "c", "v", "b", "n", "m"],
+];
+const KBD_SET = new Set(KBD_ROWS.flat());
 
 // words/onResult/onExit/onFinish передаёт «Учёба». Без них — обычный режим «Игры».
 export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish }) => {
@@ -32,7 +39,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const [current, setCurrent] = useState(() => pickWord(wordsToGame, []));
     const [guessed, setGuessed] = useState([]);
     const [missed, setMissed] = useState([]);
-    const [picked, setPicked] = useState([]);          // индексы выбранных плиток (по порядку)
+    const [typed, setTyped] = useState([]);            // введённые буквы по порядку (с клавиатуры)
 
     const knownFirstTry = guessed.filter((id) => !missed.includes(id)).length;
 
@@ -41,8 +48,14 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const trArr = (current?.translate?.[currentLanguage]?.length ? current.translate[currentLanguage]
         : (current?.translate?.ru?.length ? current.translate.ru : (current?.translate?.en || []))).filter(Boolean);
     const prompt = trArr.join(", ") || "—";
-    const tiles = useMemo(() => shuffle([...target].map((ch, i) => ({ ch, i }))), [current]); // фикс. раскладка на слово
-    const built = picked.map((p) => tiles[p].ch).join("");
+    const targetChars = useMemo(() => [...norm(target)], [current]); // символы цели по порядку
+    // сколько каждой буквы нужно (для активации клавиш и счётчика-бейджа)
+    const needed = useMemo(() => {
+        const m = {}; for (const c of targetChars) m[c] = (m[c] || 0) + 1; return m;
+    }, [current]); // eslint-disable-line
+    const extras = useMemo(() => Object.keys(needed).filter((c) => !KBD_SET.has(c)), [current]); // eslint-disable-line
+    const remainingOf = (c) => (needed[c] || 0) - typed.filter((x) => x === c).length;
+    const built = typed.join("");
     const qLang = hyLang(currentLanguage, false);  // язык подсказки — родной
     const aLang = hyLang(currentLanguage, true);   // ответ — норвежский
 
@@ -58,17 +71,17 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
         if (status === "CORRECT") { const tm = setTimeout(goNext, 1100); return () => clearTimeout(tm); }
     }, [status]); // eslint-disable-line
 
-    const tapTile = (p) => {
-        if (status !== "ASKING" || picked.includes(p)) return;
-        const next = [...picked, p];
-        setPicked(next);
-        if (next.length === tiles.length) submit(next);
+    const tapKey = (c) => {
+        if (status !== "ASKING" || remainingOf(c) <= 0) return;
+        const next = [...typed, c];
+        setTyped(next);
+        if (next.length === targetChars.length) submit(next);
     };
-    const undo = () => { if (status === "ASKING") setPicked(picked.slice(0, -1)); };
+    const undo = () => { if (status === "ASKING") setTyped(typed.slice(0, -1)); };
 
-    const submit = (sel = picked) => {
+    const submit = (sel = typed) => {
         if (status !== "ASKING") return;
-        const answer = sel.map((p) => tiles[p].ch).join("");
+        const answer = sel.join("");
         const ok = norm(answer) === norm(target);
         playSound(ok ? "correct" : "wrong");
         if (ok) {
@@ -93,10 +106,10 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
         let next = pickWord(wordsToGame, [...guessed, current?.id]);
         if (!next) next = pickWord(wordsToGame, guessed);
         if (!next) { setStatus("FINISHED"); return; }
-        setCurrent(next); setPicked([]); setStatus("ASKING");
+        setCurrent(next); setTyped([]); setStatus("ASKING");
     };
 
-    const restart = () => { setGuessed([]); setMissed([]); setPicked([]); setCurrent(pickWord(wordsToGame, [])); setStatus("ASKING"); };
+    const restart = () => { setGuessed([]); setMissed([]); setTyped([]); setCurrent(pickWord(wordsToGame, [])); setStatus("ASKING"); };
 
     const backToSelection = () => {
         if (onExit) { onExit(); return; }
@@ -137,14 +150,38 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                         {built || <span className="build-line__ph">_ _ _</span>}
                     </div>
 
-                    {/* плитки */}
-                    <div className="build-tiles">
-                        {tiles.map((tl, p) => (
-                            <button key={p} className={"build-tile" + (picked.includes(p) ? " is-used" : "")}
-                                disabled={status !== "ASKING" || picked.includes(p)} onClick={() => tapTile(p)} lang={aLang}>
-                                {tl.ch === " " ? "␣" : tl.ch}
-                            </button>
+                    {/* клавиатура QWERTY: активны только буквы слова; на повторных — счётчик доступного */}
+                    <div className="kbd">
+                        {KBD_ROWS.map((row, ri) => (
+                            <div className="kbd__row" key={ri}>
+                                {row.map((c) => {
+                                    const need = needed[c] || 0;
+                                    const rem = remainingOf(c);
+                                    return (
+                                        <button key={c} className={"kbd__key" + (need ? "" : " is-off") + (need && rem <= 0 ? " is-spent" : "")}
+                                            disabled={status !== "ASKING" || !need || rem <= 0}
+                                            onClick={() => tapKey(c)} lang={aLang}>
+                                            {c}
+                                            {need > 1 && <span className="kbd__count">{rem}</span>}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         ))}
+                        {extras.length > 0 && (
+                            <div className="kbd__row">
+                                {extras.map((c) => {
+                                    const rem = remainingOf(c);
+                                    return (
+                                        <button key={c} className={"kbd__key kbd__key--wide" + (rem <= 0 ? " is-spent" : "")}
+                                            disabled={status !== "ASKING" || rem <= 0} onClick={() => tapKey(c)} lang={aLang}>
+                                            {c === " " ? "␣" : c}
+                                            {(needed[c] || 0) > 1 && <span className="kbd__count">{rem}</span>}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
                     {status === "INCORRECT" && (

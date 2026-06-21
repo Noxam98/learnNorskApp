@@ -21,7 +21,7 @@ import { BrandLoader } from "../ui/Spinner.jsx";
 //   loading     — bool: показать лоадер вместо вариантов (когда options ещё грузятся)
 //   children    — доп. узлы под вариантами внутри карточки (фидбэк, подсказка «дальше»)
 export const ChoiceQuestion = ({
-    prompt, promptLang, options, optionLang,
+    prompt, promptLang, options, optionLang, optionSub = {},
     picked = null, correct = null, reveal = false,
     onPick, posText, hint, countText, disabled = false, loading = false, children,
 }) => (
@@ -40,15 +40,17 @@ export const ChoiceQuestion = ({
                 const cls = reveal
                     ? (opt === correct ? " is-correct" : (opt === picked ? " is-wrong" : ""))
                     : "";
+                const sub = optionSub?.[opt];
                 return (
                     <button
                         key={opt}
-                        className={`choice${cls}`}
+                        className={`choice${cls}${sub ? " choice--2line" : ""}`}
                         lang={optionLang}
                         disabled={disabled}
                         onClick={() => onPick?.(opt)}
                     >
-                        {hyphenate(opt, optionLang)}
+                        <span className="choice__main">{hyphenate(opt, optionLang)}</span>
+                        {sub && <span className="choice__sub">{hyphenate(sub, optionLang)}</span>}
                     </button>
                 );
             })}
