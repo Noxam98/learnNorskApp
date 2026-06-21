@@ -22,11 +22,11 @@ const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: Stu
 const LEGACY_DIR = "int2no";
 
 const T = {
-    ru: { done: "Сессия завершена", acc: "верно", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "На сегодня всё — возвращайся завтра", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
-    en: { done: "Session complete", acc: "correct", streak: "streak", days: "d.", left: "left for today", leftZero: "All done for today — come back tomorrow", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
-    ukr: { done: "Сесію завершено", acc: "правильно", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "На сьогодні все — повертайся завтра", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
-    pl: { done: "Sesja zakończona", acc: "poprawnie", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Na dziś koniec — wróć jutro", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
-    lt: { done: "Sesija baigta", acc: "teisingai", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Šiandienai viskas — grįžk rytoj", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
+    ru: { done: "Сессия завершена", acc: "верно", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
+    en: { done: "Session complete", acc: "correct", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
+    ukr: { done: "Сесію завершено", acc: "правильно", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
+    pl: { done: "Sesja zakończona", acc: "poprawnie", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
+    lt: { done: "Sesija baigta", acc: "teisingai", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
 };
 
 const STAGE = { position: "fixed", inset: 0, zIndex: 95, background: "var(--game-bg)", color: "var(--game-ink)", display: "flex", flexDirection: "column", overflow: "auto" };
@@ -196,11 +196,14 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                         {!noneLeft && <span style={chip}><Icon n="repeat" sm /> {left} {t.left}</span>}
                     </div>
 
-                    {noneLeft
-                        ? <p style={{ opacity: .8, marginBottom: "var(--sp-4)" }}>{t.leftZero}</p>
-                        : <button className="btn btn--accent btn--lg btn--block" onClick={again} disabled={busy}>
+                    {/* дневная цель — ориентир, не лимит: «Учить ещё» доступно всегда в системной сессии
+                        (build_session досыпет новые, если есть место, иначе даст слова в работе) */}
+                    {noneLeft && <p style={{ opacity: .8, marginBottom: "var(--sp-3)" }}>{t.leftZero}</p>}
+                    {(isSystem || !noneLeft) && (
+                        <button className="btn btn--accent btn--lg btn--block" onClick={again} disabled={busy}>
                             <Icon n="play" sm /> {t.more}
-                        </button>}
+                        </button>
+                    )}
                     <button className="btn btn--ghost btn--block" style={{ marginTop: 8, color: "var(--game-ink)", borderColor: "var(--game-border)" }} onClick={() => onClose?.(true)}>
                         {t.finish}
                     </button>
