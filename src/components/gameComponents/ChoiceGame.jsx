@@ -14,6 +14,8 @@ import { ENDONYM, DUNNO, PLAY_STYLE, filterChosenWords, shuffle, uniq, PlayTopBa
 import { playSound, playWin } from "../tools/sound.js";
 
 const GMODE = "choice";
+// подсказка после ошибки: выбрать подсвеченный правильный вариант, чтобы продолжить
+const PICK_RIGHT = { ru: "Выбери правильный вариант", en: "Pick the correct option", ukr: "Обери правильний варіант", pl: "Wybierz poprawną opcję", lt: "Pasirink teisingą variantą" };
 
 // words/onResult/onExit передаёт «Учёба» (переиспользует игру). Без них — обычный режим «Игры».
 export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
@@ -106,11 +108,16 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     };
 
     const choose = (opt) => {
+        // после ошибки: правильный вариант подсвечен — выбрать его, чтобы идти дальше (без «Дальше»)
+        if (status === "INCORRECT") {
+            if (opt === correctPrimary) { playSound("correct"); goNext(); }
+            return;
+        }
         if (status !== "ASKING") return;
         const ok = opt === correctPrimary;
         playSound(ok ? "correct" : "wrong");
         setChosen(opt);
-        record(current, ok);
+        record(current, ok);                 // SRS — только первая попытка
         setResults((rs) => [...rs, { id: current.id, ok }]);
         setStatus(ok ? "CORRECT" : "INCORRECT");
     };
@@ -125,9 +132,10 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         setStatus("INCORRECT");
     };
 
-    // Второй клик по экрану (после ответа) — следующее слово.
+    // Клик по экрану продвигает только после ВЕРНОГО ответа. После ошибки — нужно выбрать
+    // подсвеченный правильный вариант (тогда дальше), а не «тыкать дальше».
     const onStageClick = () => {
-        if (status === "CORRECT" || status === "INCORRECT") goNext();
+        if (status === "CORRECT") goNext();
     };
 
     const restart = () => {
@@ -160,7 +168,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
             <ProgressSegments segs={segs} />
 
             <div className="pstage" onClick={onStageClick}
-                style={(status === "CORRECT" || status === "INCORRECT") ? { cursor: "pointer" } : undefined}>
+                style={status === "CORRECT" ? { cursor: "pointer" } : undefined}>
                 <ChoiceQuestion
                     prompt={question}
                     promptLang={qLang}
@@ -170,6 +178,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     picked={chosen}
                     correct={correctPrimary}
                     reveal={status === "CORRECT" || status === "INCORRECT"}
+                    allowRetry={status === "INCORRECT"}
                     onPick={choose}
                     posText={posText}
                     hint={`${t.translateTo} ${promptTarget}`}
@@ -184,8 +193,8 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     )}
 
                     <div className="pcta">
-                        {(status === "CORRECT" || status === "INCORRECT") &&
-                            <span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span>}
+                        {status === "CORRECT" && <span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span>}
+                        {status === "INCORRECT" && <span className="qhint">{PICK_RIGHT[currentLanguage] || PICK_RIGHT.ru} <Icon n="arrow-up" sm /></span>}
                     </div>
                     {status === "ASKING" && options && (
                         <div className="dunno-wrap">

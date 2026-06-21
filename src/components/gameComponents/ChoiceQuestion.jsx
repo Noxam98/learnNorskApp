@@ -22,7 +22,7 @@ import { BrandLoader } from "../ui/Spinner.jsx";
 //   children    — доп. узлы под вариантами внутри карточки (фидбэк, подсказка «дальше»)
 export const ChoiceQuestion = ({
     prompt, promptLang, options, optionLang, optionSub = {},
-    picked = null, correct = null, reveal = false,
+    picked = null, correct = null, reveal = false, allowRetry = false,
     onPick, posText, hint, countText, disabled = false, loading = false, children,
 }) => (
     <div className="qcard">
@@ -41,12 +41,14 @@ export const ChoiceQuestion = ({
                     ? (opt === correct ? " is-correct" : (opt === picked ? " is-wrong" : ""))
                     : "";
                 const sub = optionSub?.[opt];
+                // повтор после ошибки: правильный вариант остаётся кликабельным (выбрать его → дальше)
+                const btnDisabled = disabled && !(allowRetry && opt === correct);
                 return (
                     <button
                         key={opt}
-                        className={`choice${cls}${sub ? " choice--2line" : ""}`}
+                        className={`choice${cls}${sub ? " choice--2line" : ""}${allowRetry && opt === correct ? " choice--retry" : ""}`}
                         lang={optionLang}
-                        disabled={disabled}
+                        disabled={btnDisabled}
                         onClick={() => onPick?.(opt)}
                     >
                         <span className="choice__main">{hyphenate(opt, optionLang)}</span>

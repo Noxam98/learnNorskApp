@@ -73,8 +73,9 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
         if (status === "CORRECT") { const tm = setTimeout(goNext, 1100); return () => clearTimeout(tm); }
     }, [status]); // eslint-disable-line
 
+    const canType = status === "ASKING" || status === "INCORRECT"; // в INCORRECT — повтор после показа ответа
     const tapKey = (c) => {
-        if (status !== "ASKING" || remainingOf(c) <= 0) return;
+        if (!canType || remainingOf(c) <= 0) return;
         const next = [...typed, c];
         setTyped(next);
         if (next.length === targetChars.length) submit(next);
@@ -84,7 +85,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     // (pointerup) над той же клавишей. Уход пальца/отмена — без ввода.
     const keyDown = (c, e) => {
         e?.preventDefault();
-        if (status !== "ASKING" || remainingOf(c) <= 0) return;
+        if (!canType || remainingOf(c) <= 0) return;
         pressingRef.current = c;
         setPop(c);
         try { navigator.vibrate?.(8); } catch { /* нет вибро — ок */ }
@@ -100,19 +101,39 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const keyCancel = (c) => {
         if (pressingRef.current === c) { pressingRef.current = null; setPop(null); }
     };
-    const undo = () => { if (status === "ASKING") setTyped(typed.slice(0, -1)); };
+    const undo = () => { if (canType) setTyped(typed.slice(0, -1)); };
+
+    // Переход дальше после УСПЕШНОГО повтора (слово зачтено пройденным в gList).
+    const advanceWith = (gList) => {
+        let next = pickWord(wordsToGame, [...gList, current?.id]);
+        if (!next) next = pickWord(wordsToGame, gList);
+        if (!next) { setStatus("FINISHED"); playWin(); return; }
+        setCurrent(next); setTyped([]); setStatus("ASKING");
+    };
 
     const submit = (sel = typed) => {
-        if (status !== "ASKING") return;
+        if (status === "CORRECT" || status === "FINISHED") return;
         const answer = sel.join("");
         const ok = norm(answer) === norm(target);
         playSound(ok ? "correct" : "wrong");
+        // повтор после ошибки: ответ показан — дальше только когда собрал правильно
+        if (status === "INCORRECT") {
+            if (ok) {
+                const ng = [...guessed, current.id]; setGuessed(ng);   // зачесть без повторной записи в SRS
+                if (ng.length === total) { setStatus("FINISHED"); playWin(); } else advanceWith(ng);
+            } else {
+                setTyped([]); // снова неверно — очистить, пусть пробует ещё
+            }
+            return;
+        }
+        // первая попытка
         if (ok) {
             if (!missed.includes(current.id)) record(current, true);
             const ng = [...guessed, current.id]; setGuessed(ng);
             if (ng.length === total) { setStatus("FINISHED"); playWin(); } else setStatus("CORRECT");
         } else {
             if (!missed.includes(current.id)) { setMissed([...missed, current.id]); record(current, false); }
+            setTyped([]);              // очистить ввод — сразу можно собирать заново
             setStatus("INCORRECT");
         }
     };
@@ -122,6 +143,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
         if (status !== "ASKING") return;
         playSound("wrong");
         if (!missed.includes(current.id)) { setMissed([...missed, current.id]); record(current, false); }
+        setTyped([]);              // очистить — после показа ответа можно собрать его заново
         setStatus("INCORRECT");
     };
 
@@ -177,7 +199,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     {/* QWERTY-клавиатура (как Gboard): мгновенный ввод по pointerdown, поп-ап превью буквы,
                         хаптик; на мобилке прижата к низу; ⌫ в конце ряда z…m, пробел и ✓ — в ряду действий.
                         Только в ASKING. */}
-                    {status === "ASKING" && (
+                    {canType && (
                         <div className="kbd" onContextMenu={(e) => e.preventDefault()}>
                             {KBD_ROWS.map((row, ri) => (
                                 <div className={"kbd__row" + (ri === KBD_ROWS.length - 1 ? " kbd__row--last" : "")} key={ri}>
@@ -241,13 +263,12 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     )}
 
                     <div className="pcta">
-                        {status === "ASKING" && (
+                        {canType && (
                             <>
                                 <button className="gbtn gbtn--ghost" onClick={undo} disabled={!typed.length}><Icon n="arrow-left" sm /> {t.undo || "Стереть"}</button>
                                 <button className="gbtn gbtn--accent" onClick={() => submit()} disabled={!typed.length}><Icon n="check" sm /> {t.check}</button>
                             </>
                         )}
-                        {status === "INCORRECT" && <button className="gbtn gbtn--accent" onClick={goNext}>{t.next} <Icon n="arrow-right" sm /></button>}
                     </div>
                     {status === "ASKING" && (
                         <div className="dunno-wrap">

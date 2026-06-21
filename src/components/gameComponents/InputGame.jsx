@@ -48,7 +48,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const aLang = hyLang(currentLanguage, !isNo2Int);
 
     useEffect(() => {
-        if (status === "ASKING" && inputRef.current) inputRef.current.focus();
+        // фокус и при повторе после ошибки — чтобы сразу вводить заново
+        if ((status === "ASKING" || status === "INCORRECT") && inputRef.current) inputRef.current.focus();
     }, [status, current]);
 
     // Озвучка видимого слова при показе (+ прогрев правильного ответа заранее).
@@ -100,12 +101,31 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         setStatus("ASKING");
     };
 
+    // Переход дальше после УСПЕШНОГО повтора (слово уже зачтено как пройденное в gList).
+    const advanceWith = (gList) => {
+        let next = pickWord(wordsToGame, [...gList, current?.id]);
+        if (!next) next = pickWord(wordsToGame, gList);
+        if (!next) { setStatus("FINISHED"); playWin(); return; }
+        setCurrent(next); setInput(""); setStatus("ASKING");
+    };
+
     const submit = (e) => {
         e?.preventDefault();
-        if (status === "INCORRECT") { goNext(); return; }
-        if (status !== "ASKING") return;
+        if (status === "CORRECT" || status === "FINISHED") return;
         const answer = foldLoose(input);
-        applyResult(accepted.some((a) => foldLoose(a) === answer));
+        const ok = accepted.some((a) => foldLoose(a) === answer);
+        // повтор после ошибки: ответ уже показан — дальше только когда ввёл правильно
+        if (status === "INCORRECT") {
+            if (ok) {
+                playSound("correct");
+                const ng = [...guessed, current.id];   // зачесть как пройденное (без повторной записи в SRS)
+                setGuessed(ng);
+                if (ng.length === total) { setStatus("FINISHED"); playWin(); }
+                else advanceWith(ng);
+            }
+            return;
+        }
+        applyResult(ok);
     };
 
     // Честный «Не знаю»: как неверный — пометит missed, покажет верное написание.
@@ -178,9 +198,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     )}
 
                     <div className="pcta">
-                        {status === "INCORRECT"
-                            ? <button className="gbtn gbtn--accent" onClick={goNext}>{t.next} <Icon n="arrow-right" sm /></button>
-                            : <button className="gbtn gbtn--accent" onClick={submit} disabled={status === "CORRECT"}><Icon n="check" sm /> {t.check}</button>}
+                        {status !== "CORRECT" &&
+                            <button className="gbtn gbtn--accent" onClick={submit}><Icon n="check" sm /> {t.check}</button>}
                     </div>
                     {status === "ASKING" && (
                         <div className="dunno-wrap">

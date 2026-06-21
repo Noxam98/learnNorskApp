@@ -244,6 +244,9 @@
 .choice:disabled { cursor: default; pointer-events: none; }
 .choice.is-correct { border-color: var(--game-correct); color: var(--game-correct); background: rgba(98,192,131,.12); }
 .choice.is-wrong { border-color: var(--game-incorrect); color: var(--game-incorrect); background: rgba(230,122,82,.12); }
+/* после ошибки правильный вариант снова кликабелен — мягкая пульсация-подсказка «нажми меня» */
+.choice--retry { cursor: pointer; pointer-events: auto; animation: choiceRetry 1.3s ease-in-out infinite; }
+@keyframes choiceRetry { 0%,100% { box-shadow: 0 0 0 0 rgba(98,192,131,.0); } 50% { box-shadow: 0 0 0 4px rgba(98,192,131,.28); } }
 /* На мобильном тоже 2 колонки (4 варианта = 2×2) — компактнее и влезает в экран */
 @media (max-width: 640px) { .choices { grid-template-columns: 1fr 1fr; gap: var(--sp-2); margin-top: var(--sp-5); } .choice { padding: 14px 12px; font-size: var(--fs-16); } }
 
@@ -298,7 +301,7 @@
 .kbd__row--last { justify-content: flex-end; }
 /* пробел — растягивается на середину; ⌫ и ✓ — по 1.5 клавишные колонки */
 .kbd__key--space { flex: 1 1 auto; width: auto; min-width: 0; max-width: none; }
-.kbd__key--act { flex: 0 0 auto; width: calc(var(--kbd-key) * 1.5 + var(--kbd-gap) * 0.5); min-width: 0; max-width: none; color: var(--game-ink-2); }
+.kbd__key--act { flex: 0 0 auto; width: calc(var(--kbd-key) * 2 + var(--kbd-gap)); min-width: 0; max-width: none; color: var(--game-ink); }
 .kbd__key--go { flex: 0 0 auto; width: calc(var(--kbd-key) * 1.5 + var(--kbd-gap) * 0.5); min-width: 0; max-width: none; background: var(--game-accent); color: #fff; border-color: var(--game-accent); }
 .kbd__key--go .ic, .kbd__key--act .ic { width: 20px; height: 20px; }
 .kbd__key:hover:not(:disabled) { border-color: var(--game-accent); }
