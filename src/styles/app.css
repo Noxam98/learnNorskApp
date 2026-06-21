@@ -335,3 +335,29 @@
     .tabbar__item .ic { width: 22px; height: 22px; }
     .tabbar__item.is-active { color: var(--fjord-600); }
 }
+
+/* Баннер «доступна новая версия» */
+.update-banner {
+    position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+    transform: translateX(-50%); z-index: 9000;
+    display: inline-flex; align-items: center; gap: 10px;
+    max-width: calc(100vw - 24px); padding: 10px 10px 10px 16px;
+    border-radius: var(--r-full); background: var(--surface); color: var(--ink);
+    border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+    animation: ubIn .22s var(--ease);
+}
+@keyframes ubIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.update-banner__ic { display: inline-flex; color: var(--ember-600); }
+.update-banner__ic .ic { width: 18px; height: 18px; }
+.update-banner__msg { font-size: var(--fs-14); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.update-banner__btn {
+    flex: none; border: none; cursor: pointer; font-family: inherit; font-weight: 800; font-size: var(--fs-14);
+    padding: 8px 16px; border-radius: var(--r-full); background: var(--ember-600); color: #fff;
+}
+.update-banner__btn:hover { filter: brightness(1.06); }
+.update-banner__x {
+    flex: none; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px;
+    border: none; background: none; cursor: pointer; color: var(--ink-3); border-radius: var(--r-full);
+}
+.update-banner__x:hover { background: var(--surface-3); color: var(--ink); }
+.update-banner__x .ic { width: 15px; height: 15px; }

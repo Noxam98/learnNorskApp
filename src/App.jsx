@@ -9,6 +9,7 @@ import { useSystemStore } from "./store/systemStore.jsx";
 
 import { BrandLoader } from "./components/ui/Spinner.jsx";
 import Toast from "./components/tools/error.jsx";
+import { UpdateBanner } from "./components/ui/UpdateBanner.jsx";
 import { WordListPage } from "./pages/WordListPage.jsx";
 import { PoolPage } from "./pages/PoolPage.jsx";
 import { GamePage } from "./pages/GamePage.jsx";
@@ -91,6 +92,7 @@ function App() {
             {showInitialLoader ? <BrandLoader size="lg" /> : routes}
             {showFooter && <Footer />}
             <Toast text={toast} setText={showToast} />
+            <UpdateBanner />
         </div>
     );
 }
