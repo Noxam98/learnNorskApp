@@ -179,7 +179,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     {status === "ASKING" && (
                         <div className="kbd" onContextMenu={(e) => e.preventDefault()}>
                             {KBD_ROWS.map((row, ri) => (
-                                <div className="kbd__row" key={ri}>
+                                <div className={"kbd__row" + (ri === KBD_ROWS.length - 1 ? " kbd__row--last" : "")} key={ri}>
                                     {row.map((c) => {
                                         const need = needed[c] || 0;
                                         const rem = remainingOf(c);
