@@ -196,8 +196,8 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     <div className="pcta">
                         {status === "ASKING" && (
                             <>
-                                <button className="gbtn gbtn--ghost" onClick={undo} disabled={!picked.length}><Icon n="arrow-left" sm /> {t.undo || "Стереть"}</button>
-                                <button className="gbtn gbtn--accent" onClick={() => submit()} disabled={!picked.length}><Icon n="check" sm /> {t.check}</button>
+                                <button className="gbtn gbtn--ghost" onClick={undo} disabled={!typed.length}><Icon n="arrow-left" sm /> {t.undo || "Стереть"}</button>
+                                <button className="gbtn gbtn--accent" onClick={() => submit()} disabled={!typed.length}><Icon n="check" sm /> {t.check}</button>
                             </>
                         )}
                         {status === "INCORRECT" && <button className="gbtn gbtn--accent" onClick={goNext}>{t.next} <Icon n="arrow-right" sm /></button>}
