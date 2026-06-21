@@ -4,6 +4,7 @@ import { Icon } from "./Icon.jsx";
 import { SpeakButton } from "./SpeakButton.jsx";
 import { speakText } from "./tts.js";
 import { posFormsRows, posLabelFull, posMeta } from "./pos.js";
+import { freqLabel, freqCls } from "./freq.js";
 import { ActionMenu } from "./Dropdown.jsx";
 import { BtnSpinner, Dots } from "./Spinner.jsx";
 import { useWordsStore } from "../../store/wordStore.jsx";
@@ -163,7 +164,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
-        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null } : v)).catch(() => {});
+        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null } : v)).catch(() => {});
     };
 
     useEffect(() => {
@@ -242,9 +243,14 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                     <button className="btn btn--ghost btn--sm" disabled={delBusy} onClick={() => setDelConfirm(false)}>{t.no}</button>
                 </div>
             )}
-            {(view?.level || view?.topics?.length > 0) && (
+            {(view?.level || view?.freqBand || view?.topics?.length > 0) && (
                 <div className="row wrap" style={{ gap: "6px", marginBottom: "var(--sp-3)" }}>
                     {view.level && <span className="chip lvl">{view.level}</span>}
+                    {view.freqBand && (
+                        <span className={`chip freq ${freqCls(view.freqBand)}`} title={t.freqHint || "частота употребления"}>
+                            <Icon n="activity" sm /> {freqLabel(view.freqBand, lang)}
+                        </span>
+                    )}
                     {(view.topics || []).map((k) => (
                         <span key={k} className="chip" style={{ background: "var(--surface-3)", color: "var(--ink-2)" }}>
                             {t.topics?.[k] || k}

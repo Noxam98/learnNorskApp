@@ -176,6 +176,15 @@
   font-size: var(--fs-12); font-weight: 600; letter-spacing: .01em;
 }
 .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+/* частотность слова: цвет от зелёного (частое) к серому (редкое) */
+.chip.freq { font-weight: 700; }
+.chip.freq .ic { width: 13px; height: 13px; }
+.chip.freq.freq--very-common { background: color-mix(in srgb, var(--st-master) 20%, var(--surface)); color: var(--st-master); }
+.chip.freq.freq--common      { background: color-mix(in srgb, var(--st-master) 14%, var(--surface)); color: var(--st-master); }
+.chip.freq.freq--frequent    { background: color-mix(in srgb, var(--st-review) 16%, var(--surface)); color: var(--st-review); }
+.chip.freq.freq--occasional  { background: color-mix(in srgb, var(--st-weak) 16%, var(--surface)); color: var(--st-weak); }
+.chip.freq.freq--rare        { background: var(--surface-3); color: var(--ink-2); }
+.chip.freq.freq--very-rare   { background: var(--surface-3); color: var(--ink-3); }
 .chip--clickable { transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }
 .chip--clickable:hover { box-shadow: var(--shadow-sm); transform: translateY(-1px); }
 .chip--clickable:active { transform: translateY(0); }
