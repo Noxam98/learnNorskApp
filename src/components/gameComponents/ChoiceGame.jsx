@@ -76,26 +76,28 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         setChosen(null);
         // второй перевод правильного слова — на вторую строку его кнопки
         const correctSub = (isNo2Int && translations[1]) ? translations[1] : null;
+        const applyRich = (rich) => {
+            setOptions(shuffle(uniq([correctPrimary, ...rich.map((d) => d.w)])));
+            const sub = correctSub ? { [correctPrimary]: correctSub } : {};
+            rich.forEach((d) => { if (d.w && d.alt) sub[d.w] = d.alt; });
+            setSubOf(sub);
+        };
         const localOptions = () => {
             const others = wordsToGame.filter((w) => w.id !== current.id)
                 .map((w) => (isNo2Int ? w.translate?.[currentLanguage]?.[0] : w.translate?.no?.[0]));
             setOptions(shuffle(uniq([correctPrimary, ...shuffle(others).slice(0, 3)])));
             setSubOf(correctSub ? { [correctPrimary]: correctSub } : {});
         };
-        // Дистракторы ВСЕГДА берём с бэка (семантически близкие из всего пула) — локальные из
-        // мелкого набора слишком очевидны. По pool_id (если есть) — иначе по id слова словаря.
+        // Варианты приходят ВМЕСТЕ с сессией (inline) — используем без запроса.
+        const pre = current.options?.length ? current.options
+            : (current.distractors?.length ? current.distractors.map((w) => ({ w, alt: null })) : null);
+        if (pre) { applyRich(pre); return; }
+        // Фолбэк (легаси-путь «Игры» / нет inline): дистракторы с бэка, семантически близкие.
         const req = current.pool_id != null
             ? api.getPoolDistractors(current.pool_id, { n: 3, mode, lang: currentLanguage })
             : api.getDistractors(current.id, { n: 3, mode, lang: currentLanguage });
         req
-            .then((res) => {
-                if (cancelled) return;
-                const rich = res.options || (res.distractors || []).map((w) => ({ w, alt: null }));
-                setOptions(shuffle(uniq([correctPrimary, ...rich.map((d) => d.w)])));
-                const sub = correctSub ? { [correctPrimary]: correctSub } : {};
-                rich.forEach((d) => { if (d.w && d.alt) sub[d.w] = d.alt; });
-                setSubOf(sub);
-            })
+            .then((res) => { if (!cancelled) applyRich(res.options || (res.distractors || []).map((w) => ({ w, alt: null }))); })
             .catch(() => { if (!cancelled) localOptions(); });
         return () => { cancelled = true; };
     }, [status, current, currentLanguage, mode]); // eslint-disable-line

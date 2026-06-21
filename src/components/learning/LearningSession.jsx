@@ -97,11 +97,11 @@ export default function LearningSession({ words = [], mode = "choice", system = 
             const list = Array.isArray(r) ? r : (r?.elements || r?.items || r?.words || []);
             const els = toElements(list, lang);
             if (els.length) {
-                // НЕ открываем задания, пока не загружено всё нужное: ждём дистракторы ВСЕХ «выборов»
-                // (кэшируются), чтобы внутри сессии ничего не подгружалось и не тормозило. Лоадер
-                // «Готовим сессию…» висит до готовности. Префетч делает это ожидание почти мгновенным.
+                // Варианты «выбора» приходят inline в элементах сессии. Догружаем дистракторы ТОЛЬКО
+                // для тех choice, где их вдруг нет (страховка) — и ждём их, чтобы внутри сессии ничего
+                // не тормозило. Обычно тут пусто → лоадер не задерживается.
                 await Promise.all(els
-                    .filter((e) => e.mode === "choice")
+                    .filter((e) => e.mode === "choice" && !(e.gw?.options?.length || e.gw?.distractors?.length))
                     .map((e) => api.getPoolDistractors(e.gw?.pool_id, { n: 3, mode: e.dir, lang }).catch(() => null)));
                 setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setHist([]); setAfter(null); setPhase("play");
             }
