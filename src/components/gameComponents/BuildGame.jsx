@@ -203,6 +203,10 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                         <div className="kbd" onContextMenu={(e) => e.preventDefault()}>
                             {KBD_ROWS.map((row, ri) => (
                                 <div className={"kbd__row" + (ri === KBD_ROWS.length - 1 ? " kbd__row--last" : "")} key={ri}>
+                                    {/* «Не знаю» — заполняет пустоту слева в нижнем ряду (как честный пропуск) */}
+                                    {ri === KBD_ROWS.length - 1 && status === "ASKING" && (
+                                        <button type="button" className="kbd__key kbd__key--dunno" onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
+                                    )}
                                     {row.map((c) => {
                                         const need = needed[c] || 0;
                                         const rem = remainingOf(c);
@@ -263,18 +267,11 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     )}
 
                     <div className="pcta">
+                        {/* стирание — клавишей ⌫; «Не знаю» — клавишей слева в клавиатуре */}
                         {canType && (
-                            <>
-                                <button className="gbtn gbtn--ghost" onClick={undo} disabled={!typed.length}><Icon n="arrow-left" sm /> {t.undo || "Стереть"}</button>
-                                <button className="gbtn gbtn--accent" onClick={() => submit()} disabled={!typed.length}><Icon n="check" sm /> {t.check}</button>
-                            </>
+                            <button className="gbtn gbtn--accent" onClick={() => submit()} disabled={!typed.length}><Icon n="check" sm /> {t.check}</button>
                         )}
                     </div>
-                    {status === "ASKING" && (
-                        <div className="dunno-wrap">
-                            <button className="dunno-link" onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
-                        </div>
-                    )}
                 </div>
 
                 {status === "FINISHED" && !onFinish && (
