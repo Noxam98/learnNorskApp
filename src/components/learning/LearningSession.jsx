@@ -132,10 +132,11 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     // Показать итог + подтянуть статистику.
     const showSummary = async () => {
         setPhase("summary");
-        // сразу после окончания — начинаем греть следующую сессию (если ещё не греется)
-        useSessionStore.getState().prefetch(20);
         try { setAfter(await api.learningStats()); } catch { /* */ }
         if (isSystem) { try { setGate(await api.learningGate()); } catch { /* */ } }
+        // следующую сессию греем ПОСЛЕ статов — к этому моменту ответы записаны, и бэк отдаст
+        // свежий состав (со сдвинутыми по рампе словами), а не те же «выборы».
+        useSessionStore.getState().prefetch(20);
     };
 
     // Финиш одной игры. isStudy=true — это была карточка-интро (НЕ ответ): считаем отдельно.
