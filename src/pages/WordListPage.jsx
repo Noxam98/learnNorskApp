@@ -16,6 +16,14 @@ import Error from "../components/tools/error.jsx";
 import api from "../components/tools/api.js";
 
 const SEARCH_DEBOUNCE_MS = 550; // время «добега» кольца отсчёта до запроса в пул
+// Подписи источника подсказки: из нашей библиотеки (БД) либо будет сгенерировано ИИ.
+const SRC_LABEL = {
+    ru:  { lib: "в библиотеке", gen: "будет сгенерировано" },
+    en:  { lib: "in library", gen: "will be generated" },
+    ukr: { lib: "у бібліотеці", gen: "буде згенеровано" },
+    pl:  { lib: "w bibliotece", gen: "zostanie wygenerowane" },
+    lt:  { lib: "bibliotekoje", gen: "bus sugeneruota" },
+};
 const POS_ORDER = ["noun", "verb", "adj", "phrase", "other"];
 const SORT_LABELS = {
     ru:  { title: "Сортировка", added: "По добавлению", alpha: "По алфавиту", pos: "По части речи" },
@@ -72,6 +80,7 @@ export const WordListPage = () => {
     const [actionsOpen, setActionsOpen] = useState(false);
     const [confirm, setConfirm] = useState(null); // { body, danger, onYes }
     const searchTimer = useRef();
+    const inputRef = useRef(null);
 
     const askConfirm = (body, onYes, danger = false) => setConfirm({ body, onYes, danger });
 
@@ -122,10 +131,20 @@ export const WordListPage = () => {
         }, SEARCH_DEBOUNCE_MS);
     };
 
-    const pickSuggestion = async (norwegian) => {
-        setSuggestions([]); setPrompt(""); setSearchPhase("idle"); setAddingPool(norwegian);
-        try { await addFromPool(norwegian); } catch { /* тост покажет api.js */ }
+    // Выбор подсказки: всегда заполняем поле выбранным словом, добавляем (из пула мгновенно,
+    // словарное — генерация), затем очищаем поле и возвращаем фокус для следующего ввода.
+    const pickSuggestion = async (s) => {
+        const word = typeof s === "string" ? s : s.word;
+        const inPool = typeof s === "string" ? true : s.inPool !== false;
+        setSuggestions([]); setSearchPhase("idle");
+        setPrompt(word); setAddingPool(word);
+        try {
+            if (inPool) await addFromPool(word);
+            else await addWords(word);   // слова нет в базе → генерация
+        } catch { /* тост покажет api.js */ }
         setAddingPool(null);
+        setPrompt("");
+        requestAnimationFrame(() => inputRef.current?.focus());
     };
 
     const dictLabel = dictName === "default" ? t.defaultDict : dictName;
@@ -296,7 +315,7 @@ export const WordListPage = () => {
             {/* Композер добавления слова + автокомплит из общего пула */}
             <div className="composer" style={{ position: "relative" }}>
                 <span className="composer__spark"><Icon n="sparkles" /></span>
-                <input type="text" value={prompt} placeholder={t.inputPlaceholder}
+                <input ref={inputRef} type="text" value={prompt} placeholder={t.inputPlaceholder}
                     onChange={(e) => onPromptChange(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") { setSuggestions([]); setSearchPhase("idle"); handleAdd(); } }} />
                 {searchPhase === "counting"
@@ -312,11 +331,22 @@ export const WordListPage = () => {
                     <div className="card composer__suggest">
                         {suggestions.map((s) => {
                             const { cls } = posMeta(s.part_of_speech);
+                            const srcT = SRC_LABEL[currentLanguage] || SRC_LABEL.ru;
                             return (
-                                <button key={s.word} className="suggest__item" onMouseDown={(e) => { e.preventDefault(); pickSuggestion(s.word); }}>
+                                <button key={s.word} className="suggest__item" onMouseDown={(e) => { e.preventDefault(); pickSuggestion(s); }}>
+                                    <span className={`suggest__src ${s.inPool === false ? "is-gen" : "is-lib"}`}
+                                        title={s.inPool === false ? srcT.gen : srcT.lib}>
+                                        <Icon n={s.inPool === false ? "sparkles" : "database"} sm />
+                                    </span>
                                     <span className="suggest__w">{s.word}</span>
-                                    <span className={`chip pos ${cls}`}>{posLabel(s.part_of_speech, t)}</span>
-                                    <span className="suggest__t">{s.translate?.[currentLanguage]?.join(", ")}</span>
+                                    {s.inPool === false ? (
+                                        <span className="suggest__t muted">{srcT.gen}</span>
+                                    ) : (
+                                        <>
+                                            <span className={`chip pos ${cls}`}>{posLabel(s.part_of_speech, t)}</span>
+                                            <span className="suggest__t">{s.translate?.[currentLanguage]?.join(", ")}</span>
+                                        </>
+                                    )}
                                 </button>
                             );
                         })}

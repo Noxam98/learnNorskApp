@@ -152,6 +152,14 @@
 .suggest__item:hover { background: var(--surface-3); }
 .suggest__w { font-weight: 700; color: var(--ink); }
 .suggest__t { color: var(--ink-2); font-size: var(--fs-14); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.suggest__t.muted { color: var(--ink-3); font-style: italic; }
+/* источник подсказки: БД (в библиотеке) или генерация ИИ */
+.suggest__src { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 22px; height: 22px; border-radius: var(--r-xs); }
+.suggest__src .ic { width: 15px; height: 15px; }
+.suggest__src.is-lib { color: var(--st-master); background: color-mix(in srgb, var(--st-master) 14%, var(--surface)); }
+.suggest__src.is-gen { color: var(--ember-600); background: var(--ember-50); }
+.suggest__item .suggest__w { flex: none; }
+.suggest__item .suggest__t { margin-left: auto; text-align: right; }
 
 /* Переключатель языка на экранах входа/регистрации */
 .auth__lang { position: absolute; top: var(--sp-5); right: var(--sp-5); z-index: 20; }
