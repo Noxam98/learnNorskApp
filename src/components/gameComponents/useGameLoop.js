@@ -64,8 +64,7 @@ export function useGameLoop({
         record(current, ok);                                   // SRS — только первая попытка
         setResults((rs) => [...rs, { id: current.id, ok }]);
         if (ok) {
-            if (autoAdvanceMs > 0 && pos + 1 >= total) { setStatus("FINISHED"); playWin(); }
-            else setStatus("CORRECT");
+            setStatus("CORRECT");   // показываем «верно» ~1с, затем авто-переход (см. эффект ниже)
         } else {
             setStatus("INCORRECT"); onWrong?.();
         }

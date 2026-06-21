@@ -96,11 +96,18 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                             onDunno={dontKnow} dunnoLabel={DUNNO[currentLanguage]} showDunno={status === "ASKING"} />
                     )}
 
+                    {status === "CORRECT" && (
+                        <div className="feedback" style={{ display: "flex" }}>
+                            <div className="fb-icon" style={{ background: "rgba(98,192,131,.16)", color: "var(--game-correct)" }}><Icon n="check" lg /></div>
+                            <div className="fb-title" style={{ color: "var(--game-correct)" }}>{t.correctly}</div>
+                        </div>
+                    )}
                     {status === "INCORRECT" && (
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(230,122,82,.16)", color: "var(--game-incorrect)" }}><Icon n="x" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-incorrect)" }}>{t.notQuite}</div>
-                            <div className="fb-line">{t.mistake} <b lang={aLang}>{hyphenate(target, aLang)}</b></div>
+                            <div className="fb-line">{t.mistake}</div>
+                            <div className="fb-answer" lang={aLang}>{hyphenate(target, aLang)}</div>
                             {descriptionText && <div className="fb-line muted">{descriptionText}</div>}
                         </div>
                     )}

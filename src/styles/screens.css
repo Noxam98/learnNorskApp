@@ -382,6 +382,10 @@
   .fb-title { font-size: var(--fs-16); font-weight: 800; letter-spacing: var(--ls-tight); }
   .fb-line { font-size: var(--fs-14); color: var(--game-ink-2); line-height: var(--lh-snug); overflow-wrap: break-word; word-break: break-word; min-width: 0; max-width: 100%; }
   .fb-line b { color: var(--game-ink); font-weight: 700; }
+  /* правильное слово, которое нужно было ввести — крупно и заметно */
+  .fb-answer { font-size: var(--fs-28); font-weight: 800; line-height: 1.1; color: var(--game-correct); letter-spacing: var(--ls-tight); overflow-wrap: break-word; word-break: break-word; max-width: 100%; }
+  /* зелёная подсказка «верно» */
+  .qhint--ok { color: var(--game-correct); }
 
   /* finished summary */
   .finish { display: none; width: 100%; max-width: 560px; text-align: center; }

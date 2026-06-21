@@ -100,7 +100,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(230,122,82,.16)", color: "var(--game-incorrect)" }}><Icon n="x" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-incorrect)" }}>{t.notQuite}</div>
-                            <div className="fb-line">{t.mistake} <b lang={aLang}>{hyphenate(accepted.join(", "), aLang)}</b></div>
+                            <div className="fb-line">{t.mistake}</div>
+                            <div className="fb-answer" lang={aLang}>{hyphenate(accepted.join(", "), aLang)}</div>
                             {descriptionText && <div className="fb-line muted">{descriptionText}</div>}
                         </div>
                     )}

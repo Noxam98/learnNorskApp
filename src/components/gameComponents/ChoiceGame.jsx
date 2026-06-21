@@ -22,10 +22,10 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
 
     const loop = useGameLoop({
         gmode: "choice", words: wordsProp, onResult, onFinish, onExit, setGameState,
-        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 0,
+        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, // после верного — показать «верно» ~1с, затем авто-переход
         onAdvance: () => setChosen(null),
     });
-    const { t, currentLanguage, total, current, status, words: wordsToGame, results, knownFirstTry, score, qIndex, qTotal, answer, advance, restart, backToSelection } = loop;
+    const { t, currentLanguage, total, current, status, words: wordsToGame, results, knownFirstTry, score, qIndex, qTotal, answer, restart, backToSelection } = loop;
 
     const no = current?.translate?.no?.[0] || "";
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
@@ -89,8 +89,6 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     };
     // Честный «Не знаю»: ничего не выбрано — подсветится только верный, засчитывается как НЕ угадано.
     const dontKnow = () => { if (status !== "ASKING") return; setChosen(null); answer(false); };
-    // Клик по экрану продвигает только после ВЕРНОГО ответа (после ошибки — выбрать верный вариант).
-    const onStageClick = () => { if (status === "CORRECT") advance(); };
 
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
 
@@ -109,8 +107,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
             <PlayTopBar correctCount={correctCount} wrongCount={wrongCount} onExit={backToSelection} t={t} />
             <ProgressSegments segs={segs} />
 
-            <div className="pstage" onClick={onStageClick}
-                style={status === "CORRECT" ? { cursor: "pointer" } : undefined}>
+            <div className="pstage">
                 <ChoiceQuestion
                     prompt={question}
                     promptLang={qLang}
@@ -135,7 +132,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     )}
 
                     <div className="pcta">
-                        {status === "CORRECT" && <span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span>}
+                        {status === "CORRECT" && <span className="qhint qhint--ok"><Icon n="check" sm /> {t.correctly}</span>}
                         {status === "INCORRECT" && <span className="qhint">{PICK_RIGHT[currentLanguage] || PICK_RIGHT.ru} <Icon n="arrow-up" sm /></span>}
                     </div>
                     {status === "ASKING" && options && (
