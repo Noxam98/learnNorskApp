@@ -9,6 +9,7 @@
 import { useEffect, useState } from "react";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { useSessionStore } from "../../store/sessionStore.jsx";
+import { pl } from "../ui/plural.js";
 import { Icon } from "../ui/Icon.jsx";
 import { BtnSpinner } from "../ui/Spinner.jsx";
 import api from "../tools/api.js";
@@ -24,11 +25,11 @@ const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: Stu
 const LEGACY_DIR = "int2no";
 
 const T = {
-    ru: { done: "Сессия завершена", acc: "верно", cardsShown: "карточек показано", masteredLabel: "Выучено", of: "из", perSession: "за сессию", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", examNote: "Готова пачка слов — сдай экзамен, чтобы открыть новые", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
-    en: { done: "Session complete", acc: "correct", cardsShown: "cards shown", masteredLabel: "Learned", of: "of", perSession: "this session", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", examNote: "A word pack is ready — pass the exam to unlock new ones", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
-    ukr: { done: "Сесію завершено", acc: "правильно", cardsShown: "карток показано", masteredLabel: "Вивчено", of: "з", perSession: "за сесію", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", examNote: "Пачка слів готова — склади екзамен, щоб відкрити нові", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
-    pl: { done: "Sesja zakończona", acc: "poprawnie", cardsShown: "kart pokazano", masteredLabel: "Nauczono", of: "z", perSession: "w sesji", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", examNote: "Paczka słów gotowa — zdaj egzamin, aby odblokować nowe", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
-    lt: { done: "Sesija baigta", acc: "teisingai", cardsShown: "kortelių parodyta", masteredLabel: "Išmokta", of: "iš", perSession: "sesijoje", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", examNote: "Žodžių paketas paruoštas — išlaikyk egzaminą, kad atrakintum naujus", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
+    ru: { done: "Сессия завершена", acc: "верно", cardsShown: "карточек показано", shown: "показано", masteredLabel: "Выучено", of: "из", perSession: "за сессию", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", examNote: "Готова пачка слов — сдай экзамен, чтобы открыть новые", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
+    en: { done: "Session complete", acc: "correct", cardsShown: "cards shown", shown: "shown", masteredLabel: "Learned", of: "of", perSession: "this session", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", examNote: "A word pack is ready — pass the exam to unlock new ones", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
+    ukr: { done: "Сесію завершено", acc: "правильно", cardsShown: "карток показано", shown: "показано", masteredLabel: "Вивчено", of: "з", perSession: "за сесію", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", examNote: "Пачка слів готова — склади екзамен, щоб відкрити нові", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
+    pl: { done: "Sesja zakończona", acc: "poprawnie", cardsShown: "kart pokazano", shown: "pokazano", masteredLabel: "Nauczono", of: "z", perSession: "w sesji", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", examNote: "Paczka słów gotowa — zdaj egzamin, aby odblokować nowe", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
+    lt: { done: "Sesija baigta", acc: "teisingai", cardsShown: "kortelių parodyta", shown: "parodyta", masteredLabel: "Išmokta", of: "iš", perSession: "sesijoje", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", examNote: "Žodžių paketas paruoštas — išlaikyk egzaminą, kad atrakintum naujus", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
 };
 
 const STAGE = { position: "fixed", inset: 0, zIndex: 95, background: "var(--game-bg)", color: "var(--game-ink)", display: "flex", flexDirection: "column", overflow: "auto" };
@@ -225,7 +226,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                             <p style={{ opacity: .8, marginTop: 4 }}>{res.correct} / {res.total} {t.acc}</p>
                         </>
                     ) : (
-                        <p style={{ opacity: .8, marginTop: 4 }}>{cards} {t.cardsShown}</p>
+                        <p style={{ opacity: .8, marginTop: 4 }}>{cards} {pl(lang, cards, "card")} {t.shown}</p>
                     )}
 
                     {totalWords > 0 && (
@@ -237,7 +238,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
 
                     <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", margin: "var(--sp-5) 0" }}>
                         <span style={chip}><Icon n="flame" sm /> {streak} {t.days} · {t.streak}</span>
-                        {cards > 0 && res.total > 0 && <span style={chip}><Icon n="layers" sm /> {cards} {t.cardsShown}</span>}
+                        {cards > 0 && res.total > 0 && <span style={chip}><Icon n="layers" sm /> {cards} {pl(lang, cards, "card")} {t.shown}</span>}
                         {!noneLeft && <span style={chip}><Icon n="repeat" sm /> {left} {t.left}</span>}
                     </div>
 

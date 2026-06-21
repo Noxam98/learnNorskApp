@@ -8,12 +8,13 @@ import { Modal } from "../../components/ui/Modal.jsx";
 import { BtnSpinner, BrandLoader } from "../../components/ui/Spinner.jsx";
 import { StatusDot, statusLabel, STATUS_ORDER } from "../../components/learning/StatusBits.jsx";
 import { useSessionStore } from "../../store/sessionStore.jsx";
+import { pl } from "../../components/ui/plural.js";
 
 // ---------- i18n (ru/en/ukr/pl/lt) ----------
 const T = {
     ru: {
         smartReview: "Smart Review · на сегодня",
-        readyA: "слов", readyB: "готовы\nна сегодня",
+        readyA: "слов", readyB: "на сегодня",
         reviewDesc: "Просроченные интервалы, слабые слова и немного новых — система собрала оптимальную сессию.",
         chReview: "повторить", chWeak: "слабых", chNew: "новое",
         startReview: "Заниматься",
@@ -28,7 +29,7 @@ const T = {
         gateLockedAdd: "Сначала сдай экзамен пачки",
         gateProgress: "До экзамена пачки осталось {n}",
         goal: "Дневная цель", streak: "дней", days: "дней",
-        goalNum: "из {n} слов", progressTitle: "Прогресс", masteredTitle: "Выучено слов", masteredDesc: "Освоено по всей рампе. Остальные дозреют по мере занятий.", goalAlmost: "Почти у цели!", goalDone: "Цель выполнена!",
+        goalNum: "из {n}", progressTitle: "Прогресс", masteredTitle: "Выучено слов", masteredDesc: "Освоено по всей рампе. Остальные дозреют по мере занятий.", goalAlmost: "Почти у цели!", goalDone: "Цель выполнена!",
         goalDescAlmost: "Закрывай повторения — серия не прервётся.",
         goalDescDone: "Сегодня всё повторено. Возвращайся завтра — повторения подойдут по интервалам.",
         suggestT: "Докинуть слов",
@@ -51,7 +52,7 @@ const T = {
     },
     en: {
         smartReview: "Smart Review · for today",
-        readyA: "words", readyB: "ready\nfor today",
+        readyA: "words", readyB: "for today",
         reviewDesc: "Overdue intervals, weak words and a few new ones — an optimal session.",
         chReview: "review", chWeak: "weak", chNew: "new",
         startReview: "Study",
@@ -66,7 +67,7 @@ const T = {
         gateLockedAdd: "Pass the pack exam first",
         gateProgress: "{n} left until the pack exam",
         goal: "Daily goal", streak: "days", days: "days",
-        goalNum: "of {n} words", progressTitle: "Progress", masteredTitle: "Words mastered", masteredDesc: "Fully learned through the ramp. The rest mature as you practice.", goalAlmost: "Almost there!", goalDone: "Goal complete!",
+        goalNum: "of {n}", progressTitle: "Progress", masteredTitle: "Words mastered", masteredDesc: "Fully learned through the ramp. The rest mature as you practice.", goalAlmost: "Almost there!", goalDone: "Goal complete!",
         goalDescAlmost: "Close your reviews — the streak won't break.",
         goalDescDone: "All reviewed for today. Come back tomorrow.",
         suggestT: "Add more words",
@@ -89,7 +90,7 @@ const T = {
     },
     ukr: {
         smartReview: "Smart Review · на сьогодні",
-        readyA: "слів", readyB: "готові\nна сьогодні",
+        readyA: "слів", readyB: "на сьогодні",
         reviewDesc: "Прострочені інтервали, слабкі слова й трохи нових — оптимальна сесія.",
         chReview: "повторити", chWeak: "слабких", chNew: "нове",
         startReview: "Займатися",
@@ -104,7 +105,7 @@ const T = {
         gateLockedAdd: "Спершу склади екзамен пачки",
         gateProgress: "До екзамену пачки залишилось {n}",
         goal: "Денна ціль", streak: "днів", days: "днів",
-        goalNum: "з {n} слів", progressTitle: "Прогрес", masteredTitle: "Вивчено слів", masteredDesc: "Освоєно по всій рампі. Решта дозріє під час занять.", goalAlmost: "Майже у цілі!", goalDone: "Ціль виконано!",
+        goalNum: "з {n}", progressTitle: "Прогрес", masteredTitle: "Вивчено слів", masteredDesc: "Освоєно по всій рампі. Решта дозріє під час занять.", goalAlmost: "Майже у цілі!", goalDone: "Ціль виконано!",
         goalDescAlmost: "Закривай повторення — серія не перерветься.",
         goalDescDone: "Сьогодні все повторено. Повертайся завтра.",
         suggestT: "Докинути слів",
@@ -127,7 +128,7 @@ const T = {
     },
     pl: {
         smartReview: "Smart Review · na dziś",
-        readyA: "słów", readyB: "gotowych\nna dziś",
+        readyA: "słów", readyB: "na dziś",
         reviewDesc: "Zaległe interwały, słabe słowa i kilka nowych — optymalna sesja.",
         chReview: "powtórka", chWeak: "słabych", chNew: "nowe",
         startReview: "Ucz się",
@@ -142,7 +143,7 @@ const T = {
         gateLockedAdd: "Najpierw zdaj egzamin paczki",
         gateProgress: "Do egzaminu paczki zostało {n}",
         goal: "Cel dzienny", streak: "dni", days: "dni",
-        goalNum: "z {n} słów", progressTitle: "Postęp", masteredTitle: "Opanowane słowa", masteredDesc: "W pełni opanowane. Reszta dojrzeje w trakcie nauki.", goalAlmost: "Prawie cel!", goalDone: "Cel osiągnięty!",
+        goalNum: "z {n}", progressTitle: "Postęp", masteredTitle: "Opanowane słowa", masteredDesc: "W pełni opanowane. Reszta dojrzeje w trakcie nauki.", goalAlmost: "Prawie cel!", goalDone: "Cel osiągnięty!",
         goalDescAlmost: "Domknij powtórki — seria się nie przerwie.",
         goalDescDone: "Wszystko powtórzone na dziś. Wróć jutro.",
         suggestT: "Dorzuć słów",
@@ -165,7 +166,7 @@ const T = {
     },
     lt: {
         smartReview: "Smart Review · šiandienai",
-        readyA: "žodžių", readyB: "paruošta\nšiandienai",
+        readyA: "žodžių", readyB: "šiandienai",
         reviewDesc: "Pradelsti intervalai, silpni žodžiai ir keli nauji — optimali sesija.",
         chReview: "kartoti", chWeak: "silpnų", chNew: "nauja",
         startReview: "Mokytis",
@@ -180,7 +181,7 @@ const T = {
         gateLockedAdd: "Pirma išlaikyk pakuotės egzaminą",
         gateProgress: "Iki pakuotės egzamino liko {n}",
         goal: "Dienos tikslas", streak: "d.", days: "d.",
-        goalNum: "iš {n} žodžių", progressTitle: "Pažanga", masteredTitle: "Išmokti žodžiai", masteredDesc: "Visiškai išmokti. Likę subręs besimokant.", goalAlmost: "Beveik tikslas!", goalDone: "Tikslas pasiektas!",
+        goalNum: "iš {n}", progressTitle: "Pažanga", masteredTitle: "Išmokti žodžiai", masteredDesc: "Visiškai išmokti. Likę subręs besimokant.", goalAlmost: "Beveik tikslas!", goalDone: "Tikslas pasiektas!",
         goalDescAlmost: "Užbaik kartojimus — serija nenutruks.",
         goalDescDone: "Šiandien viskas pakartota. Grįžk rytoj.",
         suggestT: "Pridėti žodžių",
@@ -378,7 +379,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                             <span className="ring__num" style={{ color: total ? "var(--st-master)" : "var(--ink-3)" }}>
                                 {total ? masteredCount : "—"}
                             </span>
-                            <span className="ring__den">{total ? fmt(t.goalNum, { n: total }) : ""}</span>
+                            <span className="ring__den">{total ? fmt(t.goalNum, { n: total }) + " " + pl(lang, total, "word") : ""}</span>
                         </span>
                     </div>
                     <div className="col" style={{ gap: 10 }}>
@@ -443,12 +444,12 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                             <div className="review-cta">
                                 <span className="review-cta__halo" /><span className="review-cta__halo2" />
                                 <span className="review-cta__eyebrow"><Icon n="repeat" sm /> {t.smartReview}</span>
-                                <div className="review-cta__big"><b>{learnable} {t.readyA}</b> {t.readyB.split("\n").map((l, i) => <span key={i}>{i ? <br /> : null}{l}</span>)}</div>
+                                <div className="review-cta__big"><b>{learnable} {pl(lang, learnable, "word")}</b> {t.readyB.split("\n").map((l, i) => <span key={i}>{i ? <br /> : null}{l}</span>)}</div>
                                 <p className="review-cta__desc">{t.reviewDesc}</p>
                                 <div className="review-cta__chips">
                                     <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-review)" }} />{composition.review} {t.chReview}</span>
-                                    <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {t.chWeak}</span>
-                                    <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-new)" }} />{composition.fresh} {t.chNew}</span>
+                                    <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {pl(lang, composition.weak, "weak")}</span>
+                                    <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-new)" }} />{composition.fresh} {pl(lang, composition.fresh, "fresh")}</span>
                                 </div>
                                 <button className="review-cta__btn" onClick={runReview} disabled={sessionLoading}>
                                     {sessionLoading ? <BtnSpinner /> : <Icon n="play" />} {t.startReview}

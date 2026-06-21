@@ -1,0 +1,39 @@
+// Склонение существительных/прилагательных по числу для UI.
+// ru/ukr/pl/lt — 3 формы [одно (1, 21…), мало (2–4), много (5–20, 0…)]; en — 2 формы [one, other].
+// Индекс по правилам CLDR (упрощённо, достаточно для счётчиков 0…999).
+export function pluralIndex(lang, n) {
+    n = Math.abs(Math.trunc(n || 0));
+    const m10 = n % 10, m100 = n % 100;
+    switch (lang) {
+        case "en":
+            return n === 1 ? 0 : 1;
+        case "pl":
+            if (n === 1) return 0;
+            if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return 1;
+            return 2;
+        case "lt":
+            if (m10 === 1 && m100 !== 11) return 0;
+            if (m10 >= 2 && m10 <= 9 && (m100 < 11 || m100 > 19)) return 1;
+            return 2;
+        default: // ru, ukr (одинаковые правила)
+            if (m10 === 1 && m100 !== 11) return 0;
+            if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return 1;
+            return 2;
+    }
+}
+
+// Формы по ключу: [одно, мало, много] (для en — [one, other]).
+const FORMS = {
+    word: { ru: ["слово", "слова", "слов"], ukr: ["слово", "слова", "слів"], en: ["word", "words"], pl: ["słowo", "słowa", "słów"], lt: ["žodis", "žodžiai", "žodžių"] },
+    card: { ru: ["карточка", "карточки", "карточек"], ukr: ["картка", "картки", "карток"], en: ["card", "cards"], pl: ["karta", "karty", "kart"], lt: ["kortelė", "kortelės", "kortelių"] },
+    day:  { ru: ["день", "дня", "дней"], ukr: ["день", "дні", "днів"], en: ["day", "days"], pl: ["dzień", "dni", "dni"], lt: ["diena", "dienos", "dienų"] },
+    weak: { ru: ["слабое", "слабых", "слабых"], ukr: ["слабке", "слабких", "слабких"], en: ["weak", "weak"], pl: ["słabe", "słabe", "słabych"], lt: ["silpnas", "silpni", "silpnų"] },
+    fresh: { ru: ["новое", "новых", "новых"], ukr: ["нове", "нових", "нових"], en: ["new", "new"], pl: ["nowe", "nowe", "nowych"], lt: ["naujas", "nauji", "naujų"] },
+};
+
+// Вернуть правильную форму слова `key` для числа n на языке lang.
+export function pl(lang, n, key) {
+    const m = FORMS[key];
+    const arr = (m && (m[lang] || m.en)) || [];
+    return arr[pluralIndex(lang, n)] ?? arr[arr.length - 1] ?? "";
+}
