@@ -76,9 +76,12 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                 .map((w) => (isNo2Int ? w.translate?.[currentLanguage]?.[0] : w.translate?.no?.[0]));
             setOptions(shuffle(uniq([correctPrimary, ...shuffle(others).slice(0, 3)])));
         };
-        // «Учёба» (переданный набор) строит варианты из своих слов, без запроса дистракторов.
-        if (wordsProp) { localOptions(); return () => { cancelled = true; }; }
-        api.getDistractors(current.id, { n: 3, mode, lang: currentLanguage })
+        // Дистракторы ВСЕГДА берём с бэка (семантически близкие из всего пула) — локальные из
+        // мелкого набора слишком очевидны. По pool_id (если есть) — иначе по id слова словаря.
+        const req = current.pool_id != null
+            ? api.getPoolDistractors(current.pool_id, { n: 3, mode, lang: currentLanguage })
+            : api.getDistractors(current.id, { n: 3, mode, lang: currentLanguage });
+        req
             .then((res) => { if (!cancelled) setOptions(shuffle(uniq([correctPrimary, ...(res.distractors || [])]))); })
             .catch(() => { if (!cancelled) localOptions(); });
         return () => { cancelled = true; };

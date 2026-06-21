@@ -244,6 +244,9 @@ class ApiService {
     getDistractors(wordId, { n = 3, mode = 'no2int', lang = 'ru' } = {}) {
         return this._send('GET', `/words/${wordId}/distractors?n=${n}&mode=${mode}&lang=${encodeURIComponent(lang)}`);
     }
+    getPoolDistractors(poolId, { n = 3, mode = 'no2int', lang = 'ru' } = {}) {
+        return this._send('GET', `/pool/${poolId}/distractors?n=${n}&mode=${mode}&lang=${encodeURIComponent(lang)}`);
+    }
     getSynonyms(wordId, { n = 5, lang = 'ru' } = {}) {
         return this._send('GET', `/words/${wordId}/synonyms?n=${n}&lang=${encodeURIComponent(lang)}`);
     }
