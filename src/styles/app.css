@@ -330,7 +330,7 @@
 
 /* Мобилка: клавиатура ПРИЖАТА К НИЗУ, во всю ширину; ⌫ слева, ✓ внизу-справа. */
 @media (max-width: 640px) {
-    .play--build .kbd {
+    .play--kbd .kbd {
         position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; margin: 0; width: 100%; max-width: none;
         background: var(--game-bg); padding: 7px 5px calc(env(safe-area-inset-bottom, 0px) + 7px);
         box-shadow: 0 -4px 18px rgba(0, 0, 0, .28); gap: 6px; align-items: stretch;
@@ -339,7 +339,7 @@
     .kbd__key--act, .kbd__key--go { max-width: none; }
     .kbd__count { top: -5px; right: -5px; }
     /* место под фикс-клавиатуру, чтобы карточка не уезжала под неё */
-    .play--build .pstage { justify-content: flex-start; padding-top: var(--sp-5); padding-bottom: 270px; }
+    .play--kbd .pstage { justify-content: flex-start; padding-top: var(--sp-5); padding-bottom: 270px; }
 }
 @media (max-width: 360px) {
     .build-line { margin-top: var(--sp-4); }

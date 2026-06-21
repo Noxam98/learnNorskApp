@@ -1,6 +1,8 @@
-// Игра «Ввод»: игрок печатает перевод на штатной клавиатуре. На верном — авто-переход, на
-// ошибке — показ ответа, поле сбрасывается и фокусируется (печатать заново), дальше — когда введёт
-// правильно. Механика цикла (стейт-машина, SRS, ретрай, авто-переход, финиш) — в useGameLoop.
+// Игра «Ввод»: игрок печатает перевод. Для НОРВЕЖСКОГО ответа (int2no) — наша экранная клавиатура
+// (свободный режим, без подсказок-букв), как в «Сборке». Для родного языка (no2int) — штатный
+// инпут (нашей раскладкой кириллицу/др. не набрать, да и смысла печатать родной нет).
+// На верном — авто-переход; на ошибке — показ ответа, ввод сбрасывается, дальше — когда введёт верно.
+// Механика цикла (стейт-машина, SRS, ретрай, авто-переход, финиш) — в useGameLoop.
 import { useState, useEffect, useRef } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
@@ -8,20 +10,22 @@ import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
 import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { GameKeyboard } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 
 export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
     const isNo2Int = mode !== "int2no";
+    const useKbd = !isNo2Int;        // печатаем норвежское → наша клавиатура; иначе штатный инпут
     const [input, setInput] = useState("");
     const inputRef = useRef(null);
-    // Очистить поле и вернуть фокус — чтобы после ошибки сразу вводить заново.
+    // Очистить поле и (для штатного инпута) вернуть фокус — чтобы после ошибки сразу вводить заново.
     const resetInput = () => { setInput(""); setTimeout(() => inputRef.current?.focus(), 0); };
 
     const loop = useGameLoop({
         gmode: "input", words: wordsProp, onResult, onFinish, onExit, setGameState,
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100,
-        onAdvance: () => setInput(""),   // новое слово — чистое поле (фокус даст эффект ниже)
-        onWrong: resetInput,             // после ошибки — сбросить и сфокусировать
+        onAdvance: () => setInput(""),   // новое слово — чистое поле
+        onWrong: resetInput,             // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
     const { t, currentLanguage, total, current, status, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, restart, backToSelection } = loop;
 
@@ -33,11 +37,12 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const promptTarget = isNo2Int ? (ENDONYM[currentLanguage] || currentLanguage) : "Norsk";
     const qLang = hyLang(currentLanguage, isNo2Int);
     const aLang = hyLang(currentLanguage, !isNo2Int);
+    const canType = status === "ASKING" || status === "INCORRECT";
 
     useEffect(() => {
-        // фокус при показе и при повторе после ошибки — чтобы сразу вводить
-        if ((status === "ASKING" || status === "INCORRECT") && inputRef.current) inputRef.current.focus();
-    }, [status, current]);
+        // фокус штатного инпута при показе и при повторе после ошибки
+        if (!useKbd && (status === "ASKING" || status === "INCORRECT") && inputRef.current) inputRef.current.focus();
+    }, [status, current]); // eslint-disable-line
 
     // Озвучка видимого слова при показе (+ прогрев правильного ответа заранее).
     useEffect(() => {
@@ -50,7 +55,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (sound && (status === "CORRECT" || status === "INCORRECT") && correctPrimary) speakText(correctPrimary, aLang).catch(() => {});
     }, [status]); // eslint-disable-line
 
-    const submit = (e) => { e?.preventDefault(); answer(accepted.some((a) => foldLoose(a) === foldLoose(input))); };
+    const submit = (e) => { e?.preventDefault?.(); answer(accepted.some((a) => foldLoose(a) === foldLoose(input))); };
     const dontKnow = () => { if (status === "ASKING") answer(false); };
 
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
@@ -60,7 +65,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const otherAccepted = accepted.filter((a) => foldLoose(a) !== foldLoose(input));
 
     return (
-        <div className="play" data-state={status.toLowerCase()} style={PLAY_STYLE}>
+        <div className={"play" + (useKbd ? " play--kbd" : "")} data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={doneCount} wrongCount={missedIds.size} onExit={backToSelection} t={t} />
             <ProgressSegments segs={segs} />
 
@@ -74,11 +79,15 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     </h1>
                     {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
 
-                    <form className="answer" onSubmit={submit}>
-                        <input ref={inputRef} type="text" value={input} onChange={(e) => setInput(e.target.value)}
-                            placeholder={t.yourAnswer} autoComplete="off" spellCheck="false"
-                            disabled={status === "CORRECT"} />
-                    </form>
+                    {useKbd ? (
+                        <div className="build-line" lang={aLang}>{input || <span className="build-line__ph">_ _ _</span>}</div>
+                    ) : (
+                        <form className="answer" onSubmit={submit}>
+                            <input ref={inputRef} type="text" value={input} onChange={(e) => setInput(e.target.value)}
+                                placeholder={t.yourAnswer} autoComplete="off" spellCheck="false"
+                                disabled={status === "CORRECT"} />
+                        </form>
+                    )}
 
                     {status === "CORRECT" && (
                         <div className="feedback" style={{ display: "flex" }}>
@@ -96,11 +105,20 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         </div>
                     )}
 
+                    {/* наша клавиатура (свободный режим — без подсказок-букв), только для норвежского ответа */}
+                    {useKbd && canType && (
+                        <GameKeyboard
+                            lang={aLang} extras={["-"]}
+                            canSubmit={input.length > 0} canBackspace={input.length > 0}
+                            onType={(c) => setInput(input + c)} onBackspace={() => setInput(input.slice(0, -1))} onSubmit={() => submit()}
+                            onDunno={dontKnow} dunnoLabel={DUNNO[currentLanguage]} showDunno={status === "ASKING"} />
+                    )}
+
                     <div className="pcta">
                         {status !== "CORRECT" &&
                             <button className="gbtn gbtn--accent" onClick={submit}><Icon n="check" sm /> {t.check}</button>}
                     </div>
-                    {status === "ASKING" && (
+                    {!useKbd && status === "ASKING" && (
                         <div className="dunno-wrap">
                             <button className="dunno-link" onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
                         </div>
