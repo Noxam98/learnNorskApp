@@ -1,7 +1,7 @@
 // Вкладка «Сегодня» раздела «Учёба».
 // Рендерит ТОЛЬКО контент-область (под шапкой/сегмент-навигацией страницы).
 // Данные — только через api.learning* / api.placement*. i18n — локальные константы.
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import api from "../../components/tools/api.js";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { Modal } from "../../components/ui/Modal.jsx";
@@ -226,8 +226,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const [error, setError] = useState(false);
 
     const [busy, setBusy] = useState("");      // ключ запускаемого набора/игры → спиннер
-    const [suggesting, setSuggesting] = useState(false);
-    const [suggestMsg, setSuggestMsg] = useState("");
+    const autoFillTried = useRef(false);       // авто-добор пустой учёбы — один раз за монтирование
 
     useEffect(() => {
         let on = true;
@@ -263,6 +262,19 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     // ВАЖНО: новые слова из словаря имеют due=null, поэтому только по `due` их не видно.
     const learnable = due + (by.new || 0) + (by.weak || 0);
 
+    // Авто-добор: у юзера ВООБЩЕ нет слов в учёбе (total=0) и ворота не закрыты — система сама
+    // подсыпает новые из Базы (сборка сессии на бэке делает suggest_words). Один раз за монтирование,
+    // чтобы не зациклиться, если кандидатов нет. «Закончил на сегодня» (learnable=0, total>0) не трогаем.
+    useEffect(() => {
+        if (loading || !stats || autoFillTried.current) return;
+        if (total === 0 && !gateOpen) {
+            autoFillTried.current = true;
+            api.learningSession(20)
+                .then((r) => { if ((r?.words || []).length) refresh(); })
+                .catch(() => { });
+        }
+    }, [loading, stats, total, gateOpen, refresh]);
+
     // Дневная цель: derive — цель 20, «сделано» ≈ повторённые сегодня неизвестны,
     // показываем review-слова как прокси прогресса (тактично, без выдуманной точности).
     const goalTarget = stats?.today?.goal || DAILY_GOAL;
@@ -288,22 +300,6 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const runReview = () => openSession();
     const runSet = (status, key) => launch(key, () => api.learningList({ status, limit: 60 }), "choice");
 
-    async function doSuggest() {
-        if (suggesting) return;
-        setSuggesting(true);
-        setSuggestMsg("");
-        try {
-            const r = await api.learningSuggest({ count: 10 });
-            const added = r?.added ?? (r?.words?.length || 0);
-            setSuggestMsg(added > 0 ? fmt(t.added, { n: added }) : t.addedNone);
-            if (added > 0) refresh();
-        } catch {
-            setSuggestMsg(t.err);
-        } finally {
-            setSuggesting(false);
-        }
-    }
-
     if (loading) return <BrandLoader />;
     if (error || !stats) {
         return (
@@ -320,41 +316,6 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     }
 
     const isEmpty = total === 0 || learnable === 0;
-
-    // ---------- reusable blocks ----------
-    const suggestCard = (descKey = "suggestD") => (
-        <div className="spanel" style={{ background: "var(--ember-50)", borderColor: "color-mix(in srgb,var(--ember-600) 22%,var(--surface))" }}>
-            <div className="spanel__body" style={{ display: "flex", flexDirection: "column", gap: "var(--sp-4)" }}>
-                <div className="row" style={{ gap: "var(--sp-3)", alignItems: "flex-start" }}>
-                    <span className="setrow-link__ic" style={{ background: "var(--ember-600)", color: "#fff", flex: "none" }}>
-                        <Icon n="sparkles" />
-                    </span>
-                    <div className="col" style={{ gap: 3 }}>
-                        <div style={{ fontSize: "var(--fs-16)", fontWeight: 800, letterSpacing: "var(--ls-tight)" }}>{t.suggestT}</div>
-                        <div className="muted" style={{ fontSize: "var(--fs-13)", lineHeight: 1.45 }}
-                            dangerouslySetInnerHTML={{ __html: fmt(t[descKey], { lvl: `<b style="color:var(--ink)">${level}</b>` }) }} />
-                    </div>
-                </div>
-                <div className="chiprow">
-                    <span className="fchip is-active">{t.chAuto}</span>
-                    <span className="fchip">{t.chPlus}</span>
-                    <span className="fchip">{t.chTopic}</span>
-                </div>
-                <button className="btn btn--accent btn--block" onClick={doSuggest} disabled={suggesting || gateOpen}>
-                    {suggesting ? <BtnSpinner /> : <Icon n={gateOpen ? "lock" : "plus"} sm />} {t.suggestBtn}
-                </button>
-                {gateOpen ? (
-                    <div className="row" style={{ gap: 7, fontSize: "var(--fs-13)", fontWeight: 700, color: "var(--ink-3)" }}>
-                        <Icon n="lock" sm /> {t.gateLockedAdd}
-                    </div>
-                ) : suggestMsg && (
-                    <div className="row" style={{ gap: 7, fontSize: "var(--fs-13)", fontWeight: 700, color: "var(--st-master)" }}>
-                        <Icon n="check-circle" sm /> {suggestMsg}
-                    </div>
-                )}
-            </div>
-        </div>
-    );
 
     // Баннер ворот: экзамен пачки готов → CTA на вкладку «Экзамен».
     const gateBanner = gateOpen ? (
