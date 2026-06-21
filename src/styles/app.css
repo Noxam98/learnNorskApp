@@ -285,7 +285,13 @@
     background: var(--game-surface); color: var(--game-ink); border: 2px solid var(--game-border);
     transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
 }
-.kbd__key { -webkit-tap-highlight-color: transparent; user-select: none; touch-action: manipulation; }
+/* отключаем долгий тап-callout/выделение текста на клавиатуре (iOS/Android) */
+.kbd, .kbd__key, .build-line {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none; -moz-user-select: none; user-select: none;
+}
+.kbd__key { touch-action: manipulation; }
 .kbd__row--act { margin-top: 4px; }
 .kbd__key--space { flex: 1 1 auto; min-width: 120px; }
 .kbd__key--act { flex: 0 0 auto; min-width: 66px; max-width: 90px; color: var(--game-ink-2); }

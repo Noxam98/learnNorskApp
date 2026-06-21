@@ -177,7 +177,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                         хаптик; на мобилке прижата к низу; ⌫ в конце ряда z…m, пробел и ✓ — в ряду действий.
                         Только в ASKING. */}
                     {status === "ASKING" && (
-                        <div className="kbd">
+                        <div className="kbd" onContextMenu={(e) => e.preventDefault()}>
                             {KBD_ROWS.map((row, ri) => (
                                 <div className="kbd__row" key={ri}>
                                     {row.map((c) => {
