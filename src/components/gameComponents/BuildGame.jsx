@@ -165,7 +165,8 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     </div>
 
                     {/* QWERTY-клавиатура (как Gboard): мгновенный ввод по pointerdown, поп-ап превью буквы,
-                        хаптик; на мобилке прижата к низу; ⌫ слева, ✓ справа-внизу. Только в ASKING. */}
+                        хаптик; на мобилке прижата к низу; ⌫ в конце ряда z…m, пробел и ✓ — в ряду действий.
+                        Только в ASKING. */}
                     {status === "ASKING" && (
                         <div className="kbd">
                             {KBD_ROWS.map((row, ri) => (
@@ -183,22 +184,37 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                                             </button>
                                         );
                                     })}
+                                    {/* ⌫ как в Gboard — в конце последнего буквенного ряда (рядом с «m») */}
+                                    {ri === KBD_ROWS.length - 1 && (
+                                        <button className="kbd__key kbd__key--act" onPointerDown={(e) => { e.preventDefault(); undo(); }}
+                                            disabled={!typed.length} aria-label="backspace"><Icon n="arrow-left" /></button>
+                                    )}
                                 </div>
                             ))}
                             <div className="kbd__row kbd__row--act">
-                                <button className="kbd__key kbd__key--act" onPointerDown={(e) => { e.preventDefault(); undo(); }}
-                                    disabled={!typed.length} aria-label="backspace"><Icon n="arrow-left" /></button>
-                                {extras.map((c) => {
+                                {/* спец-символы слова (дефис и т.п.), кроме пробела — отдельными клавишами */}
+                                {extras.filter((c) => c !== " ").map((c) => {
                                     const rem = remainingOf(c);
                                     return (
-                                        <button key={c} className={"kbd__key kbd__key--space" + (rem <= 0 ? " is-spent" : "")}
+                                        <button key={c} className={"kbd__key" + (rem <= 0 ? " is-spent" : "")}
                                             disabled={rem <= 0} onPointerDown={(e) => press(c, e)} lang={aLang}>
-                                            {c === " " ? "␣" : c}
+                                            {c}
                                             {(needed[c] || 0) > 1 && <span className="kbd__count">{rem}</span>}
-                                            {pop === c && <span className="kbd__pop" aria-hidden="true">{c === " " ? "␣" : c}</span>}
+                                            {pop === c && <span className="kbd__pop" aria-hidden="true">{c}</span>}
                                         </button>
                                     );
                                 })}
+                                {/* пробел — всегда в клавиатуре; активен только если в слове есть пробел */}
+                                {(() => {
+                                    const need = needed[" "] || 0; const rem = remainingOf(" ");
+                                    return (
+                                        <button className={"kbd__key kbd__key--space" + (need ? "" : " is-off") + (need && rem <= 0 ? " is-spent" : "")}
+                                            disabled={!need || rem <= 0} onPointerDown={(e) => press(" ", e)} aria-label="space">
+                                            {need > 1 && <span className="kbd__count">{rem}</span>}
+                                            {pop === " " && <span className="kbd__pop" aria-hidden="true">␣</span>}
+                                        </button>
+                                    );
+                                })()}
                                 <button className="kbd__key kbd__key--go" onPointerDown={(e) => { e.preventDefault(); submit(); }}
                                     disabled={!typed.length} aria-label="check"><Icon n="check" /></button>
                             </div>
