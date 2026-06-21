@@ -107,6 +107,14 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         }).catch(() => { /* офлайн — не критично */ });
     };
 
+    // Карточка-интро (study): фиксируем «слово показано». Бэк за study обновляет окно силы и
+    // счётчики (но НЕ клетки рампы) — поэтому слово перестаёт быть «совсем новым» и рампа на
+    // следующем заходе ведёт его к упражнениям (выбор → сборка → ввод).
+    const recordIntro = (w) => {
+        api.learningAnswer({ pool_id: w?.pool_id ?? w?.id, correct: true, mode: "study", direction: null })
+            .catch(() => { /* офлайн — не критично */ });
+    };
+
     // Показать итог + подтянуть статистику.
     const showSummary = async () => {
         setPhase("summary");
@@ -213,8 +221,10 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 words={[el.gw]}
                 mode={el.dir}
                 sound={soundOn}
-                onResult={isStudy ? undefined : (w, ok, gmode) => onResult(w, ok, gmode, el.dir)}
-                onFinish={onGameFinish}
+                // записываем по АВТОРИТЕТНОМУ шагу системы (el.mode/el.dir), а не по тому, что
+                // сообщит игра — иначе клетка рампы могла бы не совпасть и слово застряло бы
+                onResult={isStudy ? undefined : (w, ok) => onResult(w, ok, el.mode, el.dir)}
+                onFinish={isStudy ? (s) => { recordIntro(el.gw); onGameFinish(s); } : onGameFinish}
                 onExit={() => onClose?.(true)}
                 setGameState={() => onClose?.(true)}
             />
