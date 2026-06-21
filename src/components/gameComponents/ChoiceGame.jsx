@@ -16,7 +16,7 @@ import { playSound, playWin } from "../tools/sound.js";
 const GMODE = "choice";
 
 // words/onResult/onExit передаёт «Учёба» (переиспользует игру). Без них — обычный режим «Игры».
-export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish }) => {
+export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const dictList = useWordsStore((s) => s.dictList);
     const aiPlay = useWordsStore((s) => s.aiPlayWords);
@@ -145,8 +145,10 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     const posText = posLabel(current.part_of_speech, t);
     const descriptionText = current.description?.description?.[currentLanguage] || "";
     const score = total ? Math.round((knownFirstTry / total) * 100) : 0;
-    const qIndex = Math.min(qpos + 1, total);
-    const segs = Array.from({ length: total }, (_, i) => {
+    // в системной сессии счётчик/полоса показывают прогресс ВСЕЙ сессии (а не одно слово)
+    const qIndex = stepTotal ? stepNo : Math.min(qpos + 1, total);
+    const qTotal = stepTotal || total;
+    const segs = segsOverride || Array.from({ length: total }, (_, i) => {
         if (i < results.length) return results[i].ok ? "ok" : "err";
         if (i === results.length && status !== "FINISHED") return "now";
         return "";
@@ -171,7 +173,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     onPick={choose}
                     posText={posText}
                     hint={`${t.translateTo} ${promptTarget}`}
-                    countText={`${t.word} ${qIndex} / ${total}`}
+                    countText={`${t.word} ${qIndex} / ${qTotal}`}
                     disabled={status !== "ASKING"}
                     loading={!options}
                 >

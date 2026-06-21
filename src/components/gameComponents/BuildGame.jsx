@@ -23,7 +23,7 @@ const KBD_ROWS = [
 const KBD_SET = new Set(KBD_ROWS.flat());
 
 // words/onResult/onExit/onFinish передаёт «Учёба». Без них — обычный режим «Игры».
-export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish }) => {
+export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const dictList = useWordsStore((s) => s.dictList);
     const aiPlay = useWordsStore((s) => s.aiPlayWords);
@@ -149,8 +149,9 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const posText = posLabel(current.part_of_speech, t);
     const descriptionText = current.description?.description?.[currentLanguage] || "";
     const score = total ? Math.round((knownFirstTry / total) * 100) : 0;
-    const qIndex = Math.min(guessed.length + 1, total);
-    const segs = Array.from({ length: total }, (_, i) => {
+    const qIndex = stepTotal ? stepNo : Math.min(guessed.length + 1, total);
+    const qTotal = stepTotal || total;
+    const segs = segsOverride || Array.from({ length: total }, (_, i) => {
         if (i < guessed.length) return missed.includes(guessed[i]) ? "err" : "ok";
         if (i === guessed.length && status !== "FINISHED") return "now";
         return "";
@@ -163,7 +164,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
 
             <div className="pstage">
                 <div className="qcard">
-                    <div className="qcount">{t.word} {qIndex} / {total}</div>
+                    <div className="qcount">{t.word} {qIndex} / {qTotal}</div>
                     <div className="qprompt">{t.collectFromLetters || "Собери слово · Norsk"}</div>
                     <h1 className="qword" lang={qLang}>{hyphenate(prompt, qLang)}</h1>
                     {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}

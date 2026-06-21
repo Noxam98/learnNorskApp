@@ -319,6 +319,7 @@
   .pseg.is-ok { background: var(--game-correct); }
   .pseg.is-err { background: var(--game-incorrect); }
   .pseg.is-now { background: var(--game-accent); }
+  .pseg.is-card { background: var(--game-ink-2); opacity: .5; }
 
   /* center stage — занимает остаток высоты, прокручивается внутри как страховка */
   .pstage { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--sp-6) var(--sp-6); text-align: center; }

@@ -26,7 +26,7 @@ const filterChosenWords = (dictList) =>
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
 // words/onExit передаёт «Учёба» (переиспользует игру). Карточки — пассивный режим, в SRS не пишет.
-export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish }) => {
+export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, stepNo = 0, stepTotal = 0 }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -103,6 +103,11 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     const backLang = hyLang(currentLanguage, !isNo2Int);
     const posText = cur ? posLabel(cur.part_of_speech, t) : "";
     const noVisible = isNo2Int ? true : flipped; // когда видно норвежское — показываем озвучку
+    // в системной сессии счётчик/полоса = прогресс ВСЕЙ сессии (а не одна карточка)
+    const useStep = stepTotal > 0;
+    const dispNo = useStep ? stepNo : (idx + 1);
+    const dispTotal = useStep ? stepTotal : total;
+    const barFrac = useStep ? (stepNo - 1) / stepTotal : (total ? idx / total : 0);
 
     return (
         <div className="play" data-state={finished ? "finished" : "asking"} style={playStyle}>
@@ -112,13 +117,13 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                     <span className="brand__name">Lære<b>·</b>Norsk</span>
                 </a>
                 <div className="pstats">
-                    <span className="stat"><Icon n="layers" sm /> {Math.min(idx + (finished ? 0 : 1), total)} / {total}</span>
+                    <span className="stat"><Icon n="layers" sm /> {useStep ? dispNo : Math.min(idx + (finished ? 0 : 1), total)} / {dispTotal}</span>
                 </div>
                 <a className="pexit" onClick={backToSelection} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
             </div>
 
             <div className="pbar" aria-hidden="true">
-                <span className="pbar__fill" style={{ width: `${total ? (idx / total) * 100 : 0}%` }} />
+                <span className="pbar__fill" style={{ width: `${barFrac * 100}%` }} />
             </div>
 
             <div className="pstage">
@@ -140,7 +145,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                 animate={{ opacity: 1, x: 0, rotate: 0 }}
                                 exit={{ opacity: 0, x: -60, rotate: -1 }}
                                 transition={{ duration: 0.22, ease: [0.2, 0.7, 0.2, 1] }}>
-                                <div className="qcount">{t.word} {idx + 1} / {total}</div>
+                                <div className="qcount">{t.word} {dispNo} / {dispTotal}</div>
                                 <h1 className="qword" lang={frontLang}>
                                     {hyphenate(front, frontLang)}
                                     {noVisible && (

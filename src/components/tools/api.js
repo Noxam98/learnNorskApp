@@ -244,8 +244,23 @@ class ApiService {
     getDistractors(wordId, { n = 3, mode = 'no2int', lang = 'ru' } = {}) {
         return this._send('GET', `/words/${wordId}/distractors?n=${n}&mode=${mode}&lang=${encodeURIComponent(lang)}`);
     }
+    // Кэш дистракторов на время сессии: каждый вопрос «Выбора» ходил на бэк и БЛОКИРОВАЛ показ
+    // вариантов (round-trip с телефона + иногда холодный воркер = до 5с). Мемоизируем по ключу и
+    // даём prefetch — сессия греет кэш заранее, поэтому вопросы открываются мгновенно.
     getPoolDistractors(poolId, { n = 3, mode = 'no2int', lang = 'ru' } = {}) {
-        return this._send('GET', `/pool/${poolId}/distractors?n=${n}&mode=${mode}&lang=${encodeURIComponent(lang)}`);
+        if (!this._distractorCache) this._distractorCache = new Map();
+        const key = `${poolId}|${n}|${mode}|${lang}`;
+        const hit = this._distractorCache.get(key);
+        if (hit) return hit;
+        const p = this._send('GET', `/pool/${poolId}/distractors?n=${n}&mode=${mode}&lang=${encodeURIComponent(lang)}`)
+            .catch((e) => { this._distractorCache.delete(key); throw e; }); // не кэшируем ошибку
+        this._distractorCache.set(key, p);
+        return p;
+    }
+    // Заранее прогреть кэш дистракторов для предстоящих слов сессии (огонь-и-забыли).
+    prefetchPoolDistractors(poolId, opts) {
+        if (poolId == null) return;
+        try { this.getPoolDistractors(poolId, opts).catch(() => {}); } catch { /* */ }
     }
     getSynonyms(wordId, { n = 5, lang = 'ru' } = {}) {
         return this._send('GET', `/words/${wordId}/synonyms?n=${n}&lang=${encodeURIComponent(lang)}`);

@@ -78,6 +78,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     // Прогресс сессии: упражнения (ответы) и карточки считаем РАЗДЕЛЬНО.
     const [res, setRes] = useState({ correct: 0, total: 0 }); // только упражнения
     const [cards, setCards] = useState(0);                    // показано карточек-интро
+    const [hist, setHist] = useState([]);                     // итог по каждому пройденному элементу: "ok"|"err"|"card"
     const [after, setAfter] = useState(null); // свежая статистика после сессии
     const [before, setBefore] = useState(null); // базовая статистика на старте (для «выучено за сессию»)
     const [gate, setGate] = useState(null);   // состояние ворот экзамена (для итога системной сессии)
@@ -91,7 +92,11 @@ export default function LearningSession({ words = [], mode = "choice", system = 
             const r = await api.learningSession(20);
             const list = Array.isArray(r) ? r : (r?.elements || r?.items || r?.words || []);
             const els = toElements(list, lang);
-            if (els.length) { setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setAfter(null); setPhase("play"); }
+            if (els.length) {
+                setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setHist([]); setAfter(null); setPhase("play");
+                // греем кэш дистракторов для всех «выборов» сессии — вопросы открываются мгновенно
+                els.forEach((e) => { if (e.mode === "choice") api.prefetchPoolDistractors(e.gw?.pool_id, { n: 3, mode: e.dir, lang }); });
+            }
             else { setPhase("empty"); }
         } catch {
             setPhase("empty");
@@ -133,6 +138,8 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         const got = stats || { total: 0, correct: 0 };
         if (isStudy) setCards((c) => c + (got.total || 1));
         else setRes((p) => ({ correct: p.correct + (got.correct || 0), total: p.total + (got.total || 0) }));
+        // запоминаем исход элемента для полосы прогресса сессии
+        setHist((h) => [...h, isStudy ? "card" : ((got.correct || 0) > 0 ? "ok" : "err")]);
         if (isSystem) {
             if (idx + 1 < elements.length) setIdx((n) => n + 1);
             else showSummary();
@@ -246,12 +253,17 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         if (!el) { onClose?.(true); return null; }
         const Game = COMP[el.mode] || ChoiceGame;
         const isStudy = el.mode === "card" || el.mode === "study";
+        // полоса прогресса всей сессии: пройденные элементы + текущий + предстоящие
+        const sessionSegs = elements.map((_, i) => (i < idx ? (hist[i] || "ok") : (i === idx ? "now" : "")));
         return (
             <Game
                 key={`${round}-${idx}`}
                 words={[el.gw]}
                 mode={el.dir}
                 sound={soundOn}
+                stepNo={idx + 1}
+                stepTotal={elements.length}
+                segs={sessionSegs}
                 // записываем по АВТОРИТЕТНОМУ шагу системы (el.mode/el.dir), а не по тому, что
                 // сообщит игра — иначе клетка рампы могла бы не совпасть и слово застряло бы
                 onResult={isStudy ? undefined : (w, ok) => onResult(w, ok, el.mode, el.dir)}

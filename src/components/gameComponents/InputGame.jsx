@@ -16,7 +16,7 @@ import { playSound, playWin } from "../tools/sound.js";
 const GMODE = "input";
 
 // words/onResult/onExit передаёт «Учёба» (переиспользует игру). Без них — обычный режим «Игры».
-export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish }) => {
+export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const dictList = useWordsStore((s) => s.dictList);
     const aiPlay = useWordsStore((s) => s.aiPlayWords);
@@ -132,8 +132,9 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const descriptionText = current.description?.description?.[currentLanguage] || "";
     const otherAccepted = accepted.filter((a) => foldLoose(a) !== foldLoose(input));
     const score = total ? Math.round((knownFirstTry / total) * 100) : 0;
-    const qIndex = Math.min(guessed.length + 1, total);
-    const segs = Array.from({ length: total }, (_, i) => {
+    const qIndex = stepTotal ? stepNo : Math.min(guessed.length + 1, total);
+    const qTotal = stepTotal || total;
+    const segs = segsOverride || Array.from({ length: total }, (_, i) => {
         if (i < guessed.length) return missed.includes(guessed[i]) ? "err" : "ok";
         if (i === guessed.length && status !== "FINISHED") return "now";
         return "";
@@ -146,7 +147,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
 
             <div className="pstage">
                 <div className="qcard">
-                    <div className="qcount">{t.word} {qIndex} / {total}</div>
+                    <div className="qcount">{t.word} {qIndex} / {qTotal}</div>
                     <div className="qprompt">{t.translateTo} {promptTarget}</div>
                     <h1 className="qword" lang={qLang}>{hyphenate(question, qLang)}
                         <SpeakButton text={question} lang={qLang} className="qspeak" lg
