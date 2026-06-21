@@ -27,7 +27,7 @@ const T = {
         gateLockedAdd: "Сначала сдай экзамен пачки",
         gateProgress: "До экзамена пачки осталось {n}",
         goal: "Дневная цель", streak: "дней", days: "дней",
-        goalNum: "из {n} слов", goalAlmost: "Почти у цели!", goalDone: "Цель выполнена!",
+        goalNum: "из {n} слов", progressTitle: "Прогресс", masteredTitle: "Выучено слов", masteredDesc: "Освоено по всей рампе. Остальные дозреют по мере занятий.", goalAlmost: "Почти у цели!", goalDone: "Цель выполнена!",
         goalDescAlmost: "Закрывай повторения — серия не прервётся.",
         goalDescDone: "Сегодня всё повторено. Возвращайся завтра — повторения подойдут по интервалам.",
         suggestT: "Докинуть слов",
@@ -65,7 +65,7 @@ const T = {
         gateLockedAdd: "Pass the pack exam first",
         gateProgress: "{n} left until the pack exam",
         goal: "Daily goal", streak: "days", days: "days",
-        goalNum: "of {n} words", goalAlmost: "Almost there!", goalDone: "Goal complete!",
+        goalNum: "of {n} words", progressTitle: "Progress", masteredTitle: "Words mastered", masteredDesc: "Fully learned through the ramp. The rest mature as you practice.", goalAlmost: "Almost there!", goalDone: "Goal complete!",
         goalDescAlmost: "Close your reviews — the streak won't break.",
         goalDescDone: "All reviewed for today. Come back tomorrow.",
         suggestT: "Add more words",
@@ -103,7 +103,7 @@ const T = {
         gateLockedAdd: "Спершу склади екзамен пачки",
         gateProgress: "До екзамену пачки залишилось {n}",
         goal: "Денна ціль", streak: "днів", days: "днів",
-        goalNum: "з {n} слів", goalAlmost: "Майже у цілі!", goalDone: "Ціль виконано!",
+        goalNum: "з {n} слів", progressTitle: "Прогрес", masteredTitle: "Вивчено слів", masteredDesc: "Освоєно по всій рампі. Решта дозріє під час занять.", goalAlmost: "Майже у цілі!", goalDone: "Ціль виконано!",
         goalDescAlmost: "Закривай повторення — серія не перерветься.",
         goalDescDone: "Сьогодні все повторено. Повертайся завтра.",
         suggestT: "Докинути слів",
@@ -141,7 +141,7 @@ const T = {
         gateLockedAdd: "Najpierw zdaj egzamin paczki",
         gateProgress: "Do egzaminu paczki zostało {n}",
         goal: "Cel dzienny", streak: "dni", days: "dni",
-        goalNum: "z {n} słów", goalAlmost: "Prawie cel!", goalDone: "Cel osiągnięty!",
+        goalNum: "z {n} słów", progressTitle: "Postęp", masteredTitle: "Opanowane słowa", masteredDesc: "W pełni opanowane. Reszta dojrzeje w trakcie nauki.", goalAlmost: "Prawie cel!", goalDone: "Cel osiągnięty!",
         goalDescAlmost: "Domknij powtórki — seria się nie przerwie.",
         goalDescDone: "Wszystko powtórzone na dziś. Wróć jutro.",
         suggestT: "Dorzuć słów",
@@ -179,7 +179,7 @@ const T = {
         gateLockedAdd: "Pirma išlaikyk pakuotės egzaminą",
         gateProgress: "Iki pakuotės egzamino liko {n}",
         goal: "Dienos tikslas", streak: "d.", days: "d.",
-        goalNum: "iš {n} žodžių", goalAlmost: "Beveik tikslas!", goalDone: "Tikslas pasiektas!",
+        goalNum: "iš {n} žodžių", progressTitle: "Pažanga", masteredTitle: "Išmokti žodžiai", masteredDesc: "Visiškai išmokti. Likę subręs besimokant.", goalAlmost: "Beveik tikslas!", goalDone: "Tikslas pasiektas!",
         goalDescAlmost: "Užbaik kartojimus — serija nenutruks.",
         goalDescDone: "Šiandien viskas pakartota. Grįžk rytoj.",
         suggestT: "Pridėti žodžių",
@@ -353,37 +353,35 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     ) : null;
 
     const gc = (GCOLD[lang] || GCOLD.ru);
-    const ringFrac = goalComplete ? 1 : (coldGoal ? 0 : goalDone / goalTarget);
+    // Прогресс изучения: выучено (mastered) из всех слов учёбы — осмысленнее «дневной цели».
+    const masteredCount = by.mastered || 0;
+    const masteryFrac = total > 0 ? masteredCount / total : 0;
     const goalPanel = (
         <div className="spanel">
             <div className="spanel__head">
-                <span className="spanel__title">{t.goal}</span>
+                <span className="spanel__title">{t.progressTitle}</span>
                 <span className="streak-pill"><Icon n="flame" sm /> {streak} {t.days}</span>
             </div>
             <div className="spanel__body">
                 <div className="goal-row">
-                    <div className="ring" style={{ "--p": Math.round(ringFrac * 100) }}>
+                    <div className="ring" style={{ "--p": Math.round(masteryFrac * 100) }}>
                         <svg className="ring__svg" viewBox="0 0 120 120">
                             <circle className="ring__bg" cx="60" cy="60" r="52" />
                             <circle className="ring__fg" cx="60" cy="60" r="52"
                                 strokeDasharray="326.7"
-                                strokeDashoffset={(326.7 * (1 - ringFrac)).toFixed(1)}
-                                style={goalComplete ? { stroke: "var(--st-master)" } : undefined} />
+                                strokeDashoffset={(326.7 * (1 - masteryFrac)).toFixed(1)}
+                                style={{ stroke: "var(--st-master)" }} />
                         </svg>
                         <span className="ring__label">
-                            <span className="ring__num" style={goalComplete ? { color: "var(--st-master)" } : (coldGoal ? { color: "var(--ink-3)" } : undefined)}>
-                                {coldGoal ? "—" : (goalComplete ? goalTarget : goalDone)}
+                            <span className="ring__num" style={{ color: total ? "var(--st-master)" : "var(--ink-3)" }}>
+                                {total ? masteredCount : "—"}
                             </span>
-                            <span className="ring__den">{coldGoal ? "" : fmt(t.goalNum, { n: goalTarget })}</span>
+                            <span className="ring__den">{total ? fmt(t.goalNum, { n: total }) : ""}</span>
                         </span>
                     </div>
                     <div className="col" style={{ gap: 10 }}>
-                        <div style={{ fontSize: "var(--fs-15)", fontWeight: 700 }}>
-                            {coldGoal ? gc[0] : (goalComplete ? t.goalDone : t.goalAlmost)}
-                        </div>
-                        <div className="muted" style={{ fontSize: "var(--fs-13)", lineHeight: 1.45 }}>
-                            {coldGoal ? gc[1] : (goalComplete ? t.goalDescDone : t.goalDescAlmost)}
-                        </div>
+                        <div style={{ fontSize: "var(--fs-15)", fontWeight: 700 }}>{t.masteredTitle}</div>
+                        <div className="muted" style={{ fontSize: "var(--fs-13)", lineHeight: 1.45 }}>{t.masteredDesc}</div>
                     </div>
                 </div>
             </div>
