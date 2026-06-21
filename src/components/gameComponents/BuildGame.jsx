@@ -1,7 +1,7 @@
 // Игра «Собери из букв»: дано родное слово — собрать норвежское из перемешанных плиток-букв.
 // Ступень рампы «продукция со страховкой» (между Выбором и Переводом). Направление — только
 // родной→норв (собираем норвежское). Пропс-совместима с остальными играми.
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
@@ -40,6 +40,8 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const [guessed, setGuessed] = useState([]);
     const [missed, setMissed] = useState([]);
     const [typed, setTyped] = useState([]);            // введённые буквы по порядку (с клавиатуры)
+    const [pop, setPop] = useState(null);              // буква поп-ап превью (как в Gboard)
+    const popTimer = useRef(null);
 
     const knownFirstTry = guessed.filter((id) => !missed.includes(id)).length;
 
@@ -77,6 +79,18 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
         setTyped(next);
         if (next.length === targetChars.length) submit(next);
     };
+
+    // Нажатие клавиши «по-gboard»: мгновенный ввод на pointerdown + поп-ап превью + хаптик.
+    const press = (c, e) => {
+        e?.preventDefault();
+        if (status !== "ASKING" || remainingOf(c) <= 0) return;
+        tapKey(c);
+        try { navigator.vibrate?.(8); } catch { /* нет вибро — ок */ }
+        setPop(c);
+        clearTimeout(popTimer.current);
+        popTimer.current = setTimeout(() => setPop(null), 150);
+    };
+    useEffect(() => () => clearTimeout(popTimer.current), []);
     const undo = () => { if (status === "ASKING") setTyped(typed.slice(0, -1)); };
 
     const submit = (sel = typed) => {
@@ -134,7 +148,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     });
 
     return (
-        <div className="play" data-state={status.toLowerCase()} style={PLAY_STYLE}>
+        <div className="play play--build" data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={guessed.length} wrongCount={missed.length} onExit={backToSelection} t={t} />
             <ProgressSegments segs={segs} />
 
@@ -150,39 +164,46 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                         {built || <span className="build-line__ph">_ _ _</span>}
                     </div>
 
-                    {/* клавиатура QWERTY: активны только буквы слова; на повторных — счётчик доступного */}
-                    <div className="kbd">
-                        {KBD_ROWS.map((row, ri) => (
-                            <div className="kbd__row" key={ri}>
-                                {row.map((c) => {
-                                    const need = needed[c] || 0;
-                                    const rem = remainingOf(c);
-                                    return (
-                                        <button key={c} className={"kbd__key" + (need ? "" : " is-off") + (need && rem <= 0 ? " is-spent" : "")}
-                                            disabled={status !== "ASKING" || !need || rem <= 0}
-                                            onClick={() => tapKey(c)} lang={aLang}>
-                                            {c}
-                                            {need > 1 && <span className="kbd__count">{rem}</span>}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        ))}
-                        {extras.length > 0 && (
-                            <div className="kbd__row">
+                    {/* QWERTY-клавиатура (как Gboard): мгновенный ввод по pointerdown, поп-ап превью буквы,
+                        хаптик; на мобилке прижата к низу; ⌫ слева, ✓ справа-внизу. Только в ASKING. */}
+                    {status === "ASKING" && (
+                        <div className="kbd">
+                            {KBD_ROWS.map((row, ri) => (
+                                <div className="kbd__row" key={ri}>
+                                    {row.map((c) => {
+                                        const need = needed[c] || 0;
+                                        const rem = remainingOf(c);
+                                        return (
+                                            <button key={c} className={"kbd__key" + (need ? "" : " is-off") + (need && rem <= 0 ? " is-spent" : "")}
+                                                disabled={!need || rem <= 0}
+                                                onPointerDown={(e) => press(c, e)} lang={aLang}>
+                                                {c}
+                                                {need > 1 && <span className="kbd__count">{rem}</span>}
+                                                {pop === c && <span className="kbd__pop" aria-hidden="true">{c}</span>}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            ))}
+                            <div className="kbd__row kbd__row--act">
+                                <button className="kbd__key kbd__key--act" onPointerDown={(e) => { e.preventDefault(); undo(); }}
+                                    disabled={!typed.length} aria-label="backspace"><Icon n="arrow-left" /></button>
                                 {extras.map((c) => {
                                     const rem = remainingOf(c);
                                     return (
-                                        <button key={c} className={"kbd__key kbd__key--wide" + (rem <= 0 ? " is-spent" : "")}
-                                            disabled={status !== "ASKING" || rem <= 0} onClick={() => tapKey(c)} lang={aLang}>
+                                        <button key={c} className={"kbd__key kbd__key--space" + (rem <= 0 ? " is-spent" : "")}
+                                            disabled={rem <= 0} onPointerDown={(e) => press(c, e)} lang={aLang}>
                                             {c === " " ? "␣" : c}
                                             {(needed[c] || 0) > 1 && <span className="kbd__count">{rem}</span>}
+                                            {pop === c && <span className="kbd__pop" aria-hidden="true">{c === " " ? "␣" : c}</span>}
                                         </button>
                                     );
                                 })}
+                                <button className="kbd__key kbd__key--go" onPointerDown={(e) => { e.preventDefault(); submit(); }}
+                                    disabled={!typed.length} aria-label="check"><Icon n="check" /></button>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
 
                     {status === "INCORRECT" && (
                         <div className="feedback" style={{ display: "flex" }}>

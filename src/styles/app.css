@@ -285,9 +285,15 @@
     background: var(--game-surface); color: var(--game-ink); border: 2px solid var(--game-border);
     transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
 }
-.kbd__key--wide { flex: 0 0 auto; min-width: 90px; padding: 0 18px; }
+.kbd__key { -webkit-tap-highlight-color: transparent; user-select: none; touch-action: manipulation; }
+.kbd__row--act { margin-top: 4px; }
+.kbd__key--space { flex: 1 1 auto; min-width: 120px; }
+.kbd__key--act { flex: 0 0 auto; min-width: 66px; max-width: 90px; color: var(--game-ink-2); }
+.kbd__key--go { flex: 0 0 auto; min-width: 66px; max-width: 110px; background: var(--game-accent); color: #fff; border-color: var(--game-accent); }
+.kbd__key--go .ic, .kbd__key--act .ic { width: 20px; height: 20px; }
 .kbd__key:hover:not(:disabled) { border-color: var(--game-accent); }
-.kbd__key:active:not(:disabled) { transform: translateY(1px); }
+.kbd__key:active:not(:disabled) { transform: translateY(1px); background: var(--surface-3); }
+.kbd__key--go:active:not(:disabled) { background: var(--game-accent); filter: brightness(1.08); }
 /* буквы НЕ из слова — приглушены и неактивны; израсходованные — полупрозрачны */
 .kbd__key.is-off { opacity: .22; cursor: default; }
 .kbd__key.is-spent { opacity: .3; cursor: default; }
@@ -298,25 +304,34 @@
     display: inline-flex; align-items: center; justify-content: center;
     border-radius: 9px; background: var(--game-accent); color: #fff; font-size: 11px; font-weight: 800;
 }
-/* Мобилка: клавиатура использует ВСЮ ширину экрана — снимаем кап ширины клавиш и
-   выходим за боковые паддинги .pstage (sp-5), клавиши крупнее и тянутся по ширине. */
+/* поп-ап превью буквы над клавишей (как в Gboard — палец не закрывает букву) */
+.kbd__pop {
+    position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    min-width: 165%; padding: 12px 0; border-radius: var(--r-md);
+    background: var(--game-accent); color: #fff; font-size: var(--fs-26); font-weight: 800; line-height: 1;
+    box-shadow: var(--shadow-lg); pointer-events: none; z-index: 8; animation: kpop .07s ease-out;
+}
+@keyframes kpop { from { opacity: 0; transform: translateX(-50%) translateY(5px) scale(.85); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+
+/* Мобилка: клавиатура ПРИЖАТА К НИЗУ, во всю ширину; ⌫ слева, ✓ внизу-справа. */
 @media (max-width: 640px) {
-    .kbd {
-        margin-top: var(--sp-4); gap: 6px; max-width: none;
-        width: calc(100% + var(--sp-5) * 2);
-        margin-left: calc(var(--sp-5) * -1); margin-right: calc(var(--sp-5) * -1);
-        padding: 0 5px;
+    .play--build .kbd {
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; margin: 0; width: 100%; max-width: none;
+        background: var(--game-bg); padding: 7px 5px calc(env(safe-area-inset-bottom, 0px) + 7px);
+        box-shadow: 0 -4px 18px rgba(0, 0, 0, .28); gap: 6px; align-items: stretch;
     }
     .kbd__row { gap: 5px; }
-    .kbd__key { flex: 1 1 0; max-width: none; height: 54px; font-size: var(--fs-20); border-radius: var(--r-sm); }
-    .kbd__key--wide { flex: 0 0 auto; min-width: 30%; }
+    .kbd__key { flex: 1 1 0; max-width: none; height: 52px; font-size: var(--fs-20); border-radius: var(--r-sm); }
+    .kbd__key--space { min-width: 0; }
+    .kbd__key--act, .kbd__key--go { min-width: 0; flex: 1 1 0; max-width: 24%; }
     .kbd__count { top: -5px; right: -5px; }
+    /* место под фикс-клавиатуру, чтобы карточка не уезжала под неё */
+    .play--build .pstage { justify-content: flex-start; padding-top: var(--sp-5); padding-bottom: 270px; }
 }
 @media (max-width: 360px) {
-    .build-line { margin-top: var(--sp-5); }
-    .kbd { gap: 4px; padding: 0 3px; }
+    .build-line { margin-top: var(--sp-4); }
     .kbd__row { gap: 4px; }
-    .kbd__key { height: 48px; font-size: var(--fs-18); }
+    .kbd__key { height: 46px; font-size: var(--fs-18); }
 }
 
 /* Нижняя панель старта игры на мобильных: прогресс на всю ширину, кнопка снизу */
