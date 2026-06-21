@@ -82,16 +82,14 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     const [res, setRes] = useState({ correct: 0, total: 0 }); // только упражнения
     const [cards, setCards] = useState(0);                    // показано карточек-интро
     const [hist, setHist] = useState([]);                     // итог по каждому пройденному элементу: "ok"|"err"|"card"
+    const [graduated, setGraduated] = useState(0);            // слов «выпущено» за сессию: ввод (штатная клава) с 1-й попытки → больше не придут
     const [after, setAfter] = useState(null); // свежая статистика после сессии
-    const [before, setBefore] = useState(null); // базовая статистика на старте (для «выучено за сессию»)
     const [gate, setGate] = useState(null);   // состояние ворот экзамена (для итога системной сессии)
     const [busy, setBusy] = useState(false);
 
     // Подтянуть системную программу с бэка.
     const loadProgram = async () => {
         try {
-            // базовую «выучено» фиксируем ОДИН раз на старте сессии — для дельты в итоге
-            if (before == null) { try { setBefore(await api.learningStats()); } catch { /* */ } }
             // берём заранее прогретую сессию (мгновенно, если готова); следующую закажет экран итога
             const r = await useSessionStore.getState().take(20);
             const list = Array.isArray(r) ? r : (r?.elements || r?.items || r?.words || []);
@@ -103,7 +101,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 await Promise.all(els
                     .filter((e) => e.mode === "choice" && !(e.gw?.options?.length || e.gw?.distractors?.length))
                     .map((e) => api.getPoolDistractors(e.gw?.pool_id, { n: 3, mode: e.dir, lang }).catch(() => null)));
-                setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setHist([]); setAfter(null); setPhase("play");
+                setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setHist([]); setGraduated(0); setAfter(null); setPhase("play");
             }
             else { setPhase("empty"); }
         } catch {
@@ -145,10 +143,12 @@ export default function LearningSession({ words = [], mode = "choice", system = 
 
     // Финиш одной игры. isStudy=true — это была карточка-интро (НЕ ответ): считаем отдельно.
     // Системный путь: переходим к следующему элементу либо к итогу. Легаси: сразу итог.
-    const onGameFinish = (stats, isStudy = false) => {
+    const onGameFinish = (stats, isStudy = false, gmode = null) => {
         const got = stats || { total: 0, correct: 0 };
         if (isStudy) setCards((c) => c + (got.total || 1));
         else setRes((p) => ({ correct: p.correct + (got.correct || 0), total: p.total + (got.total || 0) }));
+        // «выпущено за сессию»: ввод (штатная клава) с ПЕРВОЙ попытки = слово прошло рампу и больше не придёт
+        if (!isStudy && gmode === "input" && (got.correct || 0) > 0) setGraduated((g) => g + (got.correct || 0));
         // запоминаем исход элемента для полосы прогресса сессии
         setHist((h) => [...h, isStudy ? "card" : ((got.correct || 0) > 0 ? "ok" : "err")]);
         if (isSystem) {
@@ -209,10 +209,11 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         const streak = after?.streak || 0;
         const noneLeft = left <= 0 || after?._empty;
         const examGate = isSystem && !!gate?.open;   // ворота экзамена открыты → нужен экзамен, не новые слова
-        // всего выучено (mastered) из всех слов учёбы + прирост за сессию
+        // всего выучено (mastered) из всех слов учёбы; «+N за сессию» = слов выпущено за эту сессию
+        // (ввод с штатной клавы с 1-й попытки — они прошли рампу и больше не придут)
         const masteredNow = after?.byStatus?.mastered || 0;
         const totalWords = after?.total || 0;
-        const learned = Math.max(0, masteredNow - (before?.byStatus?.mastered || 0)); // прирост за сессию
+        const learned = graduated;
         return (
             <div style={STAGE}>
                 <div style={{ margin: "auto", textAlign: "center", padding: "var(--sp-5)", maxWidth: 460, width: "100%" }}>
@@ -278,7 +279,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 // записываем по АВТОРИТЕТНОМУ шагу системы (el.mode/el.dir), а не по тому, что
                 // сообщит игра — иначе клетка рампы могла бы не совпасть и слово застряло бы
                 onResult={isStudy ? undefined : (w, ok) => onResult(w, ok, el.mode, el.dir)}
-                onFinish={isStudy ? (s) => { recordIntro(el.gw); onGameFinish(s, true); } : (s) => onGameFinish(s, false)}
+                onFinish={isStudy ? (s) => { recordIntro(el.gw); onGameFinish(s, true); } : (s) => onGameFinish(s, false, el.mode)}
                 onExit={() => onClose?.(true)}
                 setGameState={() => onClose?.(true)}
             />
