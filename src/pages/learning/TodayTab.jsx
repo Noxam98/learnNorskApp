@@ -427,9 +427,12 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                                 <Icon n="play" sm /> {t.emptyMore}
                                             </button>
                                         )}
-                                        <button className="btn btn--outline btn--lg" onClick={() => go("exam")}>
-                                            <Icon n="award" sm /> {t.emptyExam}
-                                        </button>
+                                        {/* экзамен — только когда ворота открыты (пачка готова к переходу); иначе сдавать нечего */}
+                                        {gateOpen && (
+                                            <button className="btn btn--accent btn--lg" onClick={() => go("exam")}>
+                                                <Icon n="award" sm /> {t.emptyExam}
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
