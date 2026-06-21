@@ -92,14 +92,18 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         try {
             // базовую «выучено» фиксируем ОДИН раз на старте сессии — для дельты в итоге
             if (before == null) { try { setBefore(await api.learningStats()); } catch { /* */ } }
-            // берём заранее прогретую сессию (мгновенно, если готова) и сразу греем следующую
+            // берём заранее прогретую сессию (мгновенно, если готова); следующую закажет экран итога
             const r = await useSessionStore.getState().take(20);
             const list = Array.isArray(r) ? r : (r?.elements || r?.items || r?.words || []);
             const els = toElements(list, lang);
             if (els.length) {
+                // НЕ открываем задания, пока не загружено всё нужное: ждём дистракторы ВСЕХ «выборов»
+                // (кэшируются), чтобы внутри сессии ничего не подгружалось и не тормозило. Лоадер
+                // «Готовим сессию…» висит до готовности. Префетч делает это ожидание почти мгновенным.
+                await Promise.all(els
+                    .filter((e) => e.mode === "choice")
+                    .map((e) => api.getPoolDistractors(e.gw?.pool_id, { n: 3, mode: e.dir, lang }).catch(() => null)));
                 setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setHist([]); setAfter(null); setPhase("play");
-                // греем кэш дистракторов для всех «выборов» сессии — вопросы открываются мгновенно
-                els.forEach((e) => { if (e.mode === "choice") api.prefetchPoolDistractors(e.gw?.pool_id, { n: 3, mode: e.dir, lang }); });
             }
             else { setPhase("empty"); }
         } catch {
