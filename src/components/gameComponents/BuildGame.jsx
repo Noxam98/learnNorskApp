@@ -195,7 +195,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                                     })}
                                     {/* ⌫ как в Gboard — в конце последнего буквенного ряда (рядом с «m») */}
                                     {ri === KBD_ROWS.length - 1 && (
-                                        <button className="kbd__key kbd__key--act" onPointerDown={(e) => { e.preventDefault(); undo(); }}
+                                        <button className="kbd__key kbd__key--act" onPointerDown={(e) => { e.preventDefault(); try { navigator.vibrate?.(8); } catch { /* нет вибро */ } undo(); }}
                                             disabled={!typed.length} aria-label="backspace"><Icon n="arrow-left" /></button>
                                     )}
                                 </div>
