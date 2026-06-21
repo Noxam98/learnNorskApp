@@ -38,8 +38,8 @@ const T = {
         addedNone: "Новых слов под уровень не нашлось",
         snapshot: "Мои слова сейчас", toProgress: "Прогресс",
         emptyT: "На сегодня всё повторено",
-        emptyD: "Ты закрыл все повторения и дневную цель. Можно докинуть новых слов под свой уровень или проверить себя на экзамене.",
-        emptyAdd: "Докинуть слов", emptyExam: "Пройти экзамен",
+        emptyD: "Дневная цель выполнена — но это не лимит. Можешь продолжить и учить новые слова или проверить себя на экзамене.",
+        emptyAdd: "Докинуть слов", emptyExam: "Пройти экзамен", emptyMore: "Учить ещё",
         placeT: "Пройди входной тест",
         placeD: "Несколько вопросов — и система подберёт стартовый уровень и слова под него.",
         placeBtn: "Пройти тест", placeModalT: "Входной тест",
@@ -76,8 +76,8 @@ const T = {
         addedNone: "No new words for your level",
         snapshot: "My words now", toProgress: "Progress",
         emptyT: "All reviewed for today",
-        emptyD: "You've closed all reviews and the daily goal. Add new words for your level or take the exam.",
-        emptyAdd: "Add words", emptyExam: "Take the exam",
+        emptyD: "Daily goal done — but it's not a limit. Keep going with new words or take the exam.",
+        emptyAdd: "Add words", emptyExam: "Take the exam", emptyMore: "Keep learning",
         placeT: "Take the placement test",
         placeD: "A few questions and the system will set your starting level and words.",
         placeBtn: "Take the test", placeModalT: "Placement test",
@@ -114,8 +114,8 @@ const T = {
         addedNone: "Нових слів під рівень не знайшлося",
         snapshot: "Мої слова зараз", toProgress: "Прогрес",
         emptyT: "На сьогодні все повторено",
-        emptyD: "Ти закрив усі повторення й денну ціль. Можна докинути нових слів або скласти екзамен.",
-        emptyAdd: "Докинути слів", emptyExam: "Скласти екзамен",
+        emptyD: "Денну ціль виконано — але це не ліміт. Можеш вчити нові слова далі або скласти екзамен.",
+        emptyAdd: "Докинути слів", emptyExam: "Скласти екзамен", emptyMore: "Вчити ще",
         placeT: "Пройди вхідний тест",
         placeD: "Кілька питань — і система підбере стартовий рівень та слова під нього.",
         placeBtn: "Пройти тест", placeModalT: "Вхідний тест",
@@ -152,8 +152,8 @@ const T = {
         addedNone: "Brak nowych słów dla poziomu",
         snapshot: "Moje słowa teraz", toProgress: "Postęp",
         emptyT: "Wszystko powtórzone na dziś",
-        emptyD: "Domknąłeś powtórki i cel dzienny. Dorzuć nowych słów lub podejdź do egzaminu.",
-        emptyAdd: "Dorzuć słów", emptyExam: "Podejdź do egzaminu",
+        emptyD: "Cel dzienny osiągnięty — to nie limit. Ucz się dalej nowych słów lub podejdź do egzaminu.",
+        emptyAdd: "Dorzuć słów", emptyExam: "Podejdź do egzaminu", emptyMore: "Ucz się dalej",
         placeT: "Wykonaj test wstępny",
         placeD: "Kilka pytań — system dobierze poziom startowy i słowa.",
         placeBtn: "Wykonaj test", placeModalT: "Test wstępny",
@@ -190,8 +190,8 @@ const T = {
         addedNone: "Naujų žodžių lygiui nerasta",
         snapshot: "Mano žodžiai dabar", toProgress: "Pažanga",
         emptyT: "Šiandienai viskas pakartota",
-        emptyD: "Uždarei visus kartojimus ir dienos tikslą. Pridėk naujų žodžių arba laikyk egzaminą.",
-        emptyAdd: "Pridėti žodžių", emptyExam: "Laikyti egzaminą",
+        emptyD: "Dienos tikslas pasiektas — tai ne riba. Mokykis naujų žodžių toliau arba laikyk egzaminą.",
+        emptyAdd: "Pridėti žodžių", emptyExam: "Laikyti egzaminą", emptyMore: "Mokytis toliau",
         placeT: "Atlik įvadinį testą",
         placeD: "Keli klausimai — ir sistema parinks pradinį lygį bei žodžius.",
         placeBtn: "Atlikti testą", placeModalT: "Įvadinis testas",
@@ -422,6 +422,11 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                     <div className="empty__t">{t.emptyT}</div>
                                     <div className="empty__d">{t.emptyD}</div>
                                     <div className="empty__actions">
+                                        {!gateOpen && (
+                                            <button className="btn btn--accent btn--lg" onClick={runReview}>
+                                                <Icon n="play" sm /> {t.emptyMore}
+                                            </button>
+                                        )}
                                         <button className="btn btn--outline btn--lg" onClick={() => go("exam")}>
                                             <Icon n="award" sm /> {t.emptyExam}
                                         </button>
