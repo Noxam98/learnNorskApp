@@ -6,6 +6,9 @@ import { BrandMark } from "../ui/BrandMark.jsx";
 
 export const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 
+// Честный «Не знаю» в заданиях: подсветит верный ответ, но засчитает как НЕ угадано.
+export const DUNNO = { ru: "Не знаю", ukr: "Не знаю", en: "I don't know", pl: "Nie wiem", lt: "Nežinau" };
+
 export const PLAY_STYLE = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };
 
 export const filterChosenWords = (dictList) =>

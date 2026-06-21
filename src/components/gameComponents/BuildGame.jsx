@@ -9,7 +9,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { ENDONYM, PLAY_STYLE, filterChosenWords, pickWord, shuffle, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, filterChosenWords, pickWord, shuffle, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
 
 const GMODE = "build";
@@ -79,6 +79,14 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
             if (!missed.includes(current.id)) { setMissed([...missed, current.id]); record(current, false); }
             setStatus("INCORRECT");
         }
+    };
+
+    // Честный «Не знаю»: как неверный — пометит missed, покажет верное слово.
+    const dontKnow = () => {
+        if (status !== "ASKING") return;
+        playSound("wrong");
+        if (!missed.includes(current.id)) { setMissed([...missed, current.id]); record(current, false); }
+        setStatus("INCORRECT");
     };
 
     const goNext = () => {
@@ -157,6 +165,11 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                         )}
                         {status === "INCORRECT" && <button className="gbtn gbtn--accent" onClick={goNext}>{t.next} <Icon n="arrow-right" sm /></button>}
                     </div>
+                    {status === "ASKING" && (
+                        <div className="dunno-wrap">
+                            <button className="dunno-link" onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
+                        </div>
+                    )}
                 </div>
 
                 {status === "FINISHED" && !onFinish && (

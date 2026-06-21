@@ -10,7 +10,7 @@ import { hyLang } from "../ui/hyphenate.js";
 import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
-import { ENDONYM, PLAY_STYLE, filterChosenWords, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, filterChosenWords, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
 
 const GMODE = "choice";
@@ -104,6 +104,16 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         setStatus(ok ? "CORRECT" : "INCORRECT");
     };
 
+    // Честный «Не знаю»: подсвечиваем верный, но засчитываем как НЕ угадано (рампа сбросит клетку).
+    const dontKnow = () => {
+        if (status !== "ASKING") return;
+        playSound("wrong");
+        setChosen(null);                 // ничего не выбрано — подсветится только верный
+        record(current, false);
+        setResults((rs) => [...rs, { id: current.id, ok: false }]);
+        setStatus("INCORRECT");
+    };
+
     // Второй клик по экрану (после ответа) — следующее слово.
     const onStageClick = () => {
         if (status === "CORRECT" || status === "INCORRECT") goNext();
@@ -163,6 +173,13 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                         {(status === "CORRECT" || status === "INCORRECT") &&
                             <span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span>}
                     </div>
+                    {status === "ASKING" && options && (
+                        <div className="dunno-wrap">
+                            <button className="dunno-link" onClick={(e) => { e.stopPropagation(); dontKnow(); }}>
+                                {DUNNO[currentLanguage]}
+                            </button>
+                        </div>
+                    )}
                 </ChoiceQuestion>
 
                 {status === "FINISHED" && !onFinish && (

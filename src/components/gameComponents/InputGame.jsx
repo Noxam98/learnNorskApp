@@ -10,7 +10,7 @@ import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { ENDONYM, PLAY_STYLE, filterChosenWords, pickWord, shuffle, foldLoose, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, filterChosenWords, pickWord, shuffle, foldLoose, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
 
 const GMODE = "input";
@@ -108,6 +108,12 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         applyResult(accepted.some((a) => foldLoose(a) === answer));
     };
 
+    // Честный «Не знаю»: как неверный — пометит missed, покажет верное написание.
+    const dontKnow = () => {
+        if (status !== "ASKING") return;
+        applyResult(false);
+    };
+
     const restart = () => {
         setGuessed([]); setMissed([]); setInput("");
         setCurrent(pickWord(wordsToGame, []));
@@ -175,6 +181,11 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                             ? <button className="gbtn gbtn--accent" onClick={goNext}>{t.next} <Icon n="arrow-right" sm /></button>
                             : <button className="gbtn gbtn--accent" onClick={submit} disabled={status === "CORRECT"}><Icon n="check" sm /> {t.check}</button>}
                     </div>
+                    {status === "ASKING" && (
+                        <div className="dunno-wrap">
+                            <button className="dunno-link" onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
+                        </div>
+                    )}
                 </div>
 
                 {status === "FINISHED" && !onFinish && (

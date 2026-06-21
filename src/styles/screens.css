@@ -366,6 +366,12 @@
   .gbtn--accent:hover { background: #f5b673; }
   .gbtn--ghost { background: rgba(255,255,255,.06); color: var(--game-ink); border: 1px solid var(--game-border); }
   .gbtn--ghost:hover { background: rgba(255,255,255,.1); }
+  /* честный «Не знаю» — деликатно, но заметно: приглушённая текст-ссылка под заданием */
+  .dunno-wrap { text-align: center; margin-top: var(--sp-4); }
+  .dunno-link { display: inline-flex; align-items: center; gap: 6px; background: none; border: none;
+    color: var(--game-ink); opacity: .42; font-family: inherit; font-weight: 600; font-size: var(--fs-13);
+    cursor: pointer; padding: 6px 8px; text-decoration: underline; text-underline-offset: 3px; transition: opacity var(--dur); }
+  .dunno-link:hover { opacity: .8; }
 
   /* feedback banner */
   /* фидбэк — компактно, в один ряд (переносится только при нехватке места) */

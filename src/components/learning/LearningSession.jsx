@@ -22,11 +22,11 @@ const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: Stu
 const LEGACY_DIR = "int2no";
 
 const T = {
-    ru: { done: "Сессия завершена", acc: "верно", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
-    en: { done: "Session complete", acc: "correct", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
-    ukr: { done: "Сесію завершено", acc: "правильно", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
-    pl: { done: "Sesja zakończona", acc: "poprawnie", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
-    lt: { done: "Sesija baigta", acc: "teisingai", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
+    ru: { done: "Сессия завершена", acc: "верно", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", examNote: "Готова пачка слов — сдай экзамен, чтобы открыть новые", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
+    en: { done: "Session complete", acc: "correct", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", examNote: "A word pack is ready — pass the exam to unlock new ones", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
+    ukr: { done: "Сесію завершено", acc: "правильно", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", examNote: "Пачка слів готова — склади екзамен, щоб відкрити нові", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
+    pl: { done: "Sesja zakończona", acc: "poprawnie", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", examNote: "Paczka słów gotowa — zdaj egzamin, aby odblokować nowe", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
+    lt: { done: "Sesija baigta", acc: "teisingai", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", examNote: "Žodžių paketas paruoštas — išlaikyk egzaminą, kad atrakintum naujus", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
 };
 
 const STAGE = { position: "fixed", inset: 0, zIndex: 95, background: "var(--game-bg)", color: "var(--game-ink)", display: "flex", flexDirection: "column", overflow: "auto" };
@@ -78,6 +78,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     // Общий прогресс сессии (суммируем по элементам/играм).
     const [res, setRes] = useState({ correct: 0, total: 0 });
     const [after, setAfter] = useState(null); // свежая статистика после сессии
+    const [gate, setGate] = useState(null);   // состояние ворот экзамена (для итога системной сессии)
     const [busy, setBusy] = useState(false);
 
     // Подтянуть системную программу с бэка.
@@ -119,6 +120,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     const showSummary = async () => {
         setPhase("summary");
         try { setAfter(await api.learningStats()); } catch { /* */ }
+        if (isSystem) { try { setGate(await api.learningGate()); } catch { /* */ } }
     };
 
     // Финиш одной игры. Системный путь: переходим к следующему элементу либо к итогу.
@@ -183,6 +185,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         const left = due + (after?.byStatus?.new || 0) + (after?.byStatus?.weak || 0);
         const streak = after?.streak || 0;
         const noneLeft = left <= 0 || after?._empty;
+        const examGate = isSystem && !!gate?.open;   // ворота экзамена открыты → нужен экзамен, не новые слова
         return (
             <div style={STAGE}>
                 <div style={{ margin: "auto", textAlign: "center", padding: "var(--sp-5)", maxWidth: 460, width: "100%" }}>
@@ -196,10 +199,12 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                         {!noneLeft && <span style={chip}><Icon n="repeat" sm /> {left} {t.left}</span>}
                     </div>
 
-                    {/* дневная цель — ориентир, не лимит: «Учить ещё» доступно всегда в системной сессии
-                        (build_session досыпет новые, если есть место, иначе даст слова в работе) */}
-                    {noneLeft && <p style={{ opacity: .8, marginBottom: "var(--sp-3)" }}>{t.leftZero}</p>}
-                    {(isSystem || !noneLeft) && (
+                    {/* Дневная цель — ориентир, не лимит. В режиме Учёбы (системная сессия) «Ещё сессия»
+                        доступна всегда, КРОМЕ случая открытых ворот экзамена — тогда нужен экзамен. */}
+                    {examGate
+                        ? <p style={{ opacity: .85, marginBottom: "var(--sp-3)" }}>{t.examNote}</p>
+                        : (noneLeft && <p style={{ opacity: .8, marginBottom: "var(--sp-3)" }}>{t.leftZero}</p>)}
+                    {((isSystem && !examGate) || (!isSystem && !noneLeft)) && (
                         <button className="btn btn--accent btn--lg btn--block" onClick={again} disabled={busy}>
                             <Icon n="play" sm /> {t.more}
                         </button>
