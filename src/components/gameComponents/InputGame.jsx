@@ -75,6 +75,9 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (status === "FINISHED" && onFinish) onFinish({ total, correct: guessed.filter((id) => !missed.includes(id)).length });
     }, [status]); // eslint-disable-line
 
+    // Очистить поле и вернуть фокус — чтобы после ошибки сразу вводить заново.
+    const resetInput = () => { setInput(""); setTimeout(() => inputRef.current?.focus(), 0); };
+
     const applyResult = (ok) => {
         playSound(ok ? "correct" : "wrong");
         if (ok) {
@@ -89,6 +92,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                 record(current, false);
             }
             setStatus("INCORRECT");
+            resetInput();              // сбросить ввод и сфокусировать — печатать заново
         }
     };
 
@@ -122,6 +126,9 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                 setGuessed(ng);
                 if (ng.length === total) { setStatus("FINISHED"); playWin(); }
                 else advanceWith(ng);
+            } else {
+                playSound("wrong");
+                resetInput();          // снова неверно — очистить и сфокусировать
             }
             return;
         }
