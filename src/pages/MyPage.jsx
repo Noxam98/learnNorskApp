@@ -5,6 +5,7 @@ import { useSystemStore } from "../store/systemStore.jsx";
 import { useWordsStore } from "../store/wordStore.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { Icon } from "../components/ui/Icon.jsx";
+import { Dropdown } from "../components/ui/Dropdown.jsx";
 import GoogleSignInButton from "../components/ui/GoogleSignInButton.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
 import { BtnSpinner } from "../components/ui/Spinner.jsx";
@@ -149,13 +150,15 @@ const MyPage = () => {
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="globe" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.interfaceLang}</span><span className="setrow__d">{t.interfaceLangDesc}</span></span>
-                            <select className="mini-select" value={currentLanguage} onChange={(e) => useSystemStore.getState().setCurrentLanguage(e.target.value)}>
-                                <option value="ukr">Українська</option>
-                                <option value="ru">Русский</option>
-                                <option value="en">English</option>
-                                <option value="pl">Polski</option>
-                                <option value="lt">Lietuvių</option>
-                            </select>
+                            <Dropdown value={currentLanguage}
+                                onChange={(v) => useSystemStore.getState().setCurrentLanguage(v)}
+                                options={[
+                                    { value: "ukr", label: "Українська", emoji: "🇺🇦" },
+                                    { value: "ru", label: "Русский", emoji: "🇷🇺" },
+                                    { value: "en", label: "English", emoji: "🇬🇧" },
+                                    { value: "pl", label: "Polski", emoji: "🇵🇱" },
+                                    { value: "lt", label: "Lietuvių", emoji: "🇱🇹" },
+                                ]} />
                         </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n={theme === "dark" ? "moon" : "sun"} sm /></span>

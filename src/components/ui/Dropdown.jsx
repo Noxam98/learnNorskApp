@@ -2,7 +2,7 @@
 // не режется overflow родителей (модалки/скролл-контейнеры).
 //   <Dropdown value options onChange placeholder />   — выбор значения
 //   <ActionMenu label icon items />                    — меню действий
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "./Icon.jsx";
 import { BtnSpinner } from "./Spinner.jsx";
 
@@ -36,15 +36,27 @@ function usePopup(ref, open, setOpen) {
     return pop;
 }
 
-export function Dropdown({ value, options, onChange, placeholder }) {
+export function Dropdown({ value, options, onChange, placeholder, disabled = false }) {
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
+    const popRef = useRef(null);
     const pop = usePopup(ref, open, setOpen);
     const sel = options.find((o) => o.value === value);
     const choose = (v) => { onChange(v); setOpen(false); };
+    // После рендера: если попап шире, чем место справа, сдвигаем влево (используем
+    // пространство слева от триггера); если и так не влезает — перенос делает CSS.
+    useLayoutEffect(() => {
+        const el = popRef.current;
+        if (!open || !pop || !el) return;
+        const w = el.offsetWidth, vw = window.innerWidth, m = 8;
+        let left = pop.left;
+        if (left + w > vw - m) left = vw - m - w;
+        if (left < m) left = m;
+        el.style.left = Math.round(left) + "px";
+    }, [open, pop, value]);
     return (
-        <div className={"dd" + (open ? " is-open" : "")} ref={ref}>
-            <button type="button" className="dd__trigger" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <div className={"dd" + (open ? " is-open" : "") + (disabled ? " is-disabled" : "")} ref={ref}>
+            <button type="button" className="dd__trigger" disabled={disabled} aria-haspopup="listbox" aria-expanded={open} onClick={() => !disabled && setOpen((o) => !o)}>
                 <span className="dd__val">
                     {sel ? <>{sel.emoji && <span className="dd__emoji">{sel.emoji}</span>}<span className="dd__valtxt">{sel.label}</span>{sel.sub && <span className="dd__valsub">{sel.sub}</span>}</>
                         : <span className="dd__placeholder">{placeholder || "—"}</span>}
@@ -52,8 +64,14 @@ export function Dropdown({ value, options, onChange, placeholder }) {
                 <span className="dd__chev" aria-hidden="true"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2.5 4.5 L6 8 L9.5 4.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
             </button>
             {open && pop && (
-                <div className={"dd__pop" + (pop.up ? " dd__pop--up" : "")} role="listbox"
-                    style={{ left: pop.left, top: pop.top, width: pop.width, maxHeight: pop.maxH, transform: pop.up ? "translateY(-100%)" : "none" }}>
+                <div ref={popRef} className={"dd__pop" + (pop.up ? " dd__pop--up" : "")} role="listbox"
+                    style={{
+                        left: pop.left, top: pop.top,
+                        minWidth: pop.width,             // не уже триггера
+                        width: "max-content",            // растём по длинной опции
+                        maxWidth: "calc(100vw - 16px)",  // максимум — почти вся ширина экрана
+                        maxHeight: pop.maxH, transform: pop.up ? "translateY(-100%)" : "none",
+                    }}>
                     {options.map((o) => (
                         <button key={o.value} type="button" role="option" aria-selected={o.value === value}
                             className={"dd__opt" + (o.value === value ? " is-sel" : "")} onClick={() => choose(o.value)}>

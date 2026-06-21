@@ -26,11 +26,11 @@ const SRC_LABEL = {
 };
 const POS_ORDER = ["noun", "verb", "adj", "phrase", "other"];
 const SORT_LABELS = {
-    ru:  { title: "Сортировка", added: "По добавлению", alpha: "По алфавиту", pos: "По части речи" },
-    ukr: { title: "Сортування", added: "За додаванням", alpha: "За алфавітом", pos: "За частиною мови" },
-    en:  { title: "Sort", added: "By date added", alpha: "Alphabetical", pos: "By part of speech" },
-    pl:  { title: "Sortowanie", added: "Wg dodania", alpha: "Alfabetycznie", pos: "Wg części mowy" },
-    lt:  { title: "Rūšiavimas", added: "Pagal pridėjimą", alpha: "Pagal abėcėlę", pos: "Pagal kalbos dalį" },
+    ru:  { title: "Сортировка", added: "По добавлению", alpha: "По алфавиту", pos: "По части речи", freq: "По частоте" },
+    ukr: { title: "Сортування", added: "За додаванням", alpha: "За алфавітом", pos: "За частиною мови", freq: "За частотою" },
+    en:  { title: "Sort", added: "By date added", alpha: "Alphabetical", pos: "By part of speech", freq: "By frequency" },
+    pl:  { title: "Sortowanie", added: "Wg dodania", alpha: "Alfabetycznie", pos: "Wg części mowy", freq: "Wg częstości" },
+    lt:  { title: "Rūšiavimas", added: "Pagal pridėjimą", alpha: "Pagal abėcėlę", pos: "Pagal kalbos dalį", freq: "Pagal dažnumą" },
 };
 
 export const WordListPage = () => {
@@ -157,6 +157,11 @@ export const WordListPage = () => {
         else if (sort === "pos") arr.sort((a, b) => {
             const d = POS_ORDER.indexOf(posMeta(a.part_of_speech).key) - POS_ORDER.indexOf(posMeta(b.part_of_speech).key);
             return d || byNo(a, b);
+        });
+        else if (sort === "freq") arr.sort((a, b) => {
+            // частые сначала; без частоты (null) — в хвост
+            const fa = a.freq == null ? -1 : a.freq, fb = b.freq == null ? -1 : b.freq;
+            return (fb - fa) || byNo(a, b);
         });
         else arr.reverse(); // "added" — новые слова сверху (порядок добавления — по возрастанию)
         return arr;

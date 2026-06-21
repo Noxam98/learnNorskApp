@@ -4,6 +4,7 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { BtnSpinner } from "../ui/Spinner.jsx";
+import { Dropdown } from "../ui/Dropdown.jsx";
 import { wordCount } from "../tools/plural.js";
 import { posMeta, posLabel, chipPrefix } from "../ui/pos.js";
 import api from "../tools/api.js";
@@ -274,18 +275,15 @@ export const GameWordChooser = ({ setGameState, mode, setMode, gameType, setGame
                             <p className="sel-section__sub">{aiL.sub}</p>
                             <div className="gsetup__block">
                                 <span className="gsetup__lbl">{aiL.level}</span>
-                                <select className="input" value={aiLevel} disabled={aiBusy} onChange={(e) => setAiLevel(e.target.value)}>
-                                    <option value="">{aiL.anyLevel}</option>
-                                    {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-                                </select>
+                                <Dropdown value={aiLevel} disabled={aiBusy} onChange={setAiLevel}
+                                    options={[{ value: "", label: aiL.anyLevel }, ...LEVELS.map((l) => ({ value: l, label: l }))]} />
                             </div>
                             <div className="gsetup__block">
                                 <span className="gsetup__lbl">{aiL.topic}</span>
-                                <select className="input" value={aiTopic} disabled={aiBusy} onChange={(e) => setAiTopic(e.target.value)}>
-                                    <option value="">{aiL.anyTopic}</option>
-                                    {Object.keys(topicsMap).map((k) => <option key={k} value={k}>{topicsMap[k]}</option>)}
-                                    <option value="__custom__">{aiL.custom}</option>
-                                </select>
+                                <Dropdown value={aiTopic} disabled={aiBusy} onChange={setAiTopic}
+                                    options={[{ value: "", label: aiL.anyTopic },
+                                        ...Object.keys(topicsMap).map((k) => ({ value: k, label: topicsMap[k] })),
+                                        { value: "__custom__", label: aiL.custom }]} />
                                 {aiTopic === "__custom__" && (
                                     <input className="input" type="text" value={aiTopicCustom} disabled={aiBusy}
                                         placeholder={aiL.customPh} maxLength={60} autoFocus

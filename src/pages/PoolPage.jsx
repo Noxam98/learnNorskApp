@@ -6,6 +6,7 @@ import { useSystemStore } from "../store/systemStore.jsx";
 import { useAuthStore } from "../store/AuthStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
+import { Dropdown } from "../components/ui/Dropdown.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
 import { WordInfoModal } from "../components/ui/WordInfoModal.jsx";
 import { BtnSpinner, SkeletonWordlist } from "../components/ui/Spinner.jsx";
@@ -257,24 +258,24 @@ export const PoolPage = () => {
 
                     <div className="grow" />
 
-                    <label className="poolbar__sel">
+                    <div className="poolbar__sel">
                         <Icon n="sort" sm />
-                        <select value={sort} onChange={(e) => onSort(e.target.value)}>
-                            <option value="alpha">{t.poolSort?.alpha || "А-Я"}</option>
-                            <option value="level">{t.poolSort?.level || "Уровень"}</option>
-                            <option value="added">{t.poolSort?.added || "Новые"}</option>
-                        </select>
-                    </label>
+                        <Dropdown value={sort} onChange={onSort} options={[
+                            { value: "alpha", label: t.poolSort?.alpha || "А-Я" },
+                            { value: "level", label: t.poolSort?.level || "Уровень" },
+                            { value: "added", label: t.poolSort?.added || "Новые" },
+                            { value: "freq", label: t.poolSort?.freq || "Частота" },
+                        ]} />
+                    </div>
                     <button className="iconbtn" title={order === "asc" ? "↑" : "↓"}
                         onClick={() => { setPage(1); setOrder((o) => (o === "asc" ? "desc" : "asc")); }}>
                         <Icon n={order === "asc" ? "arrow-up" : "arrow-down"} sm />
                     </button>
 
-                    <label className="poolbar__sel">
-                        <select value={pageSize} onChange={(e) => onPageSize(Number(e.target.value))}>
-                            {PAGE_SIZES.map((n) => <option key={n} value={n}>{n} / {t.pageSize || "стр."}</option>)}
-                        </select>
-                    </label>
+                    <div className="poolbar__sel">
+                        <Dropdown value={pageSize} onChange={(v) => onPageSize(Number(v))}
+                            options={PAGE_SIZES.map((n) => ({ value: n, label: `${n} / ${t.pageSize || "стр."}` }))} />
+                    </div>
                 </div>
             </div>
 
