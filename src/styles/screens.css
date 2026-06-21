@@ -123,6 +123,8 @@
     background: var(--surface); border: 1px solid var(--border); color: var(--ink-2); }
   .poolbar__sel select { border: none; background: transparent; color: var(--ink);
     font-size: var(--fs-14); font-weight: 600; cursor: pointer; outline: none; }
+  /* внутри кастомный Dropdown (свой фон/рамка) — убираем фон обёртки, чтобы не было двойного */
+  .poolbar__sel:has(.dd) { background: transparent; border: none; padding: 0; height: auto; }
 
   /* Постраничная навигация */
   .pager { display: flex; justify-content: center; align-items: center; gap: 6px;

@@ -5,6 +5,7 @@ import { Card } from "../components/wordListComponents/WordCard";
 import { useWordsStore } from "../store/wordStore";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
+import { Dropdown } from "../components/ui/Dropdown.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
 import { WordInfoModal } from "../components/ui/WordInfoModal.jsx";
 import { Dots, BtnSpinner, CountdownRing } from "../components/ui/Spinner.jsx";
@@ -63,7 +64,9 @@ export const WordListPage = () => {
     const [newDict, setNewDict] = useState("");
     const [pendingDelete, setPendingDelete] = useState(null);
     const [sort, setSort] = useState("added");
-    const [sortOpen, setSortOpen] = useState(false);
+    const [order, setOrder] = useState("desc"); // asc | desc
+    // разумное направление по умолчанию для каждого типа сортировки
+    const pickSort = (s) => { setSort(s); setOrder(({ added: "desc", alpha: "asc", pos: "asc", freq: "desc" })[s] || "asc"); };
     const [search, setSearch] = useState("");
     const [info, setInfo] = useState(null); // { no, wordId } — открытое инфо-окно слова (живёт на странице, не в карточке)
     const [suggestions, setSuggestions] = useState([]);
@@ -153,19 +156,20 @@ export const WordListPage = () => {
     const displayWords = useMemo(() => {
         const arr = (search ? wordList.filter((w) => matchWord(w, search)) : wordList).slice();
         const byNo = (a, b) => (a.translate?.no?.[0] || "").localeCompare(b.translate?.no?.[0] || "");
+        // базовая сортировка по ВОЗРАСТАНИЮ; направление применяем ниже (order)
         if (sort === "alpha") arr.sort(byNo);
         else if (sort === "pos") arr.sort((a, b) => {
             const d = POS_ORDER.indexOf(posMeta(a.part_of_speech).key) - POS_ORDER.indexOf(posMeta(b.part_of_speech).key);
             return d || byNo(a, b);
         });
         else if (sort === "freq") arr.sort((a, b) => {
-            // частые сначала; без частоты (null) — в хвост
             const fa = a.freq == null ? -1 : a.freq, fb = b.freq == null ? -1 : b.freq;
-            return (fb - fa) || byNo(a, b);
+            return (fa - fb) || byNo(a, b);   // asc: редкие → частые
         });
-        else arr.reverse(); // "added" — новые слова сверху (порядок добавления — по возрастанию)
+        else arr.sort((a, b) => (a.id || 0) - (b.id || 0)); // "added" asc: по порядку добавления
+        if (order === "desc") arr.reverse();
         return arr;
-    }, [wordList, sort, search]);
+    }, [wordList, sort, search, order]);
 
     const handleAdd = async () => {
         if (!prompt.trim()) return;
@@ -272,28 +276,18 @@ export const WordListPage = () => {
 
                 <div className="grow" />
 
-                <div style={{ position: "relative" }}>
-                    <button className="select" onClick={() => setSortOpen((p) => !p)}>
-                        <Icon n="sort" sm />
-                        <span>{sl[sort]}</span>
-                        <Icon n="chevron-down" sm />
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <Icon n="sort" sm />
+                    <Dropdown value={sort} onChange={pickSort} options={[
+                        { value: "added", label: sl.added },
+                        { value: "alpha", label: sl.alpha },
+                        { value: "pos", label: sl.pos },
+                        { value: "freq", label: sl.freq },
+                    ]} />
+                    <button className="iconbtn" title={order === "asc" ? "↑" : "↓"}
+                        onClick={() => setOrder((o) => (o === "asc" ? "desc" : "asc"))}>
+                        <Icon n={order === "asc" ? "arrow-up" : "arrow-down"} sm />
                     </button>
-                    {sortOpen && (
-                        <>
-                            <div onClick={() => setSortOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 30 }} />
-                            <div className="card" style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 40, minWidth: 200, padding: "var(--sp-2)", boxShadow: "var(--shadow-md)" }}>
-                                {["added", "alpha", "pos"].map((key) => (
-                                    <button key={key} className="nav__link" style={{
-                                        justifyContent: "flex-start", width: "100%", border: "none",
-                                        background: sort === key ? "var(--fjord-50)" : "transparent",
-                                        color: sort === key ? "var(--fjord-600)" : "var(--ink-2)",
-                                    }} onClick={() => { setSort(key); setSortOpen(false); }}>
-                                        {sl[key]}
-                                    </button>
-                                ))}
-                            </div>
-                        </>
-                    )}
                 </div>
 
                 {/* Мобильные — все действия под одной кнопкой (справа от сортировки) */}
