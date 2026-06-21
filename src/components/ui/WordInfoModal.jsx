@@ -248,7 +248,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                     {view.level && <span className="chip lvl">{view.level}</span>}
                     {view.freqBand && (
                         <span className={`chip freq ${freqCls(view.freqBand)}`} title={t.freqHint || "частота употребления"}>
-                            <Icon n="activity" sm /> {freqLabel(view.freqBand, lang)}
+                            <span className="dot" /> {freqLabel(view.freqBand, lang)}
                         </span>
                     )}
                     {(view.topics || []).map((k) => (
