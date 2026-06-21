@@ -1,42 +1,29 @@
-// Игра «Ввод»: игрок печатает перевод. Слово повторяется, пока не угадано;
-// на верном — авто-переход, на ошибке — кнопка «Дальше» с показом ответа.
-// Озвучка (если включена) — видимого слова и правильного ответа.
-import { useState, useEffect, useMemo, useRef } from "react";
-import { useWordsStore } from "../../store/wordStore";
-import { useSystemStore } from "../../store/systemStore.jsx";
-import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
+// Игра «Ввод»: игрок печатает перевод на штатной клавиатуре. На верном — авто-переход, на
+// ошибке — показ ответа, поле сбрасывается и фокусируется (печатать заново), дальше — когда введёт
+// правильно. Механика цикла (стейт-машина, SRS, ретрай, авто-переход, финиш) — в useGameLoop.
+import { useState, useEffect, useRef } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, filterChosenWords, pickWord, shuffle, foldLoose, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
-import { playSound, playWin } from "../tools/sound.js";
+import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { useGameLoop } from "./useGameLoop.js";
 
-const GMODE = "input";
-
-// words/onResult/onExit передаёт «Учёба» (переиспользует игру). Без них — обычный режим «Игры».
 export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
-    const currentLanguage = useSystemStore((s) => s.currentLanguage);
-    const dictList = useWordsStore((s) => s.dictList);
-    const aiPlay = useWordsStore((s) => s.aiPlayWords);
-    const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
-    const recordGameResult = useWordsStore((s) => s.recordGameResult);
-    const t = interfaceTranslate[currentLanguage];
-    const record = (w, ok) => { if (onResult) onResult(w, ok, GMODE); else recordGameResult(w.id, ok, GMODE); };
-
-    const wordsToGame = useMemo(() => wordsProp || aiPlay || filterChosenWords(dictList), []);
-    const total = wordsToGame.length;
     const isNo2Int = mode !== "int2no";
-
-    const [status, setStatus] = useState("ASKING"); // ASKING | CORRECT | INCORRECT | FINISHED
-    const [current, setCurrent] = useState(() => pickWord(wordsToGame, []));
-    const [guessed, setGuessed] = useState([]);
-    const [missed, setMissed] = useState([]);
     const [input, setInput] = useState("");
     const inputRef = useRef(null);
+    // Очистить поле и вернуть фокус — чтобы после ошибки сразу вводить заново.
+    const resetInput = () => { setInput(""); setTimeout(() => inputRef.current?.focus(), 0); };
 
-    const knownFirstTry = guessed.filter((id) => !missed.includes(id)).length;
+    const loop = useGameLoop({
+        gmode: "input", words: wordsProp, onResult, onFinish, onExit, setGameState,
+        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100,
+        onAdvance: () => setInput(""),   // новое слово — чистое поле (фокус даст эффект ниже)
+        onWrong: resetInput,             // после ошибки — сбросить и сфокусировать
+    });
+    const { t, currentLanguage, total, current, status, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, restart, backToSelection } = loop;
 
     const no = current?.translate?.no?.[0] || "";
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
@@ -48,7 +35,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const aLang = hyLang(currentLanguage, !isNo2Int);
 
     useEffect(() => {
-        // фокус и при повторе после ошибки — чтобы сразу вводить заново
+        // фокус при показе и при повторе после ошибки — чтобы сразу вводить
         if ((status === "ASKING" || status === "INCORRECT") && inputRef.current) inputRef.current.focus();
     }, [status, current]);
 
@@ -63,113 +50,18 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (sound && (status === "CORRECT" || status === "INCORRECT") && correctPrimary) speakText(correctPrimary, aLang).catch(() => {});
     }, [status]); // eslint-disable-line
 
-    // Верный ответ — авто-переход.
-    useEffect(() => {
-        if (status === "CORRECT") {
-            const timer = setTimeout(() => goNext(), 1100);
-            return () => clearTimeout(timer);
-        }
-    }, [status]); // eslint-disable-line
-    // «Учёба» показывает свой итог сессии — отдаём результат наружу вместо своего финиша.
-    useEffect(() => {
-        if (status === "FINISHED" && onFinish) onFinish({ total, correct: guessed.filter((id) => !missed.includes(id)).length });
-    }, [status]); // eslint-disable-line
-
-    // Очистить поле и вернуть фокус — чтобы после ошибки сразу вводить заново.
-    const resetInput = () => { setInput(""); setTimeout(() => inputRef.current?.focus(), 0); };
-
-    const applyResult = (ok) => {
-        playSound(ok ? "correct" : "wrong");
-        if (ok) {
-            if (!missed.includes(current.id)) record(current, true);
-            const ng = [...guessed, current.id];
-            setGuessed(ng);
-            if (ng.length === total) { setStatus("FINISHED"); playWin(); }
-            else setStatus("CORRECT");
-        } else {
-            if (!missed.includes(current.id)) {
-                setMissed([...missed, current.id]);
-                record(current, false);
-            }
-            setStatus("INCORRECT");
-            resetInput();              // сбросить ввод и сфокусировать — печатать заново
-        }
-    };
-
-    const goNext = () => {
-        let next = pickWord(wordsToGame, [...guessed, current?.id]);
-        if (!next) next = pickWord(wordsToGame, guessed);
-        if (!next) { setStatus("FINISHED"); return; }
-        setCurrent(next);
-        setInput("");
-        setStatus("ASKING");
-    };
-
-    // Переход дальше после УСПЕШНОГО повтора (слово уже зачтено как пройденное в gList).
-    const advanceWith = (gList) => {
-        let next = pickWord(wordsToGame, [...gList, current?.id]);
-        if (!next) next = pickWord(wordsToGame, gList);
-        if (!next) { setStatus("FINISHED"); playWin(); return; }
-        setCurrent(next); setInput(""); setStatus("ASKING");
-    };
-
-    const submit = (e) => {
-        e?.preventDefault();
-        if (status === "CORRECT" || status === "FINISHED") return;
-        const answer = foldLoose(input);
-        const ok = accepted.some((a) => foldLoose(a) === answer);
-        // повтор после ошибки: ответ уже показан — дальше только когда ввёл правильно
-        if (status === "INCORRECT") {
-            if (ok) {
-                playSound("correct");
-                const ng = [...guessed, current.id];   // зачесть как пройденное (без повторной записи в SRS)
-                setGuessed(ng);
-                if (ng.length === total) { setStatus("FINISHED"); playWin(); }
-                else advanceWith(ng);
-            } else {
-                playSound("wrong");
-                resetInput();          // снова неверно — очистить и сфокусировать
-            }
-            return;
-        }
-        applyResult(ok);
-    };
-
-    // Честный «Не знаю»: как неверный — пометит missed, покажет верное написание.
-    const dontKnow = () => {
-        if (status !== "ASKING") return;
-        applyResult(false);
-    };
-
-    const restart = () => {
-        setGuessed([]); setMissed([]); setInput("");
-        setCurrent(pickWord(wordsToGame, []));
-        setStatus("ASKING");
-    };
-
-    const backToSelection = () => {
-        if (onExit) { onExit(); return; }
-        wordsToGame.forEach((w) => { if (w?.gameData?.isChoosedToGame) toggleChooseToGame(w.id); });
-        setGameState("chooseWords");
-    };
+    const submit = (e) => { e?.preventDefault(); answer(accepted.some((a) => foldLoose(a) === foldLoose(input))); };
+    const dontKnow = () => { if (status === "ASKING") answer(false); };
 
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
 
     const posText = posLabel(current.part_of_speech, t);
     const descriptionText = current.description?.description?.[currentLanguage] || "";
     const otherAccepted = accepted.filter((a) => foldLoose(a) !== foldLoose(input));
-    const score = total ? Math.round((knownFirstTry / total) * 100) : 0;
-    const qIndex = stepTotal ? stepNo : Math.min(guessed.length + 1, total);
-    const qTotal = stepTotal || total;
-    const segs = segsOverride || Array.from({ length: total }, (_, i) => {
-        if (i < guessed.length) return missed.includes(guessed[i]) ? "err" : "ok";
-        if (i === guessed.length && status !== "FINISHED") return "now";
-        return "";
-    });
 
     return (
         <div className="play" data-state={status.toLowerCase()} style={PLAY_STYLE}>
-            <PlayTopBar correctCount={guessed.length} wrongCount={missed.length} onExit={backToSelection} t={t} />
+            <PlayTopBar correctCount={doneCount} wrongCount={missedIds.size} onExit={backToSelection} t={t} />
             <ProgressSegments segs={segs} />
 
             <div className="pstage">
@@ -216,7 +108,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                 </div>
 
                 {status === "FINISHED" && !onFinish && (
-                    <FinishScreen score={score} knownFirstTry={knownFirstTry} missedCount={missed.length} total={total}
+                    <FinishScreen score={score} knownFirstTry={knownFirstTry} missedCount={missedIds.size} total={total}
                         t={t} onRestart={restart} onExit={backToSelection} />
                 )}
             </div>

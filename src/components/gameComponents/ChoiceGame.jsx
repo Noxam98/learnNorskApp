@@ -1,53 +1,35 @@
-// Игра «Выбор»: 4 варианта, каждое слово ровно один раз, переход по второму
-// клику по экрану. Озвучка (если включена) — видимого слова и правильного ответа.
-import { useState, useEffect, useMemo } from "react";
-import { useWordsStore } from "../../store/wordStore";
-import { useSystemStore } from "../../store/systemStore.jsx";
-import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
+// Игра «Выбор»: 4 варианта, каждое слово ровно один раз, переход по тапу после верного ответа.
+// Механика цикла (стейт-машина, SRS, ретрай, переход, финиш) — в useGameLoop; здесь деривация
+// слова, загрузка вариантов, озвучка и рендер.
+import { useState, useEffect } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyLang } from "../ui/hyphenate.js";
 import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, filterChosenWords, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
-import { playSound, playWin } from "../tools/sound.js";
+import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { useGameLoop } from "./useGameLoop.js";
 
-const GMODE = "choice";
 // подсказка после ошибки: выбрать подсвеченный правильный вариант, чтобы продолжить
 const PICK_RIGHT = { ru: "Выбери правильный вариант", en: "Pick the correct option", ukr: "Обери правильний варіант", pl: "Wybierz poprawną opcję", lt: "Pasirink teisingą variantą" };
 
-// words/onResult/onExit передаёт «Учёба» (переиспользует игру). Без них — обычный режим «Игры».
 export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
-    const currentLanguage = useSystemStore((s) => s.currentLanguage);
-    const dictList = useWordsStore((s) => s.dictList);
-    const aiPlay = useWordsStore((s) => s.aiPlayWords);
-    const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
-    const recordGameResult = useWordsStore((s) => s.recordGameResult);
-    const t = interfaceTranslate[currentLanguage];
-    const record = (w, ok) => { if (onResult) onResult(w, ok, GMODE); else recordGameResult(w.id, ok, GMODE); };
-
-    const wordsToGame = useMemo(() => wordsProp || aiPlay || filterChosenWords(dictList), []);
-    const total = wordsToGame.length;
     const isNo2Int = mode !== "int2no";
-
-    const [status, setStatus] = useState("ASKING"); // ASKING | CORRECT | INCORRECT | FINISHED
-    const [order, setOrder] = useState(() => shuffle(wordsToGame)); // фикс. порядок, каждое слово 1 раз
-    const [qpos, setQpos] = useState(0);
-    const [results, setResults] = useState([]); // [{ id, ok }] в порядке ответов
+    const [chosen, setChosen] = useState(null);
     const [options, setOptions] = useState(null);
     const [subOf, setSubOf] = useState({}); // вариант → второй перевод (вторая строка кнопки)
-    const [chosen, setChosen] = useState(null);
 
-    const current = order[qpos] || null;
-    const correctCount = results.filter((r) => r.ok).length;
-    const wrongCount = results.filter((r) => !r.ok).length;
-    const knownFirstTry = correctCount;
+    const loop = useGameLoop({
+        gmode: "choice", words: wordsProp, onResult, onFinish, onExit, setGameState,
+        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 0,
+        onAdvance: () => setChosen(null),
+    });
+    const { t, currentLanguage, total, current, status, words: wordsToGame, results, knownFirstTry, score, qIndex, qTotal, answer, advance, restart, backToSelection } = loop;
 
     const no = current?.translate?.no?.[0] || "";
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
     const question = isNo2Int ? no : (translations.join(", ") || no);
-    const accepted = (isNo2Int ? translations : (current?.translate?.no || [])).map((s) => s.trim()).filter(Boolean);
     const correctPrimary = (isNo2Int ? translations[0] : no) || "";
     const promptTarget = isNo2Int ? (ENDONYM[currentLanguage] || currentLanguage) : "Norsk";
     const qLang = hyLang(currentLanguage, isNo2Int);    // язык вопроса
@@ -62,10 +44,6 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     // Озвучка правильного ответа после ответа.
     useEffect(() => {
         if (sound && (status === "CORRECT" || status === "INCORRECT") && correctPrimary) speakText(correctPrimary, aLang).catch(() => {});
-    }, [status]); // eslint-disable-line
-    // «Учёба» показывает свой итог сессии — отдаём результат наружу вместо своего финиша.
-    useEffect(() => {
-        if (status === "FINISHED" && onFinish) onFinish({ total, correct: results.filter((r) => r.ok).length });
     }, [status]); // eslint-disable-line
 
     // Подгрузка вариантов.
@@ -102,62 +80,24 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         return () => { cancelled = true; };
     }, [status, current, currentLanguage, mode]); // eslint-disable-line
 
-    const goNext = () => {
-        if (qpos + 1 >= total) { setStatus("FINISHED"); playWin(); return; }
-        setQpos(qpos + 1);
-        setChosen(null);
-        setStatus("ASKING");
-    };
-
+    // выбор варианта: после ошибки кликабелен только правильный (его выбор → дальше)
     const choose = (opt) => {
-        // после ошибки: правильный вариант подсвечен — выбрать его, чтобы идти дальше (без «Дальше»)
-        if (status === "INCORRECT") {
-            if (opt === correctPrimary) { playSound("correct"); goNext(); }
-            return;
-        }
+        if (status === "INCORRECT") { if (opt === correctPrimary) answer(true); return; }
         if (status !== "ASKING") return;
-        const ok = opt === correctPrimary;
-        playSound(ok ? "correct" : "wrong");
         setChosen(opt);
-        record(current, ok);                 // SRS — только первая попытка
-        setResults((rs) => [...rs, { id: current.id, ok }]);
-        setStatus(ok ? "CORRECT" : "INCORRECT");
+        answer(opt === correctPrimary);
     };
-
-    // Честный «Не знаю»: подсвечиваем верный, но засчитываем как НЕ угадано (рампа сбросит клетку).
-    const dontKnow = () => {
-        if (status !== "ASKING") return;
-        playSound("wrong");
-        setChosen(null);                 // ничего не выбрано — подсветится только верный
-        record(current, false);
-        setResults((rs) => [...rs, { id: current.id, ok: false }]);
-        setStatus("INCORRECT");
-    };
-
-    // Клик по экрану продвигает только после ВЕРНОГО ответа. После ошибки — нужно выбрать
-    // подсвеченный правильный вариант (тогда дальше), а не «тыкать дальше».
-    const onStageClick = () => {
-        if (status === "CORRECT") goNext();
-    };
-
-    const restart = () => {
-        setResults([]); setQpos(0); setOrder(shuffle(wordsToGame)); setChosen(null); setStatus("ASKING");
-    };
-
-    const backToSelection = () => {
-        if (onExit) { onExit(); return; }
-        wordsToGame.forEach((w) => { if (w?.gameData?.isChoosedToGame) toggleChooseToGame(w.id); });
-        setGameState("chooseWords");
-    };
+    // Честный «Не знаю»: ничего не выбрано — подсветится только верный, засчитывается как НЕ угадано.
+    const dontKnow = () => { if (status !== "ASKING") return; setChosen(null); answer(false); };
+    // Клик по экрану продвигает только после ВЕРНОГО ответа (после ошибки — выбрать верный вариант).
+    const onStageClick = () => { if (status === "CORRECT") advance(); };
 
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
 
+    const correctCount = results.filter((r) => r.ok).length;
+    const wrongCount = results.filter((r) => !r.ok).length;
     const posText = posLabel(current.part_of_speech, t);
     const descriptionText = current.description?.description?.[currentLanguage] || "";
-    const score = total ? Math.round((knownFirstTry / total) * 100) : 0;
-    // в системной сессии счётчик/полоса показывают прогресс ВСЕЙ сессии (а не одно слово)
-    const qIndex = stepTotal ? stepNo : Math.min(qpos + 1, total);
-    const qTotal = stepTotal || total;
     const segs = segsOverride || Array.from({ length: total }, (_, i) => {
         if (i < results.length) return results[i].ok ? "ok" : "err";
         if (i === results.length && status !== "FINISHED") return "now";
