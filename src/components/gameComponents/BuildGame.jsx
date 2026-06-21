@@ -8,6 +8,7 @@ import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
+import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
 import { ENDONYM, DUNNO, PLAY_STYLE, filterChosenWords, pickWord, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
@@ -61,9 +62,10 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const qLang = hyLang(currentLanguage, false);  // язык подсказки — родной
     const aLang = hyLang(currentLanguage, true);   // ответ — норвежский
 
-    // Озвучка норвежского ответа при показе (прогрев) и после ответа.
+    // При показе: озвучиваем ЗАПРАШИВАЕМОЕ слово (родной перевод) + прогреваем норвежский ответ.
     useEffect(() => {
         if (!sound || status !== "ASKING") return;
+        if (trArr[0]) speakText(trArr[0], qLang).catch(() => {});
         if (target) prefetchTts(target, aLang);
     }, [current, sound]); // eslint-disable-line
     useEffect(() => {
@@ -188,7 +190,10 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                 <div className="qcard">
                     <div className="qcount">{t.word} {qIndex} / {qTotal}</div>
                     <div className="qprompt">{t.collectFromLetters || "Собери слово · Norsk"}</div>
-                    <h1 className="qword" lang={qLang}>{hyphenate(prompt, qLang)}</h1>
+                    <h1 className="qword" lang={qLang}>{hyphenate(prompt, qLang)}
+                        {trArr[0] && <SpeakButton text={trArr[0]} lang={qLang} className="qspeak"
+                            ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />}
+                    </h1>
                     {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
 
                     {/* собранное слово */}

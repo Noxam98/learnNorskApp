@@ -8,7 +8,9 @@
 // «ещё сессия» / «в Учёбу». Финиш отдельной игры подавляется через onFinish.
 import { useEffect, useState } from "react";
 import { useSystemStore } from "../../store/systemStore.jsx";
+import { useSessionStore } from "../../store/sessionStore.jsx";
 import { Icon } from "../ui/Icon.jsx";
+import { BtnSpinner } from "../ui/Spinner.jsx";
 import api from "../tools/api.js";
 import ChoiceGame from "../gameComponents/ChoiceGame.jsx";
 import InputGame from "../gameComponents/InputGame.jsx";
@@ -61,6 +63,7 @@ const toElements = (list, lang) => (list || [])
 export default function LearningSession({ words = [], mode = "choice", system = false, lang = "ru", onClose }) {
     const t = T[lang] || T.ru;
     const soundOn = useSystemStore((s) => s.soundOn);
+    const sessionLoading = useSessionStore((s) => s.loading); // следующая сессия ещё грузится фоном
 
     // Системный путь — когда явно сказано system или набор не передан.
     const isSystem = system || !words?.length;
@@ -89,7 +92,8 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         try {
             // базовую «выучено» фиксируем ОДИН раз на старте сессии — для дельты в итоге
             if (before == null) { try { setBefore(await api.learningStats()); } catch { /* */ } }
-            const r = await api.learningSession(20);
+            // берём заранее прогретую сессию (мгновенно, если готова) и сразу греем следующую
+            const r = await useSessionStore.getState().take(20);
             const list = Array.isArray(r) ? r : (r?.elements || r?.items || r?.words || []);
             const els = toElements(list, lang);
             if (els.length) {
@@ -128,6 +132,8 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     // Показать итог + подтянуть статистику.
     const showSummary = async () => {
         setPhase("summary");
+        // сразу после окончания — начинаем греть следующую сессию (если ещё не греется)
+        useSessionStore.getState().prefetch(20);
         try { setAfter(await api.learningStats()); } catch { /* */ }
         if (isSystem) { try { setGate(await api.learningGate()); } catch { /* */ } }
     };
@@ -235,8 +241,8 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                         ? <p style={{ opacity: .85, marginBottom: "var(--sp-3)" }}>{t.examNote}</p>
                         : (noneLeft && <p style={{ opacity: .8, marginBottom: "var(--sp-3)" }}>{t.leftZero}</p>)}
                     {((isSystem && !examGate) || (!isSystem && !noneLeft)) && (
-                        <button className="btn btn--accent btn--lg btn--block" onClick={again} disabled={busy}>
-                            <Icon n="play" sm /> {t.more}
+                        <button className="btn btn--accent btn--lg btn--block" onClick={again} disabled={busy || (isSystem && sessionLoading)}>
+                            {(isSystem && sessionLoading) ? <BtnSpinner /> : <Icon n="play" sm />} {t.more}
                         </button>
                     )}
                     <button className="btn btn--ghost btn--block" style={{ marginTop: 8, color: "var(--game-ink)", borderColor: "var(--game-border)" }} onClick={() => onClose?.(true)}>

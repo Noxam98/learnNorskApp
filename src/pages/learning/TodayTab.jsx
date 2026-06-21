@@ -7,6 +7,7 @@ import { Icon } from "../../components/ui/Icon.jsx";
 import { Modal } from "../../components/ui/Modal.jsx";
 import { BtnSpinner, BrandLoader } from "../../components/ui/Spinner.jsx";
 import { StatusDot, statusLabel, STATUS_ORDER } from "../../components/learning/StatusBits.jsx";
+import { useSessionStore } from "../../store/sessionStore.jsx";
 
 // ---------- i18n (ru/en/ukr/pl/lt) ----------
 const T = {
@@ -227,6 +228,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
 
     const [busy, setBusy] = useState("");      // ключ запускаемого набора/игры → спиннер
     const autoFillTried = useRef(false);       // авто-добор пустой учёбы — один раз за монтирование
+    const sessionLoading = useSessionStore((s) => s.loading); // следующая сессия ещё грузится фоном
 
     useEffect(() => {
         let on = true;
@@ -421,8 +423,8 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                     <div className="empty__d">{t.emptyD}</div>
                                     <div className="empty__actions">
                                         {!gateOpen && (
-                                            <button className="btn btn--accent btn--lg" onClick={runReview}>
-                                                <Icon n="play" sm /> {t.emptyMore}
+                                            <button className="btn btn--accent btn--lg" onClick={runReview} disabled={sessionLoading}>
+                                                {sessionLoading ? <BtnSpinner /> : <Icon n="play" sm />} {t.emptyMore}
                                             </button>
                                         )}
                                         {/* экзамен — только когда ворота открыты (пачка готова к переходу); иначе сдавать нечего */}
@@ -448,8 +450,8 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                     <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {t.chWeak}</span>
                                     <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-new)" }} />{composition.fresh} {t.chNew}</span>
                                 </div>
-                                <button className="review-cta__btn" onClick={runReview}>
-                                    <Icon n="play" /> {t.startReview}
+                                <button className="review-cta__btn" onClick={runReview} disabled={sessionLoading}>
+                                    {sessionLoading ? <BtnSpinner /> : <Icon n="play" />} {t.startReview}
                                 </button>
                             </div>
 

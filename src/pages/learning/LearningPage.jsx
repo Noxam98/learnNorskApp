@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
+import { useSessionStore } from "../../store/sessionStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { WordInfoModal } from "../../components/ui/WordInfoModal.jsx";
@@ -53,6 +54,8 @@ export default function LearningPage() {
 
     useEffect(() => {
         try { if (!localStorage.getItem("learn_onboarded")) setIntro(true); } catch { /* */ }
+        // как только открыли «Учёбу» — фоном греем первую сессию, чтобы старт был мгновенным
+        useSessionStore.getState().prefetch(20);
     }, []);
 
     useEffect(() => {
