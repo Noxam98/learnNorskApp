@@ -41,7 +41,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const [missed, setMissed] = useState([]);
     const [typed, setTyped] = useState([]);            // введённые буквы по порядку (с клавиатуры)
     const [pop, setPop] = useState(null);              // буква поп-ап превью (как в Gboard)
-    const popTimer = useRef(null);
+    const pressingRef = useRef(null);                  // какую клавишу сейчас держим (ввод — на отпускании)
 
     const knownFirstTry = guessed.filter((id) => !missed.includes(id)).length;
 
@@ -80,17 +80,26 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
         if (next.length === targetChars.length) submit(next);
     };
 
-    // Нажатие клавиши «по-gboard»: мгновенный ввод на pointerdown + поп-ап превью + хаптик.
-    const press = (c, e) => {
+    // Клавиша «по-gboard»: на нажатии — поп-ап превью + хаптик; ВВОД символа — на ОТПУСКАНИИ
+    // (pointerup) над той же клавишей. Уход пальца/отмена — без ввода.
+    const keyDown = (c, e) => {
         e?.preventDefault();
         if (status !== "ASKING" || remainingOf(c) <= 0) return;
-        tapKey(c);
-        try { navigator.vibrate?.(8); } catch { /* нет вибро — ок */ }
+        pressingRef.current = c;
         setPop(c);
-        clearTimeout(popTimer.current);
-        popTimer.current = setTimeout(() => setPop(null), 150);
+        try { navigator.vibrate?.(8); } catch { /* нет вибро — ок */ }
     };
-    useEffect(() => () => clearTimeout(popTimer.current), []);
+    const keyUp = (c) => {
+        if (pressingRef.current === c) {
+            tapKey(c);
+            try { navigator.vibrate?.(8); } catch { /* нет вибро — ок */ }
+        }
+        pressingRef.current = null;
+        setPop(null);
+    };
+    const keyCancel = (c) => {
+        if (pressingRef.current === c) { pressingRef.current = null; setPop(null); }
+    };
     const undo = () => { if (status === "ASKING") setTyped(typed.slice(0, -1)); };
 
     const submit = (sel = typed) => {
@@ -177,7 +186,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                                         return (
                                             <button key={c} className={"kbd__key" + (need ? "" : " is-off") + (need && rem <= 0 ? " is-spent" : "")}
                                                 disabled={!need || rem <= 0}
-                                                onPointerDown={(e) => press(c, e)} lang={aLang}>
+                                                onPointerDown={(e) => keyDown(c, e)} onPointerUp={() => keyUp(c)} onPointerLeave={() => keyCancel(c)} onPointerCancel={() => keyCancel(c)} lang={aLang}>
                                                 {c}
                                                 {need > 1 && <span className="kbd__count">{rem}</span>}
                                                 {pop === c && <span className="kbd__pop" aria-hidden="true">{c}</span>}
@@ -197,7 +206,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                                     const rem = remainingOf(c);
                                     return (
                                         <button key={c} className={"kbd__key" + (rem <= 0 ? " is-spent" : "")}
-                                            disabled={rem <= 0} onPointerDown={(e) => press(c, e)} lang={aLang}>
+                                            disabled={rem <= 0} onPointerDown={(e) => keyDown(c, e)} onPointerUp={() => keyUp(c)} onPointerLeave={() => keyCancel(c)} onPointerCancel={() => keyCancel(c)} lang={aLang}>
                                             {c}
                                             {(needed[c] || 0) > 1 && <span className="kbd__count">{rem}</span>}
                                             {pop === c && <span className="kbd__pop" aria-hidden="true">{c}</span>}
@@ -209,7 +218,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                                     const need = needed[" "] || 0; const rem = remainingOf(" ");
                                     return (
                                         <button className={"kbd__key kbd__key--space" + (need ? "" : " is-off") + (need && rem <= 0 ? " is-spent" : "")}
-                                            disabled={!need || rem <= 0} onPointerDown={(e) => press(" ", e)} aria-label="space">
+                                            disabled={!need || rem <= 0} onPointerDown={(e) => keyDown(" ", e)} onPointerUp={() => keyUp(" ")} onPointerLeave={() => keyCancel(" ")} onPointerCancel={() => keyCancel(" ")} aria-label="space">
                                             {need > 1 && <span className="kbd__count">{rem}</span>}
                                             {pop === " " && <span className="kbd__pop" aria-hidden="true">␣</span>}
                                         </button>
