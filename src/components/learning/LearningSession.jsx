@@ -38,6 +38,11 @@ const STAGE = { position: "fixed", inset: 0, zIndex: 95, background: "var(--game
 const chip = { display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, border: "1px solid var(--game-border)", background: "var(--game-surface)", fontWeight: 700, fontSize: "var(--fs-14)" };
 
 // привести слово к форме, понятной играм: id = pool_id; translate.no — гарантированно есть.
+/**
+ * @param {any} w слово из БД/сессии
+ * @param {import('../../types.js').UiLang} lang
+ * @returns {import('../../types.js').GameWord}
+ */
 const toGameWord = (w, lang) => {
     const pid = w?.pool_id ?? w?.id;
     return {
@@ -55,6 +60,11 @@ const toGameWords = (list, lang) => (list || [])
 
 // Элементы системной программы: {pool_id, no, translate, mode, direction, step}.
 // Нормализуем в [{ comp, dir, gw }] — игра монтируется на одном слове.
+/**
+ * @param {import('../../types.js').SessionElement[]} list
+ * @param {import('../../types.js').UiLang} lang
+ * @returns {import('../../types.js').NormElement[]}
+ */
 const toElements = (list, lang) => (list || [])
     .filter((e) => e && (e.pool_id ?? e.id) != null)
     .map((e) => ({

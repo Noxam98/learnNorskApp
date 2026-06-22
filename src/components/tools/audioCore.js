@@ -1,3 +1,4 @@
+// @ts-check
 // Ядро синтез-звука: единый AudioContext, общий шумовой буфер, проверка тумблера.
 // Используется sound.js (UI-звуки) и raceAudio.js (гонка).
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -6,7 +7,7 @@ let ctx = null;
 export function ac() {
     if (typeof window === "undefined") return null;
     if (!ctx) {
-        const AC = window.AudioContext || window.webkitAudioContext;
+        const AC = window.AudioContext || /** @type {any} */ (window).webkitAudioContext;
         if (!AC) return null;
         ctx = new AC();
     }
