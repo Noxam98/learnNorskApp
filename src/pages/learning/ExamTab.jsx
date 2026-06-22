@@ -28,10 +28,12 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
         onExit,
     });
     const { current, picked, answer, qIndex, qTotal, backToSelection } = loop;
+    const [typed, setTyped] = useState("");   // для типа input
 
     // свуш + озвучка норв. слова при появлении вопроса (по настройке звука)
     useEffect(() => {
         if (!current) return;
+        setTyped("");
         playSound("question");
         // озвучиваем норв. слово только в no2int (оно и так на экране); в int2no/cloze — нет (выдаст ответ)
         if (soundOn && (current.type || "no2int") === "no2int" && current.no) speakText(current.no, "no").catch(() => {});
@@ -43,11 +45,12 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
     const accent = kind === "audit" ? "var(--st-learn)" : "var(--fjord-600)";
     // тип вопроса: no2int (норв.→перевод) | int2no (перевод→норв.) | cloze (пропуск в предложении)
     const type = current.type || "no2int";
-    const isInt2no = type === "int2no", isCloze = type === "cloze";
+    const isInt2no = type === "int2no", isCloze = type === "cloze", isInput = type === "input";
     const prompt = isInt2no ? current.prompt : isCloze ? (current.blank || "").replace("___", "＿＿＿") : current.no;
     const promptLang = isInt2no ? lang : "no";
     const optionLang = (isInt2no || isCloze) ? "no" : lang;
     const hint = isInt2no ? t.hintInt2no : isCloze ? t.hintCloze : `${t.dir}${ENDONYM[lang] || lang}`;
+    const onInputSubmit = () => { if (picked == null && typed.trim()) pick(typed.trim()); };
     return (
         <div className="study-root">
             <div className="plc-stage">
@@ -64,17 +67,33 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
                             <Icon n={kind === "audit" ? "rotate" : "graduation"} sm />{" "}
                             {kind === "audit" ? t.auditTitle : t.openTitle}
                         </span>
-                        <ChoiceQuestion
-                            prompt={prompt}
-                            promptLang={promptLang}
-                            options={current.options || []}
-                            optionLang={optionLang}
-                            onPick={pick}
-                            picked={picked}
-                            reveal={false}
-                            disabled={picked != null}
-                            hint={hint}
-                        />
+                        {isInput ? (
+                            <div className="qcard">
+                                <div className="qprompt">{t.hintInput}</div>
+                                <h1 className="qword" lang={lang}>{current.prompt}</h1>
+                                <form className="answer" onSubmit={(e) => { e.preventDefault(); onInputSubmit(); }}>
+                                    <input value={typed} onChange={(e) => setTyped(e.target.value)} disabled={picked != null}
+                                        autoComplete="off" spellCheck="false" lang="no" placeholder="Norsk…" autoFocus />
+                                </form>
+                                <div className="pcta">
+                                    <button className="btn btn--accent btn--lg" onClick={onInputSubmit} disabled={picked != null || !typed.trim()}>
+                                        <Icon n="check" sm /> {t.inputSubmit}
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <ChoiceQuestion
+                                prompt={prompt}
+                                promptLang={promptLang}
+                                options={current.options || []}
+                                optionLang={optionLang}
+                                onPick={pick}
+                                picked={picked}
+                                reveal={false}
+                                disabled={picked != null}
+                                hint={hint}
+                            />
+                        )}
                     </motion.div>
                 </div>
             </div>
@@ -103,6 +122,7 @@ const T = {
         // прогон
         dir: "Норвежский → ", whats: "Что это значит?",
         hintInt2no: "Выбери норвежское слово", hintCloze: "Вставь пропущенное слово", listen: "Прослушай и выбери перевод", replay: "Повторить",
+        hintInput: "Напиши по-норвежски", inputSubmit: "Проверить",
         qCount: (i, n) => `${i} / ${n}`,
         // результат ворот
         passedTitle: "Пачка сертифицирована",
@@ -139,6 +159,7 @@ const T = {
         startExam: "Start exam", neutralNote: "Score doesn't move intervals · mistakes go to review",
         dir: "Norwegian → ", whats: "What does it mean?",
         hintInt2no: "Pick the Norwegian word", hintCloze: "Fill in the gap", listen: "Listen and pick the translation", replay: "Replay",
+        hintInput: "Type in Norwegian", inputSubmit: "Check",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Pack certified",
         passedDesc: "New words are open again — the next pack starts filling. The audit now watches the old ones.",
@@ -172,6 +193,7 @@ const T = {
         startExam: "Почати екзамен", neutralNote: "Бал не рухає інтервали · помилки підуть на повторення",
         dir: "Норвезька → ", whats: "Що це означає?",
         hintInt2no: "Обери норвезьке слово", hintCloze: "Встав пропущене слово", listen: "Прослухай і обери переклад", replay: "Повторити",
+        hintInput: "Напиши норвезькою", inputSubmit: "Перевірити",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Пачку сертифіковано",
         passedDesc: "Нові слова знову відкриті — накопичується наступна пачка. Старе тепер перевірить аудит.",
@@ -205,6 +227,7 @@ const T = {
         startExam: "Rozpocznij egzamin", neutralNote: "Wynik nie zmienia interwałów · błędy trafią do powtórki",
         dir: "Norweski → ", whats: "Co to znaczy?",
         hintInt2no: "Wybierz norweskie słowo", hintCloze: "Uzupełnij lukę", listen: "Posłuchaj i wybierz tłumaczenie", replay: "Powtórz",
+        hintInput: "Napisz po norwesku", inputSubmit: "Sprawdź",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Paczka certyfikowana",
         passedDesc: "Nowe słowa znów otwarte — zbiera się kolejna paczka. Stare pilnuje teraz audyt.",
@@ -238,6 +261,7 @@ const T = {
         startExam: "Pradėti egzaminą", neutralNote: "Balas nejudina intervalų · klaidos eis kartoti",
         dir: "Norvegų → ", whats: "Ką tai reiškia?",
         hintInt2no: "Pasirink norvegišką žodį", hintCloze: "Įrašyk trūkstamą žodį", listen: "Klausyk ir pasirink vertimą", replay: "Pakartoti",
+        hintInput: "Parašyk norvegiškai", inputSubmit: "Tikrinti",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Rinkinys sertifikuotas",
         passedDesc: "Nauji žodžiai vėl atverti — kaupiasi kitas rinkinys. Senus dabar tikrins auditas.",
