@@ -33,13 +33,21 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
     useEffect(() => {
         if (!current) return;
         playSound("question");
-        if (soundOn && current.no) speakText(current.no, "no").catch(() => {});
+        // озвучиваем норв. слово только в no2int (оно и так на экране); в int2no/cloze — нет (выдаст ответ)
+        if (soundOn && (current.type || "no2int") === "no2int" && current.no) speakText(current.no, "no").catch(() => {});
     }, [current]); // eslint-disable-line
 
     if (!current) return null;
     const pick = (v) => { if (vibration) { try { navigator.vibrate?.(10); } catch { /* нет вибро — ок */ } } answer(v); };
     const pct = qTotal ? Math.round(((qIndex - 1) / qTotal) * 100) : 0;
     const accent = kind === "audit" ? "var(--st-learn)" : "var(--fjord-600)";
+    // тип вопроса: no2int (норв.→перевод) | int2no (перевод→норв.) | cloze (пропуск в предложении)
+    const type = current.type || "no2int";
+    const isInt2no = type === "int2no", isCloze = type === "cloze";
+    const prompt = isInt2no ? current.prompt : isCloze ? (current.blank || "").replace("___", "＿＿＿") : current.no;
+    const promptLang = isInt2no ? lang : "no";
+    const optionLang = (isInt2no || isCloze) ? "no" : lang;
+    const hint = isInt2no ? t.hintInt2no : isCloze ? t.hintCloze : `${t.dir}${ENDONYM[lang] || lang}`;
     return (
         <div className="study-root">
             <div className="plc-stage">
@@ -57,14 +65,15 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
                             {kind === "audit" ? t.auditTitle : t.openTitle}
                         </span>
                         <ChoiceQuestion
-                            prompt={current.no}
-                            promptLang="no"
+                            prompt={prompt}
+                            promptLang={promptLang}
                             options={current.options || []}
+                            optionLang={optionLang}
                             onPick={pick}
                             picked={picked}
                             reveal={false}
                             disabled={picked != null}
-                            hint={`${t.dir}${ENDONYM[lang] || lang}`}
+                            hint={hint}
                         />
                     </motion.div>
                 </div>
@@ -93,6 +102,7 @@ const T = {
         startExam: "Начать экзамен", neutralNote: "Балл не двигает интервалы · ошибки уйдут в повторение",
         // прогон
         dir: "Норвежский → ", whats: "Что это значит?",
+        hintInt2no: "Выбери норвежское слово", hintCloze: "Вставь пропущенное слово", listen: "Прослушай и выбери перевод", replay: "Повторить",
         qCount: (i, n) => `${i} / ${n}`,
         // результат ворот
         passedTitle: "Пачка сертифицирована",
@@ -128,6 +138,7 @@ const T = {
         openDesc: (s, p) => `${s} random words from your learned ones. You need ≥ ${p} to pass. Passing certifies the pack and reopens new words.`,
         startExam: "Start exam", neutralNote: "Score doesn't move intervals · mistakes go to review",
         dir: "Norwegian → ", whats: "What does it mean?",
+        hintInt2no: "Pick the Norwegian word", hintCloze: "Fill in the gap", listen: "Listen and pick the translation", replay: "Replay",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Pack certified",
         passedDesc: "New words are open again — the next pack starts filling. The audit now watches the old ones.",
@@ -160,6 +171,7 @@ const T = {
         openDesc: (s, p) => `${s} випадкових слів із вивчених. Скласти потрібно ≥ ${p}. Це сертифікує пачку й знову відкриє нові слова.`,
         startExam: "Почати екзамен", neutralNote: "Бал не рухає інтервали · помилки підуть на повторення",
         dir: "Норвезька → ", whats: "Що це означає?",
+        hintInt2no: "Обери норвезьке слово", hintCloze: "Встав пропущене слово", listen: "Прослухай і обери переклад", replay: "Повторити",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Пачку сертифіковано",
         passedDesc: "Нові слова знову відкриті — накопичується наступна пачка. Старе тепер перевірить аудит.",
@@ -192,6 +204,7 @@ const T = {
         openDesc: (s, p) => `${s} losowych słów z nauczonych. Zdać trzeba ≥ ${p}. To certyfikuje paczkę i znów otworzy nowe słowa.`,
         startExam: "Rozpocznij egzamin", neutralNote: "Wynik nie zmienia interwałów · błędy trafią do powtórki",
         dir: "Norweski → ", whats: "Co to znaczy?",
+        hintInt2no: "Wybierz norweskie słowo", hintCloze: "Uzupełnij lukę", listen: "Posłuchaj i wybierz tłumaczenie", replay: "Powtórz",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Paczka certyfikowana",
         passedDesc: "Nowe słowa znów otwarte — zbiera się kolejna paczka. Stare pilnuje teraz audyt.",
@@ -224,6 +237,7 @@ const T = {
         openDesc: (s, p) => `${s} atsitiktinių žodžių iš išmoktų. Reikia išlaikyti ≥ ${p}. Tai sertifikuoja rinkinį ir vėl atveria naujus žodžius.`,
         startExam: "Pradėti egzaminą", neutralNote: "Balas nejudina intervalų · klaidos eis kartoti",
         dir: "Norvegų → ", whats: "Ką tai reiškia?",
+        hintInt2no: "Pasirink norvegišką žodį", hintCloze: "Įrašyk trūkstamą žodį", listen: "Klausyk ir pasirink vertimą", replay: "Pakartoti",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Rinkinys sertifikuotas",
         passedDesc: "Nauji žodžiai vėl atverti — kaupiasi kitas rinkinys. Senus dabar tikrins auditas.",
