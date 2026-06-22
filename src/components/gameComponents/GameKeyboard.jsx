@@ -4,7 +4,7 @@
 //  • «сборка» (gated): задан remainingOf/needed → активны только буквы слова, бейдж-счётчик
 //    повторов, лишние приглушены (подсказка). Используется в «Собери из букв».
 //  • свободный: без remainingOf → все буквы активны, без подсказок. Используется в «Вводе» (норвежское слово).
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { useSystemStore, VIBE_MS } from "../../store/systemStore.jsx";
 
@@ -27,6 +27,20 @@ export function GameKeyboard({
     const [pop, setPop] = useState(null);
     const pressingRef = useRef(null);
     const pressTsRef = useRef(0);   // момент нажатия — для вибрации «на отпускании» при долгом тапе (≥200мс)
+    const kbdRef = useRef(null);
+
+    // Гасим системный long-press жест Android (его haptic-тик «через секунду» + callout): нативный
+    // touchstart c preventDefault. React вешает touch-листенеры пассивно — preventDefault там молча
+    // игнорируется, поэтому только ref + addEventListener с { passive:false }. Клавиши работают на
+    // pointer-событиях, так что ввод/поп-ап не страдают. Исключаем «Не знаю» — она на onClick,
+    // а preventDefault на touchstart убил бы синтетический click.
+    useEffect(() => {
+        const el = kbdRef.current;
+        if (!el) return;
+        const onTouchStart = (e) => { if (!e.target.closest(".kbd__key--dunno")) e.preventDefault(); };
+        el.addEventListener("touchstart", onTouchStart, { passive: false });
+        return () => el.removeEventListener("touchstart", onTouchStart);
+    }, []);
     const gated = typeof remainingOf === "function";
     const active = (c) => !gated || remainingOf(c) > 0;             // свободный режим — всё активно
     const isOff = (c) => gated && (needed?.[c] || 0) === 0;          // буква не из слова (подсказка)
@@ -66,7 +80,7 @@ export function GameKeyboard({
     };
 
     return (
-        <div className="kbd" onContextMenu={(e) => e.preventDefault()}>
+        <div className="kbd" ref={kbdRef} onContextMenu={(e) => e.preventDefault()}>
             {KBD_ROWS.map((row, ri) => {
                 const last = ri === KBD_ROWS.length - 1;
                 return (
