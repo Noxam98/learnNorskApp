@@ -304,6 +304,9 @@
 .kbd__key--act { flex: 0 0 auto; width: calc(var(--kbd-key) * 2 + var(--kbd-gap)); min-width: 0; max-width: none; color: var(--game-ink); }
 /* «Не знаю» — занимает пустоту слева в нижнем ряду, прижата к левому краю */
 .kbd__key--dunno { flex: 0 0 auto; width: calc(var(--kbd-key) * 2 + var(--kbd-gap)); min-width: 0; max-width: none; margin-right: auto; font-size: var(--fs-13); font-weight: 700; line-height: 1.1; color: var(--game-ink-2); padding: 0 4px; text-align: center; }
+/* нейтральная заглушка слева в нижнем ряду («Ввод»: «Не знаю» вынесена в угол) — закрывает
+   пустоту и балансирует ряд с ⌫ справа; некликабельна, приглушена */
+.kbd__key--filler { flex: 0 0 auto; width: calc(var(--kbd-key) * 2 + var(--kbd-gap)); min-width: 0; max-width: none; margin-right: auto; background: var(--game-surface); opacity: .3; pointer-events: none; }
 .kbd__key--go { flex: 0 0 auto; width: calc(var(--kbd-key) * 1.5 + var(--kbd-gap) * 0.5); min-width: 0; max-width: none; background: var(--game-accent); color: #fff; }
 .kbd__key--go .ic, .kbd__key--act .ic { width: 20px; height: 20px; }
 /* hover только для мыши — иначе на тач-экране состояние «залипает» после тапа (клавиша светлее) */

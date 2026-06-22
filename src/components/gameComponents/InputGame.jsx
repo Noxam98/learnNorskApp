@@ -12,10 +12,13 @@ import { speakText, prefetchTts } from "../ui/tts.js";
 import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { GameKeyboard } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
+import { useSystemStore } from "../../store/systemStore.jsx";
 
 export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
     const isNo2Int = mode !== "int2no";
-    const useKbd = !isNo2Int;        // печатаем норвежское → наша клавиатура; иначе штатный инпут
+    const nativeKeyboard = useSystemStore((s) => s.nativeKeyboard);
+    // печатаем норвежское → наша клавиатура; для родного и при выборе «системная клавиатура» — штатный инпут
+    const useKbd = !isNo2Int && !nativeKeyboard;
     const [input, setInput] = useState("");
     const inputRef = useRef(null);
     // Очистить поле и (для штатного инпута) вернуть фокус — чтобы после ошибки сразу вводить заново.
@@ -109,19 +112,15 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     {/* наша клавиатура (свободный режим — без подсказок-букв), только для норвежского ответа */}
                     {useKbd && canType && (
                         <GameKeyboard
-                            lang={aLang} extras={["-"]}
+                            lang={aLang} extras={["-"]} leftFiller
                             canSubmit={input.length > 0} canBackspace={input.length > 0}
-                            onType={(c) => setInput(input + c)} onBackspace={() => setInput(input.slice(0, -1))} onSubmit={() => submit()}
-                            onDunno={dontKnow} dunnoLabel={DUNNO[currentLanguage]} showDunno={status === "ASKING"} />
+                            onType={(c) => setInput(input + c)} onBackspace={() => setInput(input.slice(0, -1))} onSubmit={() => submit()} />
                     )}
 
                     <div className="pcta">
                         {status !== "CORRECT" &&
                             <button className="gbtn gbtn--accent" onClick={submit}><Icon n="check" sm /> {t.check}</button>}
                     </div>
-                    {!useKbd && status === "ASKING" && (
-                        <button className="dunno-corner" onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
-                    )}
                 </div>
 
                 {status === "FINISHED" && !onFinish && (
@@ -129,6 +128,12 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         t={t} onRestart={restart} onExit={backToSelection} />
                 )}
             </div>
+
+            {/* «Не знаю» — неприметная угловая кнопка (прямой ребёнок .play, чтобы её не подрезал
+                overflow:hidden у .pstage в режиме клавиатуры). С клавиатурой низ занят — уводим наверх. */}
+            {status === "ASKING" && (
+                <button className={"dunno-corner" + (useKbd ? " dunno-corner--top" : "")} onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
+            )}
         </div>
     );
 };

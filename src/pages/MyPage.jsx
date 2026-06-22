@@ -67,6 +67,8 @@ const MyPage = () => {
     const showArticles = useSystemStore((state) => state.showArticles);
     const showVerbAa = useSystemStore((state) => state.showVerbAa);
     const soundOn = useSystemStore((state) => state.soundOn);
+    const vibration = useSystemStore((state) => state.vibration);
+    const nativeKeyboard = useSystemStore((state) => state.nativeKeyboard);
     const dictList = useWordsStore((state) => state.dictList);
 
 
@@ -209,6 +211,16 @@ const MyPage = () => {
                             <span className="setrow__ic"><Icon n="volume" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.gameSounds}</span><span className="setrow__d">{t.gameSoundsDesc}</span></span>
                             <span className={`toggle${soundOn ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setSoundOn(!soundOn)} />
+                        </div>
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="zap" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{t.vibration}</span><span className="setrow__d">{t.vibrationDesc}</span></span>
+                            <span className={`toggle${vibration ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setVibration(!vibration)} />
+                        </div>
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="grid" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{t.nativeKbd}</span><span className="setrow__d">{t.nativeKbdDesc}</span></span>
+                            <span className={`toggle${nativeKeyboard ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setNativeKeyboard(!nativeKeyboard)} />
                         </div>
                     </div>
                 </div>

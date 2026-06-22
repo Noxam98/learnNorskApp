@@ -6,6 +6,7 @@
 //  • свободный: без remainingOf → все буквы активны, без подсказок. Используется в «Вводе» (норвежское слово).
 import { useState, useRef } from "react";
 import { Icon } from "../ui/Icon.jsx";
+import { useSystemStore } from "../../store/systemStore.jsx";
 
 // Норвежская раскладка QWERTY (нижний регистр).
 export const KBD_ROWS = [
@@ -18,10 +19,13 @@ export const KBD_SET = new Set(KBD_ROWS.flat());
 export function GameKeyboard({
     lang, remainingOf, needed, extras = [],
     canSubmit = false, canBackspace = false,
-    onType, onBackspace, onSubmit, onDunno, dunnoLabel, showDunno = false,
+    onType, onBackspace, onSubmit, onDunno, dunnoLabel, showDunno = false, leftFiller = false,
 }) {
+    const vibration = useSystemStore((s) => s.vibration);
+    const buzz = () => { if (!vibration) return; try { navigator.vibrate?.(8); } catch { /* нет вибро — ок */ } };
     const [pop, setPop] = useState(null);
     const pressingRef = useRef(null);
+    const pressTsRef = useRef(0);   // момент нажатия — для вибрации «на отпускании» при долгом тапе (≥200мс)
     const gated = typeof remainingOf === "function";
     const active = (c) => !gated || remainingOf(c) > 0;             // свободный режим — всё активно
     const isOff = (c) => gated && (needed?.[c] || 0) === 0;          // буква не из слова (подсказка)
@@ -32,10 +36,14 @@ export function GameKeyboard({
         e?.preventDefault();
         if (!active(c)) return;
         pressingRef.current = c; setPop(c);
-        try { navigator.vibrate?.(8); } catch { /* нет вибро — ок */ }
+        pressTsRef.current = Date.now();
+        buzz();   // одна вибрация на нажатие
     };
     const keyUp = (c, e) => {
-        if (pressingRef.current === c) { if (active(c)) onType?.(c); try { navigator.vibrate?.(8); } catch { /* */ } }
+        if (pressingRef.current === c) {
+            if (active(c)) onType?.(c);
+            if (Date.now() - pressTsRef.current >= 200) buzz();   // долгий тап (≥200мс) — вибрация и на отпускании
+        }
         pressingRef.current = null; setPop(null);
         e?.currentTarget?.blur?.();   // снять фокус после отпускания — клавиша не «залипает» подсвеченной
     };
@@ -62,15 +70,19 @@ export function GameKeyboard({
                 const last = ri === KBD_ROWS.length - 1;
                 return (
                     <div className={"kbd__row" + (last ? " kbd__row--last" : "")} key={ri}>
-                        {/* «Не знаю» — заполняет пустоту слева в нижнем ряду (честный пропуск) */}
+                        {/* левый край нижнего ряда: «Не знаю» (Сборка) ИЛИ нейтральная заглушка (Ввод —
+                            «Не знаю» вынесена в неприметный угол, а пустоту закрываем, чтоб не мозолила) */}
                         {last && showDunno && onDunno && (
                             <button type="button" className="kbd__key kbd__key--dunno" onClick={(e) => { onDunno(); e.currentTarget.blur(); }}>{dunnoLabel}</button>
+                        )}
+                        {last && leftFiller && !(showDunno && onDunno) && (
+                            <span className="kbd__key kbd__key--filler" aria-hidden="true" />
                         )}
                         {row.map((c) => symKey(c))}
                         {/* ⌫ — в конце последнего буквенного ряда (как в Gboard) */}
                         {last && (
                             <button className="kbd__key kbd__key--act" disabled={!canBackspace} aria-label="backspace"
-                                onPointerDown={(e) => { e.preventDefault(); try { navigator.vibrate?.(8); } catch { /* */ } onBackspace?.(); }}
+                                onPointerDown={(e) => { e.preventDefault(); buzz(); onBackspace?.(); }}
                                 onPointerUp={(e) => e.currentTarget.blur()}>
                                 <Icon n="arrow-left" />
                             </button>

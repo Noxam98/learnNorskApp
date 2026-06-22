@@ -11,6 +11,8 @@ export const useSystemStore = create(persist(
         showArticles: true, // показывать артикль (en/ei/et) перед сущ. на чипах слов
         showVerbAa: true,    // показывать «å» перед глаголами на чипах слов
         soundOn: true,       // звуки игры (онлайн-режим)
+        vibration: true,     // тактильный отклик нашей экранной клавиатуры (по умолчанию вкл)
+        nativeKeyboard: false, // печатать клавиатурой устройства вместо встроенной (где игра поддерживает)
 
         setCurrentLanguage: (newLanguage) =>
             set(
@@ -28,6 +30,8 @@ export const useSystemStore = create(persist(
         setShowArticles: (v) => set(produce((state) => { state.showArticles = !!v; })),
         setShowVerbAa: (v) => set(produce((state) => { state.showVerbAa = !!v; })),
         setSoundOn: (v) => set(produce((state) => { state.soundOn = !!v; })),
+        setVibration: (v) => set(produce((state) => { state.vibration = !!v; })),
+        setNativeKeyboard: (v) => set(produce((state) => { state.nativeKeyboard = !!v; })),
 
     }),
     {
@@ -37,6 +41,7 @@ export const useSystemStore = create(persist(
         partialize: (state) => ({
             currentLanguage: state.currentLanguage, theme: state.theme,
             showArticles: state.showArticles, showVerbAa: state.showVerbAa, soundOn: state.soundOn,
+            vibration: state.vibration, nativeKeyboard: state.nativeKeyboard,
         }),
     }
 ));
