@@ -162,6 +162,12 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                             : <motion.span key="h" className="flashcard__hint" initial={{ opacity: 0 }} animate={{ opacity: 0.9 }} exit={{ opacity: 0 }}>{h.reveal}</motion.span>}
                                     </AnimatePresence>
                                 </div>
+                                {flipped && cur.example?.no && (
+                                    <div className="flashcard__example">
+                                        <b lang={hyLang(currentLanguage, true)}>{cur.example.no}</b>
+                                        {cur.example.ru && <span className="muted"> — {cur.example.ru}</span>}
+                                    </div>
+                                )}
                             </motion.div>
                         </AnimatePresence>
 

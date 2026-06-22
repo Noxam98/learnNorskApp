@@ -343,6 +343,9 @@
   .flashcard:active { transform: translateY(1px); }
   .flashcard__back { margin-top: var(--sp-6); min-height: 44px; display: flex; align-items: center; justify-content: center; border-top: 1px solid var(--game-border); padding-top: var(--sp-5); }
   .flashcard__answer { font-size: var(--fs-34); font-weight: 700; color: var(--game-accent); overflow-wrap: break-word; word-break: break-word; hyphens: auto; max-width: 100%; min-width: 0; }
+  .flashcard__example { margin-top: var(--sp-4); font-size: var(--fs-16); color: var(--game-ink); }
+  .flashcard__example b { color: var(--game-ink); }
+  .flashcard__example .muted { color: var(--game-ink-2); }
   .flashcard__hint { font-size: var(--fs-14); color: var(--game-ink-2); letter-spacing: var(--ls-wide); text-transform: uppercase; }
   .qspeak { margin-left: 8px; vertical-align: middle; color: var(--game-ink-2); background: transparent; border: none; cursor: pointer; }
   .qspeak:hover { color: var(--game-ink); }

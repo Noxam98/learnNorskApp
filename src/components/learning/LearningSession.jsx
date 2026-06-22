@@ -17,9 +17,10 @@ import ChoiceGame from "../gameComponents/ChoiceGame.jsx";
 import InputGame from "../gameComponents/InputGame.jsx";
 import StudyGame from "../gameComponents/StudyGame.jsx";
 import BuildGame from "../gameComponents/BuildGame.jsx";
+import ClozeGame from "../gameComponents/ClozeGame.jsx";
 
 // mode элемента/сессии → игровой компонент.
-const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: StudyGame, study: StudyGame };
+const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: StudyGame, study: StudyGame, cloze: ClozeGame };
 
 // Направление перевода для легаси-набора (единое на сессию: родной → норвежский).
 const LEGACY_DIR = "int2no";
