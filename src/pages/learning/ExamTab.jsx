@@ -111,13 +111,13 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
                         )}
                     </motion.div>
                 </div>
+                {isInput && useKbd && picked == null && (
+                    <GameKeyboard lang="no" extras={["-"]} leftFiller
+                        canSubmit={typed.length > 0} canBackspace={typed.length > 0}
+                        onType={(c) => setTyped(typed + c)} onBackspace={() => setTyped(typed.slice(0, -1))}
+                        onSubmit={onInputSubmit} />
+                )}
             </div>
-            {isInput && useKbd && picked == null && (
-                <GameKeyboard lang="no" extras={["-"]} leftFiller
-                    canSubmit={typed.length > 0} canBackspace={typed.length > 0}
-                    onType={(c) => setTyped(typed + c)} onBackspace={() => setTyped(typed.slice(0, -1))}
-                    onSubmit={onInputSubmit} />
-            )}
         </div>
     );
 }
