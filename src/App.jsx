@@ -6,6 +6,7 @@ import Footer from "./components/footer.jsx";
 import { useWordsStore } from "./store/wordStore.jsx";
 import { useAuthStore } from "./store/AuthStore.jsx";
 import { useSystemStore } from "./store/systemStore.jsx";
+import { resyncPush } from "./components/tools/push.js";
 
 import { BrandLoader } from "./components/ui/Spinner.jsx";
 import Toast from "./components/tools/error.jsx";
@@ -33,6 +34,12 @@ function App() {
     const theme = useSystemStore((s) => s.theme);
     const toast = useSystemStore((s) => s.toast);
     const showToast = useSystemStore((s) => s.showToast);
+    const pushEnabled = useSystemStore((s) => s.pushEnabled);
+
+    // Если пуши были включены — тихо пере-подписываемся при входе (новое устройство/после деплоя).
+    useEffect(() => {
+        if (isAuthed && pushEnabled) resyncPush().catch(() => {});
+    }, [isAuthed, pushEnabled]);
 
     // Проверка сессии при старте.
     useEffect(() => { useAuthStore.getState().checkAuth(); }, []);

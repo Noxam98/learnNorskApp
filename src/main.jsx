@@ -33,5 +33,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
       <RouterProvider router={router}/>
     </React.StrictMode>,
- 
+
 )
+
+// Service worker — только для веб-пушей (напоминания). Регистрируем после загрузки; ошибки глушим.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}

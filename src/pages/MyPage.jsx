@@ -10,6 +10,7 @@ import GoogleSignInButton from "../components/ui/GoogleSignInButton.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
 import { BtnSpinner } from "../components/ui/Spinner.jsx";
 import api from "../components/tools/api.js";
+import { enablePush, disablePush } from "../components/tools/push.js";
 import { wordCount, dictCount } from "../components/tools/plural.js";
 
 const GOOGLE_ON = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -70,7 +71,33 @@ const MyPage = () => {
     const vibration = useSystemStore((state) => state.vibration);
     const vibrationStrength = useSystemStore((state) => state.vibrationStrength);
     const nativeKeyboard = useSystemStore((state) => state.nativeKeyboard);
+    const pushEnabled = useSystemStore((state) => state.pushEnabled);
+    const [pushBusy, setPushBusy] = useState(false);
     const dictList = useWordsStore((state) => state.dictList);
+
+    // Пуш-напоминания: тумблер спрашивает разрешение и подписывает (вкл) или отписывает (выкл).
+    const togglePush = async () => {
+        if (pushBusy) return;
+        setPushBusy(true);
+        try {
+            if (pushEnabled) {
+                await disablePush();
+                useSystemStore.getState().setPushEnabled(false);
+            } else {
+                await enablePush();
+                useSystemStore.getState().setPushEnabled(true);
+            }
+        } catch (e) {
+            const why = String(e?.message || e);
+            useSystemStore.getState().showToast(
+                why === "denied" ? (t.pushDenied || "Разрешение на уведомления отклонено")
+                : why === "unsupported" ? (t.pushUnsupported || "Браузер не поддерживает пуши (на iPhone — добавь приложение на главный экран)")
+                : (t.unexpectedError || "Не вышло включить уведомления")
+            );
+        } finally {
+            setPushBusy(false);
+        }
+    };
 
 
     const stats = useMemo(() => {
@@ -235,6 +262,11 @@ const MyPage = () => {
                             <span className="setrow__ic"><Icon n="grid" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.nativeKbd}</span><span className="setrow__d">{t.nativeKbdDesc}</span></span>
                             <span className={`toggle${nativeKeyboard ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setNativeKeyboard(!nativeKeyboard)} />
+                        </div>
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="alert" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{t.notifications}</span><span className="setrow__d">{t.notificationsDesc}</span></span>
+                            <span className={`toggle${pushEnabled ? " is-on" : ""}`} style={pushBusy ? { opacity: 0.5, pointerEvents: "none" } : undefined} onClick={togglePush} />
                         </div>
                     </div>
                 </div>

@@ -322,6 +322,11 @@ class ApiService {
     rediff(a, b, lang, hint) { return this._send('POST', '/pool/rediff', { a, b, lang, hint }); }
     ttsUrl(word, lang) { return `${this.baseUrl}/tts?word=${encodeURIComponent(word)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`; }
 
+    // Веб-пуши (напоминания о бездействии)
+    pushVapidKey() { return this._send('GET', '/push/vapid'); }
+    pushSubscribe(sub) { return this._send('POST', '/push/subscribe', sub); }
+    pushUnsubscribe(endpoint) { return this._send('POST', '/push/unsubscribe', { endpoint }); }
+
     logout() {
         this.accessToken = null;
         this.refreshToken = null;
