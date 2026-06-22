@@ -4,7 +4,9 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 
 // Сила вибрации → длительность импульса (мс). На вебе амплитуду не задать (Vibration API
 // умеет только длительность/паттерн), поэтому «сила» = насколько длинный импульс.
-export const VIBE_MS = { low: 4, mid: 8, high: 18 };
+// Длительность одиночного импульса (мс). Короткие (<~15мс) многие телефоны не ощущают —
+// особенно теперь, когда на короткий тап бьём ОДИН раз (раньше было два по 8мс).
+export const VIBE_MS = { low: 12, mid: 22, high: 38 };
 
 
 export const useSystemStore = create(persist(
