@@ -120,9 +120,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                             <button className="gbtn gbtn--accent" onClick={submit}><Icon n="check" sm /> {t.check}</button>}
                     </div>
                     {!useKbd && status === "ASKING" && (
-                        <div className="dunno-wrap">
-                            <button className="dunno-link" onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
-                        </div>
+                        <button className="dunno-corner" onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
                     )}
                 </div>
 

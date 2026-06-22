@@ -11,9 +11,6 @@ import api from "../tools/api.js";
 import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 
-// подсказка после ошибки: выбрать подсвеченный правильный вариант, чтобы продолжить
-const PICK_RIGHT = { ru: "Выбери правильный вариант", en: "Pick the correct option", ukr: "Обери правильний варіант", pl: "Wybierz poprawną opcję", lt: "Pasirink teisingą variantą" };
-
 export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
     const isNo2Int = mode !== "int2no";
     const [chosen, setChosen] = useState(null);
@@ -25,7 +22,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, // после верного — показать «верно» ~1с, затем авто-переход
         onAdvance: () => setChosen(null),
     });
-    const { t, currentLanguage, total, current, status, words: wordsToGame, results, knownFirstTry, score, qIndex, qTotal, answer, restart, backToSelection } = loop;
+    const { t, currentLanguage, total, current, status, words: wordsToGame, results, knownFirstTry, score, qIndex, qTotal, answer, advance, restart, backToSelection } = loop;
 
     const no = current?.translate?.no?.[0] || "";
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
@@ -80,15 +77,15 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         return () => { cancelled = true; };
     }, [status, current, currentLanguage, mode]); // eslint-disable-line
 
-    // выбор варианта: после ошибки кликабелен только правильный (его выбор → дальше)
     const choose = (opt) => {
-        if (status === "INCORRECT") { if (opt === correctPrimary) answer(true); return; }
         if (status !== "ASKING") return;
         setChosen(opt);
         answer(opt === correctPrimary);
     };
     // Честный «Не знаю»: ничего не выбрано — подсветится только верный, засчитывается как НЕ угадано.
     const dontKnow = () => { if (status !== "ASKING") return; setChosen(null); answer(false); };
+    // После ошибки правильный вариант показан — продолжить можно тапом по ЛЮБОМУ месту.
+    const onStageClick = () => { if (status === "INCORRECT") advance(); };
 
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
 
@@ -107,7 +104,8 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
             <PlayTopBar correctCount={correctCount} wrongCount={wrongCount} onExit={backToSelection} t={t} />
             <ProgressSegments segs={segs} />
 
-            <div className="pstage">
+            <div className="pstage" onClick={onStageClick}
+                style={status === "INCORRECT" ? { cursor: "pointer" } : undefined}>
                 <ChoiceQuestion
                     prompt={question}
                     promptLang={qLang}
@@ -117,7 +115,6 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     picked={chosen}
                     correct={correctPrimary}
                     reveal={status === "CORRECT" || status === "INCORRECT"}
-                    allowRetry={status === "INCORRECT"}
                     onPick={choose}
                     posText={posText}
                     hint={`${t.translateTo} ${promptTarget}`}
@@ -133,16 +130,15 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
 
                     <div className="pcta">
                         {status === "CORRECT" && <span className="qhint qhint--ok"><Icon n="check" sm /> {t.correctly}</span>}
-                        {status === "INCORRECT" && <span className="qhint">{PICK_RIGHT[currentLanguage] || PICK_RIGHT.ru} <Icon n="arrow-up" sm /></span>}
+                        {status === "INCORRECT" && <span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span>}
                     </div>
-                    {status === "ASKING" && options && (
-                        <div className="dunno-wrap">
-                            <button className="dunno-link" onClick={(e) => { e.stopPropagation(); dontKnow(); }}>
-                                {DUNNO[currentLanguage]}
-                            </button>
-                        </div>
-                    )}
                 </ChoiceQuestion>
+
+                {status === "ASKING" && options && (
+                    <button className="dunno-corner" onClick={(e) => { e.stopPropagation(); dontKnow(); }}>
+                        {DUNNO[currentLanguage]}
+                    </button>
+                )}
 
                 {status === "FINISHED" && !onFinish && (
                     <FinishScreen score={score} knownFirstTry={knownFirstTry} missedCount={wrongCount} total={total}
