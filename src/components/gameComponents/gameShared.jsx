@@ -1,10 +1,11 @@
 // Общие утилиты и презентационные части для игр (Ввод/Выбор/Изучение).
 // Игровая ЛОГИКА живёт в своих файлах (InputGame.jsx, ChoiceGame.jsx, StudyGame.jsx),
 // здесь только переиспользуемая «обвязка».
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { BrandMark } from "../ui/BrandMark.jsx";
 import { posMeta, chipPrefix } from "../ui/pos.js";
+import { useSystemStore } from "../../store/systemStore.jsx";
 
 // Блокировка скролла фона на время полноэкранной активности (игра/карточки/экзамен).
 // Ref-counted: при наложении маунтов (переход между шагами) не «протекает» — фон
@@ -68,25 +69,61 @@ export const uniq = (arr) => {
     return arr.filter((x) => x && !s.has(x.toLowerCase()) && s.add(x.toLowerCase()));
 };
 
-// Верхняя панель: бренд, счётчики верно/ошибки (или произвольный centerNode — напр. «N/30»
-// в экзамене, где ✓/✗ по ходу не показываем), выход.
-export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = null }) => (
-    <div className="ptop">
-        <a className="ptop__brand" onClick={onExit} style={{ cursor: "pointer" }}>
-            <BrandMark />
-            <span className="brand__name">Lære<b>·</b>Norsk</span>
-        </a>
-        <div className="pstats">
-            {centerNode != null ? centerNode : (
-                <>
-                    <span className="stat stat--ok"><Icon n="check" sm /> {correctCount}</span>
-                    <span className="stat stat--err"><Icon n="x" sm /> {wrongCount}</span>
-                </>
+// Регулятор громкости звука прямо в окне игры/экзамена: кнопка-иконка открывает
+// поповер с ползунком 0..100%. 0% = выкл (synced с soundOn). Закрытие — тап вне.
+const SoundControl = ({ t }) => {
+    const [open, setOpen] = useState(false);
+    const soundOn = useSystemStore((s) => s.soundOn);
+    const soundVolume = useSystemStore((s) => s.soundVolume);
+    const pct = soundOn ? Math.round((soundVolume ?? 1) * 100) : 0;
+    const ref = useRef(null);
+    useEffect(() => {
+        if (!open) return;
+        const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+        document.addEventListener("pointerdown", onDoc, true);
+        return () => document.removeEventListener("pointerdown", onDoc, true);
+    }, [open]);
+    const setPct = (v) => useSystemStore.getState().setSoundVolume(v / 100);
+    return (
+        <div className="ptop__snd-wrap" ref={ref}>
+            <button className={"ptop__snd" + (pct === 0 ? " is-off" : "")} title={t.gameSounds} aria-label={t.gameSounds}
+                onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); }}>
+                <Icon n="volume" sm />
+            </button>
+            {open && (
+                <div className="snd-pop" onClick={(e) => e.stopPropagation()}>
+                    <Icon n="volume" sm className={pct === 0 ? "snd-pop__mute" : ""} />
+                    <input type="range" min="0" max="100" step="5" value={pct}
+                        onChange={(e) => setPct(Number(e.target.value))} aria-label={t.gameSounds} />
+                    <span className="snd-pop__val">{pct}%</span>
+                </div>
             )}
         </div>
-        <a className="pexit" onClick={onExit} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
-    </div>
-);
+    );
+};
+
+// Верхняя панель: бренд, счётчики верно/ошибки (или произвольный centerNode — напр. «N/30»
+// в экзамене, где ✓/✗ по ходу не показываем), регулятор громкости, выход.
+export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = null }) => {
+    return (
+        <div className="ptop">
+            <a className="ptop__brand" onClick={onExit} style={{ cursor: "pointer" }}>
+                <BrandMark />
+                <span className="brand__name">Lære<b>·</b>Norsk</span>
+            </a>
+            <div className="pstats">
+                {centerNode != null ? centerNode : (
+                    <>
+                        <span className="stat stat--ok"><Icon n="check" sm /> {correctCount}</span>
+                        <span className="stat stat--err"><Icon n="x" sm /> {wrongCount}</span>
+                    </>
+                )}
+            </div>
+            <SoundControl t={t} />
+            <a className="pexit" onClick={onExit} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
+        </div>
+    );
+};
 
 // Сегментный прогресс-бар (сегмент на слово, цвет по результату).
 export const ProgressSegments = ({ segs }) => (

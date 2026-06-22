@@ -17,6 +17,7 @@ export const useSystemStore = create(persist(
         showArticles: true, // показывать артикль (en/ei/et) перед сущ. на чипах слов
         showVerbAa: true,    // показывать «å» перед глаголами на чипах слов
         soundOn: true,       // звуки игры (онлайн-режим)
+        soundVolume: 1,      // громкость звука 0..1 (общий множитель для синтез-звуков и TTS)
         vibration: true,     // тактильный отклик нашей экранной клавиатуры (по умолчанию вкл)
         vibrationStrength: "mid", // сила (длительность) вибрации: low | mid | high
         nativeKeyboard: false, // печатать клавиатурой устройства вместо встроенной (где игра поддерживает)
@@ -37,6 +38,12 @@ export const useSystemStore = create(persist(
         setShowArticles: (v) => set(produce((state) => { state.showArticles = !!v; })),
         setShowVerbAa: (v) => set(produce((state) => { state.showVerbAa = !!v; })),
         setSoundOn: (v) => set(produce((state) => { state.soundOn = !!v; })),
+        // громкость 0..1; 0 = выкл (синхронно гасим soundOn), >0 = вкл
+        setSoundVolume: (v) => set(produce((state) => {
+            const n = Math.max(0, Math.min(1, Number(v)));
+            state.soundVolume = isNaN(n) ? 1 : n;
+            state.soundOn = state.soundVolume > 0;
+        })),
         setVibration: (v) => set(produce((state) => { state.vibration = !!v; })),
         setVibrationStrength: (v) => set(produce((state) => { state.vibrationStrength = VIBE_MS[v] ? v : "mid"; })),
         setNativeKeyboard: (v) => set(produce((state) => { state.nativeKeyboard = !!v; })),
@@ -48,7 +55,8 @@ export const useSystemStore = create(persist(
         // toast — эфемерный, в localStorage не сохраняем (иначе всплывёт после перезагрузки).
         partialize: (state) => ({
             currentLanguage: state.currentLanguage, theme: state.theme,
-            showArticles: state.showArticles, showVerbAa: state.showVerbAa, soundOn: state.soundOn,
+            showArticles: state.showArticles, showVerbAa: state.showVerbAa,
+            soundOn: state.soundOn, soundVolume: state.soundVolume,
             vibration: state.vibration, vibrationStrength: state.vibrationStrength,
             nativeKeyboard: state.nativeKeyboard,
         }),

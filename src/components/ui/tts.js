@@ -2,6 +2,7 @@
 // Браузерный Web Speech фолбэк отключён намеренно — он давал «гугловый»
 // женский голос поверх серверного.
 import api from "../tools/api.js";
+import { soundLevel } from "../tools/audioCore.js";
 
 let _audio = null;     // текущий <audio>
 let _reject = null;    // reject ожидающего окончания фрагмента (для прерывания очереди)
@@ -31,6 +32,7 @@ const play = (text, lang, waitEnd) => new Promise((resolve, reject) => {
     stopAudio();
 
     const audio = new Audio(api.ttsUrl(t, lang));
+    audio.volume = soundLevel();   // общий уровень громкости (0 = тишина)
     _audio = audio;
 
     audio.onerror = () => { if (_reject === reject) _reject = null; reject(new Error("audio")); };

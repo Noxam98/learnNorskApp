@@ -1,8 +1,8 @@
 // UI-звуки игры — полностью синтезируются через Web Audio (без аудиофайлов),
 // гасятся глобальным тумблером soundOn. API сохранён: playSound(name)/preloadSounds()/playWin().
-import { ac, soundEnabled, noise, tone, MIDI } from "./audioCore.js";
+import { ac, soundEnabled, soundLevel, noise, tone, MIDI } from "./audioCore.js";
 
-function out(c, vol) { const g = c.createGain(); g.gain.value = vol; g.connect(c.destination); return g; }
+function out(c, vol) { const g = c.createGain(); g.gain.value = vol * soundLevel(); g.connect(c.destination); return g; }
 
 // Короткий шумовой щелчок (для тиков/кликов)
 function click(c, dest, t, hp, peak, dur) {

@@ -59,7 +59,6 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
     const hint = isInt2no ? t.hintInt2no : isCloze ? t.hintCloze : `${t.dir}${ENDONYM[lang] || lang}`;
     const onInputSubmit = () => { if (picked == null && typed.trim()) pick(typed.trim()); };
     const useKbd = !nativeKeyboard;   // кастомная клавиатура (как в игре «Ввод»), если не выбрана системная
-    const eyebrow = kind === "audit" ? t.auditTitle : t.openTitle;
     // ЕДИНЫЙ СКЕЛЕТ с играми: .play + PlayTopBar + ProgressSegments + .pstage. Поведение СВОЁ —
     // нейтрально (без ✓/✗ по ходу), счётчик «N/30» вместо них, прогресс нейтральный (is-done),
     // грейд пачкой на сервере. Клавиатура хостится как у игр (.play--kbd) → одинаково везде.
@@ -72,7 +71,6 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
             <div className="pstage">
                 {isInput ? (
                     <div className="qcard">
-                        <div className="qcount">{eyebrow}</div>
                         <div className="qprompt">{t.hintInput}</div>
                         <h1 className="qword" lang={lang}>{current.prompt}</h1>
                         {useKbd ? (
@@ -108,7 +106,6 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
                         reveal={false}
                         disabled={picked != null}
                         hint={hint}
-                        countText={eyebrow}
                     />
                 )}
             </div>

@@ -18,6 +18,17 @@ export function soundEnabled() {
     try { return useSystemStore.getState().soundOn; } catch { return false; }
 }
 
+// Общий множитель громкости 0..1 (для синтез-звуков и TTS). Не зависит от soundOn:
+// ручная озвучка по кнопке играет на этом уровне даже при выключенных игровых звуках;
+// 0 = полная тишина. Игровые звуки дополнительно гасятся soundEnabled() в playSound.
+export function soundLevel() {
+    try {
+        const v = useSystemStore.getState().soundVolume;
+        const n = Math.max(0, Math.min(1, Number(v)));
+        return isNaN(n) ? 1 : n;
+    } catch { return 1; }
+}
+
 let noiseBuf = null;
 export function noise(c) {
     if (!noiseBuf || noiseBuf.sampleRate !== c.sampleRate) {
