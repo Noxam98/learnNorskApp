@@ -40,6 +40,15 @@ export function useGameLoop({
     const [pos, setPos] = useState(0);
     const [results, setResults] = useState([]); // {id, ok} — по ПЕРВОЙ попытке каждого слова
 
+    // На время игры блокируем скролл фона: оверлей .play фиксирован, но на тач страница позади
+    // всё равно скроллилась (видна полоса прокрутки). Гасим overflow на body/html.
+    useEffect(() => {
+        const b = document.body, h = document.documentElement;
+        const prev = { bo: b.style.overflow, ho: h.style.overflow, ob: b.style.overscrollBehavior };
+        b.style.overflow = "hidden"; h.style.overflow = "hidden"; b.style.overscrollBehavior = "none";
+        return () => { b.style.overflow = prev.bo; h.style.overflow = prev.ho; b.style.overscrollBehavior = prev.ob; };
+    }, []);
+
     const current = order[pos] || null;
     const missedIds = useMemo(() => new Set(results.filter((r) => !r.ok).map((r) => r.id)), [results]);
     const doneCount = pos + (status === "FINISHED" ? 1 : 0); // сколько слов завершено

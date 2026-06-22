@@ -322,7 +322,7 @@
   .pseg.is-card { background: var(--game-ink-2); opacity: .5; }
 
   /* center stage — занимает остаток высоты, прокручивается внутри как страховка */
-  .pstage { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--sp-6) var(--sp-6); text-align: center; }
+  .pstage { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--sp-6) var(--sp-6); text-align: center; }
   .qcard { width: 100%; max-width: 600px; }
   .qcount { font-size: var(--fs-14); font-weight: 700; letter-spacing: var(--ls-wide); text-transform: uppercase; color: var(--game-ink-2); }
   .qprompt { font-size: var(--fs-15); color: var(--game-ink-2); margin-top: var(--sp-6); }
