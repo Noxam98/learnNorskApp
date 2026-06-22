@@ -10,7 +10,7 @@ import { speakText, prefetchTts } from "../ui/tts.js";
 import { posLabel, posMeta, chipPrefix } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { playSound } from "../tools/sound.js";
-import { useScrollLock } from "./gameShared.jsx";
+import { useScrollLock, ProgressSegments } from "./gameShared.jsx";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 const HINTS = {
@@ -27,7 +27,7 @@ const filterChosenWords = (dictList) =>
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
 // words/onExit передаёт «Учёба» (переиспользует игру). Карточки — пассивный режим, в SRS не пишет.
-export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, stepNo = 0, stepTotal = 0 }) => {
+export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -125,9 +125,11 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                 <a className="pexit" onClick={backToSelection} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
             </div>
 
-            <div className="pbar" aria-hidden="true">
-                <span className="pbar__fill" style={{ width: `${barFrac * 100}%` }} />
-            </div>
+            {/* системная сессия — единые сегменты-стадии (как в играх; карточка = текущий сегмент,
+                мигает «будущим» зелёным). Автономная «Учёба» (без сессии) — обычная полоса-заливка. */}
+            {segsOverride
+                ? <ProgressSegments segs={segsOverride} />
+                : <div className="pbar" aria-hidden="true"><span className="pbar__fill" style={{ width: `${barFrac * 100}%` }} /></div>}
 
             <div className="pstage">
                 {finished && onFinish ? null : finished ? (
