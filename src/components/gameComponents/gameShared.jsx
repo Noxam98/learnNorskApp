@@ -133,26 +133,47 @@ export const stageRank = (cell) => RAMP_RANK[cell || "card"] ?? 0;
 // Сегментный прогресс-бар (сегмент на слово). Сегмент — строка (легаси: "ok"/"err"/"now"/"done"/
 // "card") ИЛИ объект { state, rank }: пройденные слова красятся ЦВЕТОМ СТАДИИ (rank 0 серый …
 // 4 насыщенный зелёный), текущее — акцент «ты здесь», предстоящие — пустые (появляются по мере прохождения).
-export const ProgressSegments = ({ segs, status }) => (
-    <div className="pbar pbar--seg" aria-hidden="true">
-        {segs.map((s, i) => {
-            const isObj = s && typeof s === "object";
-            const state = isObj ? (s.state || "") : (s || "");
-            let cls = "pseg";
-            if (isObj) {
-                if (state === "now") {
-                    // на ВЕРНОМ ответе текущий сегмент мигает цветом СЛЕДУЮЩЕЙ стадии («будущим»)
-                    if (status === "CORRECT") cls += " pseg--st" + Math.min((s.rank ?? 0) + 1, 4) + " is-flash";
-                    else cls += " is-now";
-                } else if (state !== "future") cls += " pseg--st" + (s.rank ?? 0);   // пройдено → цвет стадии
-                // future → базовый «пустой» сегмент
-            } else if (state) {
-                cls += " is-" + state;
-            }
-            return <span key={i} className={cls} />;
-        })}
-    </div>
-);
+export const ProgressSegments = ({ segs, status }) => {
+    // Лайфцикл ТЕКУЩЕГО сегмента: пока вопрос не отвечен (ASKING) — мигает «будущим» зелёным
+    // (цвет следующей стадии); сразу после ответа ~1с — нейтральный (ждём итог); затем верно →
+    // зелёный своей стадии, неверно → оранжевый (как было). resolved = прошла ли секунда ожидания.
+    const [resolved, setResolved] = useState(false);
+    useEffect(() => {
+        if (status === "CORRECT" || status === "INCORRECT") {
+            setResolved(false);
+            const id = setTimeout(() => setResolved(true), 1000);
+            return () => clearTimeout(id);
+        }
+        setResolved(false);
+    }, [status]);
+
+    return (
+        <div className="pbar pbar--seg" aria-hidden="true">
+            {segs.map((s, i) => {
+                const isObj = s && typeof s === "object";
+                const state = isObj ? (s.state || "") : (s || "");
+                const r = isObj ? (s.rank ?? 0) : 0;
+                let cls = "pseg";
+                if (isObj) {
+                    if (state === "now") {
+                        if (status === "CORRECT" || status === "INCORRECT") {
+                            if (!resolved) cls += " is-pending";                    // ждём итог — нейтральный
+                            else if (status === "CORRECT") cls += " pseg--st" + r;  // верно → зелёный стадии
+                            else cls += " is-wrong";                                // неверно → оранжевый
+                        } else {
+                            cls += " pseg--st" + Math.min(r + 1, 4) + " is-blink";  // ASKING → мигает будущим зелёным
+                        }
+                    } else if (state === "err") cls += " is-wrong";                 // пройдено с ошибкой → оранжевый
+                    else if (state !== "future") cls += " pseg--st" + r;            // пройдено верно → зелёный стадии
+                    // future → базовый «пустой» сегмент
+                } else if (state) {
+                    cls += " is-" + state;
+                }
+                return <span key={i} className={cls} />;
+            })}
+        </div>
+    );
+};
 
 // Экран «нет слов для игры».
 export const NoWords = ({ t, onBack }) => (

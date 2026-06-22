@@ -343,9 +343,12 @@
   .pseg--st2 { background: color-mix(in srgb, var(--game-correct) 58%, var(--game-surface-2)); }
   .pseg--st3 { background: color-mix(in srgb, var(--game-correct) 80%, var(--game-surface-2)); }
   .pseg--st4 { background: var(--game-correct); }                                                 /* ввод — самый насыщенный */
-  /* верный ответ: текущий сегмент мигает цветом следующей стадии (виден «будущий» цвет слова) */
-  @keyframes psegFlash { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
-  .pseg.is-flash { animation: psegFlash .42s ease-in-out 2; }
+  /* текущий сегмент: пока вопрос открыт — мигает «будущим» зелёным; во время ожидания итога —
+     нейтральный (is-pending); верно — зелёный стадии; неверно — оранжевый (is-wrong, как было). */
+  @keyframes psegBlink { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+  .pseg.is-blink { animation: psegBlink 1.1s ease-in-out infinite; }
+  .pseg.is-pending { background: color-mix(in srgb, var(--game-ink-2) 30%, var(--game-surface-2)); }
+  .pseg.is-wrong { background: var(--game-accent); }
 
   /* center stage — занимает остаток высоты, прокручивается внутри как страховка */
   .pstage { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--sp-6) var(--sp-6); text-align: center; }

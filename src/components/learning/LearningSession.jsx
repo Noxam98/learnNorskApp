@@ -273,7 +273,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         // → ввод самый насыщенный зелёный), текущее — акцент, предстоящие — пустые (появляются по ходу).
         const segCell = (e) => e?.step || ((e?.mode === "card" || e?.mode === "study") ? "card" : `${e?.mode}_${e?.dir}`);
         const sessionSegs = elements.map((e, i) => ({
-            state: i < idx ? "done" : (i === idx ? "now" : "future"),
+            state: i < idx ? (hist[i] === "err" ? "err" : "ok") : (i === idx ? "now" : "future"),
             rank: stageRank(segCell(e)),
         }));
         return (
