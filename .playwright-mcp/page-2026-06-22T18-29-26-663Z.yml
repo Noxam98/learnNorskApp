@@ -1,0 +1,39 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - link [ref=e6] [cursor=pointer]:
+      - /url: "#/words"
+      - img [ref=e8]
+  - navigation "nav" [ref=e30]:
+    - link "Мій словник" [ref=e31] [cursor=pointer]:
+      - /url: "#/words"
+      - img [ref=e32]
+      - generic [ref=e34]: Мій словник
+    - link "Навчання" [ref=e35] [cursor=pointer]:
+      - /url: "#/learning"
+      - img [ref=e36]
+      - generic [ref=e38]: Навчання
+    - link "База слів" [ref=e39] [cursor=pointer]:
+      - /url: "#/pool"
+      - img [ref=e40]
+      - generic [ref=e42]: База слів
+    - link "Онлайн" [ref=e43] [cursor=pointer]:
+      - /url: "#/online"
+      - img [ref=e44]
+      - generic [ref=e46]: Онлайн
+    - link "Профіль" [ref=e47] [cursor=pointer]:
+      - /url: "#/mypage"
+      - img [ref=e48]
+      - generic [ref=e50]: Профіль
+  - status "Загрузка" [ref=e52]
+  - contentinfo [ref=e64]:
+    - generic [ref=e65]:
+      - generic [ref=e67]: © 2026 Lære Norsk
+      - generic [ref=e68]:
+        - generic [ref=e69]: Знайшли баг або є ідеї?
+        - generic [ref=e70]:
+          - link "Telegram" [ref=e71] [cursor=pointer]:
+            - /url: https://t.me/progtt
+          - link "e-mail" [ref=e72] [cursor=pointer]:
+            - /url: mailto:meliqq98@gmail.com
+  - generic:
+    - img

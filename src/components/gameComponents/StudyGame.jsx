@@ -10,6 +10,7 @@ import { speakText, prefetchTts } from "../ui/tts.js";
 import { posLabel, posMeta, chipPrefix } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { playSound } from "../tools/sound.js";
+import { useScrollLock } from "./gameShared.jsx";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 const HINTS = {
@@ -43,13 +44,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     const [idx, setIdx] = useState(0);
     const [flipped, setFlipped] = useState(false);
 
-    // блокируем скролл фона на время карточек (оверлей фиксирован, но фон скроллился на тач)
-    useEffect(() => {
-        const b = document.body, h = document.documentElement;
-        const prev = { bo: b.style.overflow, ho: h.style.overflow, ob: b.style.overscrollBehavior };
-        b.style.overflow = "hidden"; h.style.overflow = "hidden"; b.style.overscrollBehavior = "none";
-        return () => { b.style.overflow = prev.bo; h.style.overflow = prev.ho; b.style.overscrollBehavior = prev.ob; };
-    }, []);
+    useScrollLock();   // блокируем скролл фона на время карточек (общий ref-counted замок)
 
     // Озвучка по направлению: видимое слово — при показе карточки, ответ — при перевороте.
     const _sides = (i) => {

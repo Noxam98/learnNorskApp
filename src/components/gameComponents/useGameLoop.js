@@ -13,7 +13,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
-import { filterChosenWords, shuffle } from "./gameShared.jsx";
+import { filterChosenWords, shuffle, useScrollLock } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
 
 export function useGameLoop({
@@ -43,14 +43,7 @@ export function useGameLoop({
     const [results, setResults] = useState([]); // {id, ok} — по ПЕРВОЙ попытке каждого слова
     const [picked, setPicked] = useState(null); // нейтральный режим (reveal=false): выбранный ответ
 
-    // На время игры блокируем скролл фона: оверлей .play фиксирован, но на тач страница позади
-    // всё равно скроллилась (видна полоса прокрутки). Гасим overflow на body/html.
-    useEffect(() => {
-        const b = document.body, h = document.documentElement;
-        const prev = { bo: b.style.overflow, ho: h.style.overflow, ob: b.style.overscrollBehavior };
-        b.style.overflow = "hidden"; h.style.overflow = "hidden"; b.style.overscrollBehavior = "none";
-        return () => { b.style.overflow = prev.bo; h.style.overflow = prev.ho; b.style.overscrollBehavior = prev.ob; };
-    }, []);
+    useScrollLock();   // блокируем скролл фона на время игры (общий ref-counted замок)
 
     const current = order[pos] || null;
     const missedIds = useMemo(() => new Set(results.filter((r) => !r.ok).map((r) => r.id)), [results]);

@@ -1,9 +1,35 @@
 // Общие утилиты и презентационные части для игр (Ввод/Выбор/Изучение).
 // Игровая ЛОГИКА живёт в своих файлах (InputGame.jsx, ChoiceGame.jsx, StudyGame.jsx),
 // здесь только переиспользуемая «обвязка».
+import { useEffect } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { BrandMark } from "../ui/BrandMark.jsx";
 import { posMeta, chipPrefix } from "../ui/pos.js";
+
+// Блокировка скролла фона на время полноэкранной активности (игра/карточки/экзамен).
+// Ref-counted: при наложении маунтов (переход между шагами) не «протекает» — фон
+// разблокируется ТОЛЬКО когда отпущен последний замок, и восстанавливается ИСХОДНОЕ значение.
+let _lockN = 0;
+let _prevLock = null;
+export function useScrollLock() {
+    useEffect(() => {
+        if (_lockN++ === 0) {
+            const b = document.body, h = document.documentElement;
+            _prevLock = { bo: b.style.overflow, ho: h.style.overflow, ob: b.style.overscrollBehavior };
+            b.style.overflow = "hidden"; h.style.overflow = "hidden"; b.style.overscrollBehavior = "none";
+        }
+        return () => {
+            if (--_lockN <= 0) {
+                _lockN = 0;
+                if (_prevLock) {
+                    const b = document.body, h = document.documentElement;
+                    b.style.overflow = _prevLock.bo; h.style.overflow = _prevLock.ho; b.style.overscrollBehavior = _prevLock.ob;
+                    _prevLock = null;
+                }
+            }
+        };
+    }, []);
+}
 
 // Норвежское слово с приставкой по настройкам: артикль (en/ei/et) у сущ., «å» у глаг. Иначе — как есть.
 // Применять там, где слово ВЫВОДИТСЯ для чтения (вопрос/карточка/раскрытый ответ), а не в вариантах
