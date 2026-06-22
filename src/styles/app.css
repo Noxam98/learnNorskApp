@@ -330,16 +330,24 @@
 
 /* Мобилка: клавиатура ПРИЖАТА К НИЗУ, во всю ширину; ⌫ слева, ✓ внизу-справа. */
 @media (max-width: 640px) {
+    /* клавиатура: во всю ширину, прижата к низу; «повыше» — за счёт нижнего паддинга (клавиши не у края) */
     .play--kbd .kbd {
-        position: fixed; left: 6px; right: 6px; bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); z-index: 60; margin: 0; max-width: none;
-        background: var(--game-bg-2); border-radius: var(--r-lg); padding: 7px 5px;
-        box-shadow: 0 6px 22px rgba(0, 0, 0, .34); gap: 6px; align-items: stretch;
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; margin: 0; width: 100%; max-width: none;
+        background: var(--game-bg-2); border-radius: var(--r-lg) var(--r-lg) 0 0;
+        padding: 8px 5px calc(env(safe-area-inset-bottom, 0px) + 16px);
+        box-shadow: 0 -4px 22px rgba(0, 0, 0, .34); gap: 6px; align-items: stretch;
     }
-    .kbd__key { max-width: none; height: 52px; font-size: var(--fs-20); border-radius: var(--r-sm); }
+    .kbd__key { max-width: none; height: 50px; font-size: var(--fs-20); border-radius: var(--r-sm); }
     .kbd__key--act, .kbd__key--go { max-width: none; }
     .kbd__count { top: -5px; right: -5px; }
-    /* место под фикс-клавиатуру, чтобы карточка не уезжала под неё */
-    .play--kbd .pstage { justify-content: flex-start; padding-top: var(--sp-5); padding-bottom: 270px; }
+    /* контент задания целиком над клавиатурой, без скролла: поджимаем и убираем дубль-кнопку */
+    .play--kbd .pstage { justify-content: flex-start; overflow: hidden; padding-top: var(--sp-3); padding-bottom: 268px; }
+    .play--kbd .qprompt { margin-top: var(--sp-2); }
+    .play--kbd .qword { font-size: clamp(1.55rem, 5vh, 2.1rem); margin: var(--sp-2) 0; }
+    .play--kbd .build-line { margin-top: var(--sp-3); }
+    .play--kbd .feedback { margin-top: var(--sp-2); }
+    .play--kbd .fb-answer { font-size: var(--fs-22); }
+    .play--kbd .pcta { display: none; }   /* ✓ есть в самой клавиатуре — дубль не нужен */
 }
 @media (max-width: 360px) {
     .build-line { margin-top: var(--sp-4); }

@@ -411,8 +411,13 @@
   .play[data-state="finished"] .pbar { display: none; }
 
   @media (max-width: 640px) {
-    .ptop { flex-wrap: wrap; padding: var(--sp-4); }
-    .pstats { order: 3; width: 100%; }
+    /* шапка в ОДИН ряд: статистика рядом с «Выйти», бренд скрыт (экономим высоту);
+       прогресс-бар встаёт сразу под ними */
+    .ptop { flex-wrap: nowrap; padding: var(--sp-3) var(--sp-4); gap: var(--sp-2); }
+    .ptop__brand { display: none; }
+    .pstats { order: 0; width: auto; }
+    .stat { padding: 6px 12px; font-size: var(--fs-14); }
+    .pexit { padding: 7px 12px; }
     .qword { font-size: clamp(1.75rem, 6vh, var(--fs-44)); }
     .answer input { font-size: var(--fs-20); padding: 15px; }
     .finish__score { font-size: clamp(56px, 13vh, 84px); }
