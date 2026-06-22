@@ -9,9 +9,11 @@ import { motion } from "framer-motion";
 import api from "../../components/tools/api.js";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { ChoiceQuestion } from "../../components/gameComponents/ChoiceQuestion.jsx";
+import { GameKeyboard } from "../../components/gameComponents/GameKeyboard.jsx";
 import { useGameLoop } from "../../components/gameComponents/useGameLoop.js";
 import { playSound, playWin } from "../../components/tools/sound.js";
 import { speakText } from "../../components/ui/tts.js";
+import { hyLang } from "../../components/ui/hyphenate.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 
 // Прогон экзамена/аудита поверх ОБЩЕГО игрового цикла (useGameLoop) в нейтральном режиме
@@ -20,6 +22,7 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
     const soundOn = useSystemStore((s) => s.soundOn);
     const vibration = useSystemStore((s) => s.vibration);
+    const nativeKeyboard = useSystemStore((s) => s.nativeKeyboard);
     const answersRef = useRef([]);
     const loop = useGameLoop({
         gmode: "exam", words: questions, reveal: false, autoAdvanceMs: 900,
@@ -35,8 +38,13 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
         if (!current) return;
         setTyped("");
         playSound("question");
-        // озвучиваем норв. слово только в no2int (оно и так на экране); в int2no/cloze — нет (выдаст ответ)
-        if (soundOn && (current.type || "no2int") === "no2int" && current.no) speakText(current.no, "no").catch(() => {});
+        // озвучка вопроса: no2int — норвежское слово; int2no/input — родной (рус.) промпт.
+        // cloze не озвучиваем (в предложении пропуск). Норвежский ОТВЕТ нигде не произносим.
+        if (soundOn) {
+            const ty = current.type || "no2int";
+            if (ty === "no2int" && current.no) speakText(current.no, hyLang(lang, true)).catch(() => {});
+            else if ((ty === "int2no" || ty === "input") && current.prompt) speakText(current.prompt, hyLang(lang, false)).catch(() => {});
+        }
     }, [current]); // eslint-disable-line
 
     if (!current) return null;
@@ -51,8 +59,9 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
     const optionLang = (isInt2no || isCloze) ? "no" : lang;
     const hint = isInt2no ? t.hintInt2no : isCloze ? t.hintCloze : `${t.dir}${ENDONYM[lang] || lang}`;
     const onInputSubmit = () => { if (picked == null && typed.trim()) pick(typed.trim()); };
+    const useKbd = !nativeKeyboard;   // кастомная клавиатура (как в игре «Ввод»), если не выбрана системная
     return (
-        <div className="study-root">
+        <div className={"study-root" + (isInput && useKbd ? " study-root--kbd" : "")}>
             <div className="plc-stage">
                 <div className="plc-top">
                     <button className="plc-top__back" onClick={backToSelection} aria-label="close"><Icon n="x" /></button>
@@ -71,15 +80,21 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
                             <div className="qcard">
                                 <div className="qprompt">{t.hintInput}</div>
                                 <h1 className="qword" lang={lang}>{current.prompt}</h1>
-                                <form className="answer" onSubmit={(e) => { e.preventDefault(); onInputSubmit(); }}>
-                                    <input value={typed} onChange={(e) => setTyped(e.target.value)} disabled={picked != null}
-                                        autoComplete="off" spellCheck="false" lang="no" placeholder="Norsk…" autoFocus />
-                                </form>
-                                <div className="pcta">
-                                    <button className="btn btn--accent btn--lg" onClick={onInputSubmit} disabled={picked != null || !typed.trim()}>
-                                        <Icon n="check" sm /> {t.inputSubmit}
-                                    </button>
-                                </div>
+                                {useKbd ? (
+                                    <div className="build-line" lang="no">{typed || <span className="build-line__ph">_ _ _</span>}</div>
+                                ) : (
+                                    <>
+                                        <form className="answer" onSubmit={(e) => { e.preventDefault(); onInputSubmit(); }}>
+                                            <input value={typed} onChange={(e) => setTyped(e.target.value)} disabled={picked != null}
+                                                autoComplete="off" spellCheck="false" lang="no" placeholder="Norsk…" autoFocus />
+                                        </form>
+                                        <div className="pcta">
+                                            <button className="btn btn--accent btn--lg" onClick={onInputSubmit} disabled={picked != null || !typed.trim()}>
+                                                <Icon n="check" sm /> {t.inputSubmit}
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         ) : (
                             <ChoiceQuestion
@@ -97,6 +112,12 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
                     </motion.div>
                 </div>
             </div>
+            {isInput && useKbd && picked == null && (
+                <GameKeyboard lang="no" extras={["-"]} leftFiller
+                    canSubmit={typed.length > 0} canBackspace={typed.length > 0}
+                    onType={(c) => setTyped(typed + c)} onBackspace={() => setTyped(typed.slice(0, -1))}
+                    onSubmit={onInputSubmit} />
+            )}
         </div>
     );
 }
