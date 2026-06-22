@@ -4,14 +4,74 @@
 //   • Ворота открыты → прогон экзамена пачки (выбор перевода, стиль placement) → сертификат/провал.
 //   • Аудит доступен → карточка «Контрольная проверка» (тот же прогон) → итог «освежено/вернулось».
 // Прогон вопросов общий для ворот и аудита (kind: 'gate' | 'audit'). Локальная 5-язычная i18n.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import api from "../../components/tools/api.js";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { ChoiceQuestion } from "../../components/gameComponents/ChoiceQuestion.jsx";
+import { useGameLoop } from "../../components/gameComponents/useGameLoop.js";
 import { playSound, playWin } from "../../components/tools/sound.js";
 import { speakText } from "../../components/ui/tts.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
+
+// Прогон экзамена/аудита поверх ОБЩЕГО игрового цикла (useGameLoop) в нейтральном режиме
+// (reveal=false): без раскрытия правильного, нейтральная подсветка выбора, пауза и переход —
+// всё из цикла. Стратегия: копим выборы и грейдим пачкой на сервере (онлайн-авторитетно).
+function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
+    const soundOn = useSystemStore((s) => s.soundOn);
+    const vibration = useSystemStore((s) => s.vibration);
+    const answersRef = useRef([]);
+    const loop = useGameLoop({
+        gmode: "exam", words: questions, reveal: false, autoAdvanceMs: 900,
+        onResult: (w, _ok, _g, choice) => { answersRef.current.push({ pool_id: w.pool_id, answer: choice || "" }); },
+        onFinish: () => onGrade(answersRef.current),
+        onExit,
+    });
+    const { current, picked, answer, qIndex, qTotal, backToSelection } = loop;
+
+    // свуш + озвучка норв. слова при появлении вопроса (по настройке звука)
+    useEffect(() => {
+        if (!current) return;
+        playSound("question");
+        if (soundOn && current.no) speakText(current.no, "no").catch(() => {});
+    }, [current]); // eslint-disable-line
+
+    if (!current) return null;
+    const pick = (v) => { if (vibration) { try { navigator.vibrate?.(10); } catch { /* нет вибро — ок */ } } answer(v); };
+    const pct = qTotal ? Math.round(((qIndex - 1) / qTotal) * 100) : 0;
+    const accent = kind === "audit" ? "var(--st-learn)" : "var(--fjord-600)";
+    return (
+        <div className="study-root">
+            <div className="plc-stage">
+                <div className="plc-top">
+                    <button className="plc-top__back" onClick={backToSelection} aria-label="close"><Icon n="x" /></button>
+                    <div className="plc-bar"><span style={{ width: `${pct}%`, background: accent }} /></div>
+                    <span className="plc-count">{t.qCount(qIndex, qTotal)}</span>
+                </div>
+                <div className="plc-q">
+                    <motion.div className="plc-q__card" key={qIndex}
+                        initial={{ opacity: 0, x: 36 }} animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.24, ease: [0.2, 0.7, 0.2, 1] }}>
+                        <span className="plc-q__dir">
+                            <Icon n={kind === "audit" ? "rotate" : "graduation"} sm />{" "}
+                            {kind === "audit" ? t.auditTitle : t.openTitle}
+                        </span>
+                        <ChoiceQuestion
+                            prompt={current.no}
+                            promptLang="no"
+                            options={current.options || []}
+                            onPick={pick}
+                            picked={picked}
+                            reveal={false}
+                            disabled={picked != null}
+                            hint={`${t.dir}${ENDONYM[lang] || lang}`}
+                        />
+                    </motion.div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 
@@ -187,8 +247,6 @@ const T = {
 
 export default function ExamTab({ lang, go, refresh }) {
     const t = T[lang] || T.ru;
-    const soundOn = useSystemStore((s) => s.soundOn);
-    const vibration = useSystemStore((s) => s.vibration);
 
     // overview | run | result
     const [phase, setPhase] = useState("overview");
@@ -201,9 +259,6 @@ export default function ExamTab({ lang, go, refresh }) {
     // прогон
     const [kind, setKind] = useState(null);      // 'gate' | 'audit'
     const [questions, setQuestions] = useState([]);
-    const [qi, setQi] = useState(0);
-    const [answers, setAnswers] = useState([]);  // [{pool_id, answer}]
-    const [picked, setPicked] = useState(null);  // выбранный вариант (нейтральная подсветка + пауза)
     const [busy, setBusy] = useState(false);
 
     // результат
@@ -229,15 +284,6 @@ export default function ExamTab({ lang, go, refresh }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lang]);
 
-    const cur = questions[qi] || null;
-
-    // оживляем прогон: при появлении вопроса — мягкий свуш + озвучка норв. слова (по настройке звука).
-    // Правильность по ходу НЕ раскрываем (экзамен нейтрален) — звук нейтральный.
-    useEffect(() => {
-        if (phase !== "run" || !cur) return;
-        playSound("question");
-        if (soundOn && cur.no) speakText(cur.no, "no").catch(() => {});
-    }, [qi, phase]); // eslint-disable-line
     // звук итога: фанфара при успехе, грустный — иначе
     useEffect(() => {
         if (phase !== "result" || !result) return;
@@ -252,7 +298,7 @@ export default function ExamTab({ lang, go, refresh }) {
             const r = await api.learningGateExam(lang);
             const qs = r?.questions || [];
             if (!qs.length) { await loadOverview(); return; }
-            setKind("gate"); setQuestions(qs); setQi(0); setAnswers([]); setPicked(null); setResult(null); setPhase("run");
+            setKind("gate"); setQuestions(qs); setResult(null); setPhase("run");
         } catch { /* тост уже показан в api */ }
         finally { setBusy(false); }
     };
@@ -260,28 +306,8 @@ export default function ExamTab({ lang, go, refresh }) {
     const startAudit = () => {
         const qs = audit?.questions || [];
         if (!qs.length) return;
-        setKind("audit"); setQuestions(qs); setQi(0); setAnswers([]); setPicked(null); setResult(null); setPhase("run");
+        setKind("audit"); setQuestions(qs); setResult(null); setPhase("run");
     };
-
-    // ---------- ответ ----------
-    const answer = (val) => {
-        if (!cur || picked != null) return;   // уже выбрано — ждём паузы перед переходом
-        setPicked(val);
-        playSound("select");
-        if (vibration) { try { navigator.vibrate?.(10); } catch { /* нет вибро — ок */ } }
-        setAnswers((a) => [...a, { pool_id: cur.pool_id, answer: val || "" }]);
-    };
-
-    // показать выбор нейтральным цветом ~0.9с, затем следующий вопрос (или подсчёт итога)
-    useEffect(() => {
-        if (picked == null || phase !== "run") return;
-        const id = setTimeout(() => {
-            setPicked(null);
-            if (qi + 1 >= questions.length) grade(answers);
-            else setQi(qi + 1);
-        }, 900);
-        return () => clearTimeout(id);
-    }, [picked]); // eslint-disable-line
 
     const grade = async (all) => {
         setBusy(true); setPhase("result");
@@ -312,7 +338,7 @@ export default function ExamTab({ lang, go, refresh }) {
     };
 
     const backToOverview = async () => {
-        setKind(null); setQuestions([]); setQi(0); setAnswers([]); setPicked(null); setResult(null);
+        setKind(null); setQuestions([]); setResult(null);
         setPhase("overview");
         await loadOverview();
     };
@@ -320,39 +346,10 @@ export default function ExamTab({ lang, go, refresh }) {
     // ====================================================================
     // RUN (прогон вопросов — выбор перевода, стиль placement)
     // ====================================================================
-    if (phase === "run" && cur) {
-        const pct = questions.length ? Math.round((qi / questions.length) * 100) : 0;
-        const accent = kind === "audit" ? "var(--st-learn)" : "var(--fjord-600)";
+    if (phase === "run") {
         return (
-            <div className="study-root">
-                <div className="plc-stage">
-                    <div className="plc-top">
-                        <button className="plc-top__back" onClick={backToOverview} aria-label="close"><Icon n="x" /></button>
-                        <div className="plc-bar"><span style={{ width: `${pct}%`, background: accent }} /></div>
-                        <span className="plc-count">{t.qCount(qi + 1, questions.length)}</span>
-                    </div>
-                    <div className="plc-q">
-                        <motion.div className="plc-q__card" key={qi}
-                            initial={{ opacity: 0, x: 36 }} animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.24, ease: [0.2, 0.7, 0.2, 1] }}>
-                            <span className="plc-q__dir">
-                                <Icon n={kind === "audit" ? "rotate" : "graduation"} sm />{" "}
-                                {kind === "audit" ? t.auditTitle : t.openTitle}
-                            </span>
-                            <ChoiceQuestion
-                                prompt={cur.no}
-                                promptLang="no"
-                                options={cur.options || []}
-                                onPick={answer}
-                                picked={picked}
-                                reveal={false}
-                                disabled={picked != null}
-                                hint={`${t.dir}${ENDONYM[lang] || lang}`}
-                            />
-                        </motion.div>
-                    </div>
-                </div>
-            </div>
+            <ExamRun questions={questions} kind={kind} lang={lang} t={t}
+                onExit={backToOverview} onGrade={grade} />
         );
     }
 

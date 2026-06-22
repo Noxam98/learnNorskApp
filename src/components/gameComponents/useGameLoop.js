@@ -23,6 +23,8 @@ export function useGameLoop({
     autoAdvanceMs = 0,   // 0 — переход по тапу (Выбор); >0 — авто-переход (Сборка/Ввод)
     onAdvance,           // () => сбросить локальный стейт ответа для нового слова
     onWrong,             // () => очистить локальный ввод после неверного (для повтора)
+    reveal = true,       // false (экзамен): нейтральный режим — без CORRECT/INCORRECT, без ретрая,
+                         // подсветка выбора нейтральная, ответ копится наружу (грейд снаружи/на сервере).
 }) {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const dictList = useWordsStore((s) => s.dictList);
@@ -39,6 +41,7 @@ export function useGameLoop({
     const [order, setOrder] = useState(() => shuffle(wordsToGame)); // фикс. порядок, каждое слово 1 раз
     const [pos, setPos] = useState(0);
     const [results, setResults] = useState([]); // {id, ok} — по ПЕРВОЙ попытке каждого слова
+    const [picked, setPicked] = useState(null); // нейтральный режим (reveal=false): выбранный ответ
 
     // На время игры блокируем скролл фона: оверлей .play фиксирован, но на тач страница позади
     // всё равно скроллилась (видна полоса прокрутки). Гасим overflow на body/html.
@@ -57,12 +60,23 @@ export function useGameLoop({
 
     // Перейти к следующему слову (или к финишу).
     const advance = () => {
-        if (pos + 1 >= total) { setStatus("FINISHED"); playWin(); return; }
+        if (picked != null) setPicked(null);
+        if (pos + 1 >= total) { setStatus("FINISHED"); if (reveal) playWin(); return; }
         setPos(pos + 1); setStatus("ASKING"); onAdvance?.();
     };
 
-    // Единая точка ответа. ok — верно ли. В INCORRECT это ПОВТОР после показа ответа.
-    const answer = (ok) => {
+    // Единая точка ответа. В reveal-режиме (игры) аргумент — булево «верно». В нейтральном
+    // (экзамен) — сам выбранный ответ: копим наружу, нейтральная подсветка, пауза, дальше.
+    const answer = (response) => {
+        if (!reveal) {
+            if (status !== "ASKING" || picked != null) return; // один выбор → ждём перехода
+            setPicked(response);
+            playSound("select");
+            onResult?.(current, null, gmode, response);   // стратегия копит выбор (грейд снаружи)
+            setResults((rs) => [...rs, { id: current?.id, ok: null }]);
+            return;
+        }
+        const ok = response;
         if (status === "INCORRECT") {
             if (ok) { playSound("correct"); advance(); }
             else { playSound("wrong"); onWrong?.(); }
@@ -86,6 +100,13 @@ export function useGameLoop({
             return () => clearTimeout(tm);
         }
     }, [status]); // eslint-disable-line
+    // Нейтральный режим (экзамен): показать выбор ~паузу, затем следующий вопрос/финиш.
+    useEffect(() => {
+        if (!reveal && picked != null) {
+            const tm = setTimeout(advance, autoAdvanceMs || 900);
+            return () => clearTimeout(tm);
+        }
+    }, [picked]); // eslint-disable-line
 
     // «Учёба» показывает свой итог — отдаём результат наружу вместо своего финиша.
     useEffect(() => {
@@ -113,7 +134,7 @@ export function useGameLoop({
     });
 
     return {
-        t, currentLanguage, total, current, status, words: wordsToGame,
+        t, currentLanguage, total, current, status, words: wordsToGame, picked,
         pos, results, missedIds, doneCount, knownFirstTry, score,
         qIndex, qTotal, segs: autoSegs, segsOverride,
         answer, advance, restart, backToSelection,
