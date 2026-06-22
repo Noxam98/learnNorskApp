@@ -165,7 +165,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                 {flipped && cur.example?.no && (
                                     <div className="flashcard__example">
                                         <b lang={hyLang(currentLanguage, true)}>{cur.example.no}</b>
-                                        {cur.example.ru && <span className="muted"> — {cur.example.ru}</span>}
+                                        {(cur.example[currentLanguage] || cur.example.ru) && <span className="muted"> — {cur.example[currentLanguage] || cur.example.ru}</span>}
                                     </div>
                                 )}
                             </motion.div>

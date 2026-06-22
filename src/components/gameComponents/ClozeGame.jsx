@@ -42,7 +42,8 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
 
     const correctCount = results.filter((r) => r.ok).length;
     const wrongCount = results.filter((r) => !r.ok).length;
-    const descriptionText = current.gloss || "";
+    const g = current.gloss;
+    const descriptionText = (g && typeof g === "object") ? (g[currentLanguage] || g.ru || "") : (g || "");
     const segs = segsOverride || Array.from({ length: total }, (_, i) => {
         if (i < results.length) return results[i].ok ? "ok" : "err";
         if (i === results.length && status !== "FINISHED") return "now";
