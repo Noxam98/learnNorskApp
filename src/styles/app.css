@@ -373,6 +373,9 @@
 /* ---- Нижний таб-бар (мобайл) ---- */
 .tabbar { display: none; }
 @media (max-width: 760px) {
+    /* на мобилках весь верхний хедер скрыт во всём приложении — навигация снизу (таб-бар),
+       как уже было в «Учёбе». Тема/язык/профиль доступны на странице профиля. */
+    .nav { display: none; }
     .nav__links { display: none; }            /* верхние ссылки прячем — они в таб-баре */
     .nav .nav__avatar { display: none; }       /* профиль — в таб-баре */
     main, .prof-main, .words-main, .study-main { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
