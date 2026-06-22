@@ -6,7 +6,7 @@
 //  • свободный: без remainingOf → все буквы активны, без подсказок. Используется в «Вводе» (норвежское слово).
 import { useState, useRef } from "react";
 import { Icon } from "../ui/Icon.jsx";
-import { useSystemStore } from "../../store/systemStore.jsx";
+import { useSystemStore, VIBE_MS } from "../../store/systemStore.jsx";
 
 // Норвежская раскладка QWERTY (нижний регистр).
 export const KBD_ROWS = [
@@ -22,7 +22,8 @@ export function GameKeyboard({
     onType, onBackspace, onSubmit, onDunno, dunnoLabel, showDunno = false, leftFiller = false,
 }) {
     const vibration = useSystemStore((s) => s.vibration);
-    const buzz = () => { if (!vibration) return; try { navigator.vibrate?.(8); } catch { /* нет вибро — ок */ } };
+    const vibeStrength = useSystemStore((s) => s.vibrationStrength);
+    const buzz = () => { if (!vibration) return; try { navigator.vibrate?.(VIBE_MS[vibeStrength] || VIBE_MS.mid); } catch { /* нет вибро — ок */ } };
     const [pop, setPop] = useState(null);
     const pressingRef = useRef(null);
     const pressTsRef = useRef(0);   // момент нажатия — для вибрации «на отпускании» при долгом тапе (≥200мс)

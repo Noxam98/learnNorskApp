@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
-import { useSystemStore } from "../store/systemStore.jsx";
+import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
 import { useWordsStore } from "../store/wordStore.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { Icon } from "../components/ui/Icon.jsx";
@@ -68,6 +68,7 @@ const MyPage = () => {
     const showVerbAa = useSystemStore((state) => state.showVerbAa);
     const soundOn = useSystemStore((state) => state.soundOn);
     const vibration = useSystemStore((state) => state.vibration);
+    const vibrationStrength = useSystemStore((state) => state.vibrationStrength);
     const nativeKeyboard = useSystemStore((state) => state.nativeKeyboard);
     const dictList = useWordsStore((state) => state.dictList);
 
@@ -217,6 +218,19 @@ const MyPage = () => {
                             <span className="setrow__meta"><span className="setrow__t">{t.vibration}</span><span className="setrow__d">{t.vibrationDesc}</span></span>
                             <span className={`toggle${vibration ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setVibration(!vibration)} />
                         </div>
+                        {vibration && (
+                            <div className="setrow">
+                                <span className="setrow__ic"><Icon n="zap" sm /></span>
+                                <span className="setrow__meta"><span className="setrow__t">{t.vibrationStrength}</span><span className="setrow__d">{t.vibrationStrengthDesc}</span></span>
+                                <Dropdown value={vibrationStrength}
+                                    onChange={(v) => { useSystemStore.getState().setVibrationStrength(v); try { navigator.vibrate?.(VIBE_MS[v]); } catch { /* нет вибро — ок */ } }}
+                                    options={[
+                                        { value: "low", label: t.vibeLow },
+                                        { value: "mid", label: t.vibeMid },
+                                        { value: "high", label: t.vibeHigh },
+                                    ]} />
+                            </div>
+                        )}
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="grid" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.nativeKbd}</span><span className="setrow__d">{t.nativeKbdDesc}</span></span>

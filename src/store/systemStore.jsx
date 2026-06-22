@@ -2,6 +2,10 @@ import { create } from "zustand";
 import { produce } from "immer";
 import { createJSONStorage, persist } from 'zustand/middleware'
 
+// Сила вибрации → длительность импульса (мс). На вебе амплитуду не задать (Vibration API
+// умеет только длительность/паттерн), поэтому «сила» = насколько длинный импульс.
+export const VIBE_MS = { low: 4, mid: 8, high: 18 };
+
 
 export const useSystemStore = create(persist(
     (set) => ({
@@ -12,6 +16,7 @@ export const useSystemStore = create(persist(
         showVerbAa: true,    // показывать «å» перед глаголами на чипах слов
         soundOn: true,       // звуки игры (онлайн-режим)
         vibration: true,     // тактильный отклик нашей экранной клавиатуры (по умолчанию вкл)
+        vibrationStrength: "mid", // сила (длительность) вибрации: low | mid | high
         nativeKeyboard: false, // печатать клавиатурой устройства вместо встроенной (где игра поддерживает)
 
         setCurrentLanguage: (newLanguage) =>
@@ -31,6 +36,7 @@ export const useSystemStore = create(persist(
         setShowVerbAa: (v) => set(produce((state) => { state.showVerbAa = !!v; })),
         setSoundOn: (v) => set(produce((state) => { state.soundOn = !!v; })),
         setVibration: (v) => set(produce((state) => { state.vibration = !!v; })),
+        setVibrationStrength: (v) => set(produce((state) => { state.vibrationStrength = VIBE_MS[v] ? v : "mid"; })),
         setNativeKeyboard: (v) => set(produce((state) => { state.nativeKeyboard = !!v; })),
 
     }),
@@ -41,7 +47,8 @@ export const useSystemStore = create(persist(
         partialize: (state) => ({
             currentLanguage: state.currentLanguage, theme: state.theme,
             showArticles: state.showArticles, showVerbAa: state.showVerbAa, soundOn: state.soundOn,
-            vibration: state.vibration, nativeKeyboard: state.nativeKeyboard,
+            vibration: state.vibration, vibrationStrength: state.vibrationStrength,
+            nativeKeyboard: state.nativeKeyboard,
         }),
     }
 ));
