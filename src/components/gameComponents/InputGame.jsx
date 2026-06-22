@@ -130,9 +130,9 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
             </div>
 
             {/* «Не знаю» — неприметная угловая кнопка (прямой ребёнок .play, чтобы её не подрезал
-                overflow:hidden у .pstage в режиме клавиатуры). С клавиатурой низ занят — уводим наверх. */}
+                overflow:hidden у .pstage). С клавиатурой низ занят — ставим кнопку прямо НАД ней справа. */}
             {status === "ASKING" && (
-                <button className={"dunno-corner" + (useKbd ? " dunno-corner--top" : "")} onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
+                <button className={"dunno-corner" + (useKbd ? " dunno-corner--kbd" : "")} onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
             )}
         </div>
     );

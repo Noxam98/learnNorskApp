@@ -383,8 +383,9 @@
     font-family: inherit; font-weight: 600; font-size: var(--fs-12); cursor: pointer; opacity: .6;
     transition: opacity var(--dur) var(--ease), color var(--dur) var(--ease); }
   .dunno-corner:hover { opacity: 1; color: var(--game-ink); }
-  /* в режиме экранной клавиатуры низ занят клавишами — уводим «Не знаю» в верхний угол (под шапку) */
-  .dunno-corner--top { bottom: auto; top: 54px; opacity: .5; }
+  /* в режиме экранной клавиатуры низ занят клавишами — ставим «Не знаю» прямо НАД клавиатурой справа
+     (клавиатура фиксирована внизу, резерв ~268px; кнопка чуть выше) */
+  .dunno-corner--kbd { right: 12px; bottom: calc(268px + env(safe-area-inset-bottom, 0px) + 8px); opacity: .55; }
 
   /* feedback banner */
   /* фидбэк — компактно, в один ряд (переносится только при нехватке места) */
