@@ -18,7 +18,7 @@ import InputGame from "../gameComponents/InputGame.jsx";
 import StudyGame from "../gameComponents/StudyGame.jsx";
 import BuildGame from "../gameComponents/BuildGame.jsx";
 import ClozeGame from "../gameComponents/ClozeGame.jsx";
-import { stageShade } from "../gameComponents/gameShared.jsx";
+import { stageRank } from "../gameComponents/gameShared.jsx";
 
 // mode элемента/сессии → игровой компонент.
 const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: StudyGame, study: StudyGame, cloze: ClozeGame };
@@ -269,12 +269,12 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         if (!el) { onClose?.(true); return null; }
         const Game = COMP[el.mode] || ChoiceGame;
         const isStudy = el.mode === "card" || el.mode === "study";
-        // полоса прогресса всей сессии: сегмент на слово, ОТТЕНОК ЗЕЛЁНОГО по ступени рампы слова
-        // (бледный — новое, насыщенный — ближе к «выучено»). state: пройдено/текущее(now)/впереди(future).
+        // полоса прогресса сессии: сегмент на слово. Пройденные — ЦВЕТ СТАДИИ слова (карточка серая
+        // → ввод самый насыщенный зелёный), текущее — акцент, предстоящие — пустые (появляются по ходу).
         const segCell = (e) => e?.step || ((e?.mode === "card" || e?.mode === "study") ? "card" : `${e?.mode}_${e?.dir}`);
         const sessionSegs = elements.map((e, i) => ({
-            state: i < idx ? (hist[i] || "ok") : (i === idx ? "now" : "future"),
-            shade: stageShade(segCell(e)),
+            state: i < idx ? "done" : (i === idx ? "now" : "future"),
+            rank: stageRank(segCell(e)),
         }));
         return (
             <Game

@@ -70,7 +70,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     return (
         <div className="play play--kbd" data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={doneCount} wrongCount={missedIds.size} onExit={backToSelection} t={t} />
-            <ProgressSegments segs={segs} />
+            <ProgressSegments segs={segs} status={status} />
 
             <div className="pstage">
                 <div className="qcard">

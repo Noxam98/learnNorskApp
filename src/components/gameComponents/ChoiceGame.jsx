@@ -107,7 +107,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     return (
         <div className="play" data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={correctCount} wrongCount={wrongCount} onExit={backToSelection} t={t} />
-            <ProgressSegments segs={segs} />
+            <ProgressSegments segs={segs} status={status} />
 
             <div className="pstage" onClick={onStageClick}
                 style={status === "INCORRECT" ? { cursor: "pointer" } : undefined}>

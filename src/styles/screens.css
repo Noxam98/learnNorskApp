@@ -336,16 +336,16 @@
   .pseg.is-now { background: var(--game-accent); }
   .pseg.is-card { background: var(--game-ink-2); opacity: .5; }
   .pseg.is-done { background: var(--game-accent); opacity: .5; }   /* нейтральный прогресс (экзамен) */
-  /* стадия слова — оттенок зелёного: бледный (новое) → насыщенный (ближе к «выучено»).
-     color-mix с фоном полосы делает шкалу авто-адаптивной к теме. */
-  .pseg--g1 { background: color-mix(in srgb, var(--game-correct) 32%, var(--game-surface-2)); }
-  .pseg--g2 { background: color-mix(in srgb, var(--game-correct) 50%, var(--game-surface-2)); }
-  .pseg--g3 { background: color-mix(in srgb, var(--game-correct) 68%, var(--game-surface-2)); }
-  .pseg--g4 { background: color-mix(in srgb, var(--game-correct) 85%, var(--game-surface-2)); }
-  .pseg--g5 { background: var(--game-correct); }
-  .pseg.is-future { opacity: .32; }                                        /* предстоящие — приглушены */
-  .pseg.is-cur { box-shadow: inset 0 0 0 2px var(--game-accent); }         /* текущее слово — «ты здесь» */
-  .pseg.is-miss { box-shadow: inset 0 -3px 0 var(--game-incorrect); }      /* ошибка в этой сессии — красная метка снизу */
+  /* цвет сегмента = стадия слова: карточка серая → ввод (клавиатура) самый насыщенный зелёный.
+     color-mix с фоном полосы → шкала авто-адаптивна к теме. Предстоящие сегменты — базовые (пустые). */
+  .pseg--st0 { background: color-mix(in srgb, var(--game-ink-2) 50%, var(--game-surface-2)); }   /* карточка — серый */
+  .pseg--st1 { background: color-mix(in srgb, var(--game-correct) 38%, var(--game-surface-2)); }
+  .pseg--st2 { background: color-mix(in srgb, var(--game-correct) 58%, var(--game-surface-2)); }
+  .pseg--st3 { background: color-mix(in srgb, var(--game-correct) 80%, var(--game-surface-2)); }
+  .pseg--st4 { background: var(--game-correct); }                                                 /* ввод — самый насыщенный */
+  /* верный ответ: текущий сегмент мигает цветом следующей стадии (виден «будущий» цвет слова) */
+  @keyframes psegFlash { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+  .pseg.is-flash { animation: psegFlash .42s ease-in-out 2; }
 
   /* center stage — занимает остаток высоты, прокручивается внутри как страховка */
   .pstage { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--sp-6) var(--sp-6); text-align: center; }

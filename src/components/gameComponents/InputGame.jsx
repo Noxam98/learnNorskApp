@@ -80,7 +80,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     return (
         <div className={"play" + (useKbd ? " play--kbd" : "")} data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={doneCount} wrongCount={missedIds.size} onExit={backToSelection} t={t} />
-            <ProgressSegments segs={segs} />
+            <ProgressSegments segs={segs} status={status} />
 
             <div className="pstage">
                 <div className="qcard">
