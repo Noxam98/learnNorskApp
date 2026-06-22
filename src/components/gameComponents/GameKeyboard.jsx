@@ -34,9 +34,10 @@ export function GameKeyboard({
         pressingRef.current = c; setPop(c);
         try { navigator.vibrate?.(8); } catch { /* нет вибро — ок */ }
     };
-    const keyUp = (c) => {
+    const keyUp = (c, e) => {
         if (pressingRef.current === c) { if (active(c)) onType?.(c); try { navigator.vibrate?.(8); } catch { /* */ } }
         pressingRef.current = null; setPop(null);
+        e?.currentTarget?.blur?.();   // снять фокус после отпускания — клавиша не «залипает» подсвеченной
     };
     const keyCancel = (c) => { if (pressingRef.current === c) { pressingRef.current = null; setPop(null); } };
 
@@ -46,7 +47,7 @@ export function GameKeyboard({
         return (
             <button key={c || "space"} className={"kbd__key" + cls + (isOff(c) ? " is-off" : "") + (isSpent(c) ? " is-spent" : "")}
                 disabled={isOff(c) || isSpent(c)} aria-label={ariaLabel}
-                onPointerDown={(e) => keyDown(c, e)} onPointerUp={() => keyUp(c)}
+                onPointerDown={(e) => keyDown(c, e)} onPointerUp={(e) => keyUp(c, e)}
                 onPointerLeave={() => keyCancel(c)} onPointerCancel={() => keyCancel(c)} lang={lang}>
                 {c === " " ? "" : c}
                 {b != null && <span className="kbd__count">{b}</span>}
@@ -63,13 +64,14 @@ export function GameKeyboard({
                     <div className={"kbd__row" + (last ? " kbd__row--last" : "")} key={ri}>
                         {/* «Не знаю» — заполняет пустоту слева в нижнем ряду (честный пропуск) */}
                         {last && showDunno && onDunno && (
-                            <button type="button" className="kbd__key kbd__key--dunno" onClick={onDunno}>{dunnoLabel}</button>
+                            <button type="button" className="kbd__key kbd__key--dunno" onClick={(e) => { onDunno(); e.currentTarget.blur(); }}>{dunnoLabel}</button>
                         )}
                         {row.map((c) => symKey(c))}
                         {/* ⌫ — в конце последнего буквенного ряда (как в Gboard) */}
                         {last && (
                             <button className="kbd__key kbd__key--act" disabled={!canBackspace} aria-label="backspace"
-                                onPointerDown={(e) => { e.preventDefault(); try { navigator.vibrate?.(8); } catch { /* */ } onBackspace?.(); }}>
+                                onPointerDown={(e) => { e.preventDefault(); try { navigator.vibrate?.(8); } catch { /* */ } onBackspace?.(); }}
+                                onPointerUp={(e) => e.currentTarget.blur()}>
                                 <Icon n="arrow-left" />
                             </button>
                         )}
@@ -82,7 +84,8 @@ export function GameKeyboard({
                 {/* пробел — всегда в клавиатуре */}
                 {symKey(" ", " kbd__key--space", "space")}
                 <button className="kbd__key kbd__key--go" disabled={!canSubmit} aria-label="check"
-                    onPointerDown={(e) => { e.preventDefault(); onSubmit?.(); }}><Icon n="check" /></button>
+                    onPointerDown={(e) => { e.preventDefault(); onSubmit?.(); }}
+                    onPointerUp={(e) => e.currentTarget.blur()}><Icon n="check" /></button>
             </div>
         </div>
     );
