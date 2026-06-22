@@ -231,23 +231,6 @@ const MyPage = () => {
                                     ]} />
                             </div>
                         )}
-                        {/* ВРЕМЕННЫЙ диагностический тест вибрации: показывает поддержку API,
-                            возвращаемое значение vibrate() и user-activation — чтобы отличить
-                            «API нет/заблокирован» от «ОС глушит вибро» (батарея/тактильный отклик). */}
-                        <div className="setrow">
-                            <span className="setrow__ic"><Icon n="zap" sm /></span>
-                            <span className="setrow__meta"><span className="setrow__t">Тест вибрации</span><span className="setrow__d">Диагностика поддержки на этом устройстве</span></span>
-                            <button style={{ cursor: "pointer", padding: "8px 16px", borderRadius: 999, border: "1px solid var(--border, #d0d0d8)", background: "var(--card, #fff)", color: "inherit", fontWeight: 600 }}
-                                onClick={() => {
-                                    const has = typeof navigator.vibrate === "function";
-                                    const ua = navigator.userActivation;
-                                    const active = (ua && "hasBeenActive" in ua) ? String(ua.hasBeenActive) : "n/a";
-                                    const transient = (ua && "isActive" in ua) ? String(ua.isActive) : "n/a";
-                                    let ret = "no-api";
-                                    try { if (has) ret = String(navigator.vibrate(400)); } catch (e) { ret = "err:" + (e?.message || e); }
-                                    alert("Вибро-тест:\nAPI есть: " + has + "\nvibrate(400) вернул: " + ret + "\nuserActivation.hasBeenActive: " + active + "\nisActive: " + transient + "\n\nUA: " + navigator.userAgent);
-                                }}>Тест</button>
-                        </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="grid" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.nativeKbd}</span><span className="setrow__d">{t.nativeKbdDesc}</span></span>
