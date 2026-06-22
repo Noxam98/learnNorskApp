@@ -306,7 +306,8 @@
 .kbd__key--dunno { flex: 0 0 auto; width: calc(var(--kbd-key) * 2 + var(--kbd-gap)); min-width: 0; max-width: none; margin-right: auto; font-size: var(--fs-13); font-weight: 700; line-height: 1.1; color: var(--game-ink-2); padding: 0 4px; text-align: center; }
 .kbd__key--go { flex: 0 0 auto; width: calc(var(--kbd-key) * 1.5 + var(--kbd-gap) * 0.5); min-width: 0; max-width: none; background: var(--game-accent); color: #fff; }
 .kbd__key--go .ic, .kbd__key--act .ic { width: 20px; height: 20px; }
-.kbd__key:hover:not(:disabled) { background: var(--game-surface-2); }
+/* hover только для мыши — иначе на тач-экране состояние «залипает» после тапа (клавиша светлее) */
+@media (hover: hover) { .kbd__key:hover:not(:disabled) { background: var(--game-surface-2); } }
 .kbd__key:active:not(:disabled) { transform: translateY(1px); background: var(--game-border); }
 .kbd__key--go:active:not(:disabled) { background: var(--game-accent); filter: brightness(1.08); }
 /* буквы НЕ из слова — приглушены и неактивны; израсходованные — полупрозрачны */
