@@ -8,8 +8,9 @@ import { hyLang } from "../ui/hyphenate.js";
 import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
+import { useSystemStore } from "../../store/systemStore.jsx";
 
 export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
     const isNo2Int = mode !== "int2no";
@@ -24,9 +25,13 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     });
     const { t, currentLanguage, total, current, status, words: wordsToGame, results, knownFirstTry, score, qIndex, qTotal, answer, advance, restart, backToSelection } = loop;
 
+    const showArticles = useSystemStore((s) => s.showArticles);
+    const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const no = current?.translate?.no?.[0] || "";
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
     const question = isNo2Int ? no : (translations.join(", ") || no);
+    // для показа норвежского слова-вопроса — с артиклем/«å» по настройке (озвучка читает лемму)
+    const promptDisp = isNo2Int ? noWithPrefix(no, current, { articles: showArticles, verbAa: showVerbAa }) : question;
     const correctPrimary = (isNo2Int ? translations[0] : no) || "";
     const promptTarget = isNo2Int ? (ENDONYM[currentLanguage] || currentLanguage) : "Norsk";
     const qLang = hyLang(currentLanguage, isNo2Int);    // язык вопроса
@@ -107,7 +112,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
             <div className="pstage" onClick={onStageClick}
                 style={status === "INCORRECT" ? { cursor: "pointer" } : undefined}>
                 <ChoiceQuestion
-                    prompt={question}
+                    prompt={promptDisp}
                     promptLang={qLang}
                     options={options}
                     optionSub={subOf}

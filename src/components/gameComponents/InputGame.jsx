@@ -9,7 +9,7 @@ import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, PlayTopBar, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
 import { GameKeyboard } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -32,10 +32,17 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     });
     const { t, currentLanguage, total, current, status, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, restart, backToSelection } = loop;
 
+    const showArticles = useSystemStore((s) => s.showArticles);
+    const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const no = current?.translate?.no?.[0] || "";
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
     const question = isNo2Int ? no : (translations.join(", ") || no);
     const accepted = (isNo2Int ? translations : (current?.translate?.no || [])).map((s) => s.trim()).filter(Boolean);
+    // показ норв. слова — с артиклем/«å» по настройке: вопрос (no2int) и раскрытый ответ (int2no).
+    // Озвучка и сверка ввода — по «голой» лемме (артикль не печатают).
+    const promptDisp = isNo2Int ? noWithPrefix(no, current, { articles: showArticles, verbAa: showVerbAa }) : question;
+    const answerDisp = isNo2Int ? accepted.join(", ")
+        : [noWithPrefix(accepted[0] || no, current, { articles: showArticles, verbAa: showVerbAa }), ...accepted.slice(1)].join(", ");
     const correctPrimary = (isNo2Int ? translations[0] : no) || "";
     const promptTarget = isNo2Int ? (ENDONYM[currentLanguage] || currentLanguage) : "Norsk";
     const qLang = hyLang(currentLanguage, isNo2Int);
@@ -76,7 +83,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                 <div className="qcard">
                     <div className="qcount">{t.word} {qIndex} / {qTotal}</div>
                     <div className="qprompt">{t.translateTo} {promptTarget}</div>
-                    <h1 className="qword" lang={qLang}>{hyphenate(question, qLang)}
+                    <h1 className="qword" lang={qLang}>{hyphenate(promptDisp, qLang)}
                         <SpeakButton text={question} lang={qLang} className="qspeak" lg
                             ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
                     </h1>
@@ -104,7 +111,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                             <div className="fb-icon" style={{ background: "rgba(230,122,82,.16)", color: "var(--game-incorrect)" }}><Icon n="x" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-incorrect)" }}>{t.notQuite}</div>
                             <div className="fb-line">{t.mistake}</div>
-                            <div className="fb-answer" lang={aLang}>{hyphenate(accepted.join(", "), aLang)}</div>
+                            <div className="fb-answer" lang={aLang}>{hyphenate(answerDisp, aLang)}</div>
                             {descriptionText && <div className="fb-line muted">{descriptionText}</div>}
                         </div>
                     )}

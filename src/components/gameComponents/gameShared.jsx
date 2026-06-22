@@ -3,6 +3,15 @@
 // здесь только переиспользуемая «обвязка».
 import { Icon } from "../ui/Icon.jsx";
 import { BrandMark } from "../ui/BrandMark.jsx";
+import { posMeta, chipPrefix } from "../ui/pos.js";
+
+// Норвежское слово с приставкой по настройкам: артикль (en/ei/et) у сущ., «å» у глаг. Иначе — как есть.
+// Применять там, где слово ВЫВОДИТСЯ для чтения (вопрос/карточка/раскрытый ответ), а не в вариантах
+// выбора (там приставка выдала бы верный вариант) и не в строке ввода (артикль не печатают).
+export const noWithPrefix = (no, word, { articles = true, verbAa = true } = {}) => {
+    const pfx = chipPrefix(posMeta(word?.part_of_speech).key, word?.forms, { articles, verbAa });
+    return pfx ? `${pfx} ${no}` : no;
+};
 
 export const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 
