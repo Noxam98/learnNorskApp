@@ -68,16 +68,21 @@ export const uniq = (arr) => {
     return arr.filter((x) => x && !s.has(x.toLowerCase()) && s.add(x.toLowerCase()));
 };
 
-// Верхняя панель: бренд, счётчики верно/ошибки, выход.
-export const PlayTopBar = ({ correctCount, wrongCount, onExit, t }) => (
+// Верхняя панель: бренд, счётчики верно/ошибки (или произвольный centerNode — напр. «N/30»
+// в экзамене, где ✓/✗ по ходу не показываем), выход.
+export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = null }) => (
     <div className="ptop">
         <a className="ptop__brand" onClick={onExit} style={{ cursor: "pointer" }}>
             <BrandMark />
             <span className="brand__name">Lære<b>·</b>Norsk</span>
         </a>
         <div className="pstats">
-            <span className="stat stat--ok"><Icon n="check" sm /> {correctCount}</span>
-            <span className="stat stat--err"><Icon n="x" sm /> {wrongCount}</span>
+            {centerNode != null ? centerNode : (
+                <>
+                    <span className="stat stat--ok"><Icon n="check" sm /> {correctCount}</span>
+                    <span className="stat stat--err"><Icon n="x" sm /> {wrongCount}</span>
+                </>
+            )}
         </div>
         <a className="pexit" onClick={onExit} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
     </div>

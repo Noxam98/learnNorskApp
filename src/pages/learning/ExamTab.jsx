@@ -10,6 +10,7 @@ import api from "../../components/tools/api.js";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { ChoiceQuestion } from "../../components/gameComponents/ChoiceQuestion.jsx";
 import { GameKeyboard } from "../../components/gameComponents/GameKeyboard.jsx";
+import { PLAY_STYLE, PlayTopBar, ProgressSegments } from "../../components/gameComponents/gameShared.jsx";
 import { useGameLoop } from "../../components/gameComponents/useGameLoop.js";
 import { playSound, playWin } from "../../components/tools/sound.js";
 import { speakText } from "../../components/ui/tts.js";
@@ -49,9 +50,7 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
 
     if (!current) return null;
     const pick = (v) => { if (vibration) { try { navigator.vibrate?.(10); } catch { /* нет вибро — ок */ } } answer(v); };
-    const pct = qTotal ? Math.round(((qIndex - 1) / qTotal) * 100) : 0;
-    const accent = kind === "audit" ? "var(--st-learn)" : "var(--fjord-600)";
-    // тип вопроса: no2int (норв.→перевод) | int2no (перевод→норв.) | cloze (пропуск в предложении)
+    // тип вопроса: no2int (норв.→перевод) | int2no (перевод→норв.) | cloze (пропуск) | input (ввод)
     const type = current.type || "no2int";
     const isInt2no = type === "int2no", isCloze = type === "cloze", isInput = type === "input";
     const prompt = isInt2no ? current.prompt : isCloze ? (current.blank || "").replace("___", "＿＿＿") : current.no;
@@ -60,62 +59,57 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
     const hint = isInt2no ? t.hintInt2no : isCloze ? t.hintCloze : `${t.dir}${ENDONYM[lang] || lang}`;
     const onInputSubmit = () => { if (picked == null && typed.trim()) pick(typed.trim()); };
     const useKbd = !nativeKeyboard;   // кастомная клавиатура (как в игре «Ввод»), если не выбрана системная
+    const eyebrow = kind === "audit" ? t.auditTitle : t.openTitle;
+    // ЕДИНЫЙ СКЕЛЕТ с играми: .play + PlayTopBar + ProgressSegments + .pstage. Поведение СВОЁ —
+    // нейтрально (без ✓/✗ по ходу), счётчик «N/30» вместо них, прогресс нейтральный (is-done),
+    // грейд пачкой на сервере. Клавиатура хостится как у игр (.play--kbd) → одинаково везде.
+    const segs = Array.from({ length: qTotal }, (_, i) => (i < qIndex - 1 ? "done" : i === qIndex - 1 ? "now" : ""));
+    const count = <span className="stat"><Icon n="layers" sm /> {qIndex} / {qTotal}</span>;
     return (
-        <div className={"study-root" + (isInput && useKbd ? " study-root--kbd" : "")}>
-            <div className="plc-stage">
-                <div className="plc-top">
-                    <button className="plc-top__back" onClick={backToSelection} aria-label="close"><Icon n="x" /></button>
-                    <div className="plc-bar"><span style={{ width: `${pct}%`, background: accent }} /></div>
-                    <span className="plc-count">{t.qCount(qIndex, qTotal)}</span>
-                </div>
-                <div className="plc-q">
-                    <motion.div className="plc-q__card" key={qIndex}
-                        initial={{ opacity: 0, x: 36 }} animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.24, ease: [0.2, 0.7, 0.2, 1] }}>
-                        <span className="plc-q__dir">
-                            <Icon n={kind === "audit" ? "rotate" : "graduation"} sm />{" "}
-                            {kind === "audit" ? t.auditTitle : t.openTitle}
-                        </span>
-                        {isInput ? (
-                            <div className="qcard">
-                                <div className="qprompt">{t.hintInput}</div>
-                                <h1 className="qword" lang={lang}>{current.prompt}</h1>
-                                {useKbd ? (
-                                    <div className="build-line" lang="no">{typed || <span className="build-line__ph">_ _ _</span>}</div>
-                                ) : (
-                                    <>
-                                        <form className="answer" onSubmit={(e) => { e.preventDefault(); onInputSubmit(); }}>
-                                            <input value={typed} onChange={(e) => setTyped(e.target.value)} disabled={picked != null}
-                                                autoComplete="off" spellCheck="false" lang="no" placeholder="Norsk…" autoFocus />
-                                        </form>
-                                        <div className="pcta">
-                                            <button className="btn btn--accent btn--lg" onClick={onInputSubmit} disabled={picked != null || !typed.trim()}>
-                                                <Icon n="check" sm /> {t.inputSubmit}
-                                            </button>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
+        <div className={"play" + (isInput && useKbd ? " play--kbd" : "")} data-state="asking" style={PLAY_STYLE}>
+            <PlayTopBar correctCount={0} wrongCount={0} onExit={backToSelection} t={t} centerNode={count} />
+            <ProgressSegments segs={segs} />
+            <div className="pstage">
+                {isInput ? (
+                    <div className="qcard">
+                        <div className="qcount">{eyebrow}</div>
+                        <div className="qprompt">{t.hintInput}</div>
+                        <h1 className="qword" lang={lang}>{current.prompt}</h1>
+                        {useKbd ? (
+                            <div className="build-line" lang="no">{typed || <span className="build-line__ph">_ _ _</span>}</div>
                         ) : (
-                            <ChoiceQuestion
-                                prompt={prompt}
-                                promptLang={promptLang}
-                                options={current.options || []}
-                                optionLang={optionLang}
-                                onPick={pick}
-                                picked={picked}
-                                reveal={false}
-                                disabled={picked != null}
-                                hint={hint}
-                            />
+                            <form className="answer" onSubmit={(e) => { e.preventDefault(); onInputSubmit(); }}>
+                                <input value={typed} onChange={(e) => setTyped(e.target.value)} disabled={picked != null}
+                                    autoComplete="off" spellCheck="false" lang="no" placeholder="Norsk…" autoFocus />
+                            </form>
                         )}
-                    </motion.div>
-                </div>
-                {isInput && useKbd && picked == null && (
-                    <GameKeyboard lang="no" extras={["-"]} leftFiller
-                        canSubmit={typed.length > 0} canBackspace={typed.length > 0}
-                        onType={(c) => setTyped(typed + c)} onBackspace={() => setTyped(typed.slice(0, -1))}
-                        onSubmit={onInputSubmit} />
+                        {useKbd && picked == null && (
+                            <GameKeyboard lang="no" extras={["-"]} leftFiller
+                                canSubmit={typed.length > 0} canBackspace={typed.length > 0}
+                                onType={(c) => setTyped(typed + c)} onBackspace={() => setTyped(typed.slice(0, -1))}
+                                onSubmit={onInputSubmit} />
+                        )}
+                        {!useKbd && (
+                            <div className="pcta">
+                                <button className="gbtn gbtn--accent" onClick={onInputSubmit} disabled={picked != null || !typed.trim()}>
+                                    <Icon n="check" sm /> {t.inputSubmit}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <ChoiceQuestion
+                        prompt={prompt}
+                        promptLang={promptLang}
+                        options={current.options || []}
+                        optionLang={optionLang}
+                        onPick={pick}
+                        picked={picked}
+                        reveal={false}
+                        disabled={picked != null}
+                        hint={hint}
+                        countText={eyebrow}
+                    />
                 )}
             </div>
         </div>
