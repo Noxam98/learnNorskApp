@@ -39,7 +39,7 @@ export const ChoiceQuestion = ({
             {(options || []).map((opt) => {
                 const cls = reveal
                     ? (opt === correct ? " is-correct" : (opt === picked ? " is-wrong" : ""))
-                    : "";
+                    : (opt === picked ? " is-picked" : "");   // нейтральная подсветка выбора (без раскрытия)
                 const sub = optionSub?.[opt];
                 // повтор после ошибки: правильный вариант остаётся кликабельным (выбрать его → дальше)
                 const btnDisabled = disabled && !(allowRetry && opt === correct);

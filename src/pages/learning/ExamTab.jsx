@@ -203,6 +203,7 @@ export default function ExamTab({ lang, go, refresh }) {
     const [questions, setQuestions] = useState([]);
     const [qi, setQi] = useState(0);
     const [answers, setAnswers] = useState([]);  // [{pool_id, answer}]
+    const [picked, setPicked] = useState(null);  // выбранный вариант (нейтральная подсветка + пауза)
     const [busy, setBusy] = useState(false);
 
     // результат
@@ -251,7 +252,7 @@ export default function ExamTab({ lang, go, refresh }) {
             const r = await api.learningGateExam(lang);
             const qs = r?.questions || [];
             if (!qs.length) { await loadOverview(); return; }
-            setKind("gate"); setQuestions(qs); setQi(0); setAnswers([]); setResult(null); setPhase("run");
+            setKind("gate"); setQuestions(qs); setQi(0); setAnswers([]); setPicked(null); setResult(null); setPhase("run");
         } catch { /* тост уже показан в api */ }
         finally { setBusy(false); }
     };
@@ -259,19 +260,28 @@ export default function ExamTab({ lang, go, refresh }) {
     const startAudit = () => {
         const qs = audit?.questions || [];
         if (!qs.length) return;
-        setKind("audit"); setQuestions(qs); setQi(0); setAnswers([]); setResult(null); setPhase("run");
+        setKind("audit"); setQuestions(qs); setQi(0); setAnswers([]); setPicked(null); setResult(null); setPhase("run");
     };
 
     // ---------- ответ ----------
     const answer = (val) => {
-        if (!cur) return;
+        if (!cur || picked != null) return;   // уже выбрано — ждём паузы перед переходом
+        setPicked(val);
         playSound("select");
         if (vibration) { try { navigator.vibrate?.(10); } catch { /* нет вибро — ок */ } }
-        const next = [...answers, { pool_id: cur.pool_id, answer: val || "" }];
-        setAnswers(next);
-        if (qi + 1 >= questions.length) grade(next);
-        else setQi(qi + 1);
+        setAnswers((a) => [...a, { pool_id: cur.pool_id, answer: val || "" }]);
     };
+
+    // показать выбор нейтральным цветом ~0.9с, затем следующий вопрос (или подсчёт итога)
+    useEffect(() => {
+        if (picked == null || phase !== "run") return;
+        const id = setTimeout(() => {
+            setPicked(null);
+            if (qi + 1 >= questions.length) grade(answers);
+            else setQi(qi + 1);
+        }, 900);
+        return () => clearTimeout(id);
+    }, [picked]); // eslint-disable-line
 
     const grade = async (all) => {
         setBusy(true); setPhase("result");
@@ -302,7 +312,7 @@ export default function ExamTab({ lang, go, refresh }) {
     };
 
     const backToOverview = async () => {
-        setKind(null); setQuestions([]); setQi(0); setAnswers([]); setResult(null);
+        setKind(null); setQuestions([]); setQi(0); setAnswers([]); setPicked(null); setResult(null);
         setPhase("overview");
         await loadOverview();
     };
@@ -334,7 +344,9 @@ export default function ExamTab({ lang, go, refresh }) {
                                 promptLang="no"
                                 options={cur.options || []}
                                 onPick={answer}
+                                picked={picked}
                                 reveal={false}
+                                disabled={picked != null}
                                 hint={`${t.dir}${ENDONYM[lang] || lang}`}
                             />
                         </motion.div>
