@@ -63,6 +63,19 @@ export const posMeta = (pos) => {
 export const nounArticle = (forms) =>
     (forms && forms.pos === "noun" && forms.gender) ? forms.gender : "";
 
+// Поверхностные формы слова: лемма + словоформы из forms (def_sg/indef_pl/present/past/…),
+// без служебных pos/gender. Для приёма ответа во «Вводе»: hunden/snakker засчитываем как слово.
+export const wordForms = (lemma, forms) => {
+    const out = lemma ? [lemma] : [];
+    if (forms && typeof forms === "object") {
+        for (const [k, v] of Object.entries(forms)) {
+            if (k === "pos" || k === "gender") continue;
+            if (typeof v === "string" && v.trim()) out.push(v.trim());
+        }
+    }
+    return out;
+};
+
 // Приставка перед словом на чипе: артикль (en/ei/et) у сущ. и «å» у глаголов.
 // Управляется настройками (articles / verbAa). posKey — нормализованный ключ из posMeta.
 export const chipPrefix = (posKey, forms, { articles = true, verbAa = true } = {}) => {

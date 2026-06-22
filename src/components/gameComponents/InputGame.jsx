@@ -5,7 +5,7 @@
 // Механика цикла (стейт-машина, SRS, ретрай, авто-переход, финиш) — в useGameLoop.
 import { useState, useEffect, useRef } from "react";
 import { Icon } from "../ui/Icon.jsx";
-import { posLabel } from "../ui/pos.js";
+import { posLabel, wordForms } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
@@ -38,6 +38,9 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
     const question = isNo2Int ? no : (translations.join(", ") || no);
     const accepted = (isNo2Int ? translations : (current?.translate?.no || [])).map((s) => s.trim()).filter(Boolean);
+    // при ВВОДе норвежского (int2no) принимаем и словоформы (hunden/snakker/snakket), не только лемму;
+    // для родного (no2int) словоформ нет. Для отображения «также принято» используем accepted (без форм).
+    const acceptSet = isNo2Int ? accepted : [...accepted, ...wordForms(no, current?.forms)];
     // показ норв. слова — с артиклем/«å» по настройке: вопрос (no2int) и раскрытый ответ (int2no).
     // Озвучка и сверка ввода — по «голой» лемме (артикль не печатают).
     const promptDisp = isNo2Int ? noWithPrefix(no, current, { articles: showArticles, verbAa: showVerbAa }) : question;
@@ -65,7 +68,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (sound && (status === "CORRECT" || status === "INCORRECT") && correctPrimary) speakText(correctPrimary, aLang).catch(() => {});
     }, [status]); // eslint-disable-line
 
-    const submit = (e) => { e?.preventDefault?.(); answer(accepted.some((a) => foldLoose(a) === foldLoose(input))); };
+    const submit = (e) => { e?.preventDefault?.(); answer(acceptSet.some((a) => foldLoose(a) === foldLoose(input))); };
     const dontKnow = () => { if (status === "ASKING") answer(false); };
 
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
