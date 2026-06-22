@@ -5,9 +5,13 @@
 //   • Аудит доступен → карточка «Контрольная проверка» (тот же прогон) → итог «освежено/вернулось».
 // Прогон вопросов общий для ворот и аудита (kind: 'gate' | 'audit'). Локальная 5-язычная i18n.
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import api from "../../components/tools/api.js";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { ChoiceQuestion } from "../../components/gameComponents/ChoiceQuestion.jsx";
+import { playSound, playWin } from "../../components/tools/sound.js";
+import { speakText } from "../../components/ui/tts.js";
+import { useSystemStore } from "../../store/systemStore.jsx";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 
@@ -183,6 +187,8 @@ const T = {
 
 export default function ExamTab({ lang, go, refresh }) {
     const t = T[lang] || T.ru;
+    const soundOn = useSystemStore((s) => s.soundOn);
+    const vibration = useSystemStore((s) => s.vibration);
 
     // overview | run | result
     const [phase, setPhase] = useState("overview");
@@ -224,6 +230,20 @@ export default function ExamTab({ lang, go, refresh }) {
 
     const cur = questions[qi] || null;
 
+    // оживляем прогон: при появлении вопроса — мягкий свуш + озвучка норв. слова (по настройке звука).
+    // Правильность по ходу НЕ раскрываем (экзамен нейтрален) — звук нейтральный.
+    useEffect(() => {
+        if (phase !== "run" || !cur) return;
+        playSound("question");
+        if (soundOn && cur.no) speakText(cur.no, "no").catch(() => {});
+    }, [qi, phase]); // eslint-disable-line
+    // звук итога: фанфара при успехе, грустный — иначе
+    useEffect(() => {
+        if (phase !== "result" || !result) return;
+        const good = result.kind === "gate" ? result.passed : result.forgot === 0;
+        if (good) playWin(); else playSound("wrong");
+    }, [result]); // eslint-disable-line
+
     // ---------- запуск прогона ----------
     const startGate = async () => {
         setBusy(true);
@@ -245,6 +265,8 @@ export default function ExamTab({ lang, go, refresh }) {
     // ---------- ответ ----------
     const answer = (val) => {
         if (!cur) return;
+        playSound("select");
+        if (vibration) { try { navigator.vibrate?.(10); } catch { /* нет вибро — ок */ } }
         const next = [...answers, { pool_id: cur.pool_id, answer: val || "" }];
         setAnswers(next);
         if (qi + 1 >= questions.length) grade(next);
@@ -300,7 +322,9 @@ export default function ExamTab({ lang, go, refresh }) {
                         <span className="plc-count">{t.qCount(qi + 1, questions.length)}</span>
                     </div>
                     <div className="plc-q">
-                        <div className="plc-q__card">
+                        <motion.div className="plc-q__card" key={qi}
+                            initial={{ opacity: 0, x: 36 }} animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.24, ease: [0.2, 0.7, 0.2, 1] }}>
                             <span className="plc-q__dir">
                                 <Icon n={kind === "audit" ? "rotate" : "graduation"} sm />{" "}
                                 {kind === "audit" ? t.auditTitle : t.openTitle}
@@ -313,7 +337,7 @@ export default function ExamTab({ lang, go, refresh }) {
                                 reveal={false}
                                 hint={`${t.dir}${ENDONYM[lang] || lang}`}
                             />
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             </div>
@@ -341,10 +365,17 @@ export default function ExamTab({ lang, go, refresh }) {
                 <div className="exam-grid">
                     <div className="spanel" style={{ gridColumn: "1 / -1" }}>
                         <div className="spanel__body" style={resBody}>
-                            <span className="grade-cefr" style={{ background: color }}>
+                            <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                                transition={{ type: "spring", stiffness: 280, damping: 16 }}
+                                style={{ fontSize: "2.6rem", fontWeight: 800, color, lineHeight: 1 }}>
+                                {Math.max(0, questions.length - (result.demoted || 0))}
+                                <span style={{ opacity: .45, fontSize: "1.6rem" }}> / {questions.length}</span>
+                            </motion.div>
+                            <motion.span className="grade-cefr" style={{ background: color }}
+                                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
                                 <Icon n={passed ? "check" : "x-circle"} sm style={{ marginRight: 7 }} />
                                 {passed ? t.passedTitle : t.failedTitle}
-                            </span>
+                            </motion.span>
                             <p className="muted" style={resDesc}>
                                 {passed ? t.passedDesc : t.failedDesc(result.demoted)}
                             </p>
