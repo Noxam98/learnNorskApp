@@ -1,3 +1,4 @@
+// @ts-check
 // Игра «Собери из букв»: дано родное слово — собрать норвежское на QWERTY-клавиатуре (как Gboard).
 // Ступень рампы «продукция со страховкой». Направление — только родной→норв.
 // Механика цикла (стейт-машина, SRS, ретрай, авто-переход, финиш) — в useGameLoop; здесь
@@ -15,7 +16,7 @@ import { useGameLoop } from "./useGameLoop.js";
 const norm = (s) => (s || "").trim().toLowerCase();
 
 export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
-    const [typed, setTyped] = useState([]);   // введённые буквы по порядку (с клавиатуры)
+    const [typed, setTyped] = useState(/** @type {string[]} */([]));   // введённые буквы по порядку (с клавиатуры)
 
     const loop = useGameLoop({
         gmode: "build", words: wordsProp, onResult, onFinish, onExit, setGameState,
@@ -33,7 +34,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const targetChars = useMemo(() => [...norm(target)], [current]); // символы цели по порядку
     // сколько каждой буквы нужно (для активации клавиш и счётчика-бейджа)
     const needed = useMemo(() => {
-        const m = {}; for (const c of targetChars) m[c] = (m[c] || 0) + 1; return m;
+        const m = /** @type {Record<string, number>} */ ({}); for (const c of targetChars) m[c] = (m[c] || 0) + 1; return m;
     }, [current]); // eslint-disable-line
     const extras = useMemo(() => Object.keys(needed).filter((c) => !KBD_SET.has(c)), [current]); // eslint-disable-line
     const remainingOf = (c) => (needed[c] || 0) - typed.filter((x) => x === c).length;

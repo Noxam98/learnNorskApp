@@ -1,5 +1,8 @@
 // Иконка из общего SVG-спрайта (src/styles/icons.js инжектит спрайт в DOM).
 // Использование: <Icon n="type" />, <Icon n="check" sm />, <Icon n="user" lg />
+/**
+ * @param {{ n: string, sm?: boolean, lg?: boolean, className?: string, [k: string]: any }} props
+ */
 export const Icon = ({ n, sm, lg, className = "", ...rest }) => {
     const size = sm ? " ic-sm" : lg ? " ic-lg" : "";
     return (

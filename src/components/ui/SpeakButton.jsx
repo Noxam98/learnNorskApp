@@ -9,6 +9,11 @@ import { speakText, speakSequence } from "./tts.js";
 // (нужен hasTts — аудио из пула); lang задан (перевод) → генерится по требованию.
 // Режим очереди (segments: [{ text, lang, hasTts }]) — фрагменты играются подряд
 // (например норвежский → перевод). Норвежский фрагмент требует hasTts.
+/**
+ * @param {{ text?: string, hasTts?: boolean, lang?: string,
+ *   segments?: { text: string, lang?: string, hasTts?: boolean }[],
+ *   className?: string, lg?: boolean, title?: string, titlePreparing?: string, ariaLabel?: string }} props
+ */
 export const SpeakButton = ({ text, hasTts, lang, segments, className = "iconbtn", lg = false, title, titlePreparing, ariaLabel }) => {
     const [loading, setLoading] = useState(false);
 

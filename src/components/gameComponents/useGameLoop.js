@@ -16,6 +16,22 @@ import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { filterChosenWords, shuffle, useScrollLock } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
 
+/**
+ * @param {{
+ *   gmode: string,
+ *   words?: any[] | null,
+ *   onResult?: ((w: any, ok: boolean | null, gmode: string, response?: any) => void) | null,
+ *   onFinish?: ((s: { total: number, correct: number }) => void) | null,
+ *   onExit?: (() => void) | null,
+ *   setGameState?: ((s: string) => void) | null,
+ *   stepNo?: number, stepTotal?: number,
+ *   segs?: import('../../types.js').ProgressSeg[] | null,
+ *   autoAdvanceMs?: number,
+ *   onAdvance?: (() => void) | null,
+ *   onWrong?: (() => void) | null,
+ *   reveal?: boolean,
+ * }} opts
+ */
 export function useGameLoop({
     gmode, words: wordsProp,
     onResult, onFinish, onExit, setGameState,
@@ -37,10 +53,10 @@ export function useGameLoop({
     const wordsToGame = useMemo(() => wordsProp || aiPlay || filterChosenWords(dictList), []); // eslint-disable-line
     const total = wordsToGame.length;
 
-    const [status, setStatus] = useState("ASKING"); // ASKING | CORRECT | INCORRECT | FINISHED
+    const [status, setStatus] = useState(/** @type {import('../../types.js').GameStatus} */("ASKING")); // ASKING|CORRECT|INCORRECT|FINISHED
     const [order, setOrder] = useState(() => shuffle(wordsToGame)); // фикс. порядок, каждое слово 1 раз
     const [pos, setPos] = useState(0);
-    const [results, setResults] = useState([]); // {id, ok} — по ПЕРВОЙ попытке каждого слова
+    const [results, setResults] = useState(/** @type {{ id: any, ok: boolean | null }[]} */([])); // по ПЕРВОЙ попытке каждого слова
     const [picked, setPicked] = useState(null); // нейтральный режим (reveal=false): выбранный ответ
 
     useScrollLock();   // блокируем скролл фона на время игры (общий ref-counted замок)

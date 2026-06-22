@@ -16,8 +16,19 @@ export const KBD_ROWS = [
 ];
 export const KBD_SET = new Set(KBD_ROWS.flat());
 
+/**
+ * @param {{
+ *   lang?: string,
+ *   remainingOf?: ((c: string) => number) | null,
+ *   needed?: Record<string, number> | null,
+ *   extras?: string[],
+ *   canSubmit?: boolean, canBackspace?: boolean,
+ *   onType?: (c: string) => void, onBackspace?: () => void, onSubmit?: () => void,
+ *   onDunno?: (() => void) | null, dunnoLabel?: string, showDunno?: boolean, leftFiller?: boolean,
+ * }} props
+ */
 export function GameKeyboard({
-    lang, remainingOf, needed, extras = [],
+    lang, remainingOf, needed, extras = /** @type {string[]} */([]),
     canSubmit = false, canBackspace = false,
     onType, onBackspace, onSubmit, onDunno, dunnoLabel, showDunno = false, leftFiller = false,
 }) {

@@ -1,3 +1,4 @@
+// @ts-check
 import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWordsStore } from "../../store/wordStore";
@@ -65,6 +66,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (back) speakText(back, hyLang(currentLanguage, !isNo2Int)).catch(() => {});
     }, [flipped]); // eslint-disable-line
 
+    /** @type {import('react').CSSProperties} */
     const playStyle = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };
 
     const backToSelection = () => {

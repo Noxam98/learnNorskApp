@@ -1,3 +1,4 @@
+// @ts-check
 // Игра «Ввод»: игрок печатает перевод. Для НОРВЕЖСКОГО ответа (int2no) — наша экранная клавиатура
 // (свободный режим, без подсказок-букв), как в «Сборке». Для родного языка (no2int) — штатный
 // инпут (нашей раскладкой кириллицу/др. не набрать, да и смысла печатать родной нет).
@@ -20,7 +21,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     // печатаем норвежское → наша клавиатура; для родного и при выборе «системная клавиатура» — штатный инпут
     const useKbd = !isNo2Int && !nativeKeyboard;
     const [input, setInput] = useState("");
-    const inputRef = useRef(null);
+    const inputRef = useRef(/** @type {HTMLInputElement | null} */(null));
     // Очистить поле и (для штатного инпута) вернуть фокус — чтобы после ошибки сразу вводить заново.
     const resetInput = () => { setInput(""); setTimeout(() => inputRef.current?.focus(), 0); };
 

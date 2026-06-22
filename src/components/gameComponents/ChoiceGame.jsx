@@ -1,3 +1,4 @@
+// @ts-check
 // Игра «Выбор»: 4 варианта, каждое слово ровно один раз, переход по тапу после верного ответа.
 // Механика цикла (стейт-машина, SRS, ретрай, переход, финиш) — в useGameLoop; здесь деривация
 // слова, загрузка вариантов, озвучка и рендер.
@@ -14,8 +15,8 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 
 export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
     const isNo2Int = mode !== "int2no";
-    const [chosen, setChosen] = useState(null);
-    const [options, setOptions] = useState(null);
+    const [chosen, setChosen] = useState(/** @type {string | null} */(null));
+    const [options, setOptions] = useState(/** @type {string[] | null} */(null));
     const [subOf, setSubOf] = useState({}); // вариант → второй перевод (вторая строка кнопки)
 
     const loop = useGameLoop({

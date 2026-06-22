@@ -2,6 +2,9 @@ import { useId } from "react";
 
 // Логотип Lære Norsk: норвежский флаг в центре + спутники-флаги (UA·LT·PL).
 // clipPath-id уникальны на экземпляр (useId) — несколько лого на странице не конфликтуют.
+/**
+ * @param {{ size?: number, radius?: number, style?: import('react').CSSProperties }} props
+ */
 export const BrandMark = ({ size = 36, radius = 10, style }) => {
     const uid = useId().replace(/:/g, "");
     const NO = `no-${uid}`, UA = `ua-${uid}`, LT = `lt-${uid}`, PL = `pl-${uid}`;

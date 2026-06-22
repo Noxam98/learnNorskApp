@@ -1,3 +1,4 @@
+// @ts-check
 // Общие утилиты и презентационные части для игр (Ввод/Выбор/Изучение).
 // Игровая ЛОГИКА живёт в своих файлах (InputGame.jsx, ChoiceGame.jsx, StudyGame.jsx),
 // здесь только переиспользуемая «обвязка».
@@ -45,6 +46,7 @@ export const ENDONYM = { ru: "русский", ukr: "українську", en: 
 // Честный «Не знаю» в заданиях: подсветит верный ответ, но засчитает как НЕ угадано.
 export const DUNNO = { ru: "Не знаю", ukr: "Не знаю", en: "I don't know", pl: "Nie wiem", lt: "Nežinau" };
 
+/** @type {import('react').CSSProperties} */
 export const PLAY_STYLE = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };
 
 export const filterChosenWords = (dictList) =>
@@ -76,10 +78,10 @@ const SoundControl = ({ t }) => {
     const soundOn = useSystemStore((s) => s.soundOn);
     const soundVolume = useSystemStore((s) => s.soundVolume);
     const pct = soundOn ? Math.round((soundVolume ?? 1) * 100) : 0;
-    const ref = useRef(null);
+    const ref = useRef(/** @type {HTMLDivElement | null} */(null));
     useEffect(() => {
         if (!open) return;
-        const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+        const onDoc = (e) => { if (ref.current && e.target instanceof Node && !ref.current.contains(e.target)) setOpen(false); };
         document.addEventListener("pointerdown", onDoc, true);
         return () => document.removeEventListener("pointerdown", onDoc, true);
     }, [open]);
@@ -133,6 +135,9 @@ export const stageRank = (cell) => RAMP_RANK[cell || "card"] ?? 0;
 // Сегментный прогресс-бар (сегмент на слово). Сегмент — строка (легаси: "ok"/"err"/"now"/"done"/
 // "card") ИЛИ объект { state, rank }: пройденные слова красятся ЦВЕТОМ СТАДИИ (rank 0 серый …
 // 4 насыщенный зелёный), текущее — акцент «ты здесь», предстоящие — пустые (появляются по мере прохождения).
+/**
+ * @param {{ segs: import('../../types.js').ProgressSeg[], status?: import('../../types.js').GameStatus }} props
+ */
 export const ProgressSegments = ({ segs, status }) => {
     // Лайфцикл ТЕКУЩЕГО сегмента: пока вопрос не отвечен (ASKING) — мигает «будущим» зелёным
     // (цвет следующей стадии); сразу после ответа ~1с — нейтральный (ждём итог); затем верно →

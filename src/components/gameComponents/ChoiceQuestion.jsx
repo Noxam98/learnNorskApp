@@ -20,6 +20,14 @@ import { BrandLoader } from "../ui/Spinner.jsx";
 //   disabled    — заблокировать выбор
 //   loading     — bool: показать лоадер вместо вариантов (когда options ещё грузятся)
 //   children    — доп. узлы под вариантами внутри карточки (фидбэк, подсказка «дальше»)
+/**
+ * @param {{
+ *   prompt?: string, promptLang?: string, options?: string[] | null, optionLang?: string,
+ *   optionSub?: Record<string, string>, picked?: string | null, correct?: string | null,
+ *   reveal?: boolean, allowRetry?: boolean, onPick?: (opt: string) => void,
+ *   posText?: string, hint?: any, countText?: any, disabled?: boolean, loading?: boolean, children?: any,
+ * }} props
+ */
 export const ChoiceQuestion = ({
     prompt, promptLang, options, optionLang, optionSub = {},
     picked = null, correct = null, reveal = false, allowRetry = false,
