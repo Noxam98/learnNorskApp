@@ -125,10 +125,36 @@ export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = n
     );
 };
 
-// Сегментный прогресс-бар (сегмент на слово, цвет по результату).
+// Оттенок зелёного сегмента по ступени рампы слова: 1 (бледный — новое) … 5 (насыщенный —
+// ближе к «выучено»). cell — клетка рампы (card/choice_no2int/…/input_int2no либо cloze_1..3).
+const RAMP_RANK = { card: 0, study: 0, choice_no2int: 1, choice_int2no: 2, build_int2no: 3, input_int2no: 4, cloze_1: 1, cloze_2: 2, cloze_3: 3 };
+export const stageShade = (cell) => {
+    const c = cell || "card";
+    const rank = RAMP_RANK[c] ?? 0;
+    const total = c.startsWith("cloze") ? 3 : 4;        // у служебных слов рампа короче
+    return Math.max(1, Math.min(5, 1 + Math.round((4 * rank) / total)));
+};
+
+// Сегментный прогресс-бар (сегмент на слово). Сегмент может быть строкой (легаси: "ok"/"err"/
+// "now"/"done"/"card") ИЛИ объектом { state, shade } — тогда фон красится оттенком зелёного по
+// стадии (shade 1..5), а state добавляет: now → рамка-«ты здесь», future → приглушён, err → красная метка.
 export const ProgressSegments = ({ segs }) => (
     <div className="pbar pbar--seg" aria-hidden="true">
-        {segs.map((s, i) => <span key={i} className={`pseg${s ? " is-" + s : ""}`} />)}
+        {segs.map((s, i) => {
+            const isObj = s && typeof s === "object";
+            const state = isObj ? (s.state || "") : (s || "");
+            const shade = isObj ? s.shade : null;
+            let cls = "pseg";
+            if (shade) {
+                cls += " pseg--g" + shade;
+                if (state === "now") cls += " is-cur";
+                else if (state === "future") cls += " is-future";
+                else if (state === "err") cls += " is-miss";
+            } else if (state) {
+                cls += " is-" + state;
+            }
+            return <span key={i} className={cls} />;
+        })}
     </div>
 );
 
