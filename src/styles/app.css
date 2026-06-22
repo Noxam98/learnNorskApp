@@ -331,9 +331,9 @@
 /* Мобилка: клавиатура ПРИЖАТА К НИЗУ, во всю ширину; ⌫ слева, ✓ внизу-справа. */
 @media (max-width: 640px) {
     .play--kbd .kbd {
-        position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; margin: 0; width: 100%; max-width: none;
-        background: var(--game-bg-2); border-radius: 0; padding: 7px 5px calc(env(safe-area-inset-bottom, 0px) + 7px);
-        box-shadow: 0 -4px 18px rgba(0, 0, 0, .28); gap: 6px; align-items: stretch;
+        position: fixed; left: 6px; right: 6px; bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); z-index: 60; margin: 0; max-width: none;
+        background: var(--game-bg-2); border-radius: var(--r-lg); padding: 7px 5px;
+        box-shadow: 0 6px 22px rgba(0, 0, 0, .34); gap: 6px; align-items: stretch;
     }
     .kbd__key { max-width: none; height: 52px; font-size: var(--fs-20); border-radius: var(--r-sm); }
     .kbd__key--act, .kbd__key--go { max-width: none; }
