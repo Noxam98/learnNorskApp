@@ -15,7 +15,6 @@ export const NavigationBar = () => {
     const initial = (user?.username?.[0] || "").toUpperCase();
 
     const tabs = [
-        { to: "/words", icon: "bookmark", label: t.navBar.words, on: pathname === "/words" },
         { to: "/learning", icon: "graduation", label: t.navBar.study || "Учёба", on: pathname === "/learning" },
         { to: "/pool", icon: "library", label: t.navBar.base, on: pathname === "/pool" },
         { to: "/online", icon: "globe", label: t.navBar.online || "Онлайн", on: ["/online", "/games"].includes(pathname) },
@@ -26,14 +25,11 @@ export const NavigationBar = () => {
         <>
         <header className="nav">
             <div className="shell nav__row">
-                <Link className="brand" to="/words">
+                <Link className="brand" to="/learning">
                     <BrandMark />
                     <BrandName />
                 </Link>
                 <nav className="nav__links">
-                    <Link className={`nav__link${pathname === "/words" ? " is-active" : ""}`} to="/words">
-                        <Icon n="bookmark" sm /> <span>{t.navBar.words}</span>
-                    </Link>
                     <Link className={`nav__link${pathname === "/learning" ? " is-active" : ""}`} to="/learning">
                         <Icon n="graduation" sm /> <span>{t.navBar.study || "Учёба"}</span>
                     </Link>

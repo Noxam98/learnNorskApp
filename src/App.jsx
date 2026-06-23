@@ -11,7 +11,6 @@ import { resyncPush } from "./components/tools/push.js";
 import { BrandLoader } from "./components/ui/Spinner.jsx";
 import Toast from "./components/tools/error.jsx";
 import { UpdateBanner } from "./components/ui/UpdateBanner.jsx";
-import { WordListPage } from "./pages/WordListPage.jsx";
 import { PoolPage } from "./pages/PoolPage.jsx";
 import { OnlinePage } from "./pages/OnlinePage.jsx";
 import { GamesRedirect } from "./pages/GamesHub.jsx";
@@ -68,8 +67,8 @@ function App() {
 
     const routes = (
         <Routes location={location}>
-            <Route path="/" element={<Navigate to="/words" />} />
-            <Route path="/words" element={<WordListPage />} />
+            <Route path="/" element={<Navigate to="/learning" />} />
+            <Route path="/words" element={<Navigate to="/learning" replace />} />
             <Route path="/pool" element={<PoolPage />} />
             <Route path="/games" element={<GamesRedirect />} />
             <Route path="/online" element={<OnlinePage />} />
@@ -77,7 +76,7 @@ function App() {
             <Route path="/authorization" element={<LoginPage />} />
             <Route path="/registration" element={<RegisterPage />} />
             <Route path="/mypage" element={<MyPage />} />
-            <Route path="/stats" element={isAdmin ? <StatsPage /> : <Navigate to="/words" replace />} />
+            <Route path="/stats" element={isAdmin ? <StatsPage /> : <Navigate to="/learning" replace />} />
         </Routes>
     );
 
@@ -89,7 +88,7 @@ function App() {
     // Всё остальное требует авторизации.
     if (!isAuthed) return <Navigate to="/authorization" replace />;
 
-    const showFooter = path === "/words" || path === "/mypage" || path === "/pool";
+    const showFooter = path === "/mypage" || path === "/pool";
     // Первичная загрузка серверных данных — полноэкранный лоадер вместо пустых экранов.
     const showInitialLoader = isLoadingData && !dataLoaded;
     return (
