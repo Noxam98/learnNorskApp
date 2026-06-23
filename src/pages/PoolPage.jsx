@@ -52,6 +52,7 @@ export const PoolPage = () => {
     const [q, setQ] = useState("");
     const [appliedQ, setAppliedQ] = useState("");
     const [items, setItems] = useState([]);
+    const [pinned, setPinned] = useState([]); // свежедобавленные слова — закреплены вверху списка
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(60);
@@ -86,6 +87,7 @@ export const PoolPage = () => {
         if (hasQ && !prevHadQ.current) { setSort("relevance"); setOrder("desc"); setPage(1); }
         else if (!hasQ && prevHadQ.current && sort === "relevance") { setSort("alpha"); setOrder("asc"); setPage(1); }
         prevHadQ.current = hasQ;
+        setPinned([]); // смена запроса — сбрасываем закреплённые свежие слова
     }, [appliedQ]); // eslint-disable-line
 
     // Список тем с количеством (для фильтра) — один раз.
@@ -219,6 +221,19 @@ export const PoolPage = () => {
                 await addToLearning(res.pool_id);
                 setAdded((a) => ({ ...a, [res.pool_id]: true }));
                 useSystemStore.getState().showToast(`«${name}» ${ADDED_LRN[currentLanguage] || ADDED_LRN.en}`, "success");
+                // закрепить созданное слово вверху списка — вдруг ИИ выдал другую форму/перевод и
+                // оно не попадает под текущий запрос (иначе кажется, что добавление не сработало).
+                try {
+                    const m = await api.getPoolMeta(name);
+                    const card = {
+                        word: name, pool_id: res.pool_id ?? m?.pool_id,
+                        translate: m?.translate || res.translate || {},
+                        part_of_speech: m?.part_of_speech || "", level: m?.level || null,
+                        topics: m?.topics || [], forms: m?.forms || null, hasTts: !!m?.hasTts,
+                        hasEmbedding: true, hasDescription: true, inLearning: true,
+                    };
+                    setPinned((p) => [card, ...p.filter((x) => x.pool_id !== card.pool_id)]);
+                } catch { /* без меты просто не закрепим */ }
             }
             setReloadTick((k) => k + 1);             // подтянуть список — слово теперь в пуле
             setSmart((s) => s.filter((x) => x.word !== w && x.word !== name));
@@ -255,6 +270,11 @@ export const PoolPage = () => {
     const hasQuery = appliedQ.trim() !== "";
     const showShow = hasQuery && !!poolExact;
     const showGen = hasQuery && !poolExact && !loading;
+
+    // закреплённые свежие слова — вверху, без дублей с основным списком
+    const display = pinned.length
+        ? [...pinned.filter((p) => !items.some((w) => w.pool_id === p.pool_id)), ...items]
+        : items;
 
     return (
         <main className="shell words-main">
@@ -353,14 +373,14 @@ export const PoolPage = () => {
             )}
             {/* при перезагрузке списка (смена сортировки/фильтра/страницы) — затемняем старый
                 список и показываем лоадер поверх, чтобы было видно, что идёт загрузка */}
-            {loading && items.length > 0 && (
+            {loading && display.length > 0 && (
                 <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 2, pointerEvents: "none" }}>
                     <BrandLoader dark />
                 </div>
             )}
-            {items.length ? (
+            {display.length ? (
                 <div className="wordlist" style={loading ? { opacity: 0.4, pointerEvents: "none", transition: "opacity .15s ease" } : { transition: "opacity .15s ease" }}>
-                    {items.map((w) => {
+                    {display.map((w) => {
                         const { cls, key } = posMeta(w.part_of_speech);
                         const prefix = chipPrefix(key, w.forms, { articles: showArticles, verbAa: showVerbAa });
                         return (
