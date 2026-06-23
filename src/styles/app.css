@@ -3,6 +3,9 @@
 /* Подстраховка от горизонтального скролла */
 .app { overflow-x: clip; }
 
+/* Универсальный контрол сортировки (SortControl): иконка + список + кнопка направления */
+.sortctl { display: inline-flex; align-items: center; gap: 6px; }
+
 /* Навигация на мобильных: ужимаем, чтобы помещалась */
 @media (max-width: 640px) {
     .nav__row { gap: var(--sp-3); }

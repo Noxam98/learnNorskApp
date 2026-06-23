@@ -293,13 +293,14 @@ class ApiService {
     revoiceWord(word) { return this._send('POST', `/pool/${encodeURIComponent(word)}/revoice`); }
 
     // --- «Учёба» (интервальные повторения) ---
-    learningList({ status, level, topic, q, sort = "strength", limit = 500, offset = 0 } = {}) {
+    learningList({ status, level, topic, q, sort = "strength", order = "asc", limit = 500, offset = 0 } = {}) {
         const qs = new URLSearchParams();
         if (status) qs.set("status", status);
         if (level) qs.set("level", level);
         if (topic) qs.set("topic", topic);
         if (q) qs.set("q", q);
         if (sort) qs.set("sort", sort);
+        if (order) qs.set("order", order);
         qs.set("limit", limit); qs.set("offset", offset);
         return this._send('GET', `/learning?${qs.toString()}`);
     }

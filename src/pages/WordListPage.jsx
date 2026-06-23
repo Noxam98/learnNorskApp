@@ -6,6 +6,8 @@ import { useWordsStore } from "../store/wordStore";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Dropdown } from "../components/ui/Dropdown.jsx";
+import { SortControl } from "../components/ui/SortControl.jsx";
+import { sortOptions } from "../components/ui/sortOptions.js";
 import { Modal } from "../components/ui/Modal.jsx";
 import { WordInfoModal } from "../components/ui/WordInfoModal.jsx";
 import { Dots, BtnSpinner, CountdownRing } from "../components/ui/Spinner.jsx";
@@ -26,6 +28,7 @@ const SRC_LABEL = {
     lt:  { lib: "bibliotekoje", gen: "bus sugeneruota" },
 };
 const POS_ORDER = ["noun", "verb", "adj", "phrase", "other"];
+const LEVEL_RANK = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5, C2: 6 };
 const SORT_LABELS = {
     ru:  { title: "Сортировка", added: "По добавлению", alpha: "По алфавиту", pos: "По части речи", freq: "По частоте" },
     ukr: { title: "Сортування", added: "За додаванням", alpha: "За алфавітом", pos: "За частиною мови", freq: "За частотою" },
@@ -166,6 +169,10 @@ export const WordListPage = () => {
             const fa = a.freq == null ? -1 : a.freq, fb = b.freq == null ? -1 : b.freq;
             return (fa - fb) || byNo(a, b);   // asc: редкие → частые
         });
+        else if (sort === "level") arr.sort((a, b) => {
+            const la = LEVEL_RANK[a.level] || 99, lb = LEVEL_RANK[b.level] || 99;
+            return (la - lb) || byNo(a, b);   // asc: A1 → C2, без уровня — в конец
+        });
         else arr.sort((a, b) => (a.id || 0) - (b.id || 0)); // "added" asc: по порядку добавления
         if (order === "desc") arr.reverse();
         return arr;
@@ -276,19 +283,9 @@ export const WordListPage = () => {
 
                 <div className="grow" />
 
-                <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                    <Icon n="sort" sm />
-                    <Dropdown value={sort} onChange={pickSort} options={[
-                        { value: "added", label: sl.added },
-                        { value: "alpha", label: sl.alpha },
-                        { value: "pos", label: sl.pos },
-                        { value: "freq", label: sl.freq },
-                    ]} />
-                    <button className="iconbtn" title={order === "asc" ? "↑" : "↓"}
-                        onClick={() => setOrder((o) => (o === "asc" ? "desc" : "asc"))}>
-                        <Icon n={order === "asc" ? "arrow-up" : "arrow-down"} sm />
-                    </button>
-                </div>
+                <SortControl value={sort} order={order}
+                    options={sortOptions(interfaceTranslate[currentLanguage], ["alpha", "level", "freq", "added", "pos"])}
+                    onChange={(s, o) => { setSort(s); setOrder(o); }} />
 
                 {/* Мобильные — все действия под одной кнопкой (справа от сортировки) */}
                 <div className="only-mobile" style={{ position: "relative" }}>

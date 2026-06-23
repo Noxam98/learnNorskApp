@@ -7,6 +7,8 @@ import { useAuthStore } from "../store/AuthStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Dropdown } from "../components/ui/Dropdown.jsx";
+import { SortControl } from "../components/ui/SortControl.jsx";
+import { sortOptions } from "../components/ui/sortOptions.js";
 import { Modal } from "../components/ui/Modal.jsx";
 import { WordInfoModal } from "../components/ui/WordInfoModal.jsx";
 import { BtnSpinner, SkeletonWordlist, BrandLoader } from "../components/ui/Spinner.jsx";
@@ -258,19 +260,9 @@ export const PoolPage = () => {
 
                     <div className="grow" />
 
-                    <div className="poolbar__sel">
-                        <Icon n="sort" sm />
-                        <Dropdown value={sort} onChange={onSort} options={[
-                            { value: "alpha", label: t.poolSort?.alpha || "А-Я" },
-                            { value: "level", label: t.poolSort?.level || "Уровень" },
-                            { value: "added", label: t.poolSort?.added || "Новые" },
-                            { value: "freq", label: t.poolSort?.freq || "Частота" },
-                        ]} />
-                    </div>
-                    <button className="iconbtn" title={order === "asc" ? "↑" : "↓"}
-                        onClick={() => { setPage(1); setOrder((o) => (o === "asc" ? "desc" : "asc")); }}>
-                        <Icon n={order === "asc" ? "arrow-up" : "arrow-down"} sm />
-                    </button>
+                    <SortControl value={sort} order={order}
+                        options={sortOptions(t, ["alpha", "level", "freq", "added"])}
+                        onChange={(s, o) => { setPage(1); setSort(s); setOrder(o); }} />
 
                     <div className="poolbar__sel">
                         <Dropdown value={pageSize} onChange={(v) => onPageSize(Number(v))}

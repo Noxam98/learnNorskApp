@@ -6,6 +6,8 @@ import { Icon } from "../../components/ui/Icon.jsx";
 import { StatusBadge, StrengthBar } from "../../components/learning/StatusBits.jsx";
 import { ActionMenu } from "../../components/ui/Dropdown.jsx";
 import { Dropdown } from "../../components/ui/Dropdown.jsx";
+import { SortControl } from "../../components/ui/SortControl.jsx";
+import { sortOptions } from "../../components/ui/sortOptions.js";
 import { SearchBox } from "../../components/ui/SearchBox.jsx";
 import { posMeta, posLabel } from "../../components/ui/pos.js";
 import { speakText } from "../../components/ui/tts.js";
@@ -112,6 +114,7 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
     const [topic, setTopic] = useState("");
     const [level, setLevel] = useState("");
     const [sort, setSort] = useState("strength");
+    const [order, setOrder] = useState("asc");
     const [q, setQ] = useState("");
     const [dq, setDq] = useState("");        // debounced query
     const [phase, setPhase] = useState("idle");
@@ -146,7 +149,7 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
             level: level || undefined,
             topic: topic || undefined,
             q: dq || undefined,
-            sort,
+            sort, order,
         }).then((r) => {
             if (!on) return;
             setWords(Array.isArray(r?.words) ? r.words : []);
@@ -154,7 +157,7 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
         }).catch(() => { if (on) setWords([]); })
             .finally(() => { if (on) { setLoading(false); setPhase("idle"); } });
         return () => { on = false; };
-    }, [status, level, topic, dq, sort]);
+    }, [status, level, topic, dq, sort, order]);
 
     useEffect(() => load(), [load, reloadKey]);
 
@@ -172,11 +175,6 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
     const levelOptions = useMemo(() => ([
         { value: "", label: tt.levelAll },
         ...LEVELS.map((l) => ({ value: l, label: l })),
-    ]), [tt]);
-    const sortOptions = useMemo(() => ([
-        { value: "strength", label: tt.sortStrength },
-        { value: "due", label: tt.sortDue },
-        { value: "alpha", label: tt.sortAlpha },
     ]), [tt]);
 
     // --- Мутации ---
@@ -223,7 +221,9 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
                         phase={phase} debounceMs={300} />
                     <Dropdown value={topic} options={topicOptions} onChange={setTopic} placeholder={tt.topicAll} />
                     <Dropdown value={level} options={levelOptions} onChange={setLevel} placeholder={tt.levelAll} />
-                    <Dropdown value={sort} options={sortOptions} onChange={setSort} placeholder={tt.sortStrength} />
+                    <SortControl value={sort} order={order}
+                        options={sortOptions(interfaceTranslate[lang], ["strength", "due", "alpha", "level", "freq", "pos"])}
+                        onChange={(s, o) => { setSort(s); setOrder(o); }} />
                 </div>
             </div>
 
