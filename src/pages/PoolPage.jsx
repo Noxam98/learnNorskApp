@@ -77,6 +77,16 @@ export const PoolPage = () => {
     const [facets, setFacets] = useState({ topics: [], levels: [] });
     const [facetCounts, setFacetCounts] = useState(null); // динамические счётчики под текущий фильтр: { topics:{key:n} }
     const firstRun = useRef(true);
+    const prevHadQ = useRef(false);
+
+    // При начале поиска — сортировка по релевантности (по умолчанию); при очистке — назад в А-Я.
+    // Между этим (запрос есть, юзер сам сменил сортировку) — уважаем его выбор.
+    useEffect(() => {
+        const hasQ = appliedQ.trim() !== "";
+        if (hasQ && !prevHadQ.current) { setSort("relevance"); setOrder("desc"); setPage(1); }
+        else if (!hasQ && prevHadQ.current && sort === "relevance") { setSort("alpha"); setOrder("asc"); setPage(1); }
+        prevHadQ.current = hasQ;
+    }, [appliedQ]); // eslint-disable-line
 
     // Список тем с количеством (для фильтра) — один раз.
     useEffect(() => {
@@ -309,7 +319,7 @@ export const PoolPage = () => {
                 <div className="poolbar__row">
                     {/* сортировка прижата влево */}
                     <SortControl value={sort} order={order}
-                        options={sortOptions(t, ["alpha", "level", "freq", "added"])}
+                        options={sortOptions(t, [...(appliedQ.trim() ? ["relevance"] : []), "alpha", "level", "freq", "added"])}
                         onChange={(s, o) => { setPage(1); setSort(s); setOrder(o); }} />
 
                     <div className="poolbar__sel">
