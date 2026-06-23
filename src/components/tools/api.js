@@ -254,13 +254,14 @@ class ApiService {
     }
     searchPool(q, lang) { return this._send('GET', `/pool/search?q=${encodeURIComponent(q)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`); }
     generateWord(word) { return this._send('POST', '/pool/generate', { word }); }
-    getPool({ q = "", limit = 60, offset = 0, topics = [], level = "", sort = "alpha", order = "asc", missing = "", pos = "" } = {}) {
+    getPool({ q = "", limit = 60, offset = 0, topics = [], level = "", sort = "alpha", order = "asc", missing = "", pos = "", lang = "" } = {}) {
         const qs = new URLSearchParams({ limit, offset, sort, order });
         if (q) qs.set("q", q);
         if (topics && topics.length) qs.set("topics", topics.join(","));
         if (level) qs.set("level", level);
         if (missing) qs.set("missing", missing);
         if (pos) qs.set("pos", pos);
+        if (lang) qs.set("lang", lang);   // поиск по норвежскому + языку интерфейса
         return this._send('GET', `/pool?${qs.toString()}`);
     }
     setUserTheme(theme) { return this._send('POST', '/me/theme', { theme }); }

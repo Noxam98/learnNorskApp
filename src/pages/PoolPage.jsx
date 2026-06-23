@@ -96,7 +96,7 @@ export const PoolPage = () => {
         let cancelled = false;
         setLoading(true);
         setSearchPhase((p) => (p === "counting" ? "searching" : p));
-        api.getPool({ q: appliedQ, limit: pageSize, offset: (page - 1) * pageSize, topics, level, sort, order, missing, pos: posApiKey(pos) })
+        api.getPool({ q: appliedQ, limit: pageSize, offset: (page - 1) * pageSize, topics, level, sort, order, missing, pos: posApiKey(pos), lang: currentLanguage })
             .then((res) => {
                 if (cancelled) return;
                 setItems(res.words || []);
@@ -117,7 +117,7 @@ export const PoolPage = () => {
             .catch(() => { if (!cancelled) setItems([]); })
             .finally(() => { if (!cancelled) { setLoading(false); setSearchPhase("idle"); } });
         return () => { cancelled = true; };
-    }, [appliedQ, page, pageSize, topics, level, sort, order, missing, pos, reloadTick]);
+    }, [appliedQ, page, pageSize, topics, level, sort, order, missing, pos, reloadTick, currentLanguage]);
 
     // Умный добор «нет в базе»: слова из лексикона/похожие (inPool:false) под запрос — для AI-добавления.
     useEffect(() => {
