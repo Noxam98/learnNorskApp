@@ -24,7 +24,7 @@ export function FilterChipsPopup({ label, icon = "filter", count = 0, sections =
 
     return (
         <div className="fpop" ref={ref}>
-            <button type="button" className={`fchip fchip--toggle${count > 0 ? " is-on" : ""}`}
+            <button type="button" className={`fchip fchip--toggle${count > 0 ? " is-on" : ""}${open ? " is-open" : ""}`}
                 aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
                 <Icon n={icon} sm /> {label}
                 {count > 0 && <span className="fchip__n">{count}</span>}
