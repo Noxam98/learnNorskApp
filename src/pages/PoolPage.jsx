@@ -240,11 +240,11 @@ export const PoolPage = () => {
     const hasFilters = topics.length > 0 || !!level || !!missing || !!pos;
     // Кнопка-дополнение завязана на «есть ли слово в базе вообще», а не на «нет точного совпадения»:
     //  • есть точное слово/перевод → «Показать» (скролл+подсветка к нему);
-    //  • в базе вообще ничего по запросу (total=0) → «Создать» (генерация);
-    //  • есть похожие, но нет точного → кнопки нет (список совпадений и так перед глазами).
+    //  • нет точного совпадения → «Создать» (генерация именно введённого слова), даже если есть
+    //    похожие в списке (иначе короткое слово-подстрока вроде «rik» нельзя было бы создать).
     const hasQuery = appliedQ.trim() !== "";
     const showShow = hasQuery && !!poolExact;
-    const showGen = hasQuery && !poolExact && !loading && total === 0;
+    const showGen = hasQuery && !poolExact && !loading;
 
     return (
         <main className="shell words-main">
