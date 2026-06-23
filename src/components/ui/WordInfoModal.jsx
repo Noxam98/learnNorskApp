@@ -9,8 +9,12 @@ import { ActionMenu } from "./Dropdown.jsx";
 import { BtnSpinner, Dots } from "./Spinner.jsx";
 import { useWordsStore } from "../../store/wordStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
+import { useSystemStore } from "../../store/systemStore.jsx";
 import { useHistoryClose } from "../tools/useHistoryClose.js";
 import api from "../tools/api.js";
+
+const ADDED_LRN = { ru: "Добавлено в Учёбу", ukr: "Додано до навчання", en: "Added to Learning", pl: "Dodano do nauki", lt: "Pridėta į mokymąsi" };
+const REMOVED_LRN = { ru: "Убрано из Учёбы", ukr: "Прибрано з навчання", en: "Removed from Learning", pl: "Usunięto z nauki", lt: "Pašalinta iš mokymosi" };
 
 // Описание слова + похожие слова (кликабельные — навигация по пулу) +
 // кнопка добавить/удалить просматриваемое слово в текущий словарь.
@@ -198,6 +202,8 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
         try {
             if (next) await addToLearning(view.no);
             else await removeFromLearning(view.no);
+            const msg = next ? (ADDED_LRN[lang] || ADDED_LRN.en) : (REMOVED_LRN[lang] || REMOVED_LRN.en);
+            useSystemStore.getState().showToast(msg);
         } catch { setView((v) => (v ? { ...v, inLearning: !next } : v)); }
         setDictBusy(false);
     };

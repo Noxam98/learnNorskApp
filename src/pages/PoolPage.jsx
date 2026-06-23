@@ -24,6 +24,8 @@ const CATEGORIES_LBL = { ru: "Категории", ukr: "Категорії", en
 const POS_TOGGLE = { ru: "Часть речи", ukr: "Частина мови", en: "Part of speech", pl: "Część mowy", lt: "Kalbos dalis" };
 const CREATE_LBL = { ru: "Создать", ukr: "Створити", en: "Create", pl: "Utwórz", lt: "Sukurti" };
 const SHOW_LBL = { ru: "Показать", ukr: "Показати", en: "Show", pl: "Pokaż", lt: "Rodyti" };
+const ADDED_LRN = { ru: "Добавлено в Учёбу", ukr: "Додано до навчання", en: "Added to Learning", pl: "Dodano do nauki", lt: "Pridėta į mokymąsi" };
+const REMOVED_LRN = { ru: "Убрано из Учёбы", ukr: "Прибрано з навчання", en: "Removed from Learning", pl: "Usunięto z nauki", lt: "Pašalinta iš mokymosi" };
 const DATA_LBL = { ru: "Данные", ukr: "Дані", en: "Data", pl: "Dane", lt: "Duomenys" };
 
 const topicLabel = (t, key) => t.topics?.[key] || key;
@@ -154,7 +156,7 @@ export const PoolPage = () => {
     const onAdd = async (word) => {
         setAddingId(word);
         setAdded((a) => ({ ...a, [word]: true }));
-        try { await addToLearning(word); }
+        try { await addToLearning(word); useSystemStore.getState().showToast(ADDED_LRN[currentLanguage] || ADDED_LRN.en); }
         catch { setAdded((a) => { const n = { ...a }; delete n[word]; return n; }); }
         setAddingId(null);
     };
@@ -192,7 +194,7 @@ export const PoolPage = () => {
     const onRemove = async (word) => {
         setAdded((a) => { const n = { ...a }; delete n[word]; return n; });
         setAddingId(word);
-        try { await removeFromLearning(word); }
+        try { await removeFromLearning(word); useSystemStore.getState().showToast(REMOVED_LRN[currentLanguage] || REMOVED_LRN.en); }
         catch { setAdded((a) => ({ ...a, [word]: true })); }
         setAddingId(null);
     };
