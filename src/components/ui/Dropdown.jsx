@@ -6,8 +6,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "./Icon.jsx";
 import { BtnSpinner } from "./Spinner.jsx";
 
-// Общая логика позиционирования/закрытия поповера.
-function usePopup(ref, open, setOpen) {
+// Общая логика позиционирования/закрытия поповера (переиспользуется FilterChipsPopup).
+export function usePopup(ref, open, setOpen) {
     const [pop, setPop] = useState(null);
     useEffect(() => {
         if (!open) { setPop(null); return; }

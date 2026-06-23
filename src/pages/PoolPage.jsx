@@ -64,8 +64,6 @@ export const PoolPage = () => {
     const [missing, setMissing] = useState(""); // админ: "" | embedding | description | tts | meta | forms
     const [pos, setPos] = useState("");          // фильтр по части речи (ключ pos.js: noun/verb/adj/...)
     const [posRefOpen, setPosRefOpen] = useState(false); // справочник частей речи
-    const [filtersOpen, setFiltersOpen] = useState(false);        // попап «Категории + Часть речи»
-    const [adminFiltersOpen, setAdminFiltersOpen] = useState(false); // попап «Данные» (админ: без эмбеддинга/...)
     const [loading, setLoading] = useState(true);
     const [searchPhase, setSearchPhase] = useState("idle"); // idle | counting | searching
     const [addingId, setAddingId] = useState(null);
@@ -246,9 +244,7 @@ export const PoolPage = () => {
         <main className="shell words-main">
             <div className="page-head" style={{ marginBottom: "var(--sp-4)" }}>
                 <div>
-                    <span className="eyebrow"><Icon n="library" sm /> {t.navBar.base}</span>
-                    <h1 className="h1">{t.poolTitle}</h1>
-                    <p className="muted" style={{ margin: "6px 0 0" }}>{t.poolDesc}</p>
+                    <p className="muted" style={{ margin: 0 }}>{t.poolDesc}</p>
                 </div>
             </div>
 
@@ -268,17 +264,30 @@ export const PoolPage = () => {
 
             {/* Фильтр-бар: темы (сворачиваемые), уровень, сортировка, размер страницы */}
             <div className="poolbar">
-                {/* Фильтры — в попапах с чипами (переиспользуемый FilterChipsPopup) */}
+                {/* Фильтры — анкер-поповеры с чипами (переиспользуемый FilterChipsPopup) */}
                 <div className="poolbar__row" style={{ flexWrap: "wrap", gap: "var(--sp-2)" }}>
-                    <button className={`fchip fchip--toggle${(topics.length || pos) ? " is-on" : ""}`} onClick={() => setFiltersOpen(true)}>
-                        <Icon n="filter" sm /> {FILTERS_LBL[currentLanguage] || FILTERS_LBL.en}
-                        {(topics.length + (pos ? 1 : 0)) > 0 && <span className="fchip__n">{topics.length + (pos ? 1 : 0)}</span>}
-                    </button>
+                    <FilterChipsPopup icon="filter" label={FILTERS_LBL[currentLanguage] || FILTERS_LBL.en}
+                        count={topics.length + (pos ? 1 : 0)}
+                        sections={[
+                            {
+                                key: "cat", title: CATEGORIES_LBL[currentLanguage] || CATEGORIES_LBL.en, multi: true, selected: topics,
+                                onPick: toggleTopic,
+                                options: facets.topics.map(({ topic, count }) => {
+                                    const c = facetCounts ? (facetCounts.topics[topic] || 0) : count;
+                                    return { value: topic, label: topicLabel(t, topic), count: c, disabled: !topics.includes(topic) && c === 0 };
+                                }),
+                            },
+                            {
+                                key: "pos", title: POS_TOGGLE[currentLanguage] || POS_TOGGLE.en, multi: false, selected: pos, onPick: pickPos,
+                                options: POS_ORDER.map((key) => ({ value: key, label: posLabel(posApiKey(key), t) })),
+                            },
+                        ]} />
                     {isAdmin && (
-                        <button className={`fchip fchip--toggle${missing ? " is-on" : ""}`} onClick={() => setAdminFiltersOpen(true)}>
-                            <Icon n="database" sm /> {DATA_LBL[currentLanguage] || DATA_LBL.en}
-                            {missing && <span className="fchip__n">1</span>}
-                        </button>
+                        <FilterChipsPopup icon="database" label={DATA_LBL[currentLanguage] || DATA_LBL.en} count={missing ? 1 : 0}
+                            sections={[{
+                                key: "missing", title: "Без чего", multi: false, selected: missing, onPick: pickMissing,
+                                options: [["embedding", "эмбеддинга"], ["description", "описания"], ["tts", "озвучки"], ["meta", "уровня/тем"], ["forms", "форм"]].map(([value, label]) => ({ value, label })),
+                            }]} />
                     )}
                     <div className="seg">
                         {LEVELS.map((lv) => (
@@ -459,32 +468,6 @@ export const PoolPage = () => {
                     );
                 })}
             </Modal>
-
-            {/* Попап «Фильтры»: категории (мульти) + часть речи (одиночный) — переиспользуемый компонент */}
-            <FilterChipsPopup open={filtersOpen} onClose={() => setFiltersOpen(false)} title={FILTERS_LBL[currentLanguage] || FILTERS_LBL.en}
-                sections={[
-                    {
-                        key: "cat", title: CATEGORIES_LBL[currentLanguage] || CATEGORIES_LBL.en, multi: true, selected: topics,
-                        onPick: toggleTopic,
-                        options: facets.topics.map(({ topic, count }) => {
-                            const c = facetCounts ? (facetCounts.topics[topic] || 0) : count;
-                            return { value: topic, label: topicLabel(t, topic), count: c, disabled: !topics.includes(topic) && c === 0 };
-                        }),
-                    },
-                    {
-                        key: "pos", title: POS_TOGGLE[currentLanguage] || POS_TOGGLE.en, multi: false, selected: pos, onPick: pickPos,
-                        options: POS_ORDER.map((key) => ({ value: key, label: posLabel(posApiKey(key), t) })),
-                    },
-                ]} />
-
-            {/* Попап «Данные» (только админ): без эмбеддинга/описания/озвучки/уровня-тем/форм */}
-            {isAdmin && (
-                <FilterChipsPopup open={adminFiltersOpen} onClose={() => setAdminFiltersOpen(false)} title={DATA_LBL[currentLanguage] || DATA_LBL.en}
-                    sections={[{
-                        key: "missing", title: "Без чего", multi: false, selected: missing, onPick: pickMissing,
-                        options: [["embedding", "эмбеддинга"], ["description", "описания"], ["tts", "озвучки"], ["meta", "уровня/тем"], ["forms", "форм"]].map(([value, label]) => ({ value, label })),
-                    }]} />
-            )}
 
             <WordInfoModal open={!!descWord} word={descWord}
                 lang={currentLanguage} t={t} onClose={() => setDescWord(null)} />
