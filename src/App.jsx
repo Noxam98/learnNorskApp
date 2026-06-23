@@ -13,9 +13,8 @@ import Toast from "./components/tools/error.jsx";
 import { UpdateBanner } from "./components/ui/UpdateBanner.jsx";
 import { WordListPage } from "./pages/WordListPage.jsx";
 import { PoolPage } from "./pages/PoolPage.jsx";
-import { GamePage } from "./pages/GamePage.jsx";
 import { OnlinePage } from "./pages/OnlinePage.jsx";
-import { GamesLayout, GamesRedirect } from "./pages/GamesHub.jsx";
+import { GamesRedirect } from "./pages/GamesHub.jsx";
 import LearningPage from "./pages/learning/LearningPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
@@ -72,8 +71,7 @@ function App() {
             <Route path="/words" element={<WordListPage />} />
             <Route path="/pool" element={<PoolPage />} />
             <Route path="/games" element={<GamesRedirect />} />
-            <Route path="/game" element={<GamesLayout><GamePage /></GamesLayout>} />
-            <Route path="/online" element={<GamesLayout><OnlinePage /></GamesLayout>} />
+            <Route path="/online" element={<OnlinePage />} />
             <Route path="/learning" element={<LearningPage />} />
             <Route path="/authorization" element={<LoginPage />} />
             <Route path="/registration" element={<RegisterPage />} />

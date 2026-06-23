@@ -26,6 +26,7 @@ const T = {
         setReview: "На повторении", setReviewD: "Интервал подошёл — закрепить, пока не забылось",
         setWeak: "Слабые слова", setWeakD: "Много ошибок — в приоритете",
         setNew: "Новые слова", setNewD: "Доступно под твой уровень — начни учить",
+        ownWords: "Тренировать свои слова",
         gateOpenT: "Экзамен пачки готов",
         gateOpenD: "Ты накопил пачку выученных слов. Сдай экзамен, чтобы открыть новые слова.",
         gateOpenBtn: "К экзамену",
@@ -66,6 +67,7 @@ const T = {
         setReview: "Due for review", setReviewD: "The interval is up — reinforce before you forget",
         setWeak: "Weak words", setWeakD: "Many mistakes — priority",
         setNew: "New words", setNewD: "Available for your level — start learning",
+        ownWords: "Practice your own words",
         gateOpenT: "Pack exam is ready",
         gateOpenD: "You've gathered a pack of learned words. Pass the exam to unlock new words.",
         gateOpenBtn: "To the exam",
@@ -106,6 +108,7 @@ const T = {
         setReview: "На повторенні", setReviewD: "Інтервал підійшов — закріпи, поки не забулось",
         setWeak: "Слабкі слова", setWeakD: "Багато помилок — у пріоритеті",
         setNew: "Нові слова", setNewD: "Доступно під твій рівень — починай вчити",
+        ownWords: "Тренувати свої слова",
         gateOpenT: "Екзамен пачки готовий",
         gateOpenD: "Ти накопичив пачку вивчених слів. Склади екзамен, щоб відкрити нові слова.",
         gateOpenBtn: "До екзамену",
@@ -146,6 +149,7 @@ const T = {
         setReview: "Do powtórki", setReviewD: "Interwał minął — utrwal, zanim zapomnisz",
         setWeak: "Słabe słowa", setWeakD: "Dużo błędów — priorytet",
         setNew: "Nowe słowa", setNewD: "Dostępne dla twojego poziomu — zacznij się uczyć",
+        ownWords: "Ćwicz własne słowa",
         gateOpenT: "Egzamin paczki gotowy",
         gateOpenD: "Nazbierałeś paczkę nauczonych słów. Zdaj egzamin, aby odblokować nowe słowa.",
         gateOpenBtn: "Do egzaminu",
@@ -186,6 +190,7 @@ const T = {
         setReview: "Kartojimui", setReviewD: "Intervalas atėjo — įtvirtink, kol nepamiršai",
         setWeak: "Silpni žodžiai", setWeakD: "Daug klaidų — prioritetas",
         setNew: "Nauji žodžiai", setNewD: "Prieinama tavo lygiui — pradėk mokytis",
+        ownWords: "Treniruok savo žodžius",
         gateOpenT: "Pakuotės egzaminas paruoštas",
         gateOpenD: "Sukaupei išmoktų žodžių pakuotę. Išlaikyk egzaminą, kad atrakintum naujus žodžius.",
         gateOpenBtn: "Į egzaminą",
@@ -535,6 +540,11 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                             n={by.new || 0} loading={busy === "s-new"} locked={gateOpen}
                                             onClick={() => runSet("new", "s-new")} />
                                     </div>
+                                    {/* свободная тренировка — через выбор слов во вкладке «Слова» */}
+                                    <button type="button" onClick={() => go("words")}
+                                        style={{ marginTop: "var(--sp-3)", background: "none", border: "none", cursor: "pointer", color: "var(--fjord-600)", fontWeight: 600, fontSize: "var(--fs-13)", padding: "2px 0" }}>
+                                        {t.ownWords} →
+                                    </button>
                                 </div>
                             </div>
                         </>

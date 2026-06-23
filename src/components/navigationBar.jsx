@@ -18,7 +18,7 @@ export const NavigationBar = () => {
         { to: "/words", icon: "bookmark", label: t.navBar.words, on: pathname === "/words" },
         { to: "/learning", icon: "graduation", label: t.navBar.study || "Учёба", on: pathname === "/learning" },
         { to: "/pool", icon: "library", label: t.navBar.base, on: pathname === "/pool" },
-        { to: "/online", icon: "globe", label: t.navBar.online || "Онлайн", on: ["/online", "/games", "/game"].includes(pathname) },
+        { to: "/online", icon: "globe", label: t.navBar.online || "Онлайн", on: ["/online", "/games"].includes(pathname) },
         { to: "/mypage", icon: "user", label: t.navBar.profile || "Профиль", on: pathname === "/mypage" },
     ];
 
@@ -37,8 +37,8 @@ export const NavigationBar = () => {
                     <Link className={`nav__link${pathname === "/learning" ? " is-active" : ""}`} to="/learning">
                         <Icon n="graduation" sm /> <span>{t.navBar.study || "Учёба"}</span>
                     </Link>
-                    <Link className={`nav__link${["/games", "/game", "/online"].includes(pathname) ? " is-active" : ""}`} to="/games">
-                        <Icon n="gamepad" sm /> <span>{t.navBar.games || "Игры"}</span>
+                    <Link className={`nav__link${["/games", "/online"].includes(pathname) ? " is-active" : ""}`} to="/online">
+                        <Icon n="globe" sm /> <span>{t.navBar.online || "Онлайн"}</span>
                     </Link>
                     <Link className={`nav__link${pathname === "/pool" ? " is-active" : ""}`} to="/pool">
                         <Icon n="library" sm /> <span>{t.navBar.base}</span>
