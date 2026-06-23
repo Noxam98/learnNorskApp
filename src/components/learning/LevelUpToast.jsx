@@ -4,11 +4,11 @@ import confetti from "canvas-confetti";
 import { Icon } from "../ui/Icon.jsx";
 
 const T = {
-    ru: { eyebrow: "Новый уровень", title: "Поздравляю!", desc: "Ура! Теперь вы изучаете уровень {lv} 🎉 Дальше — слова посложнее.", cta: "Продолжить" },
-    en: { eyebrow: "New level", title: "Congratulations!", desc: "Hooray! You're now studying level {lv} 🎉 Next — harder words ahead.", cta: "Continue" },
-    ukr: { eyebrow: "Новий рівень", title: "Вітаємо!", desc: "Ура! Тепер ви вивчаєте рівень {lv} 🎉 Далі — складніші слова.", cta: "Продовжити" },
-    pl: { eyebrow: "Nowy poziom", title: "Gratulacje!", desc: "Hura! Uczysz się teraz poziomu {lv} 🎉 Dalej — trudniejsze słowa.", cta: "Dalej" },
-    lt: { eyebrow: "Naujas lygis", title: "Sveikiname!", desc: "Valio! Dabar mokaisi {lv} lygį 🎉 Toliau — sunkesni žodžiai.", cta: "Tęsti" },
+    ru: { eyebrow: "Новый уровень", title: "Поздравляю!", desc: "Теперь вы изучаете уровень {lv} 🎉 Дальше — слова посложнее.", cta: "Продолжить" },
+    en: { eyebrow: "New level", title: "Congratulations!", desc: "You're now studying level {lv} 🎉 Next — harder words ahead.", cta: "Continue" },
+    ukr: { eyebrow: "Новий рівень", title: "Вітаємо!", desc: "Тепер ви вивчаєте рівень {lv} 🎉 Далі — складніші слова.", cta: "Продовжити" },
+    pl: { eyebrow: "Nowy poziom", title: "Gratulacje!", desc: "Uczysz się teraz poziomu {lv} 🎉 Dalej — trudniejsze słowa.", cta: "Dalej" },
+    lt: { eyebrow: "Naujas lygis", title: "Sveikiname!", desc: "Dabar mokaisi {lv} lygį 🎉 Toliau — sunkesni žodžiai.", cta: "Tęsti" },
 };
 
 export default function LevelUpToast({ lang = "ru", to = "A2", onClose }) {
