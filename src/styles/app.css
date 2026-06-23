@@ -23,6 +23,9 @@
 .poolsearch__gen:hover { filter: brightness(1.06); }
 .poolsearch__gen:disabled { cursor: default; }
 @media (max-width: 560px) { .poolsearch__gen.is-shown { max-width: 9rem; padding: 0 var(--sp-4); } }
+.poolsearch__gen--show { background: var(--fjord-600); }   /* «Показать» — нейтральный акцент (не оранжевый «Создать») */
+/* подсветка карточки после «Показать» (outline, чтобы не сбить тень карточки) */
+.wcard.is-highlight { outline: 2px solid var(--fjord-600); outline-offset: 2px; }
 
 /* Навигация на мобильных: ужимаем, чтобы помещалась */
 @media (max-width: 640px) {

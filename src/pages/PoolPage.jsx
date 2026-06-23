@@ -24,6 +24,7 @@ const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const CATEGORIES_LBL = { ru: "Категории", ukr: "Категорії", en: "Categories", pl: "Kategorie", lt: "Kategorijos" };
 const POS_TOGGLE = { ru: "Часть речи", ukr: "Частина мови", en: "Part of speech", pl: "Część mowy", lt: "Kalbos dalis" };
 const CREATE_LBL = { ru: "Создать", ukr: "Створити", en: "Create", pl: "Utwórz", lt: "Sukurti" };
+const SHOW_LBL = { ru: "Показать", ukr: "Показати", en: "Show", pl: "Pokaż", lt: "Rodyti" };
 const FILTERS_LBL = { ru: "Фильтры", ukr: "Фільтри", en: "Filters", pl: "Filtry", lt: "Filtrai" };
 const DATA_LBL = { ru: "Данные", ukr: "Дані", en: "Data", pl: "Dane", lt: "Duomenys" };
 
@@ -70,6 +71,8 @@ export const PoolPage = () => {
     const [addingId, setAddingId] = useState(null);
     const [added, setAdded] = useState({});
     const [smart, setSmart] = useState([]);          // слова не из пула (лексикон/fuzzy) под текущий запрос
+    const [poolExact, setPoolExact] = useState(null); // точное совпадение запроса со словом из пула (есть в базе)
+    const [highlightWord, setHighlightWord] = useState(""); // слово, подсвечиваемое после «Показать»
     const [smartBusy, setSmartBusy] = useState("");  // слово, которое сейчас генерим+добавляем
     const [reloadTick, setReloadTick] = useState(0); // форс-обновление списка после генерации
     const [descWord, setDescWord] = useState(null);   // слово, чьё описание открыто
@@ -119,11 +122,21 @@ export const PoolPage = () => {
     // Умный добор «нет в базе»: слова из лексикона/похожие (inPool:false) под запрос — для AI-добавления.
     useEffect(() => {
         const term = appliedQ.trim();
-        if (!term) { setSmart([]); return; }
+        if (!term) { setSmart([]); setPoolExact(null); return; }
         let cancelled = false;
         api.searchPool(term, currentLanguage)
-            .then((r) => { if (!cancelled) setSmart((r?.results || []).filter((x) => !x.inPool).slice(0, 6)); })
-            .catch(() => { if (!cancelled) setSmart([]); });
+            .then((r) => {
+                if (cancelled) return;
+                const res = r?.results || [];
+                setSmart(res.filter((x) => !x.inPool).slice(0, 6));
+                const nq = term.toLowerCase();
+                // «есть в базе»: точное совпадение запроса со словом или его переводом (любой язык)
+                setPoolExact(res.find((x) => x.inPool && (
+                    (x.word || "").toLowerCase() === nq ||
+                    Object.values(x.translate || {}).some((arr) => (arr || []).some((s) => (s || "").toLowerCase() === nq))
+                )) || null);
+            })
+            .catch(() => { if (!cancelled) { setSmart([]); setPoolExact(null); } });
         return () => { cancelled = true; };
     }, [appliedQ, currentLanguage]);
 
@@ -146,6 +159,18 @@ export const PoolPage = () => {
         // храним id добавленного слова — он нужен, чтобы отменить добавление
         try { const id = await addFromPool(word); setAdded((a) => ({ ...a, [word]: id || true })); } catch { /* ignore */ }
         setAddingId(null);
+    };
+
+    // «Показать» — проскроллить к карточке слова в списке и подсветить её.
+    const onShow = (word) => {
+        if (!word) return;
+        try {
+            const sel = (typeof CSS !== "undefined" && CSS.escape) ? CSS.escape(word) : word;
+            const el = document.querySelector(`.wcard[data-word="${sel}"]`);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        } catch { /* */ }
+        setHighlightWord(word);
+        setTimeout(() => setHighlightWord((cur) => (cur === word ? "" : cur)), 1800);
     };
 
     // «Нет в базе» → сгенерировать слово через ИИ (положить в пул) и добавить себе.
@@ -185,8 +210,10 @@ export const PoolPage = () => {
     };
 
     const hasFilters = topics.length > 0 || !!level || !!missing || !!pos;
-    // показывать кнопку «Создать» (выезжает), когда есть запрос и точного слова нет в выдаче
-    const showGen = appliedQ.trim() !== "" && !items.some((w) => (w.word || "").toLowerCase() === appliedQ.trim().toLowerCase());
+    // запрос есть → если слово в базе, показываем «Показать» (скролл+подсветка), иначе «Создать»
+    const hasQuery = appliedQ.trim() !== "";
+    const showShow = hasQuery && !!poolExact;
+    const showGen = hasQuery && !poolExact;
 
     // Имя нового словаря по фильтрам (с возможностью переписать вручную).
     const autoDictName = () => {
@@ -222,16 +249,17 @@ export const PoolPage = () => {
                 </div>
             </div>
 
-            {/* поиск + выезжающая кнопка «Создать» (красивое дополнение инпута; инпут плавно сужается) */}
-            <div className={"poolsearch" + (showGen ? " has-gen" : "")}>
+            {/* поиск + выезжающее дополнение: «Показать» (слово есть в базе) или «Создать» (нет) */}
+            <div className={"poolsearch" + ((showGen || showShow) ? " has-gen" : "")}>
                 <SearchBox value={q} onChange={setQ} placeholder={t.poolSearchPlaceholder || t.inputPlaceholder}
                     phase={searchPhase} debounceMs={SEARCH_DEBOUNCE_MS} count={total}
                     style={{ margin: 0, flex: 1, minWidth: 0 }} />
-                <button className={"poolsearch__gen" + (showGen ? " is-shown" : "")}
-                    disabled={!showGen || !!smartBusy} aria-hidden={!showGen} tabIndex={showGen ? 0 : -1}
-                    onClick={() => onGenerateAdd(appliedQ.trim())}>
-                    {smartBusy && smartBusy === appliedQ.trim() ? <BtnSpinner /> : <Icon n="sparkles" sm />}
-                    <span>{CREATE_LBL[currentLanguage] || CREATE_LBL.en}</span>
+                <button className={"poolsearch__gen" + ((showGen || showShow) ? " is-shown" : "") + (showShow ? " poolsearch__gen--show" : "")}
+                    disabled={(!showGen && !showShow) || !!smartBusy} aria-hidden={!showGen && !showShow}
+                    tabIndex={(showGen || showShow) ? 0 : -1}
+                    onClick={() => (showShow ? onShow(poolExact.word) : onGenerateAdd(appliedQ.trim()))}>
+                    {showShow ? <Icon n="arrow-down" sm /> : (smartBusy && smartBusy === appliedQ.trim() ? <BtnSpinner /> : <Icon n="sparkles" sm />)}
+                    <span>{showShow ? (SHOW_LBL[currentLanguage] || SHOW_LBL.en) : (CREATE_LBL[currentLanguage] || CREATE_LBL.en)}</span>
                 </button>
             </div>
 
@@ -313,7 +341,8 @@ export const PoolPage = () => {
                         const { cls, key } = posMeta(w.part_of_speech);
                         const prefix = chipPrefix(key, w.forms, { articles: showArticles, verbAa: showVerbAa });
                         return (
-                            <div className={`wcard${added[w.word] ? " is-added" : ""}`} key={w.word}
+                            <div className={`wcard${added[w.word] ? " is-added" : ""}${highlightWord === w.word ? " is-highlight" : ""}`} key={w.word}
+                                data-word={w.word}
                                 onClick={() => (added[w.word] ? onRemove(w.word) : onAdd(w.word))}>
                                 <div className="wcard__body">
                                     <span className="wcard__word">
