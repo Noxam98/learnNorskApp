@@ -62,6 +62,9 @@ export const PoolPage = () => {
     const [searchPhase, setSearchPhase] = useState("idle"); // idle | counting | searching
     const [addingId, setAddingId] = useState(null);
     const [added, setAdded] = useState({});
+    const [smart, setSmart] = useState([]);          // слова не из пула (лексикон/fuzzy) под текущий запрос
+    const [smartBusy, setSmartBusy] = useState("");  // слово, которое сейчас генерим+добавляем
+    const [reloadTick, setReloadTick] = useState(0); // форс-обновление списка после генерации
     const [descWord, setDescWord] = useState(null);   // слово, чьё описание открыто
     const [facets, setFacets] = useState({ topics: [], levels: [] });
     const [facetCounts, setFacetCounts] = useState(null); // динамические счётчики под текущий фильтр: { topics:{key:n} }
@@ -105,7 +108,18 @@ export const PoolPage = () => {
             .catch(() => { if (!cancelled) setItems([]); })
             .finally(() => { if (!cancelled) { setLoading(false); setSearchPhase("idle"); } });
         return () => { cancelled = true; };
-    }, [appliedQ, page, pageSize, topics, level, sort, order, missing, pos]);
+    }, [appliedQ, page, pageSize, topics, level, sort, order, missing, pos, reloadTick]);
+
+    // Умный добор «нет в базе»: слова из лексикона/похожие (inPool:false) под запрос — для AI-добавления.
+    useEffect(() => {
+        const term = appliedQ.trim();
+        if (!term) { setSmart([]); return; }
+        let cancelled = false;
+        api.searchPool(term)
+            .then((r) => { if (!cancelled) setSmart((r?.results || []).filter((x) => !x.inPool).slice(0, 6)); })
+            .catch(() => { if (!cancelled) setSmart([]); });
+        return () => { cancelled = true; };
+    }, [appliedQ]);
 
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
     useEffect(() => { if (page > totalPages) setPage(totalPages); }, [totalPages]); // eslint-disable-line
@@ -126,6 +140,23 @@ export const PoolPage = () => {
         // храним id добавленного слова — он нужен, чтобы отменить добавление
         try { const id = await addFromPool(word); setAdded((a) => ({ ...a, [word]: id || true })); } catch { /* ignore */ }
         setAddingId(null);
+    };
+
+    // «Нет в базе» → сгенерировать слово через ИИ (положить в пул) и добавить себе.
+    const onGenerateAdd = async (word) => {
+        const w = (word || "").trim();
+        if (!w || smartBusy) return;
+        setSmartBusy(w);
+        try {
+            const res = await api.generateWord(w);   // создаст в пуле (или вернёт существующее)
+            const name = res?.word || w;
+            await onAdd(name);
+            setReloadTick((k) => k + 1);             // подтянуть список — слово теперь в пуле
+            setSmart((s) => s.filter((x) => x.word !== w && x.word !== name));
+        } catch {
+            useSystemStore.getState().showToast(t.genFailed || "Не удалось сгенерировать слово");
+        }
+        setSmartBusy("");
     };
 
     // Отмена: убрать слово из текущего словаря (не из общей базы).
@@ -270,6 +301,31 @@ export const PoolPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* «Нет в базе» — добавить новое слово через ИИ. Показываем при активном поиске. */}
+            {appliedQ.trim() && (smart.length > 0 || true) && (
+                <div className="spanel" style={{ margin: "0 0 var(--sp-3)", padding: "var(--sp-3) var(--sp-4)" }}>
+                    <div style={{ fontSize: "var(--fs-13)", color: "var(--ink-3)", marginBottom: 8 }}>
+                        {t.poolGenHint || "Нет нужного слова? Добавить через ИИ:"}
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {smart.map((w) => (
+                            <button key={w.word} type="button" disabled={!!smartBusy} onClick={() => onGenerateAdd(w.word)}
+                                style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 999, cursor: "pointer", border: "1px solid var(--border)", background: "var(--surface)", color: "var(--ink-2)", fontWeight: 600, fontSize: "var(--fs-13)" }}>
+                                <Icon n="sparkles" sm /> {w.word}
+                                {smartBusy === w.word && <BtnSpinner />}
+                            </button>
+                        ))}
+                        {!smart.some((w) => w.word.toLowerCase() === appliedQ.trim().toLowerCase()) && (
+                            <button type="button" disabled={!!smartBusy} onClick={() => onGenerateAdd(appliedQ.trim())}
+                                style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 999, cursor: "pointer", border: "1px dashed var(--fjord-600)", background: "transparent", color: "var(--fjord-600)", fontWeight: 600, fontSize: "var(--fs-13)" }}>
+                                <Icon n="sparkles" sm /> {(t.poolGen || "Сгенерировать")} «{appliedQ.trim()}»
+                                {smartBusy === appliedQ.trim() && <BtnSpinner />}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
 
             <div style={{ position: "relative" }}>
             {/* при перезагрузке списка (смена сортировки/фильтра/страницы) — затемняем старый
