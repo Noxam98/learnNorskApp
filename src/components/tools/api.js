@@ -296,8 +296,8 @@ class ApiService {
     learningDue(limit = 20) { return this._send('GET', `/learning/due?limit=${limit}`); }
     learningActivity(days = 119) { return this._send('GET', `/learning/activity?days=${days}`); }
     learningAnswer({ pool_id, correct, elapsed = null, mode = null, direction = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode, direction }); }
-    learningAdd(word) { return this._send('POST', '/learning/add', { word }); }       // добавить слово из Базы прямо в Учёбу
-    learningRemove(word) { return this._send('POST', '/learning/remove', { word }); } // убрать слово из Учёбы
+    learningAdd(poolId) { return this._send('POST', '/learning/add', { pool_id: poolId }); }       // добавить слово (по pool_id) в Учёбу
+    learningRemove(poolId) { return this._send('POST', '/learning/remove', { pool_id: poolId }); } // убрать слово (по pool_id) из Учёбы
     learningSession(size = 20, lang = 'ru') { return this._send('GET', `/learning/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
     learningGate() { return this._send('GET', '/learning/gate'); }
     learningGateExam(lang = "ru") { return this._send('GET', `/learning/gate/exam?lang=${encodeURIComponent(lang)}`); }

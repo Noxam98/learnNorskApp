@@ -166,7 +166,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
-        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning } : v)).catch(() => {});
+        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null } : v)).catch(() => {});
     };
 
     useEffect(() => {
@@ -195,13 +195,14 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     // Добавить/убрать слово из «Учёбы» (оптимистично переключаем флаг).
     const toggleDict = async () => {
-        if (!view || dictBusy) return;
+        if (!view || dictBusy || !view.pool_id) return;
         const next = !inDict;
+        const pid = view.pool_id;
         setDictBusy(true);
         setView((v) => (v ? { ...v, inLearning: next } : v));
         try {
-            if (next) await addToLearning(view.no);
-            else await removeFromLearning(view.no);
+            if (next) await addToLearning(pid);
+            else await removeFromLearning(pid);
             const phrase = next ? (ADDED_LRN[lang] || ADDED_LRN.en) : (REMOVED_LRN[lang] || REMOVED_LRN.en);
             useSystemStore.getState().showToast(`«${view.no}» ${phrase}`, next ? "success" : "warning");
         } catch { setView((v) => (v ? { ...v, inLearning: !next } : v)); }

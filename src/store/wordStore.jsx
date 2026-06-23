@@ -38,8 +38,8 @@ export const useWordsStore = create((set, get) => ({
 
     // Добавить/убрать слово из Базы напрямую в «Учёбу» (бэк кладёт в скрытый авто-словарь
     // studying=1; удаление — мягкое: прогресс архивируется, не стирается). Не зависит от словаря.
-    addToLearning: async (norwegian) => { await api.learningAdd(norwegian); return true; },
-    removeFromLearning: async (norwegian) => { await api.learningRemove(norwegian); },
+    addToLearning: async (poolId) => { await api.learningAdd(poolId); return true; },
+    removeFromLearning: async (poolId) => { await api.learningRemove(poolId); },
 
     // --- Игры (одиночные/учебные сессии через useGameLoop) ---
     ToggleChooseToGame: (wordId) => set(produce((state) => {

@@ -102,7 +102,7 @@ export const PoolPage = () => {
                 // отметить уже добавленные в Учёбу слова (флаг inLearning с бэка), не теряя сессионные добавления
                 setAdded((prev) => {
                     const next = { ...prev };
-                    for (const w of (res.words || [])) if (w.inLearning) next[w.word] = true;
+                    for (const w of (res.words || [])) if (w.inLearning) next[w.pool_id] = true;
                     return next;
                 });
                 if (res.facets) {
@@ -152,12 +152,13 @@ export const PoolPage = () => {
     const onPageSize = (n) => { setPage(1); setPageSize(n); };
     const clearFilters = () => { setPage(1); setTopics([]); setLevel(""); setMissing(""); setPos(""); };
 
-    // Добавить слово из Базы прямо в «Учёбу» (оптимистично отмечаем, при ошибке откатываем).
-    const onAdd = async (word) => {
-        setAddingId(word);
-        setAdded((a) => ({ ...a, [word]: true }));
-        try { await addToLearning(word); useSystemStore.getState().showToast(`«${word}» ${ADDED_LRN[currentLanguage] || ADDED_LRN.en}`, "success"); }
-        catch { setAdded((a) => { const n = { ...a }; delete n[word]; return n; }); }
+    // Добавить слово из Базы прямо в «Учёбу» по pool_id (омонимы — разные записи; оптимистично).
+    const onAdd = async (w) => {
+        const id = w.pool_id;
+        setAddingId(id);
+        setAdded((a) => ({ ...a, [id]: true }));
+        try { await addToLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${ADDED_LRN[currentLanguage] || ADDED_LRN.en}`, "success"); }
+        catch { setAdded((a) => { const n = { ...a }; delete n[id]; return n; }); }
         setAddingId(null);
     };
 
@@ -181,7 +182,11 @@ export const PoolPage = () => {
         try {
             const res = await api.generateWord(w);   // создаст в пуле (или вернёт существующее)
             const name = res?.word || w;
-            await onAdd(name);
+            if (res?.pool_id) {
+                await addToLearning(res.pool_id);
+                setAdded((a) => ({ ...a, [res.pool_id]: true }));
+                useSystemStore.getState().showToast(`«${name}» ${ADDED_LRN[currentLanguage] || ADDED_LRN.en}`, "success");
+            }
             setReloadTick((k) => k + 1);             // подтянуть список — слово теперь в пуле
             setSmart((s) => s.filter((x) => x.word !== w && x.word !== name));
         } catch {
@@ -190,12 +195,13 @@ export const PoolPage = () => {
         setSmartBusy("");
     };
 
-    // Убрать слово из «Учёбы» (оптимистично, при ошибке возвращаем отметку).
-    const onRemove = async (word) => {
-        setAdded((a) => { const n = { ...a }; delete n[word]; return n; });
-        setAddingId(word);
-        try { await removeFromLearning(word); useSystemStore.getState().showToast(`«${word}» ${REMOVED_LRN[currentLanguage] || REMOVED_LRN.en}`, "warning"); }
-        catch { setAdded((a) => ({ ...a, [word]: true })); }
+    // Убрать слово из «Учёбы» по pool_id (оптимистично, при ошибке возвращаем отметку).
+    const onRemove = async (w) => {
+        const id = w.pool_id;
+        setAdded((a) => { const n = { ...a }; delete n[id]; return n; });
+        setAddingId(id);
+        try { await removeFromLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${REMOVED_LRN[currentLanguage] || REMOVED_LRN.en}`, "warning"); }
+        catch { setAdded((a) => ({ ...a, [id]: true })); }
         setAddingId(null);
     };
 
@@ -322,9 +328,9 @@ export const PoolPage = () => {
                         const { cls, key } = posMeta(w.part_of_speech);
                         const prefix = chipPrefix(key, w.forms, { articles: showArticles, verbAa: showVerbAa });
                         return (
-                            <div className={`wcard${added[w.word] ? " is-added" : ""}${highlightWord === w.word ? " is-highlight" : ""}`} key={w.word}
+                            <div className={`wcard${added[w.pool_id] ? " is-added" : ""}${highlightWord === w.word ? " is-highlight" : ""}`} key={w.pool_id}
                                 data-word={w.word}
-                                onClick={() => (added[w.word] ? onRemove(w.word) : onAdd(w.word))}>
+                                onClick={() => (added[w.pool_id] ? onRemove(w) : onAdd(w))}>
                                 <div className="wcard__body">
                                     <span className="wcard__word">
                                         {prefix && <span className="muted" style={{ fontWeight: 400 }}>{prefix} </span>}
@@ -344,12 +350,12 @@ export const PoolPage = () => {
                                         onClick={() => setDescWord(w.word)}>
                                         <Icon n="info" />
                                     </button>
-                                    <button className={`iconbtn${added[w.word] ? " is-added" : ""}`}
-                                        aria-label={added[w.word] ? t.removeFromDict : t.addToDict}
-                                        title={added[w.word] ? t.removeFromDict : t.addToDict}
-                                        disabled={addingId === w.word}
-                                        onClick={() => (added[w.word] ? onRemove(w.word) : onAdd(w.word))}>
-                                        {addingId === w.word ? <BtnSpinner /> : <Icon n={added[w.word] ? "check" : "plus"} />}
+                                    <button className={`iconbtn${added[w.pool_id] ? " is-added" : ""}`}
+                                        aria-label={added[w.pool_id] ? t.removeFromDict : t.addToDict}
+                                        title={added[w.pool_id] ? t.removeFromDict : t.addToDict}
+                                        disabled={addingId === w.pool_id}
+                                        onClick={() => (added[w.pool_id] ? onRemove(w) : onAdd(w))}>
+                                        {addingId === w.pool_id ? <BtnSpinner /> : <Icon n={added[w.pool_id] ? "check" : "plus"} />}
                                     </button>
                                     <SpeakButton
                                         segments={[
