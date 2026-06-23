@@ -54,6 +54,7 @@
   border: 1px solid color-mix(in srgb, var(--danger) 25%, transparent);
 }
 .alert .ic { flex: none; }
+.alert--success { background: var(--success-bg); color: var(--success); border-color: color-mix(in srgb, var(--success) 25%, transparent); }
 
 .auth__submit { margin-top: var(--sp-2); }
 .auth__switch { margin-top: var(--sp-6); text-align: center; font-size: var(--fs-15); color: var(--ink-2); }

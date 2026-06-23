@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Icon } from "../ui/Icon.jsx";
 
-const Error = ({ text, setText }) => {
+const Error = ({ text, setText, type = "error" }) => {
     const [isVisible, setIsVisible] = useState(false);
+    const success = type === "success";
     useEffect(() => {
         if (text) {
             setIsVisible(true);
@@ -17,7 +18,7 @@ const Error = ({ text, setText }) => {
 
     return (
         <div
-            className="alert"
+            className={"alert" + (success ? " alert--success" : "")}
             style={{
                 position: "fixed", left: "var(--sp-4)", bottom: "var(--sp-4)", zIndex: 120,
                 maxWidth: 360, boxShadow: "var(--shadow-lg)",
@@ -28,7 +29,7 @@ const Error = ({ text, setText }) => {
                 whiteSpace: "pre-wrap",
             }}
         >
-            <Icon n="x" sm /> {text}
+            <Icon n={success ? "check" : "x"} sm /> {text}
         </div>
     );
 };

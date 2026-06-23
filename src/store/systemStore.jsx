@@ -13,7 +13,8 @@ export const useSystemStore = create(persist(
     (set) => ({
         currentLanguage: "ukr",
         theme: "light", // light | dark
-        toast: "", // глобальное сообщение об ошибке (тост внизу слева); пусто = скрыт
+        toast: "", // глобальный тост (внизу слева); пусто = скрыт
+        toastType: "error", // error (красный) | success (зелёный) — стиль тоста
         showArticles: true, // показывать артикль (en/ei/et) перед сущ. на чипах слов
         showVerbAa: true,    // показывать «å» перед глаголами на чипах слов
         soundOn: true,       // звуки игры (онлайн-режим)
@@ -33,8 +34,8 @@ export const useSystemStore = create(persist(
         setTheme: (theme) => set(produce((state) => { state.theme = theme; })),
         toggleTheme: () => set(produce((state) => { state.theme = state.theme === "dark" ? "light" : "dark"; })),
 
-        // Показать/скрыть глобальный тост (пустая строка = скрыть). Зовётся из api.js при сбоях запроса.
-        showToast: (text) => set(produce((state) => { state.toast = text || ""; })),
+        // Показать/скрыть глобальный тост (пустая строка = скрыть). type: error (по умолч.) | success.
+        showToast: (text, type = "error") => set(produce((state) => { state.toast = text || ""; state.toastType = type; })),
 
         setShowArticles: (v) => set(produce((state) => { state.showArticles = !!v; })),
         setShowVerbAa: (v) => set(produce((state) => { state.showVerbAa = !!v; })),
