@@ -25,7 +25,6 @@ const CATEGORIES_LBL = { ru: "Категории", ukr: "Категорії", en
 const POS_TOGGLE = { ru: "Часть речи", ukr: "Частина мови", en: "Part of speech", pl: "Część mowy", lt: "Kalbos dalis" };
 const CREATE_LBL = { ru: "Создать", ukr: "Створити", en: "Create", pl: "Utwórz", lt: "Sukurti" };
 const SHOW_LBL = { ru: "Показать", ukr: "Показати", en: "Show", pl: "Pokaż", lt: "Rodyti" };
-const FILTERS_LBL = { ru: "Фильтры", ukr: "Фільтри", en: "Filters", pl: "Filtry", lt: "Filtrai" };
 const DATA_LBL = { ru: "Данные", ukr: "Дані", en: "Data", pl: "Dane", lt: "Duomenys" };
 
 const topicLabel = (t, key) => t.topics?.[key] || key;
@@ -264,24 +263,23 @@ export const PoolPage = () => {
 
             {/* Фильтр-бар: темы (сворачиваемые), уровень, сортировка, размер страницы */}
             <div className="poolbar">
-                {/* Фильтры — анкер-поповеры с чипами (переиспользуемый FilterChipsPopup) */}
+                {/* Фильтры — отдельные чипы-поповеры: Категории и Часть речи (FilterChipsPopup) */}
                 <div className="poolbar__row" style={{ flexWrap: "wrap", gap: "var(--sp-2)" }}>
-                    <FilterChipsPopup icon="filter" label={FILTERS_LBL[currentLanguage] || FILTERS_LBL.en}
-                        count={topics.length + (pos ? 1 : 0)}
-                        sections={[
-                            {
-                                key: "cat", title: CATEGORIES_LBL[currentLanguage] || CATEGORIES_LBL.en, multi: true, selected: topics,
-                                onPick: toggleTopic,
-                                options: facets.topics.map(({ topic, count }) => {
-                                    const c = facetCounts ? (facetCounts.topics[topic] || 0) : count;
-                                    return { value: topic, label: topicLabel(t, topic), count: c, disabled: !topics.includes(topic) && c === 0 };
-                                }),
-                            },
-                            {
-                                key: "pos", title: POS_TOGGLE[currentLanguage] || POS_TOGGLE.en, multi: false, selected: pos, onPick: pickPos,
-                                options: POS_ORDER.map((key) => ({ value: key, label: posLabel(posApiKey(key), t) })),
-                            },
-                        ]} />
+                    <FilterChipsPopup icon="grid" label={CATEGORIES_LBL[currentLanguage] || CATEGORIES_LBL.en}
+                        count={topics.length}
+                        sections={[{
+                            key: "cat", multi: true, selected: topics, onPick: toggleTopic,
+                            options: facets.topics.map(({ topic, count }) => {
+                                const c = facetCounts ? (facetCounts.topics[topic] || 0) : count;
+                                return { value: topic, label: topicLabel(t, topic), count: c, disabled: !topics.includes(topic) && c === 0 };
+                            }),
+                        }]} />
+                    <FilterChipsPopup icon="type" label={POS_TOGGLE[currentLanguage] || POS_TOGGLE.en}
+                        count={pos ? 1 : 0}
+                        sections={[{
+                            key: "pos", multi: false, selected: pos, onPick: pickPos,
+                            options: POS_ORDER.map((key) => ({ value: key, label: posLabel(posApiKey(key), t) })),
+                        }]} />
                     {isAdmin && (
                         <FilterChipsPopup icon="database" label={DATA_LBL[currentLanguage] || DATA_LBL.en} count={missing ? 1 : 0}
                             sections={[{
@@ -302,14 +300,7 @@ export const PoolPage = () => {
                 </div>
 
                 <div className="poolbar__row">
-                    {(hasFilters || appliedQ.trim()) && (
-                        <button className="btn btn--primary btn--sm" disabled={!total} onClick={openCreate}>
-                            <Icon n="plus" sm /> {t.addAllToNewDict || "В новый словарь"} <b>{total}</b>
-                        </button>
-                    )}
-
-                    <div className="grow" />
-
+                    {/* сортировка прижата влево; «В новый словарь» — справа */}
                     <SortControl value={sort} order={order}
                         options={sortOptions(t, ["alpha", "level", "freq", "added"])}
                         onChange={(s, o) => { setPage(1); setSort(s); setOrder(o); }} />
@@ -318,6 +309,14 @@ export const PoolPage = () => {
                         <Dropdown value={pageSize} onChange={(v) => onPageSize(Number(v))}
                             options={PAGE_SIZES.map((n) => ({ value: n, label: `${n} / ${t.pageSize || "стр."}` }))} />
                     </div>
+
+                    <div className="grow" />
+
+                    {(hasFilters || appliedQ.trim()) && (
+                        <button className="btn btn--primary btn--sm" disabled={!total} onClick={openCreate}>
+                            <Icon n="plus" sm /> {t.addAllToNewDict || "В новый словарь"} <b>{total}</b>
+                        </button>
+                    )}
                 </div>
             </div>
 

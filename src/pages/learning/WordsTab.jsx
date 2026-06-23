@@ -1,11 +1,11 @@
 // Вкладка «Все слова» раздела «Учёба»: фильтры по статусу/теме/уровню/поиску/сортировке,
 // список слов с быстрыми действиями и массовыми операциями. Дизайн — study.css (хендофф).
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../../components/tools/api.js";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { StatusBadge, StrengthBar } from "../../components/learning/StatusBits.jsx";
 import { ActionMenu } from "../../components/ui/Dropdown.jsx";
-import { Dropdown } from "../../components/ui/Dropdown.jsx";
+import { FilterChipsPopup } from "../../components/ui/FilterChipsPopup.jsx";
 import { SortControl } from "../../components/ui/SortControl.jsx";
 import { sortOptions } from "../../components/ui/sortOptions.js";
 import { SearchBox } from "../../components/ui/SearchBox.jsx";
@@ -168,15 +168,6 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
         return counts[k] ?? 0;
     };
 
-    const topicOptions = useMemo(() => ([
-        { value: "", label: tt.topicAll },
-        ...TOPIC_KEYS.map((k) => ({ value: k, label: topicNames[k] || k })),
-    ]), [tt, topicNames]);
-    const levelOptions = useMemo(() => ([
-        { value: "", label: tt.levelAll },
-        ...LEVELS.map((l) => ({ value: l, label: l })),
-    ]), [tt]);
-
     // --- Мутации ---
     const mutate = async (poolId, action) => {
         try { await api.learningStatus(poolId, action); } catch { /* */ }
@@ -217,13 +208,23 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
                     ))}
                 </div>
                 <div className="searchrow">
-                    <SearchBox value={q} onChange={setQ} placeholder={tt.searchPh}
-                        phase={phase} debounceMs={300} />
-                    <Dropdown value={topic} options={topicOptions} onChange={setTopic} placeholder={tt.topicAll} />
-                    <Dropdown value={level} options={levelOptions} onChange={setLevel} placeholder={tt.levelAll} />
                     <SortControl value={sort} order={order}
                         options={sortOptions(interfaceTranslate[lang], ["strength", "due", "alpha", "level", "freq", "pos"])}
                         onChange={(s, o) => { setSort(s); setOrder(o); }} />
+                    <FilterChipsPopup icon="grid" label={tt.topic} count={topic ? 1 : 0}
+                        sections={[{
+                            key: "topic", multi: false, selected: topic,
+                            onPick: (v) => setTopic((c) => (c === v ? "" : v)),
+                            options: TOPIC_KEYS.map((k) => ({ value: k, label: topicNames[k] || k })),
+                        }]} />
+                    <FilterChipsPopup icon="layers" label={tt.level} count={level ? 1 : 0}
+                        sections={[{
+                            key: "level", multi: false, selected: level,
+                            onPick: (v) => setLevel((c) => (c === v ? "" : v)),
+                            options: LEVELS.map((l) => ({ value: l, label: l })),
+                        }]} />
+                    <SearchBox value={q} onChange={setQ} placeholder={tt.searchPh}
+                        phase={phase} debounceMs={300} />
                 </div>
             </div>
 
