@@ -6,6 +6,24 @@
 /* Универсальный контрол сортировки (SortControl): иконка + список + кнопка направления */
 .sortctl { display: inline-flex; align-items: center; gap: 6px; }
 
+/* Строка поиска Базы + выезжающая кнопка «Создать» (красивое дополнение инпута).
+   Кнопка всегда в DOM: анимируем max-width/opacity → инпут (flex:1) плавно сужается. */
+.poolsearch { display: flex; align-items: stretch; margin: var(--sp-6) 0 var(--sp-5); }
+.poolsearch .composer { margin: 0 !important; flex: 1; min-width: 0; transition: border-radius .28s var(--ease); }
+/* при показе кнопки правые углы инпута распрямляются — кнопка «прирастает» к нему */
+.poolsearch.has-gen .composer { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.poolsearch__gen {
+  flex: none; box-sizing: border-box; max-width: 0; opacity: 0; overflow: hidden; white-space: nowrap;
+  padding: 0; border: none; border-radius: 0 var(--r-xl) var(--r-xl) 0;
+  background: var(--ember-600); color: #fff; font-weight: 700; font-size: var(--fs-14);
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+  transition: max-width .28s var(--ease), opacity .18s var(--ease), padding .28s var(--ease);
+}
+.poolsearch__gen.is-shown { max-width: 13rem; opacity: 1; padding: 0 var(--sp-5); }
+.poolsearch__gen:hover { filter: brightness(1.06); }
+.poolsearch__gen:disabled { cursor: default; }
+@media (max-width: 560px) { .poolsearch__gen.is-shown { max-width: 9rem; padding: 0 var(--sp-4); } }
+
 /* Навигация на мобильных: ужимаем, чтобы помещалась */
 @media (max-width: 640px) {
     .nav__row { gap: var(--sp-3); }

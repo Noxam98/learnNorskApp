@@ -185,6 +185,8 @@ export const PoolPage = () => {
     };
 
     const hasFilters = topics.length > 0 || !!level || !!missing || !!pos;
+    // показывать кнопку «Создать» (выезжает), когда есть запрос и точного слова нет в выдаче
+    const showGen = appliedQ.trim() !== "" && !items.some((w) => (w.word || "").toLowerCase() === appliedQ.trim().toLowerCase());
 
     // Имя нового словаря по фильтрам (с возможностью переписать вручную).
     const autoDictName = () => {
@@ -220,18 +222,17 @@ export const PoolPage = () => {
                 </div>
             </div>
 
-            <div style={{ display: "flex", gap: "var(--sp-2)", alignItems: "flex-start", marginBottom: "var(--sp-3)" }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                    <SearchBox value={q} onChange={setQ} placeholder={t.poolSearchPlaceholder || t.inputPlaceholder}
-                        phase={searchPhase} debounceMs={SEARCH_DEBOUNCE_MS} count={total} />
-                </div>
-                {/* слова нет в выдаче → создать через ИИ */}
-                {appliedQ.trim() && !items.some((w) => (w.word || "").toLowerCase() === appliedQ.trim().toLowerCase()) && (
-                    <button className="btn btn--primary btn--sm" disabled={!!smartBusy} style={{ flex: "none", whiteSpace: "nowrap" }}
-                        onClick={() => onGenerateAdd(appliedQ.trim())}>
-                        {smartBusy === appliedQ.trim() ? <BtnSpinner /> : <Icon n="sparkles" sm />} {CREATE_LBL[currentLanguage] || CREATE_LBL.en}
-                    </button>
-                )}
+            {/* поиск + выезжающая кнопка «Создать» (красивое дополнение инпута; инпут плавно сужается) */}
+            <div className={"poolsearch" + (showGen ? " has-gen" : "")}>
+                <SearchBox value={q} onChange={setQ} placeholder={t.poolSearchPlaceholder || t.inputPlaceholder}
+                    phase={searchPhase} debounceMs={SEARCH_DEBOUNCE_MS} count={total}
+                    style={{ margin: 0, flex: 1, minWidth: 0 }} />
+                <button className={"poolsearch__gen" + (showGen ? " is-shown" : "")}
+                    disabled={!showGen || !!smartBusy} aria-hidden={!showGen} tabIndex={showGen ? 0 : -1}
+                    onClick={() => onGenerateAdd(appliedQ.trim())}>
+                    {smartBusy && smartBusy === appliedQ.trim() ? <BtnSpinner /> : <Icon n="sparkles" sm />}
+                    <span>{CREATE_LBL[currentLanguage] || CREATE_LBL.en}</span>
+                </button>
             </div>
 
             {/* Фильтр-бар: темы (сворачиваемые), уровень, сортировка, размер страницы */}
