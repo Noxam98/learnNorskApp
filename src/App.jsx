@@ -7,6 +7,10 @@ import { useWordsStore } from "./store/wordStore.jsx";
 import { useAuthStore } from "./store/AuthStore.jsx";
 import { useSystemStore } from "./store/systemStore.jsx";
 import { resyncPush } from "./components/tools/push.js";
+import api from "./components/tools/api.js";
+
+// Тост админу при росте очереди модерации (при открытом приложении). 5 языков.
+const MOD_TOAST = { ru: "Новые слова на модерации", ukr: "Нові слова на модерації", en: "New words to moderate", pl: "Nowe słowa do moderacji", lt: "Nauji žodžiai moderacijai" };
 
 import { BrandLoader } from "./components/ui/Spinner.jsx";
 import Toast from "./components/tools/error.jsx";
@@ -65,6 +69,27 @@ function App() {
         }, 45000);
         return () => clearInterval(id);
     }, [isAuthed]);
+
+    // Админ: лёгкий поллинг очереди модерации → тост при росте (когда приложение открыто).
+    // Закрытое приложение покрывает web-push (SW не дублирует системное при открытой вкладке).
+    const currentLanguage = useSystemStore((s) => s.currentLanguage);
+    useEffect(() => {
+        if (!isAuthed || !isAdmin) return;
+        let prev = null;
+        const check = () => {
+            if (document.visibilityState !== "visible") return;
+            api.adminPending().then((r) => {
+                const c = r?.count || 0;
+                if (prev !== null && c > prev) {
+                    useSystemStore.getState().showToast(`${MOD_TOAST[currentLanguage] || MOD_TOAST.en}: ${c}`, "success");
+                }
+                prev = c;
+            }).catch(() => {});
+        };
+        check();
+        const id = setInterval(check, 45000);
+        return () => clearInterval(id);
+    }, [isAuthed, isAdmin, currentLanguage]);
 
     const routes = (
         <Routes location={location}>

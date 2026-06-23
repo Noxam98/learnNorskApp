@@ -10,15 +10,20 @@ self.addEventListener("push", (event) => {
     const title = data.title || "Lære Norsk";
     const body = data.body || "";
     const url = data.url || "/";
-    event.waitUntil(
-        self.registration.showNotification(title, {
+    event.waitUntil((async () => {
+        // приложение открыто (есть видимая вкладка) → системное уведомление НЕ показываем:
+        // открытое приложение покажет тост само. Закрыто/в фоне → показываем системный пуш.
+        const all = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+        const visible = all.some((c) => c.visibilityState === "visible");
+        if (visible) return;
+        await self.registration.showNotification(title, {
             body,
             icon: "/web-app-manifest-192x192.png",
             badge: "/favicon-96x96.png",
             data: { url },
-            tag: "laere-reminder",   // одно напоминание, не пачка
-        })
-    );
+            tag: data.url && data.url.includes("moderation") ? "laere-moderation" : "laere-reminder",
+        });
+    })());
 });
 
 self.addEventListener("notificationclick", (event) => {
