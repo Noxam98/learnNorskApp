@@ -8,7 +8,11 @@ import { Modal } from "../../components/ui/Modal.jsx";
 import { BtnSpinner, BrandLoader } from "../../components/ui/Spinner.jsx";
 import { StatusDot, statusLabel, STATUS_ORDER } from "../../components/learning/StatusBits.jsx";
 import { useSessionStore } from "../../store/sessionStore.jsx";
+import { useAuthStore } from "../../store/AuthStore.jsx";
+import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { pl } from "../../components/ui/plural.js";
+
+const CEFR = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 // ---------- i18n (ru/en/ukr/pl/lt) ----------
 const T = {
@@ -29,7 +33,9 @@ const T = {
         gateLockedAdd: "Сначала сдай экзамен пачки",
         gateProgress: "До экзамена пачки осталось {n}",
         goal: "Дневная цель", streak: "дней", days: "дней",
-        goalNum: "из {n}", progressTitle: "Прогресс", masteredTitle: "Выучено слов", masteredDesc: "Освоено по всей рампе. Остальные дозреют по мере занятий.", goalAlmost: "Почти у цели!", goalDone: "Цель выполнена!",
+        goalNum: "из {n}", progressTitle: "Прогресс", masteredTitle: "Выучено слов", masteredDesc: "Освоено по всей рампе. Остальные дозреют по мере занятий.",
+        toLevel: "До уровня", toLevelLeft: "Осталось выучить {n} слов", maxLevelT: "Максимальный уровень", maxLevelD: "Вся рампа освоена 🎉",
+        focusTitle: "Темы в фокусе", focusDesc: "Выбери, что интереснее — около трети новых слов будет по этим темам, пока не закончатся", focusEmpty: "Тема не выбрана", goalAlmost: "Почти у цели!", goalDone: "Цель выполнена!",
         goalDescAlmost: "Закрывай повторения — серия не прервётся.",
         goalDescDone: "Сегодня всё повторено. Возвращайся завтра — повторения подойдут по интервалам.",
         suggestT: "Докинуть слов",
@@ -67,7 +73,9 @@ const T = {
         gateLockedAdd: "Pass the pack exam first",
         gateProgress: "{n} left until the pack exam",
         goal: "Daily goal", streak: "days", days: "days",
-        goalNum: "of {n}", progressTitle: "Progress", masteredTitle: "Words mastered", masteredDesc: "Fully learned through the ramp. The rest mature as you practice.", goalAlmost: "Almost there!", goalDone: "Goal complete!",
+        goalNum: "of {n}", progressTitle: "Progress", masteredTitle: "Words mastered", masteredDesc: "Fully learned through the ramp. The rest mature as you practice.",
+        toLevel: "To level", toLevelLeft: "{n} words left to learn", maxLevelT: "Top level", maxLevelD: "Whole ramp mastered 🎉",
+        focusTitle: "Focus topics", focusDesc: "Pick what interests you — about a third of new words will be on these, until they run out", focusEmpty: "No topic selected", goalAlmost: "Almost there!", goalDone: "Goal complete!",
         goalDescAlmost: "Close your reviews — the streak won't break.",
         goalDescDone: "All reviewed for today. Come back tomorrow.",
         suggestT: "Add more words",
@@ -105,7 +113,9 @@ const T = {
         gateLockedAdd: "Спершу склади екзамен пачки",
         gateProgress: "До екзамену пачки залишилось {n}",
         goal: "Денна ціль", streak: "днів", days: "днів",
-        goalNum: "з {n}", progressTitle: "Прогрес", masteredTitle: "Вивчено слів", masteredDesc: "Освоєно по всій рампі. Решта дозріє під час занять.", goalAlmost: "Майже у цілі!", goalDone: "Ціль виконано!",
+        goalNum: "з {n}", progressTitle: "Прогрес", masteredTitle: "Вивчено слів", masteredDesc: "Освоєно по всій рампі. Решта дозріє під час занять.",
+        toLevel: "До рівня", toLevelLeft: "Залишилось вивчити {n} слів", maxLevelT: "Максимальний рівень", maxLevelD: "Уся рампа освоєна 🎉",
+        focusTitle: "Теми у фокусі", focusDesc: "Обери, що цікавіше — близько третини нових слів буде з цих тем, поки не закінчаться", focusEmpty: "Тему не вибрано", goalAlmost: "Майже у цілі!", goalDone: "Ціль виконано!",
         goalDescAlmost: "Закривай повторення — серія не перерветься.",
         goalDescDone: "Сьогодні все повторено. Повертайся завтра.",
         suggestT: "Докинути слів",
@@ -143,7 +153,9 @@ const T = {
         gateLockedAdd: "Najpierw zdaj egzamin paczki",
         gateProgress: "Do egzaminu paczki zostało {n}",
         goal: "Cel dzienny", streak: "dni", days: "dni",
-        goalNum: "z {n}", progressTitle: "Postęp", masteredTitle: "Opanowane słowa", masteredDesc: "W pełni opanowane. Reszta dojrzeje w trakcie nauki.", goalAlmost: "Prawie cel!", goalDone: "Cel osiągnięty!",
+        goalNum: "z {n}", progressTitle: "Postęp", masteredTitle: "Opanowane słowa", masteredDesc: "W pełni opanowane. Reszta dojrzeje w trakcie nauki.",
+        toLevel: "Do poziomu", toLevelLeft: "Zostało {n} słów do nauczenia", maxLevelT: "Najwyższy poziom", maxLevelD: "Cała ścieżka opanowana 🎉",
+        focusTitle: "Tematy w centrum", focusDesc: "Wybierz, co cię interesuje — około jednej trzeciej nowych słów będzie z tych tematów, aż się skończą", focusEmpty: "Nie wybrano tematu", goalAlmost: "Prawie cel!", goalDone: "Cel osiągnięty!",
         goalDescAlmost: "Domknij powtórki — seria się nie przerwie.",
         goalDescDone: "Wszystko powtórzone na dziś. Wróć jutro.",
         suggestT: "Dorzuć słów",
@@ -181,7 +193,9 @@ const T = {
         gateLockedAdd: "Pirma išlaikyk pakuotės egzaminą",
         gateProgress: "Iki pakuotės egzamino liko {n}",
         goal: "Dienos tikslas", streak: "d.", days: "d.",
-        goalNum: "iš {n}", progressTitle: "Pažanga", masteredTitle: "Išmokti žodžiai", masteredDesc: "Visiškai išmokti. Likę subręs besimokant.", goalAlmost: "Beveik tikslas!", goalDone: "Tikslas pasiektas!",
+        goalNum: "iš {n}", progressTitle: "Pažanga", masteredTitle: "Išmokti žodžiai", masteredDesc: "Visiškai išmokti. Likę subręs besimokant.",
+        toLevel: "Iki lygio", toLevelLeft: "Liko išmokti {n} žodžių", maxLevelT: "Aukščiausias lygis", maxLevelD: "Visa rampa įveikta 🎉",
+        focusTitle: "Pasirinktos temos", focusDesc: "Pasirink, kas įdomu — apie trečdalis naujų žodžių bus iš šių temų, kol baigsis", focusEmpty: "Tema nepasirinkta", goalAlmost: "Beveik tikslas!", goalDone: "Tikslas pasiektas!",
         goalDescAlmost: "Užbaik kartojimus — serija nenutruks.",
         goalDescDone: "Šiandien viskas pakartota. Grįžk rytoj.",
         suggestT: "Pridėti žodžių",
@@ -228,6 +242,8 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const [error, setError] = useState(false);
 
     const [busy, setBusy] = useState("");      // ключ запускаемого набора/игры → спиннер
+    const [focusSaving, setFocusSaving] = useState(false);
+    const focusTopicsSel = useAuthStore((s) => s.user?.focusTopics);
     const autoFillTried = useRef(false);       // авто-добор пустой учёбы — один раз за монтирование
     const sessionLoading = useSessionStore((s) => s.loading); // следующая сессия ещё грузится фоном
 
@@ -356,9 +372,53 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     ) : null;
 
     const gc = (GCOLD[lang] || GCOLD.ru);
-    // Прогресс изучения: выучено (mastered) из всех слов учёбы — осмысленнее «дневной цели».
+    // Прогресс до следующего уровня CEFR: кольцо наполняется по текущему уровню рампы,
+    // подпись — следующий уровень (напр. «До уровня B1»). Данные из learning_stats.
     const masteredCount = by.mastered || 0;
-    const masteryFrac = total > 0 ? masteredCount / total : 0;
+    const curLevel = stats?.currentLevel || "A1";
+    const nextLevel = CEFR[CEFR.indexOf(curLevel) + 1] || null;
+    const band = (stats?.byLevel && stats.byLevel[curLevel]) || { mastered: 0, target: 0 };
+    const bandMastered = band.mastered || 0;
+    const bandTarget = band.target || 0;
+    const toNext = stats?.toNextLevel ?? Math.max(0, bandTarget - bandMastered);
+    const masteryFrac = bandTarget ? Math.min(1, bandMastered / bandTarget) : 0;
+
+    // Фокус на темах: ~треть новых слов будет из выбранных тем (бэк-смещение в suggest_words).
+    const focusTopics = focusTopicsSel || [];
+    const topicLabels = (interfaceTranslate[lang] || interfaceTranslate.ru).topics || {};
+    const toggleFocus = async (key) => {
+        if (focusSaving) return;
+        const next = focusTopics.includes(key) ? focusTopics.filter((x) => x !== key) : [...focusTopics, key];
+        setFocusSaving(true);
+        useAuthStore.setState((s) => ({ user: s.user ? { ...s.user, focusTopics: next } : s.user }));  // оптимистично
+        try { await api.setFocusTopics(next); } catch { /* /me перечитает позже */ }
+        setFocusSaving(false);
+    };
+    const focusPanel = (
+        <div className="spanel">
+            <div className="spanel__head"><span className="spanel__title">{t.focusTitle}</span></div>
+            <div className="spanel__body">
+                <div className="muted" style={{ fontSize: "var(--fs-13)", lineHeight: 1.45, marginBottom: "var(--sp-3)" }}>{t.focusDesc}</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {Object.keys(topicLabels).map((k) => {
+                        const on = focusTopics.includes(k);
+                        return (
+                            <button key={k} type="button" onClick={() => toggleFocus(k)} disabled={focusSaving}
+                                style={{
+                                    padding: "6px 12px", borderRadius: 999, cursor: "pointer",
+                                    fontSize: "var(--fs-13)", fontWeight: 600,
+                                    border: on ? "1px solid var(--fjord-600)" : "1px solid var(--border)",
+                                    background: on ? "var(--fjord-600)" : "var(--surface)",
+                                    color: on ? "#fff" : "var(--ink-2)",
+                                }}>
+                                {topicLabels[k]}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
+    );
     const goalPanel = (
         <div className="spanel">
             <div className="spanel__head">
@@ -376,15 +436,17 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                 style={{ stroke: "var(--st-master)" }} />
                         </svg>
                         <span className="ring__label">
-                            <span className="ring__num" style={{ color: total ? "var(--st-master)" : "var(--ink-3)" }}>
-                                {total ? masteredCount : "—"}
-                            </span>
-                            <span className="ring__den">{total ? fmt(t.goalNum, { n: total }) + " " + pl(lang, total, "word") : ""}</span>
+                            <span className="ring__num" style={{ color: "var(--st-master)" }}>{bandMastered}</span>
+                            <span className="ring__den">{fmt(t.goalNum, { n: bandTarget })}</span>
                         </span>
                     </div>
                     <div className="col" style={{ gap: 10 }}>
-                        <div style={{ fontSize: "var(--fs-15)", fontWeight: 700 }}>{t.masteredTitle}</div>
-                        <div className="muted" style={{ fontSize: "var(--fs-13)", lineHeight: 1.45 }}>{t.masteredDesc}</div>
+                        <div style={{ fontSize: "var(--fs-15)", fontWeight: 700 }}>
+                            {nextLevel ? `${t.toLevel} ${nextLevel}` : t.maxLevelT}
+                        </div>
+                        <div className="muted" style={{ fontSize: "var(--fs-13)", lineHeight: 1.45 }}>
+                            {nextLevel ? fmt(t.toLevelLeft, { n: toNext }) : t.maxLevelD}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -482,6 +544,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                 {/* RIGHT */}
                 <div className="col" style={{ gap: "var(--sp-5)" }}>
                     {goalPanel}
+                    {focusPanel}
 
                     {/* Status snapshot */}
                     <div className="spanel">

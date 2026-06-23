@@ -37,6 +37,7 @@ const _userFrom = (me) => ({
     hasPassword: !!me.hasPassword,
     onlinePrefs: me.onlinePrefs || null,
     gameMode: me.gameMode || null,
+    focusTopics: Array.isArray(me.focusTopics) ? me.focusTopics : [],
 });
 
 // Токенами владеет ApiService (единственный источник правды + localStorage).

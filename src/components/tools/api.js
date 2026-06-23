@@ -276,6 +276,7 @@ class ApiService {
         return this._send('GET', `/pool?${qs.toString()}`);
     }
     setUserTheme(theme) { return this._send('POST', '/me/theme', { theme }); }
+    setFocusTopics(topics) { return this._send('POST', '/me/focus_topics', { topics }); }
     setGamePrefs(prefs) { return this._send('POST', '/me/game_prefs', prefs); }
     saveCurrentDict(name) { return this._send('POST', '/me/current_dict', { name }); }
     getAdminStats() { return this._send('GET', '/admin/stats'); }
