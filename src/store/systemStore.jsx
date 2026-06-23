@@ -14,7 +14,8 @@ export const useSystemStore = create(persist(
         currentLanguage: "ukr",
         theme: "light", // light | dark
         toast: "", // глобальный тост (внизу слева); пусто = скрыт
-        toastType: "error", // error (красный) | success (зелёный) — стиль тоста
+        toastType: "error", // error (красный) | success (зелёный) | warning (жёлтый)
+        toastUrl: "", // если задан — тост кликабельный, ведёт на этот hash-маршрут (напр. "/moderation")
         showArticles: true, // показывать артикль (en/ei/et) перед сущ. на чипах слов
         showVerbAa: true,    // показывать «å» перед глаголами на чипах слов
         soundOn: true,       // звуки игры (онлайн-режим)
@@ -34,8 +35,9 @@ export const useSystemStore = create(persist(
         setTheme: (theme) => set(produce((state) => { state.theme = theme; })),
         toggleTheme: () => set(produce((state) => { state.theme = state.theme === "dark" ? "light" : "dark"; })),
 
-        // Показать/скрыть глобальный тост (пустая строка = скрыть). type: error (по умолч.) | success.
-        showToast: (text, type = "error") => set(produce((state) => { state.toast = text || ""; state.toastType = type; })),
+        // Показать/скрыть глобальный тост (пустая строка = скрыть). type: error|success|warning.
+        // url — необязательный hash-маршрут: тогда тост кликабельный и ведёт туда.
+        showToast: (text, type = "error", url = "") => set(produce((state) => { state.toast = text || ""; state.toastType = type; state.toastUrl = url || ""; })),
 
         setShowArticles: (v) => set(produce((state) => { state.showArticles = !!v; })),
         setShowVerbAa: (v) => set(produce((state) => { state.showVerbAa = !!v; })),

@@ -37,6 +37,7 @@ function App() {
     const theme = useSystemStore((s) => s.theme);
     const toast = useSystemStore((s) => s.toast);
     const toastType = useSystemStore((s) => s.toastType);
+    const toastUrl = useSystemStore((s) => s.toastUrl);
     const showToast = useSystemStore((s) => s.showToast);
     const pushEnabled = useSystemStore((s) => s.pushEnabled);
 
@@ -81,7 +82,7 @@ function App() {
             api.adminPending().then((r) => {
                 const c = r?.count || 0;
                 if (prev !== null && c > prev) {
-                    useSystemStore.getState().showToast(`${MOD_TOAST[currentLanguage] || MOD_TOAST.en}: ${c}`, "success");
+                    useSystemStore.getState().showToast(`${MOD_TOAST[currentLanguage] || MOD_TOAST.en}: ${c}`, "success", "/moderation");
                 }
                 prev = c;
             }).catch(() => {});
@@ -123,7 +124,7 @@ function App() {
             <NavigationBar />
             {showInitialLoader ? <BrandLoader size="lg" /> : routes}
             {showFooter && <Footer />}
-            <Toast text={toast} setText={showToast} type={toastType} />
+            <Toast text={toast} setText={showToast} type={toastType} url={toastUrl} />
             <UpdateBanner />
         </div>
     );
