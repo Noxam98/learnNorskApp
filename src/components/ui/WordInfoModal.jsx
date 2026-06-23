@@ -17,10 +17,8 @@ import api from "../tools/api.js";
 // wordId передаётся только для исходного слова словаря — тогда описание
 // тянется по id (генерится по требованию). Синонимы — всегда слова из пула.
 export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
-    const dictList = useWordsStore((s) => s.dictList);
-    const currentDictName = useWordsStore((s) => s.currentDictName);
-    const addFromPool = useWordsStore((s) => s.addFromPool);
-    const removeFromDict = useWordsStore((s) => s.removeFromDict);
+    const addToLearning = useWordsStore((s) => s.addToLearning);
+    const removeFromLearning = useWordsStore((s) => s.removeFromLearning);
     const loadData = useWordsStore((s) => s.loadData);
     const isAdmin = useAuthStore((s) => s.user?.isAdmin);
 
@@ -84,7 +82,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const LANG_LABEL = { ru: t.russian, ukr: t.ukrainian, en: t.english, pl: t.polish, lt: t.lithuanian };
 
     const openEdit = () => {
-        const tr = view?.translate || member?.translate || {};
+        const tr = view?.translate || {};
         const join = (a) => (Array.isArray(a) ? a.join(", ") : "");
         setEdit({
             no: join(tr.no) || view?.no || "",
@@ -164,7 +162,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
-        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null } : v)).catch(() => {});
+        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning } : v)).catch(() => {});
     };
 
     useEffect(() => {
@@ -175,10 +173,8 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     // Свайп/кнопка «Назад» закрывает карточку слова (на всех экранах, где она открыта)
     useHistoryClose(open, onClose);
 
-    const curDict = dictList.find((d) => d.dictName === currentDictName);
-    const member = curDict?.words.find((w) => (w.translate?.no?.[0] || "").toLowerCase() === (view?.no || "").toLowerCase());
-    const inDict = !!member;
-    const posKey = view?.part_of_speech ?? member?.part_of_speech;   // часть речи (из пула или словаря)
+    const inDict = !!view?.inLearning;   // слово в «Учёбе» пользователя
+    const posKey = view?.part_of_speech;
     const posText = posKey ? posLabelFull(posKey, t) : "";
 
     // Шапка слова для под-модалок: слово + озвучка + часть речи + перевод (как в основной модалке)
@@ -193,13 +189,16 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
         </div>
     ) : null;
 
+    // Добавить/убрать слово из «Учёбы» (оптимистично переключаем флаг).
     const toggleDict = async () => {
         if (!view || dictBusy) return;
+        const next = !inDict;
         setDictBusy(true);
+        setView((v) => (v ? { ...v, inLearning: next } : v));
         try {
-            if (inDict) await removeFromDict(member.id);
-            else await addFromPool(view.no);
-        } catch { /* офлайн — не критично */ }
+            if (next) await addToLearning(view.no);
+            else await removeFromLearning(view.no);
+        } catch { setView((v) => (v ? { ...v, inLearning: !next } : v)); }
         setDictBusy(false);
     };
 
@@ -213,7 +212,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const actionsNode = view ? (
         <ActionMenu label={t.actions || "Действия"} align="right" iconRight iconLg items={[
             { key: "dict", label: inDict ? (t.removeFromDict || "Из словаря") : (t.addToDict || "В словарь"),
-              icon: inDict ? "trash" : "plus", danger: inDict, disabled: dictBusy || !currentDictName, busy: dictBusy, onClick: toggleDict },
+              icon: inDict ? "trash" : "plus", danger: inDict, disabled: dictBusy, busy: dictBusy, onClick: toggleDict },
             { key: "edit", label: t.editWord || "Изменить слово", icon: "edit", onClick: openEdit },
             { key: "ask", label: t.askWord || "Спросить о слове", icon: "info", onClick: () => { setAskOpen(true); setFixOpen(false); } },
             { key: "revoice", label: t.revoice || "Переозвучить", icon: "volume", busy: revoiceBusy, disabled: revoiceBusy, onClick: revoice },

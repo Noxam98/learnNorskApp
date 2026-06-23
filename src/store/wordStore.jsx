@@ -89,6 +89,11 @@ export const useWordsStore = create((set, get) => ({
         await get().loadData(true);
     },
 
+    // Фаза 2: добавить/убрать слово из Базы напрямую в «Учёбу» (без личного словаря —
+    // бэк кладёт в скрытый авто-словарь studying=1). Не зависит от currentDict.
+    addToLearning: async (norwegian) => { await api.learningAdd(norwegian); return true; },
+    removeFromLearning: async (norwegian) => { await api.learningRemove(norwegian); },
+
     addNewDict: async (name) => {
         await api.createDict(name);
         await get().loadData(true);

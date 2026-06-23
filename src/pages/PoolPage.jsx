@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../components/tools/api.js";
 import { useWordsStore } from "../store/wordStore.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
@@ -44,11 +43,9 @@ export const PoolPage = () => {
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const t = interfaceTranslate[currentLanguage];
-    const addFromPool = useWordsStore((s) => s.addFromPool);
-    const removeFromDict = useWordsStore((s) => s.removeFromDict);
-    const createDictFromPool = useWordsStore((s) => s.createDictFromPool);
+    const addToLearning = useWordsStore((s) => s.addToLearning);
+    const removeFromLearning = useWordsStore((s) => s.removeFromLearning);
     const isAdmin = useAuthStore((s) => s.user?.isAdmin);
-    const navigate = useNavigate();
 
     const [q, setQ] = useState("");
     const [appliedQ, setAppliedQ] = useState("");
@@ -75,10 +72,6 @@ export const PoolPage = () => {
     const [descWord, setDescWord] = useState(null);   // слово, чьё описание открыто
     const [facets, setFacets] = useState({ topics: [], levels: [] });
     const [facetCounts, setFacetCounts] = useState(null); // динамические счётчики под текущий фильтр: { topics:{key:n} }
-    const [dictOpen, setDictOpen] = useState(false);
-    const [dictName, setDictName] = useState("");
-    const [creating, setCreating] = useState(false);
-    const [createErr, setCreateErr] = useState("");
     const firstRun = useRef(true);
 
     // Список тем с количеством (для фильтра) — один раз.
@@ -104,6 +97,12 @@ export const PoolPage = () => {
                 if (cancelled) return;
                 setItems(res.words || []);
                 setTotal(res.total || 0);
+                // отметить уже добавленные в Учёбу слова (флаг inLearning с бэка), не теряя сессионные добавления
+                setAdded((prev) => {
+                    const next = { ...prev };
+                    for (const w of (res.words || [])) if (w.inLearning) next[w.word] = true;
+                    return next;
+                });
                 if (res.facets) {
                     setFacetCounts({
                         topics: Object.fromEntries((res.facets.topics || []).map((x) => [x.topic, x.count])),
@@ -151,10 +150,12 @@ export const PoolPage = () => {
     const onPageSize = (n) => { setPage(1); setPageSize(n); };
     const clearFilters = () => { setPage(1); setTopics([]); setLevel(""); setMissing(""); setPos(""); };
 
+    // Добавить слово из Базы прямо в «Учёбу» (оптимистично отмечаем, при ошибке откатываем).
     const onAdd = async (word) => {
         setAddingId(word);
-        // храним id добавленного слова — он нужен, чтобы отменить добавление
-        try { const id = await addFromPool(word); setAdded((a) => ({ ...a, [word]: id || true })); } catch { /* ignore */ }
+        setAdded((a) => ({ ...a, [word]: true }));
+        try { await addToLearning(word); }
+        catch { setAdded((a) => { const n = { ...a }; delete n[word]; return n; }); }
         setAddingId(null);
     };
 
@@ -187,13 +188,12 @@ export const PoolPage = () => {
         setSmartBusy("");
     };
 
-    // Отмена: убрать слово из текущего словаря (не из общей базы).
+    // Убрать слово из «Учёбы» (оптимистично, при ошибке возвращаем отметку).
     const onRemove = async (word) => {
-        const id = added[word];
-        const drop = () => setAdded((a) => { const n = { ...a }; delete n[word]; return n; });
-        if (!id || id === true) { drop(); return; } // id неизвестен — просто сбрасываем отметку
+        setAdded((a) => { const n = { ...a }; delete n[word]; return n; });
         setAddingId(word);
-        try { await removeFromDict(id); drop(); } catch { /* ignore */ }
+        try { await removeFromLearning(word); }
+        catch { setAdded((a) => ({ ...a, [word]: true })); }
         setAddingId(null);
     };
 
@@ -214,30 +214,6 @@ export const PoolPage = () => {
     const hasQuery = appliedQ.trim() !== "";
     const showShow = hasQuery && !!poolExact;
     const showGen = hasQuery && !poolExact && !loading && total === 0;
-
-    // Имя нового словаря по фильтрам (с возможностью переписать вручную).
-    const autoDictName = () => {
-        const parts = [];
-        if (topics.length) parts.push(topics.map((k) => topicLabel(t, k)).join(", "));
-        if (level) parts.push(level);
-        if (appliedQ.trim()) parts.push(`«${appliedQ.trim()}»`);
-        return parts.length ? parts.join(" · ") : (t.allWordsName || "Все слова");
-    };
-
-    const openCreate = () => { setDictName(autoDictName()); setCreateErr(""); setDictOpen(true); };
-    const doCreate = async () => {
-        const name = dictName.trim();
-        if (!name) return;
-        setCreating(true); setCreateErr("");
-        try {
-            await createDictFromPool({ name, q: appliedQ, topics, level });
-            setDictOpen(false);
-            navigate("/words");
-        } catch {
-            setCreateErr(t.dictExistsError || "Не удалось создать словарь");
-        }
-        setCreating(false);
-    };
 
     return (
         <main className="shell words-main">
@@ -300,7 +276,7 @@ export const PoolPage = () => {
                 </div>
 
                 <div className="poolbar__row">
-                    {/* сортировка прижата влево; «В новый словарь» — справа */}
+                    {/* сортировка прижата влево */}
                     <SortControl value={sort} order={order}
                         options={sortOptions(t, ["alpha", "level", "freq", "added"])}
                         onChange={(s, o) => { setPage(1); setSort(s); setOrder(o); }} />
@@ -309,14 +285,6 @@ export const PoolPage = () => {
                         <Dropdown value={pageSize} onChange={(v) => onPageSize(Number(v))}
                             options={PAGE_SIZES.map((n) => ({ value: n, label: `${n} / ${t.pageSize || "стр."}` }))} />
                     </div>
-
-                    <div className="grow" />
-
-                    {(hasFilters || appliedQ.trim()) && (
-                        <button className="btn btn--primary btn--sm" disabled={!total} onClick={openCreate}>
-                            <Icon n="plus" sm /> {t.addAllToNewDict || "В новый словарь"} <b>{total}</b>
-                        </button>
-                    )}
                 </div>
             </div>
 
@@ -431,27 +399,6 @@ export const PoolPage = () => {
                     </button>
                 </div>
             )}
-
-            <Modal
-                open={dictOpen}
-                onClose={() => { if (!creating) setDictOpen(false); }}
-                title={t.newDictTitle || "Новый словарь"}
-                footer={<>
-                    <button className="btn btn--ghost" disabled={creating} onClick={() => setDictOpen(false)}>{t.cancel}</button>
-                    <button className="btn btn--primary" disabled={creating || !dictName.trim()} onClick={doCreate}>
-                        {creating ? <BtnSpinner /> : <Icon n="plus" sm />} {t.create || "Создать"}
-                    </button>
-                </>}
-            >
-                <div className="field">
-                    <label className="label">{t.dictNameLabel || "Название словаря"}</label>
-                    <input className="input" value={dictName} autoFocus
-                        onChange={(e) => setDictName(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === "Enter") doCreate(); }} />
-                    <span className="input-hint">{(t.willAddWords || "Будет добавлено слов")}: <b>{total}</b></span>
-                    {createErr && <span className="alert"><Icon n="x" sm /> {createErr}</span>}
-                </div>
-            </Modal>
 
             <Modal open={posRefOpen} onClose={() => setPosRefOpen(false)} title="Части речи — справочник" maxWidth={560}>
                 {POS_ORDER.map((key) => {

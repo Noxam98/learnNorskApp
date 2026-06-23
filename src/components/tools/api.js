@@ -310,6 +310,8 @@ class ApiService {
     learningDue(limit = 20) { return this._send('GET', `/learning/due?limit=${limit}`); }
     learningActivity(days = 119) { return this._send('GET', `/learning/activity?days=${days}`); }
     learningAnswer({ pool_id, correct, elapsed = null, mode = null, direction = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode, direction }); }
+    learningAdd(word) { return this._send('POST', '/learning/add', { word }); }       // добавить слово из Базы прямо в Учёбу
+    learningRemove(word) { return this._send('POST', '/learning/remove', { word }); } // убрать слово из Учёбы
     setDictStudying(dictId, studying) { return this._send('POST', `/dictionaries/${dictId}/studying`, { studying }); }
     learningSession(size = 20, lang = 'ru') { return this._send('GET', `/learning/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
     learningGate() { return this._send('GET', '/learning/gate'); }
