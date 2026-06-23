@@ -18,6 +18,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     const [chosen, setChosen] = useState(/** @type {string | null} */(null));
     const [options, setOptions] = useState(/** @type {string[] | null} */(null));
     const [subOf, setSubOf] = useState({}); // вариант → второй перевод (вторая строка кнопки)
+    const [armed, setArmed] = useState(false); // анти-ghost-click: свежий вопрос ~350мс не принимает выбор
 
     const loop = useGameLoop({
         gmode: "choice", words: wordsProp, onResult, onFinish, onExit, setGameState,
@@ -83,8 +84,18 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         return () => { cancelled = true; };
     }, [status, current, currentLanguage, mode]); // eslint-disable-line
 
-    const choose = (opt) => {
+    // «Взвод» выбора: новый вопрос (ASKING) ~350мс не принимает тап. Защищает от долетевшего с
+    // прошлого экрана клика/ghost-click при БЫСТРОМ переходе (верный ответ на повторе после ошибки
+    // переходит без паузы — иначе вариант мог «выбраться сам»). Сбрасывается на каждый новый вопрос.
+    useEffect(() => {
         if (status !== "ASKING") return;
+        setArmed(false);
+        const tm = setTimeout(() => setArmed(true), 350);
+        return () => clearTimeout(tm);
+    }, [status, current]);
+
+    const choose = (opt) => {
+        if (status !== "ASKING" || !armed) return;
         setChosen(opt);
         answer(opt === correctPrimary);
     };

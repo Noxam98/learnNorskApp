@@ -15,6 +15,7 @@ const FILL = { ru: "Вставь пропущенное слово", en: "Fill i
 
 export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false }) => {
     const [chosen, setChosen] = useState(null);
+    const [armed, setArmed] = useState(false); // анти-ghost-click: свежий вопрос ~350мс не принимает выбор
     const loop = useGameLoop({
         gmode: "cloze", words: wordsProp, onResult, onFinish, onExit, setGameState,
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100,
@@ -35,7 +36,16 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
         }
     }, [status]); // eslint-disable-line
 
-    const choose = (opt) => { if (status !== "ASKING") return; setChosen(opt); answer(opt === correct); };
+    // «Взвод» выбора: новый вопрос (ASKING) ~350мс не принимает тап — защита от долетевшего с прошлого
+    // экрана клика/ghost-click при быстром переходе (см. ChoiceGame). Сбрасывается на каждый новый вопрос.
+    useEffect(() => {
+        if (status !== "ASKING") return;
+        setArmed(false);
+        const tm = setTimeout(() => setArmed(true), 350);
+        return () => clearTimeout(tm);
+    }, [status, current]);
+
+    const choose = (opt) => { if (status !== "ASKING" || !armed) return; setChosen(opt); answer(opt === correct); };
     // после ошибки правильный показан — продолжаем тапом по любому месту (как в «Выборе»)
     const onStageClick = () => { if (status === "INCORRECT") advance(); };
 
