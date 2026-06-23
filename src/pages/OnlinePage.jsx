@@ -4,7 +4,6 @@ import confetti from "canvas-confetti";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { useAuthStore } from "../store/AuthStore.jsx";
-import { useWordsStore } from "../store/wordStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { StageTimer } from "../components/online/StageTimer.jsx";
 import { Countdown } from "../components/online/Countdown.jsx";
@@ -18,7 +17,7 @@ import { startRaceMusic, stopRaceMusic, playGallop, playFall } from "../componen
 import { hyphenate, hyLang } from "../components/ui/hyphenate.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
-const DEFAULT_SETTINGS = { game: "quiz", answer: "type", dir: "no2int", source: "pool", dictId: "", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
+const DEFAULT_SETTINGS = { game: "quiz", answer: "type", dir: "no2int", source: "pool", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
 
 // Полноэкранный игровой контейнер в теме приложения (а не в тёмной теме обычных игр).
 const SCREEN = {
@@ -63,7 +62,6 @@ export const OnlinePage = () => {
     const t = interfaceTranslate[lang];
     const to = t.online || {};
     const savedPrefs = useAuthStore((s) => s.user?.onlinePrefs);
-    const dictList = useWordsStore((s) => s.dictList);
 
     const wsRef = useRef(null);
     const [connected, setConnected] = useState(false);
@@ -360,7 +358,7 @@ export const OnlinePage = () => {
                 <button className="btn btn--outline" onClick={() => send({ type: "leave" })}><Icon n="arrow-left" sm /> {to.leave || "Выйти"}</button>
             </div>
 
-            <RoomForm open={editOpen} onClose={() => setEditOpen(false)} theme={theme} t={t} to={to} dicts={dictList}
+            <RoomForm open={editOpen} onClose={() => setEditOpen(false)} theme={theme} t={t} to={to}
                 title={to.roomSettings || "Настройки комнаты"} confirmLabel={t.save}
                 initial={s} initialName={room.name}
                 onConfirm={(name, settings) => {
@@ -473,7 +471,7 @@ export const OnlinePage = () => {
             </div></div>
         ) : <p className="muted" style={{ textAlign: "center", marginTop: "var(--sp-5)" }}>{to.noRooms || "Пока нет открытых комнат"}</p>}
 
-        <RoomForm open={createOpen} onClose={() => setCreateOpen(false)} theme={theme} t={t} to={to} dicts={dictList}
+        <RoomForm open={createOpen} onClose={() => setCreateOpen(false)} theme={theme} t={t} to={to}
             initial={savedPrefs} onConfirm={(name, settings) => {
                 send({ type: "create", name, settings });
                 api.setOnlinePrefs(settings).catch(() => {});
@@ -536,7 +534,7 @@ const Reveal = ({ open, children }) => (
 );
 
 
-const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", title, confirmLabel, onConfirm, dicts = [] }) => {
+const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", title, confirmLabel, onConfirm }) => {
     const [name, setName] = useState(initialName);
     const [s, setS] = useState({ ...DEFAULT_SETTINGS, ...(initial || {}) });
     const topics = t.topics || {};
@@ -563,7 +561,6 @@ const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", titl
         return next;
     });
 
-    const showLevelTheme = s.source !== "dict";
     const isAI = s.source === "ai";
     const topicVal = s.topic || "";   // бэкенд может вернуть null
     const invalid = customMode && isAI && !topicVal.trim();
@@ -572,8 +569,6 @@ const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", titl
     const themeOpts = [{ value: "", label: to.anyTopic || "Любая" },
         ...Object.keys(topics).map((k) => ({ value: k, label: topics[k] })),
         ...(isAI ? [{ value: "__custom__", label: (to.customTopic || "Своя тема").replace("✏️ ", ""), emoji: "✏️" }] : [])];
-    const dictOpts = [{ value: "", label: to.allDicts || "Все словари" },
-        ...dicts.map((d) => ({ value: String(d.id), label: d.dictName === "default" ? t.defaultDict : d.dictName, sub: `${d.words?.length || 0} ${to.wordsShort || "сл."}` }))];
 
     return (
         <div className="roomwrap" data-theme={theme} style={{ zIndex: 100 }}>
@@ -622,16 +617,10 @@ const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", titl
                             <Field label={to.wordSource || "Источник слов"}>
                                 <Seg value={s.source} onChange={setSource} options={[
                                     { value: "pool", label: to.sourcePool || "Пул", icon: "🌐" },
-                                    { value: "dict", label: to.sourceDict || "Словари", icon: "📚" },
                                     { value: "ai", label: to.sourceAi || "AI", icon: "✨" },
                                 ]} />
                             </Field>
-                            <Reveal open={s.source === "dict"}>
-                                <Field label={to.dictionary || "Словарь"} dep>
-                                    <Dropdown value={String(s.dictId || "")} options={dictOpts} onChange={(v) => set("dictId", v)} />
-                                </Field>
-                            </Reveal>
-                            <Reveal open={showLevelTheme}>
+                            <Reveal open>
                                 <div className="rf rf--dep">
                                     <div className="rf__lbl"><span className="rf__link" aria-hidden="true">↳</span><span className="rf__lbltxt">{to.level || "Уровень"} · {to.topic || "Тема"}</span></div>
                                     <div className="rcols">
