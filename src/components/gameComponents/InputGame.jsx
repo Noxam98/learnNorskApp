@@ -10,10 +10,13 @@ import { posLabel, wordForms } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
 import { GameKeyboard } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
+
+// «С опечаткой, но засчитано» — снисходительный зачёт на повторении (1 правка).
+const TYPO_OK = { ru: "С опечаткой — но засчитано:", ukr: "З опискою — але зараховано:", en: "Typo — but accepted:", pl: "Literówka — ale zaliczono:", lt: "Su klaida — bet užskaityta:" };
 
 export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false }) => {
     const isNo2Int = mode !== "int2no";
@@ -21,6 +24,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     // печатаем норвежское → наша клавиатура; для родного и при выборе «системная клавиатура» — штатный инпут
     const useKbd = !isNo2Int && !nativeKeyboard;
     const [input, setInput] = useState("");
+    const [typoOk, setTypoOk] = useState(false);   // ответ принят с одной опечаткой (повтор)
     const inputRef = useRef(/** @type {HTMLInputElement | null} */(null));
     // Очистить поле и (для штатного инпута) вернуть фокус — чтобы после ошибки сразу вводить заново.
     const resetInput = () => { setInput(""); setTimeout(() => inputRef.current?.focus(), 0); };
@@ -28,8 +32,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const loop = useGameLoop({
         gmode: "input", words: wordsProp, onResult, onFinish, onExit, setGameState,
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100,
-        onAdvance: () => setInput(""),   // новое слово — чистое поле
-        onWrong: resetInput,             // после ошибки — сбросить (и сфокусировать штатный инпут)
+        onAdvance: () => { setInput(""); setTypoOk(false); },   // новое слово — чистое поле
+        onWrong: () => { resetInput(); setTypoOk(false); },     // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
     const { t, currentLanguage, total, current, status, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, restart, backToSelection } = loop;
 
@@ -69,7 +73,17 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (sound && (status === "CORRECT" || status === "INCORRECT") && correctPrimary) speakText(correctPrimary, aLang).catch(() => {});
     }, [status]); // eslint-disable-line
 
-    const submit = (e) => { e?.preventDefault?.(); answer(acceptSet.some((a) => foldLoose(a) === foldLoose(input))); };
+    const submit = (e) => {
+        e?.preventDefault?.();
+        const fin = foldLoose(input);
+        if (acceptSet.some((a) => foldLoose(a) === fin)) { setTypoOk(false); answer(true); return; }
+        // на повторении прощаем ОДНУ опечатку (пропуск/перестановка/замена символа), но только для
+        // слов от 4 букв — на коротких 1 правка слишком близко к другому слову. Засчитываем как верно,
+        // но в фидбэке честно скажем «с опечаткой» и покажем правильное написание.
+        const typo = repeat && fin.length >= 4 && acceptSet.some((a) => { const fa = foldLoose(a); return fa.length >= 4 && withinOneEdit(fa, fin); });
+        setTypoOk(typo);
+        answer(typo);
+    };
     const dontKnow = () => { if (status === "ASKING") answer(false); };
 
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
@@ -107,7 +121,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(98,192,131,.16)", color: "var(--game-correct)" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-correct)" }}>{t.correctly}</div>
-                            {otherAccepted.length > 0 && <div className="fb-line">{t.alsoAccepted} <b lang={aLang}>{hyphenate(otherAccepted.join(", "), aLang)}</b></div>}
+                            {typoOk && <div className="fb-line">{TYPO_OK[currentLanguage] || TYPO_OK.en} <b lang={aLang}>{hyphenate(correctPrimary, aLang)}</b></div>}
+                            {!typoOk && otherAccepted.length > 0 && <div className="fb-line">{t.alsoAccepted} <b lang={aLang}>{hyphenate(otherAccepted.join(", "), aLang)}</b></div>}
                         </div>
                     )}
                     {status === "INCORRECT" && (

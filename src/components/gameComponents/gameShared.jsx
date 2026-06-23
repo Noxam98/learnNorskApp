@@ -71,6 +71,30 @@ export const uniq = (arr) => {
     return arr.filter((x) => x && !s.has(x.toLowerCase()) && s.add(x.toLowerCase()));
 };
 
+// «Отличается не более чем на одну правку» (OSA-1): подстановка одного символа, пропуск/лишний
+// символ ИЛИ перестановка двух соседних. Для снисходительного зачёта опечаток на повторении.
+// Строки сравнивать УЖЕ свёрнутыми (foldLoose). a === b обрабатываем выше как точное совпадение.
+export const withinOneEdit = (a, b) => {
+    if (a === b) return true;
+    const la = a.length, lb = b.length;
+    if (Math.abs(la - lb) > 1) return false;
+    if (la === lb) {
+        const idx = [];
+        for (let i = 0; i < la; i++) if (a[i] !== b[i]) { idx.push(i); if (idx.length > 2) return false; }
+        if (idx.length <= 1) return true;   // одна замена
+        // перестановка двух соседних
+        return idx.length === 2 && idx[1] === idx[0] + 1 && a[idx[0]] === b[idx[1]] && a[idx[1]] === b[idx[0]];
+    }
+    // длины различаются на 1 → пропуск/лишний символ: short вкладывается в long с одним пропуском
+    const [s, l] = la < lb ? [a, b] : [b, a];
+    let i = 0, j = 0, skipped = false;
+    while (i < s.length && j < l.length) {
+        if (s[i] === l[j]) { i++; j++; }
+        else { if (skipped) return false; skipped = true; j++; }
+    }
+    return true;
+};
+
 // Регулятор громкости звука прямо в окне игры/экзамена: кнопка-иконка открывает
 // поповер с ползунком 0..100%. 0% = выкл (synced с soundOn). Закрытие — тап вне.
 const SoundControl = ({ t }) => {
