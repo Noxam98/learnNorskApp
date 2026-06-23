@@ -18,7 +18,6 @@ import {
   RouterProvider,
   Navigate
 } from "react-router-dom";
-import { WordListPage } from './pages/WordListPage.jsx';
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import MyPage from "./pages/MyPage.jsx";

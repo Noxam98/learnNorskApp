@@ -225,21 +225,8 @@ class ApiService {
         return response.json();
     }
 
-    getData() { return this._send('GET', '/data'); }
-    createDict(name) { return this._send('POST', '/dictionaries', { name }); }
-    deleteDict(dictId) { return this._send('DELETE', `/dictionaries/${dictId}`); }
-    addWords(dictId, prompt) { return this._send('POST', `/dictionaries/${dictId}/words`, { prompt }); }
-    addPoolWord(dictId, norwegian) { return this._send('POST', `/dictionaries/${dictId}/add_pool`, { norwegian }); }
-    importDict(dict) { return this._send('POST', '/dictionaries/import', { name: dict.dictName, words: dict.words || [] }); }
-    createDictFromPool({ name, q = "", topics = [], level = "" }) {
-        return this._send('POST', '/dictionaries/from_pool', { name, q, topics, level });
-    }
-    deleteWord(wordId) { return this._send('DELETE', `/words/${wordId}`); }
-    moveWords(ids, dictId) { return this._send('POST', `/words/move`, { ids, dict_id: dictId }); }
-    refineWords(ids, lang) { return this._send('POST', `/words/refine`, { ids, lang }); }
-    editWord(wordId, override) { return this._send('PATCH', `/words/${wordId}`, override); }
+    getData() { return this._send('GET', '/data'); }   // набор слов пользователя (фон tts + fallback игр)
     recordResult(wordId, correct, mode = null, elapsed = null, direction = null) { return this._send('POST', `/words/${wordId}/result`, { correct, mode, elapsed, direction }); }
-    reportWord(wordId) { return this._send('POST', `/words/${wordId}/report`); }
     getWordDescription(wordId) { return this._send('GET', `/words/${wordId}/description`); }
     getDistractors(wordId, { n = 3, mode = 'no2int', lang = 'ru' } = {}) {
         return this._send('GET', `/words/${wordId}/distractors?n=${n}&mode=${mode}&lang=${encodeURIComponent(lang)}`);
@@ -279,7 +266,6 @@ class ApiService {
     setUserTheme(theme) { return this._send('POST', '/me/theme', { theme }); }
     setFocusTopics(topics) { return this._send('POST', '/me/focus_topics', { topics }); }
     setGamePrefs(prefs) { return this._send('POST', '/me/game_prefs', prefs); }
-    saveCurrentDict(name) { return this._send('POST', '/me/current_dict', { name }); }
     getAdminStats() { return this._send('GET', '/admin/stats'); }
     adminDeleteWord(word) { return this._send('DELETE', `/admin/pool/${encodeURIComponent(word)}`); }
     adminDescribeAll() { return this._send('POST', '/admin/describe_all'); }
@@ -312,7 +298,6 @@ class ApiService {
     learningAnswer({ pool_id, correct, elapsed = null, mode = null, direction = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode, direction }); }
     learningAdd(word) { return this._send('POST', '/learning/add', { word }); }       // добавить слово из Базы прямо в Учёбу
     learningRemove(word) { return this._send('POST', '/learning/remove', { word }); } // убрать слово из Учёбы
-    setDictStudying(dictId, studying) { return this._send('POST', `/dictionaries/${dictId}/studying`, { studying }); }
     learningSession(size = 20, lang = 'ru') { return this._send('GET', `/learning/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
     learningGate() { return this._send('GET', '/learning/gate'); }
     learningGateExam(lang = "ru") { return this._send('GET', `/learning/gate/exam?lang=${encodeURIComponent(lang)}`); }
