@@ -27,11 +27,11 @@ const TABS = [
     { key: "progress", icon: "chart" },
 ];
 const TAB_LABELS = {
-    ru:  { title: "Учёба", today: "Сегодня", words: "Все слова", exam: "Экзамен", progress: "Прогресс", hi: "Добрый день" },
-    en:  { title: "Study", today: "Today", words: "All words", exam: "Exam", progress: "Progress", hi: "Hello" },
-    ukr: { title: "Навчання", today: "Сьогодні", words: "Усі слова", exam: "Екзамен", progress: "Прогрес", hi: "Доброго дня" },
-    pl:  { title: "Nauka", today: "Dziś", words: "Wszystkie", exam: "Egzamin", progress: "Postęp", hi: "Dzień dobry" },
-    lt:  { title: "Mokymasis", today: "Šiandien", words: "Visi žodžiai", exam: "Egzaminas", progress: "Pažanga", hi: "Laba diena" },
+    ru:  { title: "Учёба", today: "Сегодня", words: "В работе", exam: "Экзамен", progress: "Прогресс", hi: "Добрый день" },
+    en:  { title: "Study", today: "Today", words: "In progress", exam: "Exam", progress: "Progress", hi: "Hello" },
+    ukr: { title: "Навчання", today: "Сьогодні", words: "В роботі", exam: "Екзамен", progress: "Прогрес", hi: "Доброго дня" },
+    pl:  { title: "Nauka", today: "Dziś", words: "W toku", exam: "Egzamin", progress: "Postęp", hi: "Dzień dobry" },
+    lt:  { title: "Mokymasis", today: "Šiandien", words: "Mokomasi", exam: "Egzaminas", progress: "Pažanga", hi: "Laba diena" },
 };
 
 export default function LearningPage() {
