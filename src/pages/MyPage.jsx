@@ -1,8 +1,7 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
-import { useWordsStore } from "../store/wordStore.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Dropdown } from "../components/ui/Dropdown.jsx";
@@ -11,9 +10,21 @@ import { Modal } from "../components/ui/Modal.jsx";
 import { BtnSpinner } from "../components/ui/Spinner.jsx";
 import api from "../components/tools/api.js";
 import { enablePush, disablePush } from "../components/tools/push.js";
-import { wordCount, dictCount } from "../components/tools/plural.js";
+import { wordCount } from "../components/tools/plural.js";
 
 const GOOGLE_ON = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+// Локальные подписи (статистика теперь из «Учёбы», а не из личных словарей).
+const MASTERED_LBL = { ru: "Выучено", ukr: "Вивчено", en: "Mastered", pl: "Opanowane", lt: "Išmokta" };
+const LEVEL_LBL = { ru: "Уровень", ukr: "Рівень", en: "Level", pl: "Poziom", lt: "Lygis" };
+const OPEN_STUDY = { ru: "Открыть Учёбу", ukr: "Відкрити Навчання", en: "Open Learning", pl: "Otwórz Naukę", lt: "Atverti mokymąsi" };
+const STATUS_ORDER = ["new", "learning", "review", "mastered"];
+const STATUS_LBL = {
+    new: { ru: "Новые", ukr: "Нові", en: "New", pl: "Nowe", lt: "Nauji" },
+    learning: { ru: "Учу", ukr: "Вчу", en: "Learning", pl: "Uczę się", lt: "Mokausi" },
+    review: { ru: "Повторение", ukr: "Повторення", en: "Review", pl: "Powtórka", lt: "Kartojimas" },
+    mastered: { ru: "Выучено", ukr: "Вивчено", en: "Mastered", pl: "Opanowane", lt: "Išmokta" },
+};
 
 const MyPage = () => {
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
@@ -73,7 +84,12 @@ const MyPage = () => {
     const nativeKeyboard = useSystemStore((state) => state.nativeKeyboard);
     const pushEnabled = useSystemStore((state) => state.pushEnabled);
     const [pushBusy, setPushBusy] = useState(false);
-    const dictList = useWordsStore((state) => state.dictList);
+    const [lstats, setLstats] = useState(null);
+    useEffect(() => {
+        let on = true;
+        api.learningStats().then((s) => { if (on) setLstats(s || null); }).catch(() => {});
+        return () => { on = false; };
+    }, []);
 
     // Пуш-напоминания: тумблер спрашивает разрешение и подписывает (вкл) или отписывает (выкл).
     const togglePush = async () => {
@@ -100,18 +116,12 @@ const MyPage = () => {
     };
 
 
-    const stats = useMemo(() => {
-        const allWords = dictList.flatMap((d) => d.words);
-        const correct = allWords.reduce((a, w) => a + (w.gameData?.correctFirstTry || 0), 0);
-        const wrong = allWords.reduce((a, w) => a + (w.gameData?.incorrectFirstTry || 0), 0);
-        const attempts = correct + wrong;
-        const accuracy = attempts ? Math.round((correct / attempts) * 100) : 0;
-        const mastered = allWords.filter(
-            (w) => (w.gameData?.correctFirstTry || 0) > 0 && (w.gameData?.correctFirstTry || 0) > (w.gameData?.incorrectFirstTry || 0)
-        ).length;
-        const maxWords = Math.max(1, ...dictList.map((d) => d.words.length));
-        return { total: allWords.length, dicts: dictList.length, attempts, accuracy, mastered, maxWords };
-    }, [dictList]);
+    // Статистика «Учёбы» (единый набор слов, SRS) — вместо личных словарей.
+    const byStatus = lstats?.byStatus || {};
+    const total = lstats?.total || 0;
+    const masteredTotal = (byStatus.mastered || 0) + (byStatus.archived || 0);
+    const accuracy = lstats?.accuracy; // % | null
+    const currentLevel = lstats?.currentLevel || "—";
 
     const username = user?.username || "guest";
     const displayName = (user?.name || "").trim() || username;
@@ -125,7 +135,7 @@ const MyPage = () => {
                 <div className="pavatar">{avatar}</div>
                 <div className="phead__meta">
                     <div className="phead__name">{displayName}</div>
-                    <div className="phead__sub">{user?.name ? `@${username} · ` : ""}{dictCount(stats.dicts, currentLanguage)} · {wordCount(stats.total, currentLanguage)}</div>
+                    <div className="phead__sub">{user?.name ? `@${username} · ` : ""}{wordCount(total, currentLanguage)} · {LEVEL_LBL[currentLanguage] || LEVEL_LBL.en} {currentLevel}</div>
                 </div>
                 <button className="btn btn--outline" onClick={logOut}><Icon n="logout" sm /> {t.logout}</button>
             </div>
@@ -133,44 +143,47 @@ const MyPage = () => {
             <div className="stats">
                 <div className="scard">
                     <div className="scard__ic" style={{ background: "var(--fjord-50)", color: "var(--fjord-600)" }}><Icon n="type" /></div>
-                    <div className="scard__n">{stats.total}</div>
+                    <div className="scard__n">{total}</div>
                     <div className="scard__l">{t.wordsTotal}</div>
                 </div>
                 <div className="scard">
-                    <div className="scard__ic" style={{ background: "var(--ember-50)", color: "var(--ember-600)" }}><Icon n="layers" /></div>
-                    <div className="scard__n">{stats.dicts}</div>
-                    <div className="scard__l">{t.dictsLabel}</div>
-                </div>
-                <div className="scard">
                     <div className="scard__ic" style={{ background: "var(--success-bg)", color: "var(--success)" }}><Icon n="target" /></div>
-                    <div className="scard__n">{stats.chosen}</div>
-                    <div className="scard__l">{t.chosenForGame}</div>
+                    <div className="scard__n">{masteredTotal}</div>
+                    <div className="scard__l">{MASTERED_LBL[currentLanguage] || MASTERED_LBL.en}</div>
                 </div>
                 <div className="scard">
-                    <div className="scard__ic" style={{ background: "var(--pos-adj-bg)", color: "var(--pos-adj)" }}><Icon n="sparkles" /></div>
-                    <div className="scard__n">{stats.withDesc}</div>
-                    <div className="scard__l">{t.withDescription}</div>
+                    <div className="scard__ic" style={{ background: "var(--pos-adj-bg)", color: "var(--pos-adj)" }}><Icon n="check" /></div>
+                    <div className="scard__n">{accuracy == null ? "—" : accuracy + "%"}</div>
+                    <div className="scard__l">{t.accuracy}</div>
+                </div>
+                <div className="scard">
+                    <div className="scard__ic" style={{ background: "var(--ember-50)", color: "var(--ember-600)" }}><Icon n="graduation" /></div>
+                    <div className="scard__n">{currentLevel}</div>
+                    <div className="scard__l">{LEVEL_LBL[currentLanguage] || LEVEL_LBL.en}</div>
                 </div>
             </div>
 
             <div className="pgrid">
                 <div className="panel">
                     <div className="panel__head">
-                        <span className="panel__title">{t.dictionaries}</span>
-                        <span className="muted-3" style={{ fontSize: "var(--fs-13)" }}>{t.word.toLowerCase()}</span>
+                        <span className="panel__title">{t.navBar.study || "Учёба"}</span>
+                        <span className="muted-3" style={{ fontSize: "var(--fs-13)" }}>{wordCount(total, currentLanguage)}</span>
                     </div>
                     <div className="panel__body">
-                        {dictList.map((d, i) => {
-                            const name = d.dictName === "default" ? t.defaultDict : d.dictName;
-                            const pct = Math.round((d.words.length / stats.maxWords) * 100);
-                            const colors = ["var(--fjord-600)", "var(--ember-600)", "var(--pos-adj)"];
+                        {STATUS_ORDER.map((k, i) => {
+                            const n = byStatus[k] || 0;
+                            const pct = total ? Math.round((n / total) * 100) : 0;
+                            const colors = ["var(--ink-3)", "var(--fjord-600)", "var(--ember-600)", "var(--success)"];
                             return (
-                                <div className="drow" key={d.dictName}>
-                                    <div className="drow__top"><span className="drow__name">{name}</span><span className="drow__val">{d.words.length}</span></div>
+                                <div className="drow" key={k}>
+                                    <div className="drow__top"><span className="drow__name">{STATUS_LBL[k][currentLanguage] || STATUS_LBL[k].en}</span><span className="drow__val">{n}</span></div>
                                     <div className="bar"><span style={{ width: `${pct}%`, background: colors[i % colors.length] }} /></div>
                                 </div>
                             );
                         })}
+                        <button className="btn btn--outline" style={{ marginTop: "var(--sp-3)" }} onClick={() => navigate("/learning")}>
+                            <Icon n="graduation" sm /> {OPEN_STUDY[currentLanguage] || OPEN_STUDY.en}
+                        </button>
                     </div>
                 </div>
 
