@@ -265,7 +265,7 @@ class ApiService {
     getSynonyms(wordId, { n = 5, lang = 'ru' } = {}) {
         return this._send('GET', `/words/${wordId}/synonyms?n=${n}&lang=${encodeURIComponent(lang)}`);
     }
-    searchPool(q) { return this._send('GET', `/pool/search?q=${encodeURIComponent(q)}`); }
+    searchPool(q, lang) { return this._send('GET', `/pool/search?q=${encodeURIComponent(q)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`); }
     generateWord(word) { return this._send('POST', '/pool/generate', { word }); }
     getPool({ q = "", limit = 60, offset = 0, topics = [], level = "", sort = "alpha", order = "asc", missing = "", pos = "" } = {}) {
         const qs = new URLSearchParams({ limit, offset, sort, order });

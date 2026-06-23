@@ -10,6 +10,7 @@ import { Dropdown } from "../components/ui/Dropdown.jsx";
 import { SortControl } from "../components/ui/SortControl.jsx";
 import { sortOptions } from "../components/ui/sortOptions.js";
 import { Modal } from "../components/ui/Modal.jsx";
+import { FilterChipsPopup } from "../components/ui/FilterChipsPopup.jsx";
 import { WordInfoModal } from "../components/ui/WordInfoModal.jsx";
 import { BtnSpinner, SkeletonWordlist, BrandLoader } from "../components/ui/Spinner.jsx";
 import { SearchBox } from "../components/ui/SearchBox.jsx";
@@ -20,7 +21,11 @@ import { ttsLang } from "../components/ui/tts.js";
 const SEARCH_DEBOUNCE_MS = 550;
 const PAGE_SIZES = [30, 60, 120];
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
-const TOPICS_TOGGLE = { ru: "Темы", ukr: "Теми", en: "Topics", pl: "Tematy", lt: "Temos" };
+const CATEGORIES_LBL = { ru: "Категории", ukr: "Категорії", en: "Categories", pl: "Kategorie", lt: "Kategorijos" };
+const POS_TOGGLE = { ru: "Часть речи", ukr: "Частина мови", en: "Part of speech", pl: "Część mowy", lt: "Kalbos dalis" };
+const CREATE_LBL = { ru: "Создать", ukr: "Створити", en: "Create", pl: "Utwórz", lt: "Sukurti" };
+const FILTERS_LBL = { ru: "Фильтры", ukr: "Фільтри", en: "Filters", pl: "Filtry", lt: "Filtrai" };
+const DATA_LBL = { ru: "Данные", ukr: "Дані", en: "Data", pl: "Dane", lt: "Duomenys" };
 
 const topicLabel = (t, key) => t.topics?.[key] || key;
 
@@ -58,6 +63,8 @@ export const PoolPage = () => {
     const [missing, setMissing] = useState(""); // админ: "" | embedding | description | tts | meta | forms
     const [pos, setPos] = useState("");          // фильтр по части речи (ключ pos.js: noun/verb/adj/...)
     const [posRefOpen, setPosRefOpen] = useState(false); // справочник частей речи
+    const [filtersOpen, setFiltersOpen] = useState(false);        // попап «Категории + Часть речи»
+    const [adminFiltersOpen, setAdminFiltersOpen] = useState(false); // попап «Данные» (админ: без эмбеддинга/...)
     const [loading, setLoading] = useState(true);
     const [searchPhase, setSearchPhase] = useState("idle"); // idle | counting | searching
     const [addingId, setAddingId] = useState(null);
@@ -68,7 +75,6 @@ export const PoolPage = () => {
     const [descWord, setDescWord] = useState(null);   // слово, чьё описание открыто
     const [facets, setFacets] = useState({ topics: [], levels: [] });
     const [facetCounts, setFacetCounts] = useState(null); // динамические счётчики под текущий фильтр: { topics:{key:n} }
-    const [topicsOpen, setTopicsOpen] = useState(() => (typeof window !== "undefined" ? window.innerWidth > 700 : true));
     const [dictOpen, setDictOpen] = useState(false);
     const [dictName, setDictName] = useState("");
     const [creating, setCreating] = useState(false);
@@ -115,11 +121,11 @@ export const PoolPage = () => {
         const term = appliedQ.trim();
         if (!term) { setSmart([]); return; }
         let cancelled = false;
-        api.searchPool(term)
+        api.searchPool(term, currentLanguage)
             .then((r) => { if (!cancelled) setSmart((r?.results || []).filter((x) => !x.inPool).slice(0, 6)); })
             .catch(() => { if (!cancelled) setSmart([]); });
         return () => { cancelled = true; };
-    }, [appliedQ]);
+    }, [appliedQ, currentLanguage]);
 
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
     useEffect(() => { if (page > totalPages) setPage(totalPages); }, [totalPages]); // eslint-disable-line
@@ -214,73 +220,45 @@ export const PoolPage = () => {
                 </div>
             </div>
 
-            <SearchBox value={q} onChange={setQ} placeholder={t.poolSearchPlaceholder || t.inputPlaceholder}
-                phase={searchPhase} debounceMs={SEARCH_DEBOUNCE_MS} count={total}
-                style={{ marginBottom: "var(--sp-3)" }} />
+            <div style={{ display: "flex", gap: "var(--sp-2)", alignItems: "flex-start", marginBottom: "var(--sp-3)" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <SearchBox value={q} onChange={setQ} placeholder={t.poolSearchPlaceholder || t.inputPlaceholder}
+                        phase={searchPhase} debounceMs={SEARCH_DEBOUNCE_MS} count={total} />
+                </div>
+                {/* слова нет в выдаче → создать через ИИ */}
+                {appliedQ.trim() && !items.some((w) => (w.word || "").toLowerCase() === appliedQ.trim().toLowerCase()) && (
+                    <button className="btn btn--primary btn--sm" disabled={!!smartBusy} style={{ flex: "none", whiteSpace: "nowrap" }}
+                        onClick={() => onGenerateAdd(appliedQ.trim())}>
+                        {smartBusy === appliedQ.trim() ? <BtnSpinner /> : <Icon n="sparkles" sm />} {CREATE_LBL[currentLanguage] || CREATE_LBL.en}
+                    </button>
+                )}
+            </div>
 
             {/* Фильтр-бар: темы (сворачиваемые), уровень, сортировка, размер страницы */}
             <div className="poolbar">
-                {facets.topics.length > 0 && (
-                    <div className="poolbar__topics">
-                        <button className={`fchip fchip--toggle${topics.length ? " is-on" : ""}`} onClick={() => setTopicsOpen((o) => !o)}>
-                            <Icon n="grid" sm /> {TOPICS_TOGGLE[currentLanguage] || TOPICS_TOGGLE.en}
-                            {topics.length > 0 && <span className="fchip__n">{topics.length}</span>}
-                            <Icon n="chevron-down" sm className="fchip__chev" style={{ transform: topicsOpen ? "rotate(180deg)" : "none" }} />
-                        </button>
-                        <div className="seg">
-                            {LEVELS.map((lv) => (
-                                <button key={lv} className={`seg__btn${level === lv ? " is-on" : ""}`}
-                                    onClick={() => pickLevel(lv)}>{lv}</button>
-                            ))}
-                        </div>
-                        {hasFilters && (
-                            <button className="fchip fchip--clear" onClick={clearFilters}>
-                                <Icon n="x" sm /> {t.clearFilters || "Сброс"}
-                            </button>
-                        )}
-                        {topicsOpen && (
-                            <div className="poolbar__chips">
-                                {facets.topics.map(({ topic, count }) => {
-                                    // фасеты загружены → отсутствие темы значит 0 (а не статичный счёт)
-                                    const c = facetCounts ? (facetCounts.topics[topic] || 0) : count;
-                                    const on = topics.includes(topic);
-                                    return (
-                                        <button key={topic}
-                                            className={`fchip${on ? " is-on" : ""}${(!on && c === 0) ? " is-empty" : ""}`}
-                                            disabled={!on && c === 0}
-                                            onClick={() => toggleTopic(topic)}>
-                                            {topicLabel(t, topic)} <span className="fchip__n">{c}</span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        )}
-                    </div>
-                )}
-
+                {/* Фильтры — в попапах с чипами (переиспользуемый FilterChipsPopup) */}
                 <div className="poolbar__row" style={{ flexWrap: "wrap", gap: "var(--sp-2)" }}>
-                    <span className="muted" style={{ fontSize: "var(--fs-13)" }}>Часть речи:</span>
-                    {POS_ORDER.map((key) => (
-                        <button key={key} className={`fchip${pos === key ? " is-on" : ""}`} onClick={() => pickPos(key)}>
-                            {posLabel(posApiKey(key), t)}
-                        </button>
-                    ))}
-                    <button className="fchip fchip--toggle" onClick={() => setPosRefOpen(true)} title="Что значат части речи">
-                        <Icon n="info" sm /> справка
+                    <button className={`fchip fchip--toggle${(topics.length || pos) ? " is-on" : ""}`} onClick={() => setFiltersOpen(true)}>
+                        <Icon n="filter" sm /> {FILTERS_LBL[currentLanguage] || FILTERS_LBL.en}
+                        {(topics.length + (pos ? 1 : 0)) > 0 && <span className="fchip__n">{topics.length + (pos ? 1 : 0)}</span>}
                     </button>
-                </div>
-
-                {isAdmin && (
-                    <div className="poolbar__row" style={{ flexWrap: "wrap", gap: "var(--sp-2)" }}>
-                        <span className="muted" style={{ fontSize: "var(--fs-13)" }}>Админ · без:</span>
-                        {[["embedding", "эмбеддинга"], ["description", "описания"], ["tts", "озвучки"], ["meta", "уровня/тем"], ["forms", "форм"]].map(([val, name]) => (
-                            <button key={val} className={`fchip${missing === val ? " is-on" : ""}`} onClick={() => pickMissing(val)}>
-                                {name}
-                            </button>
+                    {isAdmin && (
+                        <button className={`fchip fchip--toggle${missing ? " is-on" : ""}`} onClick={() => setAdminFiltersOpen(true)}>
+                            <Icon n="database" sm /> {DATA_LBL[currentLanguage] || DATA_LBL.en}
+                            {missing && <span className="fchip__n">1</span>}
+                        </button>
+                    )}
+                    <div className="seg">
+                        {LEVELS.map((lv) => (
+                            <button key={lv} className={`seg__btn${level === lv ? " is-on" : ""}`} onClick={() => pickLevel(lv)}>{lv}</button>
                         ))}
-                        {(missing || pos) && <span className="muted" style={{ fontSize: "var(--fs-13)" }}>найдено: <b>{total}</b></span>}
                     </div>
-                )}
+                    {hasFilters && (
+                        <button className="fchip fchip--clear" onClick={clearFilters}>
+                            <Icon n="x" sm /> {t.clearFilters || "Сброс"}
+                        </button>
+                    )}
+                </div>
 
                 <div className="poolbar__row">
                     {(hasFilters || appliedQ.trim()) && (
@@ -303,7 +281,7 @@ export const PoolPage = () => {
             </div>
 
             {/* «Нет в базе» — добавить новое слово через ИИ. Показываем при активном поиске. */}
-            {appliedQ.trim() && (smart.length > 0 || true) && (
+            {appliedQ.trim() && smart.length > 0 && (
                 <div className="spanel" style={{ margin: "0 0 var(--sp-3)", padding: "var(--sp-3) var(--sp-4)" }}>
                     <div style={{ fontSize: "var(--fs-13)", color: "var(--ink-3)", marginBottom: 8 }}>
                         {t.poolGenHint || "Нет нужного слова? Добавить через ИИ:"}
@@ -316,13 +294,6 @@ export const PoolPage = () => {
                                 {smartBusy === w.word && <BtnSpinner />}
                             </button>
                         ))}
-                        {!smart.some((w) => w.word.toLowerCase() === appliedQ.trim().toLowerCase()) && (
-                            <button type="button" disabled={!!smartBusy} onClick={() => onGenerateAdd(appliedQ.trim())}
-                                style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 999, cursor: "pointer", border: "1px dashed var(--fjord-600)", background: "transparent", color: "var(--fjord-600)", fontWeight: 600, fontSize: "var(--fs-13)" }}>
-                                <Icon n="sparkles" sm /> {(t.poolGen || "Сгенерировать")} «{appliedQ.trim()}»
-                                {smartBusy === appliedQ.trim() && <BtnSpinner />}
-                            </button>
-                        )}
                     </div>
                 </div>
             )}
@@ -455,6 +426,32 @@ export const PoolPage = () => {
                     );
                 })}
             </Modal>
+
+            {/* Попап «Фильтры»: категории (мульти) + часть речи (одиночный) — переиспользуемый компонент */}
+            <FilterChipsPopup open={filtersOpen} onClose={() => setFiltersOpen(false)} title={FILTERS_LBL[currentLanguage] || FILTERS_LBL.en}
+                sections={[
+                    {
+                        key: "cat", title: CATEGORIES_LBL[currentLanguage] || CATEGORIES_LBL.en, multi: true, selected: topics,
+                        onPick: toggleTopic,
+                        options: facets.topics.map(({ topic, count }) => {
+                            const c = facetCounts ? (facetCounts.topics[topic] || 0) : count;
+                            return { value: topic, label: topicLabel(t, topic), count: c, disabled: !topics.includes(topic) && c === 0 };
+                        }),
+                    },
+                    {
+                        key: "pos", title: POS_TOGGLE[currentLanguage] || POS_TOGGLE.en, multi: false, selected: pos, onPick: pickPos,
+                        options: POS_ORDER.map((key) => ({ value: key, label: posLabel(posApiKey(key), t) })),
+                    },
+                ]} />
+
+            {/* Попап «Данные» (только админ): без эмбеддинга/описания/озвучки/уровня-тем/форм */}
+            {isAdmin && (
+                <FilterChipsPopup open={adminFiltersOpen} onClose={() => setAdminFiltersOpen(false)} title={DATA_LBL[currentLanguage] || DATA_LBL.en}
+                    sections={[{
+                        key: "missing", title: "Без чего", multi: false, selected: missing, onPick: pickMissing,
+                        options: [["embedding", "эмбеддинга"], ["description", "описания"], ["tts", "озвучки"], ["meta", "уровня/тем"], ["forms", "форм"]].map(([value, label]) => ({ value, label })),
+                    }]} />
+            )}
 
             <WordInfoModal open={!!descWord} word={descWord}
                 lang={currentLanguage} t={t} onClose={() => setDescWord(null)} />
