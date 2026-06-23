@@ -203,7 +203,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             if (next) await addToLearning(view.no);
             else await removeFromLearning(view.no);
             const phrase = next ? (ADDED_LRN[lang] || ADDED_LRN.en) : (REMOVED_LRN[lang] || REMOVED_LRN.en);
-            useSystemStore.getState().showToast(`«${view.no}» ${phrase}`, "success");
+            useSystemStore.getState().showToast(`«${view.no}» ${phrase}`, next ? "success" : "error");
         } catch { setView((v) => (v ? { ...v, inLearning: !next } : v)); }
         setDictBusy(false);
     };
