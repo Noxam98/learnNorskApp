@@ -3,7 +3,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "./Icon.jsx";
 
 // Лёгкий модал в стиле дизайн-системы.
-export const Modal = ({ open, onClose, title, children, footer, headerExtra, cornerClose = false, maxWidth = 460 }) => {
+// Крестик — единый для всех модалок: круглая кнопка, вынесенная за правый верхний угол
+// (как в карточке слова). Поэтому карточка всегда overflow:visible.
+export const Modal = ({ open, onClose, title, children, footer, headerExtra, maxWidth = 460 }) => {
     // Пока модалка открыта — блокируем прокрутку фона (свайп под модалкой).
     useEffect(() => {
         if (!open) return;
@@ -36,17 +38,15 @@ export const Modal = ({ open, onClose, title, children, footer, headerExtra, cor
                         width: "100%", maxWidth, boxShadow: "var(--shadow-lg)",
                         display: "flex", flexDirection: "column", position: "relative",
                         maxHeight: "calc(100dvh - 2 * var(--sp-5))",
-                        // cornerClose: крестик «выносится» за угол → не обрезаем
-                        overflow: cornerClose ? "visible" : "hidden",
+                        // крестик «выносится» за угол → карточку не обрезаем
+                        overflow: "visible",
                         borderRadius: "var(--r-lg)",
                     }}
                 >
-                    {/* Крестик — абсолютно в правом верхнем углу. В режиме cornerClose вынесен за угол transform-ом. */}
+                    {/* Крестик — круглая кнопка, вынесенная за правый верхний угол (единый стиль, как в карточке слова). */}
                     <button className="iconbtn" onClick={onClose} aria-label="Закрыть"
-                        style={cornerClose
-                            ? { position: "absolute", top: "var(--sp-5)", right: "var(--sp-5)", transform: "translate(100%, -100%)", zIndex: 3, background: "var(--surface)", boxShadow: "var(--shadow-sm)" }
-                            : { position: "absolute", top: "var(--sp-4)", right: "var(--sp-4)", zIndex: 2 }}><Icon n="x" /></button>
-                    <div className="modalhead" style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", paddingBottom: 0, paddingLeft: "var(--sp-5)", paddingRight: cornerClose ? "var(--sp-5)" : "calc(var(--sp-5) + 40px)" }}>
+                        style={{ position: "absolute", top: "var(--sp-5)", right: "var(--sp-5)", transform: "translate(100%, -100%)", zIndex: 3, background: "var(--surface)", boxShadow: "var(--shadow-sm)" }}><Icon n="x" /></button>
+                    <div className="modalhead" style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", paddingBottom: 0, paddingLeft: "var(--sp-5)", paddingRight: "var(--sp-5)" }}>
                         <span className="panel__title" style={{ fontSize: "var(--fs-18)", fontWeight: 700, minWidth: 0 }}>{title}</span>
                         {headerExtra && <span style={{ flexShrink: 0 }}>{headerExtra}</span>}
                     </div>

@@ -224,7 +224,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     return (
         <>
-        <Modal open={open} onClose={onClose} title={titleNode} headerExtra={actionsNode} cornerClose>
+        <Modal open={open} onClose={onClose} title={titleNode} headerExtra={actionsNode}>
             {/* Само слово + озвучка — крупно, слитно; под ним перевод. Подтянуто к части речи сверху. */}
             <div className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "nowrap", minWidth: 0, marginTop: "calc(-1 * var(--sp-3))", marginBottom: view?.translate?.[lang]?.length ? "var(--sp-1)" : "var(--sp-4)" }}>
                 <span style={{ fontSize: "var(--fs-24)", fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{view?.no || word || ""}</span>
