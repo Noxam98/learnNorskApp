@@ -68,7 +68,9 @@ export const PoolPage = () => {
     const [added, setAdded] = useState({});
     const [smart, setSmart] = useState([]);          // слова не из пула (лексикон/fuzzy) под текущий запрос
     const [poolExact, setPoolExact] = useState(null); // точное совпадение запроса со словом из пула (есть в базе)
-    const [highlightWord, setHighlightWord] = useState(""); // слово, подсвечиваемое после «Показать»
+    const [highlightWord, setHighlightWord] = useState(""); // слово, подсвечиваемое после «Показать» (per-card)
+    const [highlightBox, setHighlightBox] = useState(null);  // одна обводка вокруг группы смежных карточек (омонимы)
+    const listWrapRef = useRef(null);                        // контейнер списка (для расчёта рамки)
     const [smartBusy, setSmartBusy] = useState("");  // слово, которое сейчас генерим+добавляем
     const [reloadTick, setReloadTick] = useState(0); // форс-обновление списка после генерации
     const [descWord, setDescWord] = useState(null);   // слово, чьё описание открыто
@@ -162,13 +164,34 @@ export const PoolPage = () => {
         setAddingId(null);
     };
 
-    // «Показать» — проскроллить к карточке слова в списке и подсветить её.
+    // «Показать» — проскроллить к карточке слова и подсветить. Для омонимов (несколько карточек
+    // одного слова): если они идут подряд — одна общая обводка вокруг группы; иначе — подсветка
+    // каждой по отдельности. Координаты рамки считаем относительно контейнера (стабильны при скролле).
     const onShow = (word) => {
         if (!word) return;
+        setHighlightBox(null);
+        setHighlightWord("");
         try {
             const sel = (typeof CSS !== "undefined" && CSS.escape) ? CSS.escape(word) : word;
-            const el = document.querySelector(`.wcard[data-word="${sel}"]`);
-            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+            const wrap = listWrapRef.current;
+            const cards = wrap ? [...wrap.querySelectorAll(`.wcard[data-word="${sel}"]`)] : [];
+            if (cards[0]) cards[0].scrollIntoView({ behavior: "smooth", block: "center" });
+            if (wrap && cards.length > 1) {
+                const all = [...wrap.querySelectorAll(".wcard")];
+                const idx = cards.map((c) => all.indexOf(c));
+                const contiguous = Math.max(...idx) - Math.min(...idx) + 1 === cards.length;
+                if (contiguous) {
+                    const cont = wrap.getBoundingClientRect();
+                    const rs = cards.map((c) => c.getBoundingClientRect());
+                    const top = Math.min(...rs.map((r) => r.top)) - cont.top;
+                    const left = Math.min(...rs.map((r) => r.left)) - cont.left;
+                    const w = Math.max(...rs.map((r) => r.right)) - cont.left - left;
+                    const h = Math.max(...rs.map((r) => r.bottom)) - cont.top - top;
+                    setHighlightBox({ top, left, w, h });
+                    setTimeout(() => setHighlightBox(null), 1800);
+                    return; // одна обводка — per-card не включаем
+                }
+            }
         } catch { /* */ }
         setHighlightWord(word);
         setTimeout(() => setHighlightWord((cur) => (cur === word ? "" : cur)), 1800);
@@ -314,7 +337,10 @@ export const PoolPage = () => {
                 </div>
             )}
 
-            <div style={{ position: "relative" }}>
+            <div style={{ position: "relative" }} ref={listWrapRef}>
+            {highlightBox && (
+                <div className="wcard-hibox" style={{ top: highlightBox.top, left: highlightBox.left, width: highlightBox.w, height: highlightBox.h }} />
+            )}
             {/* при перезагрузке списка (смена сортировки/фильтра/страницы) — затемняем старый
                 список и показываем лоадер поверх, чтобы было видно, что идёт загрузка */}
             {loading && items.length > 0 && (
