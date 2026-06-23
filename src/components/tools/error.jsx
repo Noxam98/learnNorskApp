@@ -4,6 +4,9 @@ import { Icon } from "../ui/Icon.jsx";
 const Error = ({ text, setText, type = "error" }) => {
     const [isVisible, setIsVisible] = useState(false);
     const success = type === "success";
+    const warning = type === "warning";
+    const cls = success ? " alert--success" : warning ? " alert--warning" : "";
+    const icon = success ? "check" : warning ? "info" : "x";
     useEffect(() => {
         if (text) {
             setIsVisible(true);
@@ -18,7 +21,7 @@ const Error = ({ text, setText, type = "error" }) => {
 
     return (
         <div
-            className={"alert" + (success ? " alert--success" : "")}
+            className={"alert" + cls}
             style={{
                 position: "fixed", left: "var(--sp-4)", bottom: "var(--sp-4)", zIndex: 120,
                 maxWidth: 360, boxShadow: "var(--shadow-lg)",
@@ -29,7 +32,7 @@ const Error = ({ text, setText, type = "error" }) => {
                 whiteSpace: "pre-wrap",
             }}
         >
-            <Icon n={success ? "check" : "x"} sm /> {text}
+            <Icon n={icon} sm /> {text}
         </div>
     );
 };

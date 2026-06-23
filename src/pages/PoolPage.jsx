@@ -194,7 +194,7 @@ export const PoolPage = () => {
     const onRemove = async (word) => {
         setAdded((a) => { const n = { ...a }; delete n[word]; return n; });
         setAddingId(word);
-        try { await removeFromLearning(word); useSystemStore.getState().showToast(`«${word}» ${REMOVED_LRN[currentLanguage] || REMOVED_LRN.en}`, "error"); }
+        try { await removeFromLearning(word); useSystemStore.getState().showToast(`«${word}» ${REMOVED_LRN[currentLanguage] || REMOVED_LRN.en}`, "warning"); }
         catch { setAdded((a) => ({ ...a, [word]: true })); }
         setAddingId(null);
     };
