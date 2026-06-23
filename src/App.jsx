@@ -12,6 +12,7 @@ import { BrandLoader } from "./components/ui/Spinner.jsx";
 import Toast from "./components/tools/error.jsx";
 import { UpdateBanner } from "./components/ui/UpdateBanner.jsx";
 import { PoolPage } from "./pages/PoolPage.jsx";
+import ModerationPage from "./pages/ModerationPage.jsx";
 import { OnlinePage } from "./pages/OnlinePage.jsx";
 import { GamesRedirect } from "./pages/GamesHub.jsx";
 import LearningPage from "./pages/learning/LearningPage.jsx";
@@ -77,6 +78,7 @@ function App() {
             <Route path="/registration" element={<RegisterPage />} />
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/stats" element={isAdmin ? <StatsPage /> : <Navigate to="/learning" replace />} />
+            <Route path="/moderation" element={isAdmin ? <ModerationPage /> : <Navigate to="/learning" replace />} />
         </Routes>
     );
 

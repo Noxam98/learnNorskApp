@@ -42,6 +42,11 @@ export const NavigationBar = () => {
                 </nav>
                 <div className="nav__spacer" />
                 {user?.isAdmin && (
+                    <Link className="nav__theme hide-mobile" to="/moderation" aria-label="moderation" title="Модерация">
+                        <Icon n="check-circle" sm />
+                    </Link>
+                )}
+                {user?.isAdmin && (
                     <Link className="nav__theme hide-mobile" to="/stats" aria-label="stats" title="Статистика">
                         <Icon n="chart" sm />
                     </Link>

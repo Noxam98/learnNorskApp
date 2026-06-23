@@ -268,6 +268,9 @@ class ApiService {
     setFocusTopics(topics) { return this._send('POST', '/me/focus_topics', { topics }); }
     setGamePrefs(prefs) { return this._send('POST', '/me/game_prefs', prefs); }
     getAdminStats() { return this._send('GET', '/admin/stats'); }
+    adminPending() { return this._send('GET', '/admin/pending'); }                                  // слова на модерации
+    adminApprove(poolId) { return this._send('POST', `/admin/pending/${poolId}/approve`); }         // → в общую базу
+    adminReject(poolId) { return this._send('POST', `/admin/pending/${poolId}/reject`); }           // → приватно у автора
     adminDeleteWord(word) { return this._send('DELETE', `/admin/pool/${encodeURIComponent(word)}`); }
     adminDescribeAll() { return this._send('POST', '/admin/describe_all'); }
     getAdminControl() { return this._send('GET', '/admin/control'); }

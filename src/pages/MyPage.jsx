@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
 import { useAuth } from "../hooks/useAuth.js";
+import { useAuthStore } from "../store/AuthStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Dropdown } from "../components/ui/Dropdown.jsx";
 import GoogleSignInButton from "../components/ui/GoogleSignInButton.jsx";
@@ -18,6 +19,9 @@ const GOOGLE_ON = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const MASTERED_LBL = { ru: "Выучено", ukr: "Вивчено", en: "Mastered", pl: "Opanowane", lt: "Išmokta" };
 const LEVEL_LBL = { ru: "Уровень", ukr: "Рівень", en: "Level", pl: "Poziom", lt: "Lygis" };
 const OPEN_STUDY = { ru: "Открыть Учёбу", ukr: "Відкрити Навчання", en: "Open Learning", pl: "Otwórz Naukę", lt: "Atverti mokymąsi" };
+const ADMIN_LBL = { ru: "Админ", ukr: "Адмін", en: "Admin", pl: "Admin", lt: "Administratorius" };
+const MOD_LBL = { ru: "Модерация", ukr: "Модерація", en: "Moderation", pl: "Moderacja", lt: "Moderacija" };
+const STATS_LBL = { ru: "Статистика", ukr: "Статистика", en: "Stats", pl: "Statystyki", lt: "Statistika" };
 const STATUS_ORDER = ["new", "learning", "review", "mastered"];
 const STATUS_LBL = {
     new: { ru: "Новые", ukr: "Нові", en: "New", pl: "Nowe", lt: "Nauji" },
@@ -90,6 +94,15 @@ const MyPage = () => {
         api.learningStats().then((s) => { if (on) setLstats(s || null); }).catch(() => {});
         return () => { on = false; };
     }, []);
+    // Админ: счётчик слов на модерации (для бейджа). Профиль доступен и с телефона (таб-бар).
+    const isAdmin = useAuthStore((s) => s.user?.isAdmin);
+    const [pendingCount, setPendingCount] = useState(0);
+    useEffect(() => {
+        if (!isAdmin) return;
+        let on = true;
+        api.adminPending().then((r) => { if (on) setPendingCount(r?.count || 0); }).catch(() => {});
+        return () => { on = false; };
+    }, [isAdmin]);
 
     // Пуш-напоминания: тумблер спрашивает разрешение и подписывает (вкл) или отписывает (выкл).
     const togglePush = async () => {
@@ -162,6 +175,21 @@ const MyPage = () => {
                     <div className="scard__l">{LEVEL_LBL[currentLanguage] || LEVEL_LBL.en}</div>
                 </div>
             </div>
+
+            {isAdmin && (
+                <div className="panel" style={{ marginBottom: "var(--sp-5)" }}>
+                    <div className="panel__head"><span className="panel__title">{ADMIN_LBL[currentLanguage] || ADMIN_LBL.en}</span></div>
+                    <div className="panel__body" style={{ display: "flex", gap: "var(--sp-3)", flexWrap: "wrap" }}>
+                        <button className="btn btn--outline" onClick={() => navigate("/moderation")}>
+                            <Icon n="check-circle" sm /> {MOD_LBL[currentLanguage] || MOD_LBL.en}
+                            {pendingCount > 0 && <span className="fchip__n" style={{ marginLeft: 6 }}>{pendingCount}</span>}
+                        </button>
+                        <button className="btn btn--outline" onClick={() => navigate("/stats")}>
+                            <Icon n="chart" sm /> {STATS_LBL[currentLanguage] || STATS_LBL.en}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="pgrid">
                 <div className="panel">
