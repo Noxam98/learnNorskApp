@@ -8,12 +8,12 @@ import { Icon } from "../ui/Icon.jsx";
 import { hyLang } from "../ui/hyphenate.js";
 import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { speakText } from "../ui/tts.js";
-import { PLAY_STYLE, PlayTopBar, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 
 const FILL = { ru: "Вставь пропущенное слово", en: "Fill in the gap", ukr: "Встав пропущене слово", pl: "Uzupełnij lukę", lt: "Įrašyk trūkstamą žodį" };
 
-export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
+export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false }) => {
     const [chosen, setChosen] = useState(null);
     const loop = useGameLoop({
         gmode: "cloze", words: wordsProp, onResult, onFinish, onExit, setGameState,
@@ -53,7 +53,7 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
 
     return (
         <div className="play" data-state={status.toLowerCase()} style={PLAY_STYLE}>
-            <PlayTopBar correctCount={correctCount} wrongCount={wrongCount} onExit={backToSelection} t={t} />
+            <PlayTopBar correctCount={correctCount} wrongCount={wrongCount} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
             <div className="pstage" onClick={onStageClick}

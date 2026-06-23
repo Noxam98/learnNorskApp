@@ -10,12 +10,12 @@ import { posLabel, wordForms } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, PlayTopBar, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
 import { GameKeyboard } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 
-export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
+export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false }) => {
     const isNo2Int = mode !== "int2no";
     const nativeKeyboard = useSystemStore((s) => s.nativeKeyboard);
     // печатаем норвежское → наша клавиатура; для родного и при выборе «системная клавиатура» — штатный инпут
@@ -80,7 +80,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
 
     return (
         <div className={"play" + (useKbd ? " play--kbd" : "")} data-state={status.toLowerCase()} style={PLAY_STYLE}>
-            <PlayTopBar correctCount={doneCount} wrongCount={missedIds.size} onExit={backToSelection} t={t} />
+            <PlayTopBar correctCount={doneCount} wrongCount={missedIds.size} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
             <div className="pstage">

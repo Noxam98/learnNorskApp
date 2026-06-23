@@ -9,11 +9,11 @@ import { hyLang } from "../ui/hyphenate.js";
 import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 
-export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
+export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false }) => {
     const isNo2Int = mode !== "int2no";
     const [chosen, setChosen] = useState(/** @type {string | null} */(null));
     const [options, setOptions] = useState(/** @type {string[] | null} */(null));
@@ -107,7 +107,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
 
     return (
         <div className="play" data-state={status.toLowerCase()} style={PLAY_STYLE}>
-            <PlayTopBar correctCount={correctCount} wrongCount={wrongCount} onExit={backToSelection} t={t} />
+            <PlayTopBar correctCount={correctCount} wrongCount={wrongCount} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
             <div className="pstage" onClick={onStageClick}

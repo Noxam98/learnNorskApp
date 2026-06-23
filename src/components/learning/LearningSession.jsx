@@ -71,6 +71,7 @@ const toElements = (list, lang) => (list || [])
         mode: e.mode || "choice",
         dir: e.direction || LEGACY_DIR,
         step: e.step || null,        // клетка рампы (для оттенка прогресса по стадии)
+        repeat: !!e.repeat,          // повтор (уже учил) — для пометки в игре
         gw: toGameWord(e, lang),
     }));
 
@@ -295,6 +296,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 stepNo={idx + 1}
                 stepTotal={elements.length}
                 segs={sessionSegs}
+                repeat={el.repeat}
                 // записываем по АВТОРИТЕТНОМУ шагу системы (el.mode/el.dir), а не по тому, что
                 // сообщит игра — иначе клетка рампы могла бы не совпасть и слово застряло бы
                 onResult={isStudy ? undefined : (w, ok) => onResult(w, ok, el.mode, el.dir)}

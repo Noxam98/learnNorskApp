@@ -106,13 +106,31 @@ const SoundControl = ({ t }) => {
 
 // Верхняя панель: бренд, счётчики верно/ошибки (или произвольный centerNode — напр. «N/30»
 // в экзамене, где ✓/✗ по ходу не показываем), регулятор громкости, выход.
-export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = null }) => {
+// Маленький ненавязчивый бейдж «повтор» — для слов из повторений (а не новых). Сам читает язык.
+const REPEAT_LBL = { ru: "повтор", ukr: "повтор", en: "review", pl: "powtórka", lt: "kartojimas" };
+export const RepeatBadge = () => {
+    const lang = useSystemStore((s) => s.currentLanguage);
+    const txt = REPEAT_LBL[lang] || REPEAT_LBL.en;
+    return (
+        <span title={txt} style={{
+            display: "inline-flex", alignItems: "center", gap: 4, fontSize: "var(--fs-12)", fontWeight: 700,
+            color: "var(--fjord-600)", background: "var(--fjord-50)", border: "1px solid var(--fjord-300)",
+            padding: "2px 8px", borderRadius: "var(--r-full)", whiteSpace: "nowrap",
+        }}>
+            <Icon n="repeat" sm /> {txt}
+        </span>
+    );
+};
+
+/** @param {{correctCount?:number, wrongCount?:number, onExit?:any, t:any, centerNode?:any, tag?:any}} props */
+export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = null, tag = null }) => {
     return (
         <div className="ptop">
             <a className="ptop__brand" onClick={onExit} style={{ cursor: "pointer" }}>
                 <BrandMark />
                 <span className="brand__name">Lære<b>·</b>Norsk</span>
             </a>
+            {tag}
             <div className="pstats">
                 {centerNode != null ? centerNode : (
                     <>
