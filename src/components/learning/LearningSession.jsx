@@ -27,11 +27,11 @@ const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: Stu
 const LEGACY_DIR = "int2no";
 
 const T = {
-    ru: { done: "Сессия завершена", acc: "верно", cardsShown: "карточек показано", shown: "показано", masteredLabel: "Выучено", protectedLabel: "Защищено", of: "из", perSession: "за сессию", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", examNote: "Готова пачка слов — сдай экзамен, чтобы открыть новые", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
-    en: { done: "Session complete", acc: "correct", cardsShown: "cards shown", shown: "shown", masteredLabel: "Learned", protectedLabel: "Protected", of: "of", perSession: "this session", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", examNote: "A word pack is ready — pass the exam to unlock new ones", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
-    ukr: { done: "Сесію завершено", acc: "правильно", cardsShown: "карток показано", shown: "показано", masteredLabel: "Вивчено", protectedLabel: "Захищено", of: "з", perSession: "за сесію", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", examNote: "Пачка слів готова — склади екзамен, щоб відкрити нові", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
-    pl: { done: "Sesja zakończona", acc: "poprawnie", cardsShown: "kart pokazano", shown: "pokazano", masteredLabel: "Nauczono", protectedLabel: "Chronione", of: "z", perSession: "w sesji", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", examNote: "Paczka słów gotowa — zdaj egzamin, aby odblokować nowe", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
-    lt: { done: "Sesija baigta", acc: "teisingai", cardsShown: "kortelių parodyta", shown: "parodyta", masteredLabel: "Išmokta", protectedLabel: "Apsaugota", of: "iš", perSession: "sesijoje", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", examNote: "Žodžių paketas paruoštas — išlaikyk egzaminą, kad atrakintum naujus", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
+    ru: { done: "Сессия завершена", acc: "верно", cardsShown: "карточек показано", shown: "показано", masteredLabel: "Выучено", protectedLabel: "Защищено", protectedTypoLabel: "Защищено с опечаткой", of: "из", perSession: "за сессию", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", examNote: "Готова пачка слов — сдай экзамен, чтобы открыть новые", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
+    en: { done: "Session complete", acc: "correct", cardsShown: "cards shown", shown: "shown", masteredLabel: "Learned", protectedLabel: "Protected", protectedTypoLabel: "Protected with a typo", of: "of", perSession: "this session", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", examNote: "A word pack is ready — pass the exam to unlock new ones", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
+    ukr: { done: "Сесію завершено", acc: "правильно", cardsShown: "карток показано", shown: "показано", masteredLabel: "Вивчено", protectedLabel: "Захищено", protectedTypoLabel: "Захищено з опискою", of: "з", perSession: "за сесію", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", examNote: "Пачка слів готова — склади екзамен, щоб відкрити нові", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
+    pl: { done: "Sesja zakończona", acc: "poprawnie", cardsShown: "kart pokazano", shown: "pokazano", masteredLabel: "Nauczono", protectedLabel: "Chronione", protectedTypoLabel: "Chronione z literówką", of: "z", perSession: "w sesji", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", examNote: "Paczka słów gotowa — zdaj egzamin, aby odblokować nowe", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
+    lt: { done: "Sesija baigta", acc: "teisingai", cardsShown: "kortelių parodyta", shown: "parodyta", masteredLabel: "Išmokta", protectedLabel: "Apsaugota", protectedTypoLabel: "Apsaugota su klaida", of: "iš", perSession: "sesijoje", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", examNote: "Žodžių paketas paruoštas — išlaikyk egzaminą, kad atrakintum naujus", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
 };
 
 const STAGE = { position: "fixed", inset: 0, zIndex: 95, background: "var(--game-bg)", color: "var(--game-ink)", display: "flex", flexDirection: "column", overflow: "auto" };
@@ -98,7 +98,8 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     const [cards, setCards] = useState(0);                    // показано карточек-интро
     const [hist, setHist] = useState([]);                     // итог по каждому пройденному элементу: "ok"|"err"|"card"
     const [graduated, setGraduated] = useState(0);            // слов «выпущено» за сессию: ввод (штатная клава) с 1-й попытки → больше не придут
-    const [protectedNow, setProtectedNow] = useState(0);      // «защищено» за сессию: повтор-слова, прошедшие финальную стадию (ввод)
+    const [protectedNow, setProtectedNow] = useState(0);      // «защищено» за сессию: повтор-слова, прошедшие финальную стадию (ввод) чисто
+    const [protectedTypo, setProtectedTypo] = useState(0);    // из них принятых С ОПЕЧАТКОЙ (отдельный пункт итога)
     const [after, setAfter] = useState(null); // свежая статистика после сессии
     const [gate, setGate] = useState(null);   // состояние ворот экзамена (для итога системной сессии)
     const [busy, setBusy] = useState(false);
@@ -117,7 +118,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 await Promise.all(els
                     .filter((e) => e.mode === "choice" && !(e.gw?.options?.length || e.gw?.distractors?.length))
                     .map((e) => api.getPoolDistractors(e.gw?.pool_id, { n: 3, mode: e.dir, lang }).catch(() => null)));
-                setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setHist([]); setGraduated(0); setProtectedNow(0); setAfter(null); setPhase("play");
+                setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setHist([]); setGraduated(0); setProtectedNow(0); setProtectedTypo(0); setAfter(null); setPhase("play");
             }
             else { setPhase("empty"); }
         } catch {
@@ -165,8 +166,12 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         else setRes((p) => ({ correct: p.correct + (got.correct || 0), total: p.total + (got.total || 0) }));
         // «выпущено за сессию»: ввод (штатная клава) с ПЕРВОЙ попытки = слово прошло рампу и больше не придёт
         if (!isStudy && gmode === "input" && (got.correct || 0) > 0) setGraduated((g) => g + (got.correct || 0));
-        // «защищено за сессию»: повтор-слово, прошедшее финальную стадию (ввод) — закрепилось
-        if (!isStudy && gmode === "input" && (got.correct || 0) > 0 && elements[idx]?.repeat) setProtectedNow((p) => p + (got.correct || 0));
+        // «защищено за сессию»: повтор-слово, прошедшее финальную стадию (ввод) — закрепилось.
+        // Если ввод приняли С ОПЕЧАТКОЙ (got.typo) — отдельный счётчик (отдельный пункт итога).
+        if (!isStudy && gmode === "input" && (got.correct || 0) > 0 && elements[idx]?.repeat) {
+            if (got.typo) setProtectedTypo((p) => p + 1);
+            else setProtectedNow((p) => p + (got.correct || 0));
+        }
         // запоминаем исход элемента для полосы прогресса сессии
         setHist((h) => [...h, isStudy ? "card" : ((got.correct || 0) > 0 ? "ok" : "err")]);
         if (isSystem) {
@@ -256,6 +261,12 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                     {protectedNow > 0 && (
                         <p style={{ opacity: .9, marginTop: 6, fontWeight: 700, color: "var(--st-master)" }}>
                             <Icon n="lock" sm /> {t.protectedLabel}: {protectedNow}
+                        </p>
+                    )}
+
+                    {protectedTypo > 0 && (
+                        <p style={{ opacity: .9, marginTop: 6, fontWeight: 700, color: "#d98a2b" }}>
+                            <Icon n="lock" sm /> {t.protectedTypoLabel}: {protectedTypo}
                         </p>
                     )}
 

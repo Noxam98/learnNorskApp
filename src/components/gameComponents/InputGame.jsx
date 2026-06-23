@@ -10,6 +10,7 @@ import { posLabel, wordForms } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
+import { playSound } from "../tools/sound.js";
 import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
 import { GameKeyboard } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
@@ -25,17 +26,21 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const useKbd = !isNo2Int && !nativeKeyboard;
     const [input, setInput] = useState("");
     const [typoOk, setTypoOk] = useState(false);   // ответ принят с одной опечаткой (повтор)
+    const typoRef = useRef(false);                  // тот же флаг для onFinish (без гонок ререндера)
     const inputRef = useRef(/** @type {HTMLInputElement | null} */(null));
     // Очистить поле и (для штатного инпута) вернуть фокус — чтобы после ошибки сразу вводить заново.
     const resetInput = () => { setInput(""); setTimeout(() => inputRef.current?.focus(), 0); };
 
     const loop = useGameLoop({
-        gmode: "input", words: wordsProp, onResult, onFinish, onExit, setGameState,
+        gmode: "input", words: wordsProp, onResult, setGameState,
+        // в onFinish прокидываем флаг «принято с опечаткой» — для пункта «Защищено с опечаткой» в итоге
+        onFinish: onFinish ? (s) => onFinish({ ...s, typo: typoRef.current }) : null,
+        onExit,
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100,
-        onAdvance: () => { setInput(""); setTypoOk(false); },   // новое слово — чистое поле
-        onWrong: () => { resetInput(); setTypoOk(false); },     // после ошибки — сбросить (и сфокусировать штатный инпут)
+        onAdvance: () => { setInput(""); setTypoOk(false); typoRef.current = false; },   // новое слово — чистое поле
+        onWrong: () => { resetInput(); setTypoOk(false); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
-    const { t, currentLanguage, total, current, status, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, restart, backToSelection } = loop;
+    const { t, currentLanguage, total, current, status, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, advance, restart, backToSelection } = loop;
 
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -76,15 +81,17 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const submit = (e) => {
         e?.preventDefault?.();
         const fin = foldLoose(input);
-        if (acceptSet.some((a) => foldLoose(a) === fin)) { setTypoOk(false); answer(true); return; }
+        if (acceptSet.some((a) => foldLoose(a) === fin)) { setTypoOk(false); typoRef.current = false; answer(true); return; }
         // на повторении прощаем ОДНУ опечатку (пропуск/перестановка/замена символа), но только для
         // слов от 4 букв — на коротких 1 правка слишком близко к другому слову. Засчитываем как верно,
-        // но в фидбэке честно скажем «с опечаткой» и покажем правильное написание.
+        // НО без авто-перехода: свой звук + ждём тап, чтобы юзер прочитал верное написание.
         const typo = repeat && fin.length >= 4 && acceptSet.some((a) => { const fa = foldLoose(a); return fa.length >= 4 && withinOneEdit(fa, fin); });
-        setTypoOk(typo);
-        answer(typo);
+        if (typo) { setTypoOk(true); typoRef.current = true; playSound("typo"); answer(true, { hold: true, silent: true }); return; }
+        setTypoOk(false); typoRef.current = false; answer(false);
     };
     const dontKnow = () => { if (status === "ASKING") answer(false); };
+    // принято с опечаткой: авто-перехода нет — продолжаем тапом по любому месту сцены
+    const onStageClick = () => { if (status === "CORRECT" && typoOk) advance(); };
 
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
 
@@ -97,7 +104,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
             <PlayTopBar correctCount={doneCount} wrongCount={missedIds.size} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
-            <div className="pstage">
+            <div className="pstage" onClick={onStageClick}
+                style={status === "CORRECT" && typoOk ? { cursor: "pointer" } : undefined}>
                 <div className="qcard">
                     <div className="qcount">{t.word} {qIndex} / {qTotal}</div>
                     <div className="qprompt">{t.translateTo} {promptTarget}</div>
@@ -117,12 +125,19 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         </form>
                     )}
 
-                    {status === "CORRECT" && (
+                    {status === "CORRECT" && typoOk && (
+                        <div className="feedback" style={{ display: "flex" }}>
+                            <div className="fb-icon" style={{ background: "rgba(232,170,72,.18)", color: "#d98a2b" }}><Icon n="check" lg /></div>
+                            <div className="fb-title" style={{ color: "#d98a2b" }}>{TYPO_OK[currentLanguage] || TYPO_OK.en}</div>
+                            <div className="fb-answer" lang={aLang}>{hyphenate(correctPrimary, aLang)}</div>
+                            <div className="pcta"><span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span></div>
+                        </div>
+                    )}
+                    {status === "CORRECT" && !typoOk && (
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(98,192,131,.16)", color: "var(--game-correct)" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-correct)" }}>{t.correctly}</div>
-                            {typoOk && <div className="fb-line">{TYPO_OK[currentLanguage] || TYPO_OK.en} <b lang={aLang}>{hyphenate(correctPrimary, aLang)}</b></div>}
-                            {!typoOk && otherAccepted.length > 0 && <div className="fb-line">{t.alsoAccepted} <b lang={aLang}>{hyphenate(otherAccepted.join(", "), aLang)}</b></div>}
+                            {otherAccepted.length > 0 && <div className="fb-line">{t.alsoAccepted} <b lang={aLang}>{hyphenate(otherAccepted.join(", "), aLang)}</b></div>}
                         </div>
                     )}
                     {status === "INCORRECT" && (

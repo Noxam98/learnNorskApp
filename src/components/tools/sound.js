@@ -23,6 +23,9 @@ const SOUNDS = {
     correct(c) { const o = out(c, 0.6); const t = c.currentTime; tone(c, o, { type: "triangle", freq: MIDI(72), t, dur: 0.12, peak: 0.32 }); tone(c, o, { type: "triangle", freq: MIDI(76), t: t + 0.1, dur: 0.16, peak: 0.32 }); tone(c, o, { type: "sine", freq: MIDI(79), t: t + 0.2, dur: 0.22, peak: 0.28 }); },
     // ошибка — нисходящее «бз-з» (минор)
     wrong(c) { const o = out(c, 0.55); const t = c.currentTime; tone(c, o, { type: "sawtooth", freq: MIDI(58), to: MIDI(53), t, dur: 0.18, peak: 0.26 }); tone(c, o, { type: "sawtooth", freq: MIDI(54), to: MIDI(49), t: t + 0.13, dur: 0.24, peak: 0.24 }); },
+    // принято с опечаткой — мягкий нейтральный «динь-дынь» (не мажор «верно», не минор «ошибка»):
+    // два близких тёплых тона на месте, без подъёма/спада — «почти, но ок»
+    typo(c) { const o = out(c, 0.5); const t = c.currentTime; tone(c, o, { type: "triangle", freq: MIDI(71), t, dur: 0.1, peak: 0.26 }); tone(c, o, { type: "triangle", freq: MIDI(69), t: t + 0.11, dur: 0.16, peak: 0.24 }); },
     // старт — восходящая фанфара
     start(c) { const o = out(c, 0.6); const t = c.currentTime; [60, 64, 67, 72].forEach((n, i) => tone(c, o, { type: "square", freq: MIDI(n), t: t + i * 0.07, dur: 0.18, peak: 0.22 })); },
     // появление вопроса — мягкий «вверх» свуш

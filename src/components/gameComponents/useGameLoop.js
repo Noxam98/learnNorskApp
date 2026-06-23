@@ -58,6 +58,7 @@ export function useGameLoop({
     const [pos, setPos] = useState(0);
     const [results, setResults] = useState(/** @type {{ id: any, ok: boolean | null }[]} */([])); // по ПЕРВОЙ попытке каждого слова
     const [picked, setPicked] = useState(null); // нейтральный режим (reveal=false): выбранный ответ
+    const [held, setHeld] = useState(false);    // верно, но БЕЗ авто-перехода — ждём тап (принято с опечаткой)
 
     useScrollLock();   // блокируем скролл фона на время игры (общий ref-counted замок)
 
@@ -69,6 +70,7 @@ export function useGameLoop({
 
     // Перейти к следующему слову (или к финишу).
     const advance = () => {
+        if (held) setHeld(false);
         if (picked != null) setPicked(null);
         if (pos + 1 >= total) { setStatus("FINISHED"); if (reveal) playWin(); return; }
         setPos(pos + 1); setStatus("ASKING"); onAdvance?.();
@@ -76,7 +78,7 @@ export function useGameLoop({
 
     // Единая точка ответа. В reveal-режиме (игры) аргумент — булево «верно». В нейтральном
     // (экзамен) — сам выбранный ответ: копим наружу, нейтральная подсветка, пауза, дальше.
-    const answer = (response) => {
+    const answer = (response, opts) => {
         if (!reveal) {
             if (status !== "ASKING" || picked != null) return; // один выбор → ждём перехода
             setPicked(response);
@@ -92,19 +94,21 @@ export function useGameLoop({
             return;
         }
         if (status !== "ASKING") return; // CORRECT/FINISHED — игнорируем
-        playSound(ok ? "correct" : "wrong");
+        if (!opts?.silent) playSound(ok ? "correct" : "wrong");   // silent: звук играет сама игра (напр. «опечатка»)
         record(current, ok);                                   // SRS — только первая попытка
         setResults((rs) => [...rs, { id: current.id, ok }]);
         if (ok) {
-            setStatus("CORRECT");   // показываем «верно» ~1с, затем авто-переход (см. эффект ниже)
+            // hold: верно, но без авто-перехода — ждём тап (принято с опечаткой: дать прочитать верное)
+            setStatus("CORRECT"); if (opts?.hold) setHeld(true);
         } else {
             setStatus("INCORRECT"); onWrong?.();
         }
     };
 
     // Авто-переход после верного (Сборка/Ввод). Выбор (ms=0) — переход по тапу через advance().
+    // held (принято с опечаткой) — авто-перехода НЕТ, ждём тап игрока.
     useEffect(() => {
-        if (status === "CORRECT" && autoAdvanceMs > 0) {
+        if (status === "CORRECT" && autoAdvanceMs > 0 && !held) {
             const tm = setTimeout(advance, autoAdvanceMs);
             return () => clearTimeout(tm);
         }
@@ -143,7 +147,7 @@ export function useGameLoop({
     });
 
     return {
-        t, currentLanguage, total, current, status, words: wordsToGame, picked,
+        t, currentLanguage, total, current, status, words: wordsToGame, picked, held,
         pos, results, missedIds, doneCount, knownFirstTry, score,
         qIndex, qTotal, segs: autoSegs, segsOverride,
         answer, advance, restart, backToSelection,
