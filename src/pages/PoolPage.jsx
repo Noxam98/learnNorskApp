@@ -9,7 +9,7 @@ import { Icon } from "../components/ui/Icon.jsx";
 import { Dropdown } from "../components/ui/Dropdown.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
 import { WordInfoModal } from "../components/ui/WordInfoModal.jsx";
-import { BtnSpinner, SkeletonWordlist } from "../components/ui/Spinner.jsx";
+import { BtnSpinner, SkeletonWordlist, BrandLoader } from "../components/ui/Spinner.jsx";
 import { SearchBox } from "../components/ui/SearchBox.jsx";
 import { posMeta, posLabel, POS_INFO, POS_ORDER, posApiKey, chipPrefix } from "../components/ui/pos.js";
 import { SpeakButton } from "../components/ui/SpeakButton.jsx";
@@ -279,8 +279,16 @@ export const PoolPage = () => {
                 </div>
             </div>
 
+            <div style={{ position: "relative" }}>
+            {/* при перезагрузке списка (смена сортировки/фильтра/страницы) — затемняем старый
+                список и показываем лоадер поверх, чтобы было видно, что идёт загрузка */}
+            {loading && items.length > 0 && (
+                <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 2, pointerEvents: "none" }}>
+                    <BrandLoader dark />
+                </div>
+            )}
             {items.length ? (
-                <div className="wordlist">
+                <div className="wordlist" style={loading ? { opacity: 0.4, pointerEvents: "none", transition: "opacity .15s ease" } : { transition: "opacity .15s ease" }}>
                     {items.map((w) => {
                         const { cls, key } = posMeta(w.part_of_speech);
                         const prefix = chipPrefix(key, w.forms, { articles: showArticles, verbAa: showVerbAa });
@@ -335,6 +343,7 @@ export const PoolPage = () => {
                     ? <SkeletonWordlist count={12} />
                     : <p className="muted" style={{ textAlign: "center", padding: "var(--sp-12) 0" }}>{t.poolEmpty}</p>
             )}
+            </div>
 
             {/* Постраничная навигация */}
             {totalPages > 1 && (
