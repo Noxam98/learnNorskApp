@@ -93,16 +93,26 @@ export const tplSlots = (typedArr, targetChars, { tpl = false, caret = false } =
 };
 
 // «Отличается не более чем на одну правку» (OSA-1): подстановка одного символа, пропуск/лишний
-// символ ИЛИ перестановка двух соседних. Для снисходительного зачёта опечаток на повторении.
+// символ ИЛИ перестановка двух соседних. Для снисходительного зачёта опечаток.
 // Строки сравнивать УЖЕ свёрнутыми (foldLoose). a === b обрабатываем выше как точное совпадение.
-export const withinOneEdit = (a, b) => {
+// adjacent(c1,c2) (необязательно): если задан — ОДНУ замену прощаем только когда клавиши соседние
+// (палец соскользнул); пропуск/лишняя/перестановка — независимо от клавиш (механический слип).
+/**
+ * @param {string} a
+ * @param {string} b
+ * @param {((c1: string, c2: string) => boolean) | null} [adjacent]
+ */
+export const withinOneEdit = (a, b, adjacent = null) => {
     if (a === b) return true;
     const la = a.length, lb = b.length;
     if (Math.abs(la - lb) > 1) return false;
     if (la === lb) {
         const idx = [];
         for (let i = 0; i < la; i++) if (a[i] !== b[i]) { idx.push(i); if (idx.length > 2) return false; }
-        if (idx.length <= 1) return true;   // одна замена
+        if (idx.length <= 1) {
+            if (idx.length === 0) return true;
+            return adjacent ? !!adjacent(a[idx[0]], b[idx[0]]) : true;   // одна замена (с предикатом — только соседние)
+        }
         // перестановка двух соседних
         return idx.length === 2 && idx[1] === idx[0] + 1 && a[idx[0]] === b[idx[1]] && a[idx[1]] === b[idx[0]];
     }

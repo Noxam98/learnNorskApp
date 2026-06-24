@@ -18,6 +18,27 @@ export const KBD_ROWS = [
 ];
 export const KBD_SET = new Set(KBD_ROWS.flat());
 
+// Карта соседства клавиш (для «клавиатурных» опечаток — палец соскользнул на соседнюю клавишу).
+// Выводим из раскладки с учётом «ступеньки» рядов (полу-клавиша): соседи = по горизонтали в ряду
+// + диагонали сверху/снизу (≈6 клавиш). keysAdjacent(a, b) — соседние ли клавиши a и b.
+const _KEY_ADJ = (() => {
+    const ROW_OFF = [0, 0.5, 1.0];   // горизонтальный сдвиг ряда (стандартная ступенька QWERTY)
+    const pos = /** @type {Record<string,{r:number,x:number}>} */ ({});
+    KBD_ROWS.forEach((row, r) => row.forEach((ch, c) => { pos[ch] = { r, x: c + ROW_OFF[r] }; }));
+    const adj = /** @type {Record<string, Set<string>>} */ ({});
+    const keys = Object.keys(pos);
+    for (const a of keys) {
+        adj[a] = new Set();
+        for (const b of keys) {
+            if (a === b) continue;
+            const dr = Math.abs(pos[a].r - pos[b].r), dx = Math.abs(pos[a].x - pos[b].x);
+            if (dr === 0 ? dx === 1 : (dr === 1 && dx <= 0.5 + 1e-9)) adj[a].add(b);
+        }
+    }
+    return adj;
+})();
+export const keysAdjacent = (a, b) => !!(a && b && _KEY_ADJ[a]?.has(b));
+
 // Физическая клавиатура (ПК): позиция клавиши (e.code) → буква НАШЕЙ норв. раскладки.
 // По code, а НЕ по e.key — чтобы НЕ зависеть от раскладки ОС (рус/eng/no дают тот же результат).
 const CODE_MAP = {

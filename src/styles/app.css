@@ -424,7 +424,11 @@
     .play--kbd .feedback { margin-top: var(--sp-2); }
     .play--kbd .fb-answer { font-size: var(--fs-22); }
     .play--kbd .pcta { display: none; }   /* ✓ есть в самой клавиатуре — дубль не нужен */
+    .play--kbd .typo-ask__btns { display: flex; }   /* кнопки вопроса «опечатка?» видимы и при клавиатуре */
 }
+/* панель «похоже на опечатку?»: две кнопки Да/Нет под найденным написанием */
+.typo-ask__btns { display: flex; gap: var(--sp-2); margin-top: var(--sp-3); flex-wrap: wrap; justify-content: center; }
+.typo-ask__btns .gbtn { min-width: 132px; }
 @media (max-width: 360px) {
     .build-line { margin-top: var(--sp-4); }
     .kbd { --kbd-gap: 4px; }

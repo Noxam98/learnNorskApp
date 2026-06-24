@@ -12,18 +12,23 @@ import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import { playSound } from "../tools/sound.js";
 import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots } from "./gameShared.jsx";
-import { GameKeyboard } from "./GameKeyboard.jsx";
+import { GameKeyboard, keysAdjacent } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 
-// «С опечаткой, но засчитано» — снисходительный зачёт на повторении (1 правка).
+// «С опечаткой, но засчитано» — снисходительный зачёт (1 правка).
 const TYPO_OK = { ru: "С опечаткой — но засчитано:", ukr: "З опискою — але зараховано:", en: "Typo — but accepted:", pl: "Literówka — ale zaliczono:", lt: "Su klaida — bet užskaityta:" };
+// Вопрос при близкой опечатке (замена соседних клавиш / перестановка / пропуск-лишняя буква).
+const TYPO_ASK = { ru: "Похоже на опечатку. Это она?", ukr: "Схоже на описку. Це вона?", en: "Looks like a typo. Was it?", pl: "Wygląda na literówkę. To ona?", lt: "Panašu į klaidą. Ar taip?" };
+const TYPO_YES = { ru: "Да, опечатка", ukr: "Так, описка", en: "Yes, a typo", pl: "Tak, literówka", lt: "Taip, klaida" };
+const TYPO_NO = { ru: "Нет, ошибся", ukr: "Ні, помилився", en: "No, I was wrong", pl: "Nie, błąd", lt: "Ne, suklydau" };
 
 export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const isNo2Int = mode !== "int2no";
     // печатаем норвежское → наша экранная клавиатура; для ввода родного перевода (no2int) — штатный инпут
     const useKbd = !isNo2Int;
     const [input, setInput] = useState("");
+    const [typoAsk, setTypoAsk] = useState(/** @type {{typed:string, correct:string}|null} */(null)); // найден near-miss — спросить «опечатка?»
     const [typoOk, setTypoOk] = useState(false);   // ответ принят с одной опечаткой (повтор)
     const [armed, setArmed] = useState(false);     // анти-ghost-click: тап-продолжение активируется не сразу
     const typoRef = useRef(false);                  // тот же флаг для onFinish (без гонок ререндера)
@@ -42,8 +47,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         // со звуком пауза перед переходом = длина озвучки ответа + хвост (correctPrimary/aLang ниже).
         // При опечатке (held) переход по тапу — там озвучивает сама игра, см. эффект ниже.
         speakAnswer: () => (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null,
-        onAdvance: () => { setInput(""); setTypoOk(false); typoRef.current = false; },   // новое слово — чистое поле
-        onWrong: () => { resetInput(); setTypoOk(false); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
+        onAdvance: () => { setInput(""); setTypoOk(false); setTypoAsk(null); typoRef.current = false; },   // новое слово — чистое поле
+        onWrong: () => { resetInput(); setTypoOk(false); setTypoAsk(null); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
     const { t, currentLanguage, total, current, status, held, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, advance, restart, backToSelection } = loop;
 
@@ -96,16 +101,28 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
 
     const submit = (e) => {
         e?.preventDefault?.();
-        if (!submitArmedRef.current) return;   // дебаунс: игнор фантомного submit сразу после нового слова
+        if (!submitArmedRef.current || typoAsk) return;   // дебаунс + не отправляем, пока ждём ответа на «опечатка?»
         const fin = foldLoose(input);
         if (acceptSet.some((a) => foldLoose(a) === fin)) { setTypoOk(false); typoRef.current = false; answer(true); return; }
-        // на повторении прощаем ОДНУ опечатку (пропуск/перестановка/замена символа), но только для
-        // слов от 4 букв — на коротких 1 правка слишком близко к другому слову. Засчитываем как верно,
-        // НО без авто-перехода: свой звук + ждём тап, чтобы юзер прочитал верное написание.
-        const typo = repeat && fin.length >= 4 && acceptSet.some((a) => { const fa = foldLoose(a); return fa.length >= 4 && withinOneEdit(fa, fin); });
-        if (typo) { setTypoOk(true); typoRef.current = true; playSound("typo"); answer(true, { hold: true, silent: true }); return; }
+        // Близкая опечатка: ОДНА правка (замена — только соседних по клаве букв / перестановка / пропуск-
+        // лишняя), слова от 4 букв (на коротких 1 правка ≈ другое слово). НЕ зачитываем сами — показываем
+        // что нашли и спрашиваем пользователя (он сам отвечает за свою учёбу). Только при вводе норвежского
+        // (наша раскладка → карта соседства валидна).
+        if (useKbd && fin.length >= 4) {
+            const hit = acceptSet.find((a) => { const fa = foldLoose(a); return fa.length >= 4 && withinOneEdit(fa, fin, keysAdjacent); });
+            if (hit) { setTypoAsk({ typed: input.trim(), correct: hit }); return; }
+        }
+        // ввод родного (no2int): карты соседства нет — прежнее поведение (тихий зачёт опечатки на повторе)
+        if (!useKbd) {
+            const typo = repeat && fin.length >= 4 && acceptSet.some((a) => { const fa = foldLoose(a); return fa.length >= 4 && withinOneEdit(fa, fin); });
+            if (typo) { setTypoOk(true); typoRef.current = true; playSound("typo"); answer(true, { hold: true, silent: true }); return; }
+        }
         setTypoOk(false); typoRef.current = false; answer(false);
     };
+    // «Да, опечатка» — засчитываем верно (тег «с опечаткой»), без авто-перехода: дать прочитать верное → тап.
+    const confirmTypo = () => { setTypoAsk(null); setTypoOk(true); typoRef.current = true; playSound("typo"); answer(true, { hold: true, silent: true }); };
+    // «Нет, ошибся» — обычная ошибка.
+    const denyTypo = () => { setTypoAsk(null); setTypoOk(false); typoRef.current = false; answer(false); };
     const dontKnow = () => { if (status === "ASKING") answer(false); };
     // принято с опечаткой: авто-перехода нет — продолжаем тапом по любому месту сцены.
     // «Взвод» (~400мс): иначе тот же тап, что отправил ответ, долетает «ghost click» по сцене
@@ -125,9 +142,10 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const posText = posLabel(current.part_of_speech, t);
     const descriptionText = current.description?.description?.[currentLanguage] || "";
     const otherAccepted = accepted.filter((a) => foldLoose(a) !== foldLoose(input));
-    // экранный ввод: после ошибки показываем ШАБЛОН правильного слова (тусклым) + красным неверные
-    // буквы по позициям (как в «Собери из букв»), чтобы ввести с подсказкой. До ошибки — обычный ввод.
-    const inputSlots = useKbd ? tplSlots([...input], [...((no || "").trim().toLowerCase())], { tpl: status === "INCORRECT", caret: canType }) : null;
+    // экранный ввод: после ошибки (и при вопросе «опечатка?») показываем ШАБЛОН правильного слова
+    // (тусклым) + красным неверные буквы по позициям — это и есть «что мы нашли». До этого — обычный ввод.
+    const tplTarget = (typoAsk ? typoAsk.correct : (no || "")).trim().toLowerCase();
+    const inputSlots = useKbd ? tplSlots([...input], [...tplTarget], { tpl: status === "INCORRECT" || !!typoAsk, caret: canType && !typoAsk }) : null;
 
     return (
         <div className={"play" + (useKbd ? " play--kbd" : "")} data-state={status.toLowerCase()} style={PLAY_STYLE}>
@@ -182,8 +200,21 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         </div>
                     )}
 
+                    {/* близкая опечатка: показали красным в инпуте, что нашли + верное написание; спрашиваем юзера */}
+                    {typoAsk && (
+                        <div className="feedback typo-ask" style={{ display: "flex" }}>
+                            <div className="fb-icon" style={{ background: "rgba(232,170,72,.18)", color: "#d98a2b" }}><Icon n="check" lg /></div>
+                            <div className="fb-title" style={{ color: "#d98a2b" }}>{TYPO_ASK[currentLanguage] || TYPO_ASK.en}</div>
+                            <div className="fb-answer" lang={aLang}>{hyphenate(typoAsk.correct, aLang)}</div>
+                            <div className="typo-ask__btns">
+                                <button className="gbtn gbtn--accent" onClick={confirmTypo}><Icon n="check" sm /> {TYPO_YES[currentLanguage] || TYPO_YES.en}</button>
+                                <button className="gbtn" onClick={denyTypo}><Icon n="x" sm /> {TYPO_NO[currentLanguage] || TYPO_NO.en}</button>
+                            </div>
+                        </div>
+                    )}
+
                     {/* наша клавиатура (свободный режим — без подсказок-букв), только для норвежского ответа */}
-                    {useKbd && canType && (
+                    {useKbd && canType && !typoAsk && (
                         <GameKeyboard
                             lang={aLang} extras={["-"]}
                             canSubmit canBackspace={input.length > 0}
@@ -192,7 +223,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     )}
 
                     <div className="pcta">
-                        {status !== "CORRECT" &&
+                        {status !== "CORRECT" && !typoAsk &&
                             <button className="gbtn gbtn--accent" onClick={submit}><Icon n="check" sm /> {t.check}</button>}
                     </div>
                 </div>
