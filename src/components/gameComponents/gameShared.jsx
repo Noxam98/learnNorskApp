@@ -196,6 +196,11 @@ export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = n
 const RAMP_RANK = { card: 0, study: 0, choice_no2int: 1, choice_int2no: 2, build_int2no: 3, input_int2no: 4, cloze_1: 1, cloze_2: 2, cloze_3: 3 };
 export const stageRank = (cell) => RAMP_RANK[cell || "card"] ?? 0;
 
+// Транспонировка звуков «вход в задание»/«верно» по стадии рампы (rank 0..4): чем дальше слово
+// по рампе — тем выше тон (та же узнаваемая фраза). Диатоника до-ре-ми-фа-соль (полутоны).
+const RANK_SEMIS = [0, 2, 4, 5, 7];
+export const semisOf = (rank) => RANK_SEMIS[rank] ?? 0;
+
 // Сегментный прогресс-бар (сегмент на слово). Сегмент — строка (легаси: "ok"/"err"/"now"/"done"/
 // "card") ИЛИ объект { state, rank }: пройденные слова красятся ЦВЕТОМ СТАДИИ (rank 0 серый …
 // 4 насыщенный зелёный), текущее — акцент «ты здесь», предстоящие — пустые (появляются по мере прохождения).

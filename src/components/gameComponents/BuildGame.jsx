@@ -15,13 +15,13 @@ import { useGameLoop } from "./useGameLoop.js";
 
 const norm = (s) => (s || "").trim().toLowerCase();
 
-export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
+export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const [typed, setTyped] = useState(/** @type {string[]} */([]));   // введённые буквы по порядку (с клавиатуры)
     const submitArmedRef = useRef(false);   // дебаунс: ~250мс после нового слова submit не принимается (анти-фантомный Enter)
 
     const loop = useGameLoop({
         gmode: "build", words: wordsProp, onResult, onFinish, onExit, setGameState,
-        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100,
+        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, rank,
         // пауза перед переходом = длина озвучки ответа + хвост (target/aLang ниже — коллбэк зовётся позже)
         speakAnswer: () => (sound && target) ? speakTextEnd(target, aLang) : null,
         onAdvance: () => setTyped([]),   // новое слово — чистый ввод

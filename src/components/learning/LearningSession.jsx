@@ -378,6 +378,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 stepNo={idx + 1}
                 stepTotal={elements.length}
                 segs={sessionSegs}
+                rank={stageRank(segCell(el))}   // стадия рампы слова → высота звуков «вход»/«верно»
                 repeat={el.repeat}
                 baseCorrect={res.correct}
                 baseWrong={res.total - res.correct}

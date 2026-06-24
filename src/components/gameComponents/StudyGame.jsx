@@ -11,7 +11,7 @@ import { speakText, prefetchTts } from "../ui/tts.js";
 import { posLabel, posMeta, chipPrefix } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { playSound } from "../tools/sound.js";
-import { useScrollLock, ProgressSegments } from "./gameShared.jsx";
+import { useScrollLock, ProgressSegments, semisOf } from "./gameShared.jsx";
 
 const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 const HINTS = {
@@ -28,7 +28,7 @@ const filterChosenWords = (dictList) =>
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
 // words/onExit передаёт «Учёба» (переиспользует игру). Карточки — пассивный режим, в SRS не пишет.
-export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, onReport = null, onKnow = null, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
+export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, onReport = null, onKnow = null, stepNo = 0, stepTotal = 0, segs: segsOverride = null, rank = 0 }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -56,6 +56,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     };
     useEffect(() => {  // видимое игроку слово (+ прогрев ответа для мгновенного переворота)
         if (!sound) return;
+        playSound("enter", { semis: semisOf(rank) });   // звук «вход в задание» по стадии (карточка — базовая)
         const { front, back } = _sides(idx);
         if (front) speakText(front, hyLang(currentLanguage, isNo2Int)).catch(() => {});
         if (back) prefetchTts(back, hyLang(currentLanguage, !isNo2Int));

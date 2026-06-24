@@ -19,8 +19,12 @@ const SOUNDS = {
     tick(c) { const o = out(c, 0.5); const t = c.currentTime; tone(c, o, { type: "square", freq: MIDI(96), to: MIDI(91), t, dur: 0.05, peak: 0.18 }); click(c, o, t, 5000, 0.12, 0.03); },
     // клик по варианту — мягкий блип
     select(c) { const o = out(c, 0.5); const t = c.currentTime; tone(c, o, { type: "triangle", freq: MIDI(79), t, dur: 0.08, peak: 0.22 }); },
-    // правильно — восходящее трезвучие (мажор)
-    correct(c) { const o = out(c, 0.6); const t = c.currentTime; tone(c, o, { type: "triangle", freq: MIDI(72), t, dur: 0.12, peak: 0.32 }); tone(c, o, { type: "triangle", freq: MIDI(76), t: t + 0.1, dur: 0.16, peak: 0.32 }); tone(c, o, { type: "sine", freq: MIDI(79), t: t + 0.2, dur: 0.22, peak: 0.28 }); },
+    // правильно — восходящее трезвучие (мажор). semis: транспонировка по стадии слова (0..) —
+    // чем дальше слово по рампе, тем выше «верно» (та же узнаваемая фраза, выше по высоте).
+    correct(c, { semis = 0 } = {}) { const o = out(c, 0.6); const t = c.currentTime; const s = semis; tone(c, o, { type: "triangle", freq: MIDI(72 + s), t, dur: 0.12, peak: 0.32 }); tone(c, o, { type: "triangle", freq: MIDI(76 + s), t: t + 0.1, dur: 0.16, peak: 0.32 }); tone(c, o, { type: "sine", freq: MIDI(79 + s), t: t + 0.2, dur: 0.22, peak: 0.28 }); },
+    // вход в задание — короткий мягкий подъём (квинта). semis: транспонировка по стадии слова —
+    // на появлении слова слышно, на какой оно ступени рампы (карточка ниже всех → ввод выше всех).
+    enter(c, { semis = 0 } = {}) { const o = out(c, 0.4); const t = c.currentTime; const s = semis; tone(c, o, { type: "triangle", freq: MIDI(64 + s), to: MIDI(71 + s), t, dur: 0.16, peak: 0.18 }); },
     // ошибка — нисходящее «бз-з» (минор)
     wrong(c) { const o = out(c, 0.55); const t = c.currentTime; tone(c, o, { type: "sawtooth", freq: MIDI(58), to: MIDI(53), t, dur: 0.18, peak: 0.26 }); tone(c, o, { type: "sawtooth", freq: MIDI(54), to: MIDI(49), t: t + 0.13, dur: 0.24, peak: 0.24 }); },
     // принято с опечаткой — мягкий нейтральный «динь-дынь» (не мажор «верно», не минор «ошибка»):
@@ -38,11 +42,11 @@ const SOUNDS = {
 
 export function preloadSounds() { ac(); }   // просто «разбудить» контекст
 
-export function playSound(name) {
+export function playSound(name, opts) {
     if (!soundEnabled()) return;
     const c = ac(); if (!c) return;
     const fn = SOUNDS[name];
-    if (fn) try { fn(c); } catch { /* no-op */ }
+    if (fn) try { fn(c, opts); } catch { /* no-op */ }
 }
 
 // Фанфара победителя: старт + радостный аккорд

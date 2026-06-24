@@ -13,12 +13,12 @@ import { useGameLoop } from "./useGameLoop.js";
 
 const FILL = { ru: "Вставь пропущенное слово", en: "Fill in the gap", ukr: "Встав пропущене слово", pl: "Uzupełnij lukę", lt: "Įrašyk trūkstamą žodį" };
 
-export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
+export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const [chosen, setChosen] = useState(null);
     const [armed, setArmed] = useState(false); // анти-ghost-click: свежий вопрос ~350мс не принимает выбор
     const loop = useGameLoop({
         gmode: "cloze", words: wordsProp, onResult, onFinish, onExit, setGameState,
-        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100,
+        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, rank,
         // со звуком пауза = длина озвучки предложения с верным словом + хвост (cloze/correct/aLang ниже)
         speakAnswer: () => (sound && cloze.blank) ? speakTextEnd((cloze.blank || "").replace("___", correct), aLang) : null,
         onAdvance: () => setChosen(null),

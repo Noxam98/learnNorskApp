@@ -24,7 +24,7 @@ const CHOICE_GOT_IT = { ru: "Понял", en: "Got it", ukr: "Зрозуміло
 const CHOICE_HINT_KEY = "choice_num_hint_seen";
 let _choiceHintShown = false;   // максимум раз за сессию
 
-export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
+export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const isNo2Int = mode !== "int2no";
     const [chosen, setChosen] = useState(/** @type {string | null} */(null));
     const [options, setOptions] = useState(/** @type {string[] | null} */(null));
@@ -39,7 +39,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
 
     const loop = useGameLoop({
         gmode: "choice", words: wordsProp, onResult, onFinish, onExit, setGameState,
-        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, // фолбэк без звука: ~1с, затем авто-переход
+        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, rank, // фолбэк без звука: ~1с, затем авто-переход
         // со звуком пауза = длина озвучки ответа + хвост (correctPrimary/aLang ниже — коллбэк зовётся позже)
         speakAnswer: () => (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null,
         onAdvance: () => setChosen(null),

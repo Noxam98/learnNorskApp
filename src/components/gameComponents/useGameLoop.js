@@ -13,7 +13,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
-import { filterChosenWords, shuffle, useScrollLock } from "./gameShared.jsx";
+import { filterChosenWords, shuffle, useScrollLock, semisOf } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
 
 const ANSWER_TAIL_MS = 250;    // пауза ПОСЛЕ окончания озвучки ответа, затем авто-переход
@@ -31,6 +31,7 @@ const ANSWER_MAX_MS = 6000;    // страховка: если аудио не �
  *   segs?: import('../../types.js').ProgressSeg[] | null,
  *   autoAdvanceMs?: number,
  *   speakAnswer?: (() => (Promise<any> | null)) | null,
+ *   rank?: number,
  *   onAdvance?: (() => void) | null,
  *   onWrong?: (() => void) | null,
  *   reveal?: boolean,
@@ -43,6 +44,7 @@ export function useGameLoop({
     autoAdvanceMs = 0,   // 0 — переход по тапу (Выбор); >0 — авто-переход (Сборка/Ввод)
     speakAnswer = null,  // () => Promise(конец озвучки ответа) | null. Есть → пауза = длина аудио+хвост;
     //                      вернул null (звук выкл.) → фолбэк на фикс. autoAdvanceMs.
+    rank = 0,            // стадия рампы слова (0..4) — высота звуков «вход»/«верно» (системная сессия)
     onAdvance,           // () => сбросить локальный стейт ответа для нового слова
     onWrong,             // () => очистить локальный ввод после неверного (для повтора)
     reveal = true,       // false (экзамен): нейтральный режим — без CORRECT/INCORRECT, без ретрая,
@@ -97,12 +99,13 @@ export function useGameLoop({
         if (status === "INCORRECT") {
             if (ok) {
                 if (opts?.hold) { setStatus("CORRECT"); setHeld(true); }   // принято с опечаткой — ждём тап (звук играет игра)
-                else { playSound("correct"); advance(); }
+                else { playSound("correct", { semis: semisOf(rank) }); advance(); }
             } else { playSound("wrong"); onWrong?.(); }
             return;
         }
         if (status !== "ASKING") return; // CORRECT/FINISHED — игнорируем
-        if (!opts?.silent) playSound(ok ? "correct" : "wrong");   // silent: звук играет сама игра (напр. «опечатка»)
+        // «верно» транспонируем по стадии слова (rank); «ошибка» — всегда базовая. silent: звук играет сама игра.
+        if (!opts?.silent) playSound(ok ? "correct" : "wrong", ok ? { semis: semisOf(rank) } : undefined);
         record(current, ok);                                   // SRS — только первая попытка
         setResults((rs) => [...rs, { id: current.id, ok }]);
         if (ok) {
@@ -112,6 +115,12 @@ export function useGameLoop({
             setStatus("INCORRECT"); onWrong?.();
         }
     };
+
+    // Звук «вход в задание»: на появлении НОВОГО слова (монтирование игры / смена pos), тон по стадии
+    // рампы (rank). На ретрае после ошибки (статус INCORRECT) не звучит — pos не меняется.
+    useEffect(() => {
+        if (status === "ASKING") playSound("enter", { semis: semisOf(rank) });
+    }, [pos]); // eslint-disable-line
 
     // Авто-переход после верного. С озвучкой (speakAnswer вернул промис) пауза = длина аудио ответа
     // + ANSWER_TAIL_MS; без звука — фиксированная autoAdvanceMs. held (принято с опечаткой) — авто-

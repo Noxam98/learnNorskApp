@@ -19,7 +19,7 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 // «С опечаткой, но засчитано» — снисходительный зачёт на повторении (1 правка).
 const TYPO_OK = { ru: "С опечаткой — но засчитано:", ukr: "З опискою — але зараховано:", en: "Typo — but accepted:", pl: "Literówka — ale zaliczono:", lt: "Su klaida — bet užskaityta:" };
 
-export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
+export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const isNo2Int = mode !== "int2no";
     // печатаем норвежское → наша экранная клавиатура; для ввода родного перевода (no2int) — штатный инпут
     const useKbd = !isNo2Int;
@@ -38,7 +38,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         // в onFinish прокидываем флаг «принято с опечаткой» — для пункта «Защищено с опечаткой» в итоге
         onFinish: onFinish ? (s) => onFinish({ ...s, typo: typoRef.current }) : null,
         onExit,
-        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100,
+        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, rank,
         // со звуком пауза перед переходом = длина озвучки ответа + хвост (correctPrimary/aLang ниже).
         // При опечатке (held) переход по тапу — там озвучивает сама игра, см. эффект ниже.
         speakAnswer: () => (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null,
