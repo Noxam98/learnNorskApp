@@ -11,7 +11,7 @@ import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import { playSound } from "../tools/sound.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, foldLight, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots } from "./gameShared.jsx";
 import { GameKeyboard, keysAdjacent } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -111,8 +111,15 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         // лишняя), слова от 4 букв (на коротких 1 правка ≈ другое слово). НЕ зачитываем сами — показываем
         // что нашли и спрашиваем пользователя (он сам отвечает за свою учёбу). Только при вводе норвежского
         // (наша раскладка → карта соседства валидна).
-        if (useKbd && fin.length >= 4) {
-            const hit = acceptSet.find((a) => { const fa = foldLoose(a); return fa.length >= 4 && withinOneEdit(fa, fin, keysAdjacent); });
+        if (useKbd) {
+            // соседство проверяем ДВАЖДЫ: по свёрнутой строке (a/o/ae — для тех, кто печатает базовые буквы)
+            // И по «сырой» с сохранёнными å/ø/æ (соседство по фактическим клавишам: å рядом с ø/p/æ).
+            const finRaw = foldLight(input);
+            const hit = acceptSet.find((a) => {
+                const fa = foldLoose(a), faRaw = foldLight(a);
+                return (fa.length >= 4 && fin.length >= 4 && withinOneEdit(fa, fin, keysAdjacent))
+                    || (faRaw.length >= 4 && finRaw.length >= 4 && withinOneEdit(faRaw, finRaw, keysAdjacent));
+            });
             if (hit) { setTypoAsk({ typed: input.trim(), correct: hit }); return; }
         }
         // ввод родного (no2int): карты соседства нет — прежнее поведение (тихий зачёт опечатки на повторе)
