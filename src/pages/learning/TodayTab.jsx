@@ -378,14 +378,17 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const gc = (GCOLD[lang] || GCOLD.ru);
     // Прогресс до следующего уровня CEFR: кольцо наполняется по текущему уровню рампы,
     // подпись — следующий уровень (напр. «До уровня B1»). Данные из learning_stats.
-    const masteredCount = by.mastered || 0;
     const curLevel = stats?.currentLevel || "A1";
     const nextLevel = CEFR[CEFR.indexOf(curLevel) + 1] || null;
-    const band = (stats?.byLevel && stats.byLevel[curLevel]) || { mastered: 0, target: 0 };
-    const bandMastered = band.mastered || 0;
-    const bandTarget = band.target || 0;
-    const toNext = stats?.toNextLevel ?? Math.max(0, bandTarget - bandMastered);
-    const masteryFrac = bandTarget ? Math.min(1, bandMastered / bandTarget) : 0;
+    // Прогресс к след. уровню — по ВСЕМУ активному словарю (выучено+повтор+архив) против суммарного
+    // порога след. уровня (LEVEL_TARGETS кумулятивны), а не по словам одного CEFR-тега (иначе кольцо
+    // переполнялось: «553/500» и «осталось 0», хотя до уровня ещё далеко).
+    const masteredAll = (by.mastered || 0) + (by.repeat || 0) + (by.archived || 0);
+    const nextTarget = nextLevel ? (stats?.byLevel?.[nextLevel]?.target || 0) : 0;
+    const toNext = nextLevel ? Math.max(0, nextTarget - masteredAll) : 0;
+    const masteryFrac = (nextLevel && nextTarget) ? Math.min(1, masteredAll / nextTarget) : 1;
+    const ringNum = masteredAll;
+    const ringDen = nextLevel ? nextTarget : masteredAll;
 
     // Фокус на темах: ~треть новых слов будет из выбранных тем (бэк-смещение в suggest_words).
     const focusTopics = focusTopicsSel || [];
@@ -440,8 +443,8 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                 style={{ stroke: "var(--st-master)" }} />
                         </svg>
                         <span className="ring__label">
-                            <span className="ring__num" style={{ color: "var(--st-master)" }}>{bandMastered}</span>
-                            <span className="ring__den">{fmt(t.goalNum, { n: bandTarget })}</span>
+                            <span className="ring__num" style={{ color: "var(--st-master)" }}>{ringNum}</span>
+                            <span className="ring__den">{fmt(t.goalNum, { n: ringDen })}</span>
                         </span>
                     </div>
                     <div className="col" style={{ gap: 10 }}>
