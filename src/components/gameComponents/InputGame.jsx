@@ -11,7 +11,7 @@ import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
 import { playSound } from "../tools/sound.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots } from "./gameShared.jsx";
 import { GameKeyboard } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -119,6 +119,9 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const posText = posLabel(current.part_of_speech, t);
     const descriptionText = current.description?.description?.[currentLanguage] || "";
     const otherAccepted = accepted.filter((a) => foldLoose(a) !== foldLoose(input));
+    // экранный ввод: после ошибки показываем ШАБЛОН правильного слова (тусклым) + красным неверные
+    // буквы по позициям (как в «Собери из букв»), чтобы ввести с подсказкой. До ошибки — обычный ввод.
+    const inputSlots = useKbd ? tplSlots([...input], [...((no || "").trim().toLowerCase())], { tpl: status === "INCORRECT", caret: canType }) : null;
 
     return (
         <div className={"play" + (useKbd ? " play--kbd" : "")} data-state={status.toLowerCase()} style={PLAY_STYLE}>
@@ -137,7 +140,9 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
 
                     {useKbd ? (
-                        <div className="build-line" lang={aLang}>{input || <span className="build-line__ph">_ _ _</span>}</div>
+                        <div className="build-line build-line--tpl" lang={aLang}>
+                            {inputSlots && inputSlots.length ? inputSlots : <span className="build-line__ph">_ _ _</span>}
+                        </div>
                     ) : (
                         <form className="answer" onSubmit={submit}>
                             <input ref={inputRef} type="text" value={input} onChange={(e) => setInput(e.target.value)}

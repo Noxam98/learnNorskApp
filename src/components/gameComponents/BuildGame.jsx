@@ -3,13 +3,13 @@
 // Ступень рампы «продукция со страховкой». Направление — только родной→норв.
 // Механика цикла (стейт-машина, SRS, ретрай, авто-переход, финиш) — в useGameLoop; здесь
 // клавиатура, деривация слова, озвучка и рендер.
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { DUNNO, PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { DUNNO, PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, tplSlots } from "./gameShared.jsx";
 import { GameKeyboard, KBD_SET } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 
@@ -17,6 +17,7 @@ const norm = (s) => (s || "").trim().toLowerCase();
 
 export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
     const [typed, setTyped] = useState(/** @type {string[]} */([]));   // введённые буквы по порядку (с клавиатуры)
+    const submitArmedRef = useRef(false);   // дебаунс: ~250мс после нового слова submit не принимается (анти-фантомный Enter)
 
     const loop = useGameLoop({
         gmode: "build", words: wordsProp, onResult, onFinish, onExit, setGameState,
@@ -53,7 +54,15 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
 
     const canType = status === "ASKING" || status === "INCORRECT"; // в INCORRECT — повтор после показа ответа
 
-    const submit = (sel = typed) => answer(norm(sel.join("")) === norm(target));
+    // дебаунс submit: на новом слове блокируем отправку на 250мс (анти-фантомный Enter с прошлого задания)
+    useEffect(() => {
+        submitArmedRef.current = false;
+        const tm = setTimeout(() => { submitArmedRef.current = true; }, 250);
+        return () => clearTimeout(tm);
+    }, [current]);
+
+    // submit по ✓/Enter работает и на ПУСТОМ (= неверно → показывает шаблон-подсказку, слово откатывается)
+    const submit = (sel = typed) => { if (!submitArmedRef.current) return; answer(norm(sel.join("")) === norm(target)); };
     // ввод буквы с клавиатуры: просто добавить. Проверка — по кнопке ✓ (не авто-завершение).
     const onType = (c) => setTyped((prev) => [...prev, c]);
     const dontKnow = () => { if (status === "ASKING") answer(false); };
@@ -64,23 +73,8 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const descriptionText = current.description?.description?.[currentLanguage] || "";
 
     // Импровизированный инпут с мигающим курсором (как реальное поле). ШАБЛОН-подсказку (тусклое
-    // слово + подсветка верных/красных букв по позициям) показываем ТОЛЬКО ПОСЛЕ ошибки (INCORRECT);
-    // до этого — обычный ввод (что набрал + курсор), слово не подсказываем.
-    const showTpl = status === "INCORRECT";
-    const caretAt = (status === "ASKING" || status === "INCORRECT") ? typed.length : -1;
-    const slots = [];
-    const n = showTpl ? Math.max(targetChars.length, typed.length) : typed.length;
-    for (let i = 0; i < n; i++) {
-        if (i === caretAt) slots.push(<span key="caret" className="build-line__caret" />);
-        const ch = typed[i];
-        if (ch != null) {
-            const bad = showTpl && (i >= targetChars.length || ch !== targetChars[i]);   // не на своём месте / лишняя
-            slots.push(<span key={i} className={bad ? "build-line__bad" : undefined}>{ch === " " ? "\u00a0" : ch}</span>);
-        } else if (showTpl && i < targetChars.length) {
-            slots.push(<span key={i} className="build-line__ghost">{targetChars[i] === " " ? "\u00a0" : targetChars[i]}</span>);
-        }
-    }
-    if (caretAt >= n) slots.push(<span key="caret" className="build-line__caret" />);
+    // слово + подсветка верных/красных букв) показываем ТОЛЬКО ПОСЛЕ ошибки (INCORRECT). Хелпер tplSlots.
+    const slots = tplSlots(typed, targetChars, { tpl: status === "INCORRECT", caret: canType });
 
     return (
         <div className="play play--kbd" data-state={status.toLowerCase()} style={PLAY_STYLE}>
@@ -106,7 +100,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     {canType && (
                         <GameKeyboard
                             lang={aLang} remainingOf={remainingOf} needed={needed} extras={extras}
-                            canSubmit={typed.length > 0} canBackspace={typed.length > 0}
+                            canSubmit canBackspace={typed.length > 0}
                             onType={onType} onBackspace={() => setTyped((t) => t.slice(0, -1))} onSubmit={() => submit()}
                             onDunno={dontKnow} dunnoLabel={DUNNO[currentLanguage]} showDunno={status === "ASKING"} />
                     )}
@@ -130,7 +124,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     <div className="pcta">
                         {/* стирание — клавишей ⌫; «Не знаю» — клавишей слева в клавиатуре */}
                         {canType && (
-                            <button className="gbtn gbtn--accent" onClick={() => submit()} disabled={!typed.length}><Icon n="check" sm /> {t.check}</button>
+                            <button className="gbtn gbtn--accent" onClick={() => submit()}><Icon n="check" sm /> {t.check}</button>
                         )}
                     </div>
                 </div>

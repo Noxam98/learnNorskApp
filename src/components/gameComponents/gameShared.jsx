@@ -71,6 +71,27 @@ export const uniq = (arr) => {
     return arr.filter((x) => x && !s.has(x.toLowerCase()) && s.add(x.toLowerCase()));
 };
 
+// Слоты «импровизированного инпута» (build-line) с мигающим курсором. tpl=true (после ошибки) —
+// ШАБЛОН: тусклые ещё-не-введённые буквы цели + красным символ не на своём месте/лишний. tpl=false —
+// просто набранное. typedArr/targetChars — массивы символов. Используют BuildGame и InputGame.
+export const tplSlots = (typedArr, targetChars, { tpl = false, caret = false } = {}) => {
+    const slots = [];
+    const n = tpl ? Math.max(targetChars.length, typedArr.length) : typedArr.length;
+    const caretAt = caret ? typedArr.length : -1;
+    for (let i = 0; i < n; i++) {
+        if (i === caretAt) slots.push(<span key="caret" className="build-line__caret" />);
+        const ch = typedArr[i];
+        if (ch != null) {
+            const bad = tpl && (i >= targetChars.length || ch !== targetChars[i]);
+            slots.push(<span key={i} className={bad ? "build-line__bad" : undefined}>{ch === " " ? " " : ch}</span>);
+        } else if (tpl && i < targetChars.length) {
+            slots.push(<span key={i} className="build-line__ghost">{targetChars[i] === " " ? " " : targetChars[i]}</span>);
+        }
+    }
+    if (caretAt >= n) slots.push(<span key="caret" className="build-line__caret" />);
+    return slots;
+};
+
 // «Отличается не более чем на одну правку» (OSA-1): подстановка одного символа, пропуск/лишний
 // символ ИЛИ перестановка двух соседних. Для снисходительного зачёта опечаток на повторении.
 // Строки сравнивать УЖЕ свёрнутыми (foldLoose). a === b обрабатываем выше как точное совпадение.
