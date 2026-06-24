@@ -29,6 +29,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const [armed, setArmed] = useState(false);     // анти-ghost-click: тап-продолжение активируется не сразу
     const typoRef = useRef(false);                  // тот же флаг для onFinish (без гонок ререндера)
     const inputRef = useRef(/** @type {HTMLInputElement | null} */(null));
+    const submitArmedRef = useRef(false);           // дебаунс: ~250мс после нового слова submit не принимается
+    //                                                 (чтобы фантомный Enter с прошлого задания не сработал)
     // Очистить поле и (для штатного инпута) вернуть фокус — чтобы после ошибки сразу вводить заново.
     const resetInput = () => { setInput(""); setTimeout(() => inputRef.current?.focus(), 0); };
 
@@ -63,6 +65,13 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const aLang = hyLang(currentLanguage, !isNo2Int);
     const canType = status === "ASKING" || status === "INCORRECT";
 
+    // дебаунс submit: на новом слове блокируем отправку на 250мс (анти-фантомный Enter с прошлого задания)
+    useEffect(() => {
+        submitArmedRef.current = false;
+        const tm = setTimeout(() => { submitArmedRef.current = true; }, 250);
+        return () => clearTimeout(tm);
+    }, [current]);
+
     useEffect(() => {
         // фокус штатного инпута при показе и при повторе после ошибки
         if (!useKbd && (status === "ASKING" || status === "INCORRECT") && inputRef.current) inputRef.current.focus();
@@ -81,6 +90,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
 
     const submit = (e) => {
         e?.preventDefault?.();
+        if (!submitArmedRef.current) return;   // дебаунс: игнор фантомного submit сразу после нового слова
         const fin = foldLoose(input);
         if (acceptSet.some((a) => foldLoose(a) === fin)) { setTypoOk(false); typoRef.current = false; answer(true); return; }
         // на повторении прощаем ОДНУ опечатку (пропуск/перестановка/замена символа), но только для
@@ -165,7 +175,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     {useKbd && canType && (
                         <GameKeyboard
                             lang={aLang} extras={["-"]}
-                            canSubmit={input.length > 0} canBackspace={input.length > 0}
+                            canSubmit canBackspace={input.length > 0}
                             onType={(c) => setInput(input + c)} onBackspace={() => setInput((s) => s.slice(0, -1))} onSubmit={() => submit()}
                             onDunno={dontKnow} showDunno={status === "ASKING"} dunnoLabel={DUNNO[currentLanguage]} />
                     )}
