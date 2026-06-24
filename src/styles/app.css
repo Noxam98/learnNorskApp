@@ -336,13 +336,6 @@
 /* «Не знаю» — неприметная кнопка НАД клавиатурой (правый угол), не клавиша среди букв */
 .kbd-dunno { position: absolute; bottom: calc(100% + 6px); right: 8px; z-index: 8; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--r-full); background: var(--game-bg-2); border: 1px solid var(--game-border); color: var(--game-ink-2); font-size: var(--fs-13); font-weight: 700; line-height: 1; cursor: pointer; opacity: .6; }
 .kbd-dunno:hover { opacity: 1; color: var(--game-ink); }
-/* ПК: ТОСТ «можно печатать с клавиатуры» — заметный, фиксированный сверху, не гаснет по таймеру.
-   Убирается только кнопкой «Понял» (помнится в БД). */
-.kbd-hint { position: fixed; left: 50%; transform: translateX(-50%); top: 70px; z-index: 200; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--r-lg); background: var(--game-bg-2); border: 1px solid var(--game-border); box-shadow: 0 12px 32px rgba(0,0,0,.35); font-size: var(--fs-14); font-weight: 600; color: var(--game-ink); max-width: calc(100vw - 32px); animation: kbdHintIn .2s ease-out; }
-.kbd-hint .ic { flex: none; opacity: .85; color: var(--game-accent); }
-.kbd-hint__ok { margin-left: 4px; padding: 6px 14px; border-radius: var(--r-full); background: var(--game-accent); color: #fff; border: none; font-size: var(--fs-13); font-weight: 700; cursor: pointer; white-space: nowrap; }
-.kbd-hint__ok:hover { filter: brightness(1.08); }
-@keyframes kbdHintIn { from { opacity: 0; transform: translateX(-50%) translateY(-8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 .kbd__row { display: flex; justify-content: center; gap: var(--kbd-gap); width: 100%; }
 /* все буквы — единая фикс-ширина (по 11 в ряд); ⌫/✓/пробел — исключения */
 .kbd__key {

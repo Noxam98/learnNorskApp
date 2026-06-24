@@ -14,8 +14,10 @@ export const useSystemStore = create(persist(
         currentLanguage: "ukr",
         theme: "light", // light | dark
         toast: "", // глобальный тост (внизу слева); пусто = скрыт
-        toastType: "error", // error (красный) | success (зелёный) | warning (жёлтый)
+        toastType: "error", // error (красный) | success (зелёный) | warning (жёлтый) | info (нейтральный)
         toastUrl: "", // если задан — тост кликабельный, ведёт на этот hash-маршрут (напр. "/moderation")
+        toastAction: null, // { label, onClick } — кнопка-действие в тосте (напр. «Понял»)
+        toastPersist: false, // true — тост НЕ гаснет по таймеру (только по кнопке/повторному showToast)
         showArticles: true, // показывать артикль (en/ei/et) перед сущ. на чипах слов
         showVerbAa: true,    // показывать «å» перед глаголами на чипах слов
         soundOn: true,       // звуки игры (онлайн-режим)
@@ -35,9 +37,17 @@ export const useSystemStore = create(persist(
         setTheme: (theme) => set(produce((state) => { state.theme = theme; })),
         toggleTheme: () => set(produce((state) => { state.theme = state.theme === "dark" ? "light" : "dark"; })),
 
-        // Показать/скрыть глобальный тост (пустая строка = скрыть). type: error|success|warning.
-        // url — необязательный hash-маршрут: тогда тост кликабельный и ведёт туда.
-        showToast: (text, type = "error", url = "") => set(produce((state) => { state.toast = text || ""; state.toastType = type; state.toastUrl = url || ""; })),
+        // Показать/скрыть глобальный тост (пустая строка = скрыть). type: error|success|warning|info.
+        // 3-й аргумент: либо строка-hash-маршрут (тост кликабельный, ведёт туда), либо объект-опции
+        // { url, action: { label, onClick }, persist }. С action/persist тост не гаснет сам.
+        showToast: (text, type = "error", opt = "") => set(produce((state) => {
+            const o = (opt && typeof opt === "object") ? opt : { url: opt };
+            state.toast = text || "";
+            state.toastType = type;
+            state.toastUrl = o.url || "";
+            state.toastAction = o.action || null;
+            state.toastPersist = !!o.persist || !!o.action;
+        })),
 
         setShowArticles: (v) => set(produce((state) => { state.showArticles = !!v; })),
         setShowVerbAa: (v) => set(produce((state) => { state.showVerbAa = !!v; })),

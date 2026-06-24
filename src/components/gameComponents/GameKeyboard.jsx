@@ -63,22 +63,28 @@ export function GameKeyboard({
     const pressTsRef = useRef(0);   // момент нажатия — для вибрации «на отпускании» при долгом тапе (≥200мс)
     const kbdRef = useRef(null);
     const [isDesktop] = useState(_isDesktop);
+    const uiLang = useSystemStore((s) => s.currentLanguage);   // язык ИНТЕРФЕЙСА (не клавиш) — для текста тоста
     const hintSeenDB = useAuthStore((s) => s.user?.gamePrefs?.kbdHintSeen);   // флаг из БД (между устройствами)
-    const [showHint, setShowHint] = useState(false);   // тост-подсказка про физ-клавиатуру (ПК)
     const seenRef = useRef(undefined);
     if (seenRef.current === undefined) { try { seenRef.current = !!hintSeenDB || !!localStorage.getItem(HINT_KEY); } catch { seenRef.current = !!hintSeenDB; } }
-    // «Понял» / первый физ-ввод → скрыть тост и запомнить навсегда: localStorage + БД (gamePrefs).
+    // «Понял» / первый физ-ввод → убрать тост и запомнить навсегда: localStorage + БД (gamePrefs).
     const persistSeen = () => {
-        setShowHint(false);
+        try { useSystemStore.getState().showToast(""); } catch { /* */ }   // скрыть тост-подсказку
         if (seenRef.current) return;
         seenRef.current = true;
         try { localStorage.setItem(HINT_KEY, "1"); } catch { /* no-op */ }
         api.setGamePrefs({ kbdHintSeen: true }).catch(() => { /* офлайн — localStorage уже хватит */ });
     };
-    // ПК: показать тост ОДИН раз за сессию, когда юзер НАЧАЛ набор МЫШЬЮ по экранной клавише
-    // (если ещё не нажимал «Понял»). Тригерится из keyDown (клик по букве).
+    // ПК: показать СИСТЕМНЫЙ тост (с кнопкой «Понял», не гаснет сам) ОДИН раз за сессию, когда юзер
+    // начал набор МЫШЬЮ по экранной клавише (если ещё не нажимал «Понял»). Триггер — из keyDown.
     const maybeShowHint = () => {
-        if (isDesktop && !seenRef.current && !_hintShownSession) { _hintShownSession = true; setShowHint(true); }
+        if (!isDesktop || seenRef.current || _hintShownSession) return;
+        _hintShownSession = true;
+        try {
+            useSystemStore.getState().showToast(KBD_HINT[uiLang] || KBD_HINT.en, "info", {
+                persist: true, action: { label: GOT_IT[uiLang] || GOT_IT.en, onClick: persistSeen },
+            });
+        } catch { /* */ }
     };
 
     // Гасим системный long-press жест Android (его haptic-тик «через секунду» + callout): нативный
@@ -244,13 +250,6 @@ export function GameKeyboard({
                     {pop === GO && <span className="kbd__pop kbd__pop--go" aria-hidden="true"><Icon n="check" /></span>}
                 </button>
             </div>
-            {/* ПК: тост «можно печатать с клавиатуры» — постоянный (не гаснет по таймеру), «Понял» убирает навсегда (в БД) */}
-            {showHint && (
-                <div className="kbd-hint" role="status">
-                    <Icon n="info" sm /> <span>{KBD_HINT[lang] || KBD_HINT.en}</span>
-                    <button type="button" className="kbd-hint__ok" onClick={persistSeen}>{GOT_IT[lang] || GOT_IT.en}</button>
-                </div>
-            )}
         </div>
     );
 }

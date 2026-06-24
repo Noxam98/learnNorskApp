@@ -38,6 +38,8 @@ function App() {
     const toast = useSystemStore((s) => s.toast);
     const toastType = useSystemStore((s) => s.toastType);
     const toastUrl = useSystemStore((s) => s.toastUrl);
+    const toastAction = useSystemStore((s) => s.toastAction);
+    const toastPersist = useSystemStore((s) => s.toastPersist);
     const showToast = useSystemStore((s) => s.showToast);
     const pushEnabled = useSystemStore((s) => s.pushEnabled);
 
@@ -124,7 +126,7 @@ function App() {
             <NavigationBar />
             {showInitialLoader ? <BrandLoader size="lg" /> : routes}
             {showFooter && <Footer />}
-            <Toast text={toast} setText={showToast} type={toastType} url={toastUrl} />
+            <Toast text={toast} setText={showToast} type={toastType} url={toastUrl} action={toastAction} persist={toastPersist} />
             <UpdateBanner />
         </div>
     );

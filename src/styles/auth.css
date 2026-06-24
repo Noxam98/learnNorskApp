@@ -56,6 +56,10 @@
 .alert .ic { flex: none; }
 .alert--success { background: var(--success-bg); color: var(--success); border-color: color-mix(in srgb, var(--success) 25%, transparent); }
 .alert--warning { background: var(--warning-bg); color: var(--warning); border-color: color-mix(in srgb, var(--warning) 25%, transparent); }
+/* нейтральный (инфо) вариант + кнопка-действие в тосте (напр. «Понял») */
+.alert--info { background: var(--surface); color: var(--ink); border-color: var(--border-2); }
+.alert__action { flex: none; padding: 6px 14px; border-radius: var(--r-full); background: var(--ember-600); color: #fff; border: none; font-size: var(--fs-13); font-weight: 700; cursor: pointer; white-space: nowrap; }
+.alert__action:hover { filter: brightness(1.08); }
 
 .auth__submit { margin-top: var(--sp-2); }
 .auth__switch { margin-top: var(--sp-6); text-align: center; font-size: var(--fs-15); color: var(--ink-2); }
