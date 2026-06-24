@@ -7,6 +7,7 @@ import { Icon } from "../../components/ui/Icon.jsx";
 import { Modal } from "../../components/ui/Modal.jsx";
 import { BtnSpinner, BrandLoader } from "../../components/ui/Spinner.jsx";
 import { StatusDot, statusLabel, STATUS_ORDER } from "../../components/learning/StatusBits.jsx";
+import { LeaderboardCard, LeaderboardModal } from "../../components/learning/Leaderboard.jsx";
 import { useSessionStore } from "../../store/sessionStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
@@ -245,6 +246,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const [gate, setGate] = useState(null);   // {pack, threshold, open} — ворота экзамена пачки
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [lbOpen, setLbOpen] = useState(false);   // открыта модалка полного рейтинга
 
     const [busy, setBusy] = useState("");      // ключ запускаемого набора/игры → спиннер
     const [focusSaving, setFocusSaving] = useState(false);
@@ -534,6 +536,9 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                 <div className="col" style={{ gap: "var(--sp-5)" }}>
                     {goalPanel}
 
+                    {/* Рейтинг недели — компактная карточка, тап открывает полный список */}
+                    <LeaderboardCard lang={lang} onOpen={() => setLbOpen(true)} />
+
                     {/* Status snapshot */}
                     <div className="spanel">
                         <div className="spanel__head">
@@ -559,6 +564,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                 </div>
             </div>
 
+            {lbOpen && <LeaderboardModal lang={lang} onClose={() => setLbOpen(false)} />}
         </>
     );
 }

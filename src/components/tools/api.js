@@ -300,6 +300,7 @@ class ApiService {
         return this._send('GET', `/learning?${qs.toString()}`);
     }
     learningStats() { return this._send('GET', '/learning/stats'); }
+    leaderboard(period = 'week', limit = 50) { return this._send('GET', `/learning/leaderboard?period=${period}&limit=${limit}`); }
     learningDue(limit = 20) { return this._send('GET', `/learning/due?limit=${limit}`); }
     learningActivity(days = 119) { return this._send('GET', `/learning/activity?days=${days}`); }
     learningAnswer({ pool_id, correct, elapsed = null, mode = null, direction = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode, direction }); }

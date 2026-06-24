@@ -127,6 +127,14 @@ const MyPage = () => {
         }
     };
 
+    // Участие в рейтинге: тумблер хранит инверсию (gamePrefs.leaderboardOptOut). Вкл = участвую.
+    const lbOptOut = !!user?.gamePrefs?.leaderboardOptOut;
+    const toggleLeaderboard = () => {
+        const next = !lbOptOut;
+        useAuthStore.setState((s) => ({ user: { ...s.user, gamePrefs: { ...(s.user?.gamePrefs || {}), leaderboardOptOut: next } } }));
+        api.setGamePrefs({ leaderboardOptOut: next }).catch(() => { /* офлайн — не критично */ });
+    };
+
 
     // Статистика «Учёбы» (единый набор слов, SRS) — вместо личных словарей.
     const byStatus = lstats?.byStatus || {};
@@ -279,6 +287,11 @@ const MyPage = () => {
                             <span className="setrow__ic"><Icon n="volume" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.gameSounds}</span><span className="setrow__d">{t.gameSoundsDesc}</span></span>
                             <span className={`toggle${soundOn ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setSoundOn(!soundOn)} />
+                        </div>
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="award" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{t.leaderboardSetting}</span><span className="setrow__d">{t.leaderboardSettingDesc}</span></span>
+                            <span className={`toggle${!lbOptOut ? " is-on" : ""}`} onClick={toggleLeaderboard} />
                         </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="zap" sm /></span>
