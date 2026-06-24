@@ -91,9 +91,10 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     </h1>
                     {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
 
-                    {/* собранное слово — тусклый шаблон + подсветка по позициям + мигающий курсор */}
-                    <div className="build-line build-line--tpl" lang={aLang}>
-                        {slots.length ? slots : <span className="build-line__ph">_ _ _</span>}
+                    {/* собранное слово — тусклый шаблон + подсветка по позициям + мигающий курсор.
+                        Буквы — инлайн в .build-line__row (обычный letter-spacing, спаны лишь красят). */}
+                    <div className="build-line" lang={aLang}>
+                        <span className="build-line__row">{slots.length ? slots : <span className="build-line__ph">_ _ _</span>}</span>
                     </div>
 
                     {/* QWERTY-клавиатура (режим «сборка»: активны только буквы слова, бейдж-счётчик повторов) */}

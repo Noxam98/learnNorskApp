@@ -308,10 +308,12 @@
 .build-line__ph { color: var(--game-ink-2); font-weight: 600; letter-spacing: .3em; }
 /* буква не на своём месте / лишняя — красным */
 .build-line__bad { color: var(--game-incorrect); }
-/* шаблон слова: тусклые ещё-не-введённые буквы + мигающий курсор (как в реальном инпуте) */
-.build-line--tpl { gap: 2px; }
+/* шаблон слова: тусклые ещё-не-введённые буквы + мигающий курсор (как в реальном инпуте).
+   Буквы — инлайн внутри .build-line__row, чтобы межбуквенный интервал был ОБЫЧНЫЙ (letter-spacing
+   от .build-line), а не flex-gap. */
+.build-line__row { display: inline; white-space: pre-wrap; letter-spacing: normal; }   /* обычный интервал, как в вариантах выбора */
 .build-line__ghost { opacity: .26; }
-.build-line__caret { width: 3px; height: 1em; background: var(--game-accent); border-radius: 2px; animation: caretBlink 1.05s step-end infinite; }
+.build-line__caret { display: inline-block; width: 2px; height: 1em; vertical-align: text-bottom; background: var(--game-accent); border-radius: 1px; animation: caretBlink 1.05s step-end infinite; }
 @keyframes caretBlink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
 
 /* плитки-буквы — флекс с переносом */

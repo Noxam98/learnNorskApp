@@ -139,8 +139,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
 
                     {useKbd ? (
-                        <div className="build-line build-line--tpl" lang={aLang}>
-                            {inputSlots && inputSlots.length ? inputSlots : <span className="build-line__ph">_ _ _</span>}
+                        <div className="build-line" lang={aLang}>
+                            <span className="build-line__row">{inputSlots && inputSlots.length ? inputSlots : <span className="build-line__ph">_ _ _</span>}</span>
                         </div>
                     ) : (
                         <form className="answer" onSubmit={submit}>
