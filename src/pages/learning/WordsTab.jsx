@@ -293,8 +293,9 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
 function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onReset, primaryTr }) {
     const ds = w.dstatus || w.status;   // отображаемый статус (in_progress/repeat/...)
     const showKnow = w.status !== "mastered" && w.status !== "archived";   // по ВНУТРЕННЕМУ статусу
-    // срок «когда прилетит в повтор» — для всех со сроком, кроме новых/архива
-    const due = (ds === "new" || ds === "archived") ? null : dueText(nextReviewAt(w), tt);
+    // срок «когда повторять» — только у выученного/повторения (у них есть расписание повтора).
+    // «в процессе» ещё учатся (нет графика повторов), новые/архив — тоже без срока.
+    const due = (ds === "mastered" || ds === "repeat") ? dueText(nextReviewAt(w), tt) : null;
 
     const menuItems = [
         { key: "know", label: tt.knowMenu, icon: "check-circle", onClick: onKnow },
