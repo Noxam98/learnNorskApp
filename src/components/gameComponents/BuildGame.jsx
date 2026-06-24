@@ -93,7 +93,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                         <GameKeyboard
                             lang={aLang} remainingOf={remainingOf} needed={needed} extras={extras}
                             canSubmit={typed.length > 0} canBackspace={typed.length > 0}
-                            onType={onType} onBackspace={() => setTyped(typed.slice(0, -1))} onSubmit={() => submit()}
+                            onType={onType} onBackspace={() => setTyped((t) => t.slice(0, -1))} onSubmit={() => submit()}
                             onDunno={dontKnow} dunnoLabel={DUNNO[currentLanguage]} showDunno={status === "ASKING"} />
                     )}
 

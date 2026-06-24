@@ -75,6 +75,38 @@ export function GameKeyboard({
     };
     const keyCancel = (c) => { if (pressingRef.current === c) { pressingRef.current = null; setPop(null); } };
 
+    // ⌫ «Стереть»: одиночный тап — удалить символ; удержание — авто-повтор (после паузы 400мс,
+    // далее каждые 60мс), свой поп-ап с иконкой. Повтор работает за счёт функционального setState
+    // в родителях (onBackspace = s => s.slice(0,-1)).
+    const BK = "bk";   // сентинел поп-апа для ⌫
+    const bkTimer = useRef(null);
+    const bkEndRef = useRef(null);   // хранит ИМЕННО навешенный на window обработчик отпускания
+    const bkStop = () => {
+        const t = bkTimer.current;
+        if (t) { clearTimeout(t.to); clearInterval(t.iv); bkTimer.current = null; }
+        if (bkEndRef.current) {
+            window.removeEventListener("pointerup", bkEndRef.current);
+            window.removeEventListener("pointercancel", bkEndRef.current);
+            bkEndRef.current = null;
+        }
+        setPop((p) => (p === BK ? null : p));
+    };
+    const bkDown = (e) => {
+        e?.preventDefault();
+        if (!canBackspace) return;
+        bkStop();
+        buzz(); onBackspace?.(); setPop(BK);
+        // отпускание ловим на window — кнопка может стать disabled (поле опустело) и не дать pointerup
+        const end = () => bkStop();
+        bkEndRef.current = end;
+        window.addEventListener("pointerup", end);
+        window.addEventListener("pointercancel", end);
+        bkTimer.current = { to: setTimeout(() => {
+            bkTimer.current = { to: null, iv: setInterval(() => { onBackspace?.(); buzz(); }, 60) };
+        }, 400), iv: null };
+    };
+    useEffect(() => bkStop, []);   // подчистить таймеры/слушатели при размонтировании
+
     // Клавиша-символ (буква/дефис/пробел). cls — доп. класс (напр. для пробела).
     const symKey = (c, cls = "", ariaLabel) => {
         const b = badge(c);
@@ -108,9 +140,10 @@ export function GameKeyboard({
                         {/* ⌫ — в конце последнего буквенного ряда (как в Gboard) */}
                         {last && (
                             <button className="kbd__key kbd__key--act" disabled={!canBackspace} aria-label="backspace"
-                                onPointerDown={(e) => { e.preventDefault(); buzz(); onBackspace?.(); }}
+                                onPointerDown={bkDown} onPointerLeave={bkStop}
                                 onPointerUp={(e) => e.currentTarget.blur()}>
                                 <Icon n="arrow-left" />
+                                {pop === BK && <span className="kbd__pop kbd__pop--icon" aria-hidden="true"><Icon n="arrow-left" /></span>}
                             </button>
                         )}
                     </div>

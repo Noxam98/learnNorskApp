@@ -369,11 +369,14 @@
 /* поп-ап превью буквы над клавишей (как в Gboard — палец не закрывает букву) */
 .kbd__pop {
     position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
-    min-width: 165%; padding: 12px 0; border-radius: var(--r-md);
-    background: var(--game-accent); color: #fff; font-size: var(--fs-26); font-weight: 800; line-height: 1;
-    box-shadow: var(--shadow-lg); pointer-events: none; z-index: 8; animation: kpop .07s ease-out;
+    /* фикс-размер (не зависит от ширины клавиши): симметрично центрирован над кнопкой и крупнее её */
+    width: calc(var(--kbd-key) * 1.5); height: calc(var(--kbd-key) + 26px); min-width: 46px;
+    display: inline-flex; align-items: center; justify-content: center; border-radius: var(--r-md);
+    background: var(--game-accent); color: #fff; font-size: var(--fs-28); font-weight: 800; line-height: 1;
+    box-shadow: var(--shadow-lg); pointer-events: none; z-index: 8; animation: kpop .1s ease-out;
 }
-@keyframes kpop { from { opacity: 0; transform: translateX(-50%) translateY(5px) scale(.85); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+.kbd__pop .ic { width: 26px; height: 26px; }   /* иконка ⌫ в поп-апе крупнее */
+@keyframes kpop { from { opacity: 0; transform: translateX(-50%) translateY(6px) scale(.8); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
 
 /* Мобилка: клавиатура ПРИЖАТА К НИЗУ, во всю ширину; ⌫ слева, ✓ внизу-справа. */
 @media (max-width: 640px) {
