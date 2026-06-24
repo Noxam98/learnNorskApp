@@ -71,11 +71,11 @@ const COLD = {
 };
 
 const STATUS_VAR = {
-    new: "var(--st-new)", learning: "var(--st-learn)", review: "var(--st-review)",
+    new: "var(--st-new)", in_progress: "var(--st-learn)", repeat: "var(--st-review)",
     mastered: "var(--st-master)", weak: "var(--st-weak)", archived: "var(--st-master)",
 };
 // Порядок секторов доната (archived объединяем визуально с mastered цветом, но как отдельный сектор).
-const DONUT_ORDER = ["mastered", "review", "learning", "new", "weak", "archived"];
+const DONUT_ORDER = ["mastered", "repeat", "in_progress", "new", "weak", "archived"];
 const CEFR = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 function tr(word, lang) {
@@ -123,7 +123,7 @@ export default function ProgressTab({ lang, go, openSession, openWord, openPlace
     const due = stats?.due || 0;
     const currentLevel = stats?.currentLevel || "—";
     const toNextLevel = stats?.toNextLevel;
-    const masteredTotal = (byStatus.mastered || 0) + (byStatus.archived || 0);
+    const masteredTotal = (byStatus.mastered || 0) + (byStatus.repeat || 0) + (byStatus.archived || 0);
     const retention = stats?.retention;       // % или null
     const accuracy = stats?.accuracy;         // % или null
     const streak = stats?.streak || 0;
@@ -161,7 +161,7 @@ export default function ProgressTab({ lang, go, openSession, openWord, openPlace
     const heatColor = (l) => (l === 0 ? "var(--surface-3)" : `color-mix(in srgb, var(--fjord-600) ${l * 25}%, var(--surface-3))`);
 
     // Легенда: статусы с цветами в осмысленном порядке (без archived, если 0).
-    const legendOrder = ["new", "learning", "review", "mastered", "weak", "archived"];
+    const legendOrder = ["new", "in_progress", "repeat", "mastered", "weak", "archived"];
     const legend = legendOrder
         .filter((k) => (byStatus[k] || 0) > 0)
         .map((k) => ({ k, n: byStatus[k] || 0 }));

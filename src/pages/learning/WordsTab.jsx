@@ -17,7 +17,7 @@ import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 // --- Локальные 5-язычные строки (i18n этого файла; interfaceTranslation не трогаем) ---
 const L = {
     ru: {
-        chips: { all: "Все", new: "Новые", learning: "Учу", review: "Повторение", mastered: "Выучено", weak: "Слабые", archived: "Архив" },
+        chips: { all: "Все", new: "Новые", in_progress: "В процессе", repeat: "Повторение", mastered: "Выучено", weak: "Слабые", archived: "Архив" },
         searchPh: "Поиск по всем языкам — norsk, рус, eng…",
         topicAll: "Тема: все", topic: "Тема", levelAll: "Уровень: все", level: "Уровень",
         sortStrength: "По силе", sortDue: "Скоро повторять", sortAlpha: "Алфавит",
@@ -25,11 +25,12 @@ const L = {
         reset: "Сбросить прогресс", toArchive: "В архив",
         selected: "Выбрано:", markMastered: "Отметить выученными", practice: "Практика по выбранным", clear: "Снять",
         empty: "Слов не найдено", emptyHint: "Измените фильтры или поисковый запрос.",
-        today: "сегодня", tomorrow: "завтра", overdue: "просрочено",
+        today: "сегодня", tomorrow: "завтра", overdue: "пора",
+        inMin: (n) => `через ${n} мин`, inHours: (n) => `через ${n} ч`,
         inDays: (n) => `через ${n} ${plRu(n)}`,
     },
     en: {
-        chips: { all: "All", new: "New", learning: "Learning", review: "Review", mastered: "Mastered", weak: "Weak", archived: "Archive" },
+        chips: { all: "All", new: "New", in_progress: "In progress", repeat: "Review", mastered: "Mastered", weak: "Weak", archived: "Archive" },
         searchPh: "Search across all languages — norsk, rus, eng…",
         topicAll: "Topic: all", topic: "Topic", levelAll: "Level: all", level: "Level",
         sortStrength: "By strength", sortDue: "Due soon", sortAlpha: "Alphabetical",
@@ -37,11 +38,12 @@ const L = {
         reset: "Reset progress", toArchive: "Archive",
         selected: "Selected:", markMastered: "Mark as mastered", practice: "Practice selected", clear: "Clear",
         empty: "No words found", emptyHint: "Change filters or search query.",
-        today: "today", tomorrow: "tomorrow", overdue: "overdue",
+        today: "today", tomorrow: "tomorrow", overdue: "due",
+        inMin: (n) => `in ${n} min`, inHours: (n) => `in ${n} h`,
         inDays: (n) => `in ${n} day${n === 1 ? "" : "s"}`,
     },
     ukr: {
-        chips: { all: "Усі", new: "Нові", learning: "Вчу", review: "Повторення", mastered: "Вивчено", weak: "Слабкі", archived: "Архів" },
+        chips: { all: "Усі", new: "Нові", in_progress: "У процесі", repeat: "Повторення", mastered: "Вивчено", weak: "Слабкі", archived: "Архів" },
         searchPh: "Пошук усіма мовами — norsk, укр, eng…",
         topicAll: "Тема: усі", topic: "Тема", levelAll: "Рівень: усі", level: "Рівень",
         sortStrength: "За силою", sortDue: "Скоро повторювати", sortAlpha: "Алфавіт",
@@ -49,11 +51,12 @@ const L = {
         reset: "Скинути прогрес", toArchive: "В архів",
         selected: "Вибрано:", markMastered: "Позначити вивченими", practice: "Практика за вибраними", clear: "Зняти",
         empty: "Слів не знайдено", emptyHint: "Змініть фільтри або пошуковий запит.",
-        today: "сьогодні", tomorrow: "завтра", overdue: "прострочено",
+        today: "сьогодні", tomorrow: "завтра", overdue: "час",
+        inMin: (n) => `через ${n} хв`, inHours: (n) => `через ${n} год`,
         inDays: (n) => `через ${n} ${plUk(n)}`,
     },
     pl: {
-        chips: { all: "Wszystkie", new: "Nowe", learning: "Uczę się", review: "Powtórka", mastered: "Opanowane", weak: "Słabe", archived: "Archiwum" },
+        chips: { all: "Wszystkie", new: "Nowe", in_progress: "W trakcie", repeat: "Powtórka", mastered: "Opanowane", weak: "Słabe", archived: "Archiwum" },
         searchPh: "Szukaj we wszystkich językach — norsk, pol, eng…",
         topicAll: "Temat: wszystkie", topic: "Temat", levelAll: "Poziom: wszystkie", level: "Poziom",
         sortStrength: "Wg siły", sortDue: "Wkrótce powtórka", sortAlpha: "Alfabetycznie",
@@ -61,11 +64,12 @@ const L = {
         reset: "Zresetuj postęp", toArchive: "Do archiwum",
         selected: "Wybrano:", markMastered: "Oznacz jako opanowane", practice: "Ćwicz wybrane", clear: "Wyczyść",
         empty: "Nie znaleziono słów", emptyHint: "Zmień filtry lub zapytanie.",
-        today: "dziś", tomorrow: "jutro", overdue: "zaległe",
+        today: "dziś", tomorrow: "jutro", overdue: "czas",
+        inMin: (n) => `za ${n} min`, inHours: (n) => `za ${n} godz`,
         inDays: (n) => `za ${n} ${plPl(n)}`,
     },
     lt: {
-        chips: { all: "Visi", new: "Nauji", learning: "Mokausi", review: "Kartojimas", mastered: "Išmokti", weak: "Silpni", archived: "Archyvas" },
+        chips: { all: "Visi", new: "Nauji", in_progress: "Eigoje", repeat: "Kartojimas", mastered: "Išmokti", weak: "Silpni", archived: "Archyvas" },
         searchPh: "Ieškoti visomis kalbomis — norsk, lt, eng…",
         topicAll: "Tema: visos", topic: "Tema", levelAll: "Lygis: visi", level: "Lygis",
         sortStrength: "Pagal stiprumą", sortDue: "Greitai kartoti", sortAlpha: "Abėcėlė",
@@ -73,7 +77,8 @@ const L = {
         reset: "Atstatyti progresą", toArchive: "Į archyvą",
         selected: "Pasirinkta:", markMastered: "Pažymėti išmoktais", practice: "Praktika su pasirinktais", clear: "Nuimti",
         empty: "Žodžių nerasta", emptyHint: "Pakeiskite filtrus arba paieškos užklausą.",
-        today: "šiandien", tomorrow: "rytoj", overdue: "pavėluota",
+        today: "šiandien", tomorrow: "rytoj", overdue: "laikas",
+        inMin: (n) => `po ${n} min`, inHours: (n) => `po ${n} val`,
         inDays: (n) => `po ${n} ${plLt(n)}`,
     },
 };
@@ -84,23 +89,34 @@ function plUk(n) { const m10 = n % 10, m100 = n % 100; if (m10 === 1 && m100 !==
 function plPl(n) { const m10 = n % 10, m100 = n % 100; if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "dni"; return "dni"; }
 function plLt(n) { const m10 = n % 10, m100 = n % 100; if (m10 === 0 || (m100 >= 11 && m100 <= 19)) return "dienų"; if (m10 === 1) return "dieną"; return "dienų"; }
 
-const STATUS_CHIPS = ["all", "new", "learning", "review", "mastered", "weak", "archived"];
-const STATUS_DOT = { new: "new", learning: "learn", review: "review", mastered: "master", weak: "weak" };
+const STATUS_CHIPS = ["all", "new", "in_progress", "repeat", "mastered", "weak", "archived"];
+const STATUS_DOT = { new: "new", in_progress: "learn", repeat: "review", mastered: "master", weak: "weak" };
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const SORTS = ["strength", "due", "alpha"];
 const TOPIC_KEYS = ["family", "food", "home", "work", "school", "travel", "health", "body", "clothing", "nature", "animals", "weather", "city", "transport", "shopping", "time", "sport", "hobby", "technology", "communication", "emotions", "holidays", "society", "other"];
 
 const MS_DAY = 86400000;
 
-// Относительный срок повторения из ISO due_at.
-function dueText(dueAt, tt) {
-    if (!dueAt) return null;
-    const due = new Date(dueAt); if (isNaN(due)) return null;
+// Когда слово реально «прилетит в повтор»: у сертифицированных — по аудиту (audit_due),
+// у остальных — по due_at. Для отображения срока на карточке.
+function nextReviewAt(w) {
+    return (w?.certified && w?.audit_due) ? w.audit_due : (w?.due_at || w?.due || null);
+}
+
+// Относительный срок до повтора из ISO: минуты/часы/дни (когда прилетит в повтор).
+function dueText(at, tt) {
+    if (!at) return null;
+    const due = new Date(at); if (isNaN(due)) return null;
+    const ms = due - new Date();
+    if (ms <= 0) return tt.overdue;                       // срок настал
+    const mins = Math.round(ms / 60000);
+    if (mins < 60) return tt.inMin(Math.max(1, mins));    // < часа → минуты
+    const hours = Math.round(mins / 60);
+    if (hours < 24) return tt.inHours(hours);             // < суток → часы
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const day = new Date(due); day.setHours(0, 0, 0, 0);
     const diff = Math.round((day - today) / MS_DAY);
-    if (diff < 0) return tt.overdue;
-    if (diff === 0) return tt.today;
+    if (diff <= 0) return tt.today;
     if (diff === 1) return tt.tomorrow;
     return tt.inDays(diff);
 }
@@ -275,8 +291,10 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
 }
 
 function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onReset, primaryTr }) {
-    const showKnow = w.status !== "mastered" && w.status !== "archived";
-    const due = w.status === "review" ? dueText(w.due_at || w.due, tt) : null;
+    const ds = w.dstatus || w.status;   // отображаемый статус (in_progress/repeat/...)
+    const showKnow = w.status !== "mastered" && w.status !== "archived";   // по ВНУТРЕННЕМУ статусу
+    // срок «когда прилетит в повтор» — для всех со сроком, кроме новых/архива
+    const due = (ds === "new" || ds === "archived") ? null : dueText(nextReviewAt(w), tt);
 
     const menuItems = [
         { key: "know", label: tt.knowMenu, icon: "check-circle", onClick: onKnow },
@@ -307,8 +325,8 @@ function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onReset, 
                 </div>
                 <div className="sword__meta">
                     <span className={"chip pos " + posMeta(w.part_of_speech).cls}>{posLabel(w.part_of_speech, t)}</span>
-                    <StatusBadge status={w.status} lang={lang} />
-                    <StrengthBar value={w.strength} status={w.status} sm showVal />
+                    <StatusBadge status={ds} lang={lang} />
+                    <StrengthBar value={w.strength} status={ds} sm showVal />
                     {due && <span className="sword__due"><Icon n="clock" /> {due}</span>}
                 </div>
             </div>

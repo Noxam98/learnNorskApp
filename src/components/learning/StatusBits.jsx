@@ -2,23 +2,28 @@
 // Используются всеми вкладками раздела. Классы — из study.css (дизайн-хендофф).
 import { Icon } from "../ui/Icon.jsx";
 
+// Статусы для ОТОБРАЖЕНИЯ (приходят в dstatus с бэка): in_progress = начато-не-выучено (бывшие
+// learning+review), repeat = выученное с подошедшим сроком повтора, mastered = выученное без срока.
+// learning/review оставлены алиасами на случай внутреннего статуса.
 const META = {
-    new:      { fill: "new",    badge: "new",    icon: "spark-dot" },
-    learning: { fill: "learn",  badge: "learn",  icon: "book" },
-    review:   { fill: "review", badge: "review", icon: "repeat" },
-    mastered: { fill: "master", badge: "master", icon: "check" },
-    weak:     { fill: "weak",   badge: "weak",   icon: "alert" },
-    archived: { fill: "master", badge: "master", icon: "archive" },
+    new:         { fill: "new",    badge: "new",    icon: "spark-dot" },
+    in_progress: { fill: "learn",  badge: "learn",  icon: "book" },
+    repeat:      { fill: "review", badge: "review", icon: "repeat" },
+    mastered:    { fill: "master", badge: "master", icon: "check" },
+    weak:        { fill: "weak",   badge: "weak",   icon: "alert" },
+    archived:    { fill: "master", badge: "master", icon: "archive" },
+    learning:    { fill: "learn",  badge: "learn",  icon: "book" },   // алиас → in_progress
+    review:      { fill: "learn",  badge: "learn",  icon: "book" },   // алиас → in_progress
 };
 
-export const STATUS_ORDER = ["new", "learning", "review", "mastered", "weak", "archived"];
+export const STATUS_ORDER = ["new", "in_progress", "repeat", "mastered", "weak", "archived"];
 
 export const STATUS_LABELS = {
-    ru:  { new: "Новое", learning: "Учу", review: "Повторение", mastered: "Выучено", weak: "Слабое", archived: "Архив" },
-    en:  { new: "New", learning: "Learning", review: "Review", mastered: "Mastered", weak: "Weak", archived: "Archived" },
-    ukr: { new: "Нове", learning: "Вчу", review: "Повторення", mastered: "Вивчено", weak: "Слабке", archived: "Архів" },
-    pl:  { new: "Nowe", learning: "Uczę się", review: "Powtórka", mastered: "Opanowane", weak: "Słabe", archived: "Archiwum" },
-    lt:  { new: "Nauja", learning: "Mokausi", review: "Kartojimas", mastered: "Išmokta", weak: "Silpna", archived: "Archyvas" },
+    ru:  { new: "Новое", in_progress: "В процессе", repeat: "Повторение", mastered: "Выучено", weak: "Слабое", archived: "Архив", learning: "В процессе", review: "В процессе" },
+    en:  { new: "New", in_progress: "In progress", repeat: "Review", mastered: "Mastered", weak: "Weak", archived: "Archived", learning: "In progress", review: "In progress" },
+    ukr: { new: "Нове", in_progress: "У процесі", repeat: "Повторення", mastered: "Вивчено", weak: "Слабке", archived: "Архів", learning: "У процесі", review: "У процесі" },
+    pl:  { new: "Nowe", in_progress: "W trakcie", repeat: "Powtórka", mastered: "Opanowane", weak: "Słabe", archived: "Archiwum", learning: "W trakcie", review: "W trakcie" },
+    lt:  { new: "Nauja", in_progress: "Eigoje", repeat: "Kartojimas", mastered: "Išmokta", weak: "Silpna", archived: "Archyvas", learning: "Eigoje", review: "Eigoje" },
 };
 
 export function statusMeta(status) { return META[status] || META.new; }

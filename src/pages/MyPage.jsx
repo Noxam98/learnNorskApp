@@ -22,11 +22,11 @@ const OPEN_STUDY = { ru: "Открыть Учёбу", ukr: "Відкрити Н�
 const ADMIN_LBL = { ru: "Админ", ukr: "Адмін", en: "Admin", pl: "Admin", lt: "Administratorius" };
 const MOD_LBL = { ru: "Модерация", ukr: "Модерація", en: "Moderation", pl: "Moderacja", lt: "Moderacija" };
 const STATS_LBL = { ru: "Статистика", ukr: "Статистика", en: "Stats", pl: "Statystyki", lt: "Statistika" };
-const STATUS_ORDER = ["new", "learning", "review", "mastered"];
+const STATUS_ORDER = ["new", "in_progress", "repeat", "mastered"];
 const STATUS_LBL = {
     new: { ru: "Новые", ukr: "Нові", en: "New", pl: "Nowe", lt: "Nauji" },
-    learning: { ru: "Учу", ukr: "Вчу", en: "Learning", pl: "Uczę się", lt: "Mokausi" },
-    review: { ru: "Повторение", ukr: "Повторення", en: "Review", pl: "Powtórka", lt: "Kartojimas" },
+    in_progress: { ru: "В процессе", ukr: "У процесі", en: "In progress", pl: "W trakcie", lt: "Eigoje" },
+    repeat: { ru: "Повторение", ukr: "Повторення", en: "Review", pl: "Powtórka", lt: "Kartojimas" },
     mastered: { ru: "Выучено", ukr: "Вивчено", en: "Mastered", pl: "Opanowane", lt: "Išmokta" },
 };
 
@@ -132,7 +132,7 @@ const MyPage = () => {
     // Статистика «Учёбы» (единый набор слов, SRS) — вместо личных словарей.
     const byStatus = lstats?.byStatus || {};
     const total = lstats?.total || 0;
-    const masteredTotal = (byStatus.mastered || 0) + (byStatus.archived || 0);
+    const masteredTotal = (byStatus.mastered || 0) + (byStatus.repeat || 0) + (byStatus.archived || 0);
     const accuracy = lstats?.accuracy; // % | null
     const currentLevel = lstats?.currentLevel || "—";
 

@@ -279,9 +279,9 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const composition = useMemo(() => {
         const weak = by.weak || 0;
         const fresh = by.new || 0;
-        const review = Math.max(0, due - weak);   // просроченные не-слабые ≈ обычное повторение
+        const review = by.repeat || 0;   // «Повторение» = выученные, у кого подошёл срок (display-статус)
         return { review, weak, fresh };
-    }, [by.weak, by.new, due]);
+    }, [by.weak, by.new, by.repeat]);
     // Что реально можно учить сейчас: просроченные + слабые + новые (как собирает get_due).
     // ВАЖНО: новые слова из словаря имеют due=null, поэтому только по `due` их не видно.
     const learnable = due + (by.new || 0) + (by.weak || 0);
@@ -532,7 +532,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                 <div className="spanel__body" style={{ paddingTop: "var(--sp-2)" }}>
                                     <div className="setlist">
                                         <SetRow icon="repeat" color="--st-review" title={t.setReview} desc={t.setReviewD}
-                                            n={due} loading={busy === "s-review"} onClick={() => runSet("due", "s-review")} badge="review" />
+                                            n={by.repeat || 0} loading={busy === "s-review"} onClick={() => runSet("repeat", "s-review")} badge="review" />
                                         <SetRow icon="alert" color="--st-weak" title={t.setWeak} desc={t.setWeakD}
                                             n={by.weak || 0} loading={busy === "s-weak"} onClick={() => runSet("weak", "s-weak")} />
                                         <SetRow icon="spark-dot" color="--st-new" title={t.setNew}
