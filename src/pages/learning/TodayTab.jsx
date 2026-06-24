@@ -522,39 +522,15 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                     {sessionLoading ? <BtnSpinner /> : <Icon n="play" />} {t.startReview}
                                 </button>
                             </div>
-
-                            {/* Sets */}
-                            <div className="spanel">
-                                <div className="spanel__head">
-                                    <span className="spanel__title">{t.sets}</span>
-                                    <span className="muted-3" style={{ fontSize: "var(--fs-13)" }}>{t.setsHint}</span>
-                                </div>
-                                <div className="spanel__body" style={{ paddingTop: "var(--sp-2)" }}>
-                                    <div className="setlist">
-                                        <SetRow icon="repeat" color="--st-review" title={t.setReview} desc={t.setReviewD}
-                                            n={by.repeat || 0} loading={busy === "s-review"} onClick={() => runSet("repeat", "s-review")} badge="review" />
-                                        <SetRow icon="alert" color="--st-weak" title={t.setWeak} desc={t.setWeakD}
-                                            n={by.weak || 0} loading={busy === "s-weak"} onClick={() => runSet("weak", "s-weak")} />
-                                        <SetRow icon="spark-dot" color="--st-new" title={t.setNew}
-                                            desc={gateOpen ? t.gateLockedNew : t.setNewD}
-                                            n={by.new || 0} loading={busy === "s-new"} locked={gateOpen}
-                                            onClick={() => runSet("new", "s-new")} />
-                                    </div>
-                                    {/* свободная тренировка — через выбор слов во вкладке «Слова» */}
-                                    <button type="button" onClick={() => go("words")}
-                                        style={{ marginTop: "var(--sp-3)", background: "none", border: "none", cursor: "pointer", color: "var(--fjord-600)", fontWeight: 600, fontSize: "var(--fs-13)", padding: "2px 0" }}>
-                                        {t.ownWords} →
-                                    </button>
-                                </div>
-                            </div>
                         </>
                     )}
+                    {/* Темы в фокусе — под Smart Review (на месте бывших «наборов для практики») */}
+                    {focusPanel}
                 </div>
 
                 {/* RIGHT */}
                 <div className="col" style={{ gap: "var(--sp-5)" }}>
                     {goalPanel}
-                    {focusPanel}
 
                     {/* Status snapshot */}
                     <div className="spanel">
@@ -582,27 +558,6 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
             </div>
 
         </>
-    );
-}
-
-// ---------- sub-components ----------
-function SetRow({ icon, color, title, desc, n, badge, loading, locked, onClick }) {
-    return (
-        <button className="setrow-link" onClick={onClick} disabled={loading || locked}
-            style={{ background: "none", border: "none", borderTop: "1px solid var(--border)", textAlign: "left", width: "100%", cursor: locked ? "not-allowed" : "pointer", opacity: locked ? 0.6 : 1 }}>
-            <span className="setrow-link__ic" style={{ background: `color-mix(in srgb,var(${color}) 15%,var(--surface))`, color: `var(${color})` }}>
-                <Icon n={icon} />
-            </span>
-            <span className="setrow-link__meta">
-                <span className="setrow-link__t">
-                    {title}
-                    {badge && <span className="sbadge sbadge--review"><Icon n="repeat" /> SRS</span>}
-                </span>
-                <span className="setrow-link__d">{desc}</span>
-            </span>
-            <span className="setrow-link__n">{n}</span>
-            <span className="setrow-link__go">{loading ? <BtnSpinner /> : <Icon n={locked ? "lock" : "arrow-right"} />}</span>
-        </button>
     );
 }
 
