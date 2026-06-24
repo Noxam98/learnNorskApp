@@ -19,7 +19,7 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 // «С опечаткой, но засчитано» — снисходительный зачёт на повторении (1 правка).
 const TYPO_OK = { ru: "С опечаткой — но засчитано:", ukr: "З опискою — але зараховано:", en: "Typo — but accepted:", pl: "Literówka — ale zaliczono:", lt: "Su klaida — bet užskaityta:" };
 
-export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, onReport, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
+export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
     const isNo2Int = mode !== "int2no";
     const nativeKeyboard = useSystemStore((s) => s.nativeKeyboard);
     // печатаем норвежское → наша клавиатура; для родного и при выборе «системная клавиатура» — штатный инпут
@@ -112,7 +112,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
 
     return (
         <div className={"play" + (useKbd ? " play--kbd" : "")} data-state={status.toLowerCase()} style={PLAY_STYLE}>
-            <PlayTopBar correctCount={baseCorrect + knownFirstTry} wrongCount={baseWrong + missedIds.size} onExit={backToSelection} onReport={onReport} t={t} tag={repeat ? <RepeatBadge /> : null} />
+            <PlayTopBar correctCount={baseCorrect + knownFirstTry} wrongCount={baseWrong + missedIds.size} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
             <div className="pstage" onClick={onStageClick}

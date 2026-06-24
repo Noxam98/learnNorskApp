@@ -13,7 +13,7 @@ import { useGameLoop } from "./useGameLoop.js";
 
 const FILL = { ru: "Вставь пропущенное слово", en: "Fill in the gap", ukr: "Встав пропущене слово", pl: "Uzupełnij lukę", lt: "Įrašyk trūkstamą žodį" };
 
-export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, onReport, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
+export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
     const [chosen, setChosen] = useState(null);
     const [armed, setArmed] = useState(false); // анти-ghost-click: свежий вопрос ~350мс не принимает выбор
     const loop = useGameLoop({
@@ -63,7 +63,7 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
 
     return (
         <div className="play" data-state={status.toLowerCase()} style={PLAY_STYLE}>
-            <PlayTopBar correctCount={baseCorrect + correctCount} wrongCount={baseWrong + wrongCount} onExit={backToSelection} onReport={onReport} t={t} tag={repeat ? <RepeatBadge /> : null} />
+            <PlayTopBar correctCount={baseCorrect + correctCount} wrongCount={baseWrong + wrongCount} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
             <div className="pstage" onClick={onStageClick}
