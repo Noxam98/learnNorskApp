@@ -22,6 +22,7 @@ const TYPO_OK = { ru: "С опечаткой — но засчитано:", ukr:
 const TYPO_ASK = { ru: "Похоже на опечатку. Это она?", ukr: "Схоже на описку. Це вона?", en: "Looks like a typo. Was it?", pl: "Wygląda na literówkę. To ona?", lt: "Panašu į klaidą. Ar taip?" };
 const TYPO_YES = { ru: "Да, опечатка", ukr: "Так, описка", en: "Yes, a typo", pl: "Tak, literówka", lt: "Taip, klaida" };
 const TYPO_NO = { ru: "Нет, ошибся", ukr: "Ні, помилився", en: "No, I was wrong", pl: "Nie, błąd", lt: "Ne, suklydau" };
+const TYPO_NEXT_MS = 600;   // после выбора Да/Нет — короткая пауза (показать результат), затем авто-переход
 
 export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const isNo2Int = mode !== "int2no";
@@ -29,6 +30,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const useKbd = !isNo2Int;
     const [input, setInput] = useState("");
     const [typoAsk, setTypoAsk] = useState(/** @type {{typed:string, correct:string}|null} */(null)); // найден near-miss — спросить «опечатка?»
+    const [resolving, setResolving] = useState(false);   // после выбора Да/Нет — короткая пауза до авто-перехода (клавиатуру прячем)
+    const typoTmrRef = useRef(/** @type {any} */(null)); // таймер этого авто-перехода
     const [typoOk, setTypoOk] = useState(false);   // ответ принят с одной опечаткой (повтор)
     const [armed, setArmed] = useState(false);     // анти-ghost-click: тап-продолжение активируется не сразу
     const typoRef = useRef(false);                  // тот же флаг для onFinish (без гонок ререндера)
@@ -47,7 +50,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         // со звуком пауза перед переходом = длина озвучки ответа + хвост (correctPrimary/aLang ниже).
         // При опечатке (held) переход по тапу — там озвучивает сама игра, см. эффект ниже.
         speakAnswer: () => (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null,
-        onAdvance: () => { setInput(""); setTypoOk(false); setTypoAsk(null); typoRef.current = false; },   // новое слово — чистое поле
+        onAdvance: () => { setInput(""); setTypoOk(false); setTypoAsk(null); setResolving(false); typoRef.current = false; },   // новое слово — чистое поле
         onWrong: () => { resetInput(); setTypoOk(false); setTypoAsk(null); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
     const { t, currentLanguage, total, current, status, held, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, advance, restart, backToSelection } = loop;
@@ -70,7 +73,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const promptTarget = isNo2Int ? (ENDONYM[currentLanguage] || currentLanguage) : "Norsk";
     const qLang = hyLang(currentLanguage, isNo2Int);
     const aLang = hyLang(currentLanguage, !isNo2Int);
-    const canType = status === "ASKING" || status === "INCORRECT";
+    const canType = (status === "ASKING" || status === "INCORRECT") && !resolving;
 
     // дебаунс submit: на новом слове блокируем отправку на 250мс (анти-фантомный Enter с прошлого задания)
     useEffect(() => {
@@ -119,10 +122,14 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         }
         setTypoOk(false); typoRef.current = false; answer(false);
     };
-    // «Да, опечатка» — засчитываем верно (тег «с опечаткой»), без авто-перехода: дать прочитать верное → тап.
-    const confirmTypo = () => { setTypoAsk(null); setTypoOk(true); typoRef.current = true; playSound("typo"); answer(true, { hold: true, silent: true }); };
-    // «Нет, ошибся» — обычная ошибка.
-    const denyTypo = () => { setTypoAsk(null); setTypoOk(false); typoRef.current = false; answer(false); };
+    // После выбора Да/Нет — короткая пауза (увидеть результат), затем сами идём дальше (без ожидания тапа).
+    const clearTypoTmr = () => { if (typoTmrRef.current) { clearTimeout(typoTmrRef.current); typoTmrRef.current = null; } };
+    const afterTypoDelay = () => { clearTypoTmr(); typoTmrRef.current = setTimeout(() => { typoTmrRef.current = null; advance(); }, TYPO_NEXT_MS); };
+    // «Да, опечатка» — засчитываем верно (тег «с опечаткой»).
+    const confirmTypo = () => { setTypoAsk(null); setResolving(true); setTypoOk(true); typoRef.current = true; playSound("typo"); answer(true, { hold: true, silent: true }); afterTypoDelay(); };
+    // «Нет, ошибся» — обычная ошибка (ответ уже показан панелью, поэтому не заставляем перепечатывать — пауза и дальше).
+    const denyTypo = () => { setTypoAsk(null); setResolving(true); setTypoOk(false); typoRef.current = false; answer(false); afterTypoDelay(); };
+    useEffect(() => clearTypoTmr, []);   // снять таймер при размонтировании
     const dontKnow = () => { if (status === "ASKING") answer(false); };
     // принято с опечаткой: авто-перехода нет — продолжаем тапом по любому месту сцены.
     // «Взвод» (~400мс): иначе тот же тап, что отправил ответ, долетает «ghost click» по сцене
@@ -135,7 +142,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         }
         setArmed(false);
     }, [status, typoOk]);
-    const onStageClick = () => { if (status === "CORRECT" && typoOk && armed) advance(); };
+    const onStageClick = () => { if (status === "CORRECT" && typoOk && armed) { clearTypoTmr(); advance(); } };   // тап раньше таймера — отменяем таймер
 
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
 
@@ -180,7 +187,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                             <div className="fb-icon" style={{ background: "rgba(232,170,72,.18)", color: "#d98a2b" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "#d98a2b" }}>{TYPO_OK[currentLanguage] || TYPO_OK.en}</div>
                             <div className="fb-answer" lang={aLang}>{hyphenate(correctPrimary, aLang)}</div>
-                            <div className="pcta"><span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span></div>
+                            {!resolving && <div className="pcta"><span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span></div>}
                         </div>
                     )}
                     {status === "CORRECT" && !typoOk && (
