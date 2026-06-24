@@ -15,6 +15,9 @@ import api from "../tools/api.js";
 
 const ADDED_LRN = { ru: "добавлено в Учёбу", ukr: "додано до навчання", en: "added to Learning", pl: "dodano do nauki", lt: "pridėta į mokymąsi" };
 const REMOVED_LRN = { ru: "убрано из Учёбы", ukr: "прибрано з навчання", en: "removed from Learning", pl: "usunięto z nauki", lt: "pašalinta iš mokymosi" };
+// «Не учить»: жалоба на мусорное слово → убрано у пользователя + отправлено админу на модерацию
+const REPORTED_LRN = { ru: "убрано и отправлено на модерацию", ukr: "прибрано й надіслано на модерацію", en: "removed and sent for review", pl: "usunięto i wysłano do moderacji", lt: "pašalinta ir išsiųsta peržiūrai" };
+const REPORTED_GONE = { ru: "уже убрано из учёбы", ukr: "вже прибрано з навчання", en: "already removed from learning", pl: "już usunięto z nauki", lt: "jau pašalinta iš mokymosi" };
 
 // Описание слова + похожие слова (кликабельные — навигация по пулу) +
 // кнопка добавить/удалить просматриваемое слово в текущий словарь.
@@ -28,6 +31,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     const [view, setView] = useState(null); // { no, desc, descLoading, synonyms }
     const [dictBusy, setDictBusy] = useState(false);
+    const [reportBusy, setReportBusy] = useState(false); // «Не учить» в работе
     const [diff, setDiff] = useState(null); // { with, loading, data } — разбор разницы с близким словом
     const [fixOpen, setFixOpen] = useState(false); // форма исправления описания
     const [fixHint, setFixHint] = useState("");
@@ -209,6 +213,20 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
         setDictBusy(false);
     };
 
+    // «Не учить»: мусорное слово (типа «покемон») — убрать у себя из Учёбы и отправить админу на модерацию.
+    const reportDontLearn = async () => {
+        if (!view || reportBusy || !view.pool_id) return;
+        setReportBusy(true);
+        try {
+            const r = await api.learningReport(view.pool_id);
+            const phrase = r?.status === "excluded" ? (REPORTED_GONE[lang] || REPORTED_GONE.en) : (REPORTED_LRN[lang] || REPORTED_LRN.en);
+            useSystemStore.getState().showToast(`«${view.no}» — ${phrase}`, "success");
+            try { loadData?.(); } catch { /* no-op */ }
+            onClose?.();
+        } catch { /* тост покажет api.js */ }
+        setReportBusy(false);
+    };
+
     const titleNode = (
         posText
             ? <span className={`chip pos ${posMeta(posKey).cls}`} style={{ fontWeight: 600 }}>{posText}</span>
@@ -224,6 +242,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             { key: "ask", label: t.askWord || "Спросить о слове", icon: "info", onClick: () => { setAskOpen(true); setFixOpen(false); } },
             { key: "revoice", label: t.revoice || "Переозвучить", icon: "volume", busy: revoiceBusy, disabled: revoiceBusy, onClick: revoice },
             (!view.descLoading ? { key: "fix", label: t.fixDesc, icon: "edit", onClick: () => { setFixOpen(true); setAskOpen(false); } } : null),
+            { key: "report", label: t.dontLearn || "Не учить", icon: "x-circle", danger: true, busy: reportBusy, disabled: reportBusy, onClick: reportDontLearn },
             (isAdmin ? { key: "del", label: t.deleteFromBase || "Удалить из базы", icon: "trash", danger: true, onClick: () => setDelConfirm(true) } : null),
         ]} />
     ) : null;

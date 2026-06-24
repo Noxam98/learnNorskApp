@@ -189,6 +189,11 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
         try { await api.learningStatus(poolId, action); } catch { /* */ }
         load(); refresh?.();
     };
+    // «Не учить»: мусорное слово — убрать у себя из Учёбы + отправить админу на модерацию.
+    const report = async (poolId) => {
+        try { await api.learningReport(poolId); } catch { /* */ }
+        load(); refresh?.();
+    };
     const bulk = async (action) => {
         const ids = words.filter((w) => sel.has(w.pool_id)).map((w) => w.pool_id);
         if (!ids.length) return;
@@ -282,6 +287,7 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
                             onOpen={() => openWord?.(w.no, null)}
                             onKnow={() => mutate(w.pool_id, "know")}
                             onReset={() => mutate(w.pool_id, "reset")}
+                            onReport={() => report(w.pool_id)}
                             primaryTr={primaryTr(w)} />
                     ))}
                 </div>
@@ -290,7 +296,7 @@ export default function WordsTab({ lang, go, openSession, openWord, reloadKey, r
     );
 }
 
-function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onReset, primaryTr }) {
+function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onReset, onReport, primaryTr }) {
     const ds = w.dstatus || w.status;   // отображаемый статус (in_progress/repeat/...)
     const showKnow = w.status !== "mastered" && w.status !== "archived";   // по ВНУТРЕННЕМУ статусу
     // срок «когда повторять» — только у выученного/повторения (у них есть расписание повтора).
@@ -302,6 +308,7 @@ function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onReset, 
         { key: "open", label: tt.openCard, icon: "bookmark", onClick: onOpen },
         { key: "speak", label: tt.speak, icon: "volume", onClick: () => speakText(w.no) },
         { key: "reset", label: tt.reset, icon: "rotate", onClick: onReset },
+        { key: "report", label: t.dontLearn || "Не учить", icon: "x-circle", danger: true, onClick: onReport },
         { key: "archive", label: tt.toArchive, icon: "archive", onClick: onKnow, danger: true },
     ];
 

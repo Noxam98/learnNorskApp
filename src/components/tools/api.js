@@ -271,6 +271,9 @@ class ApiService {
     adminPending() { return this._send('GET', '/admin/pending'); }                                  // слова на модерации
     adminApprove(poolId) { return this._send('POST', `/admin/pending/${poolId}/approve`); }         // → в общую базу
     adminReject(poolId) { return this._send('POST', `/admin/pending/${poolId}/reject`); }           // → приватно у автора
+    adminReported() { return this._send('GET', '/admin/reported'); }                                 // жалобы «не учить»
+    adminExcludeWord(poolId) { return this._send('POST', `/admin/reported/${poolId}/exclude`); }     // убрать из учёбы (всем)
+    adminKeepWord(poolId) { return this._send('POST', `/admin/reported/${poolId}/keep`); }           // оставить (+гасить 5 жалоб)
     adminDeleteWord(word) { return this._send('DELETE', `/admin/pool/${encodeURIComponent(word)}`); }
     adminDescribeAll() { return this._send('POST', '/admin/describe_all'); }
     getAdminControl() { return this._send('GET', '/admin/control'); }
@@ -302,6 +305,7 @@ class ApiService {
     learningAnswer({ pool_id, correct, elapsed = null, mode = null, direction = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode, direction }); }
     learningAdd(poolId) { return this._send('POST', '/learning/add', { pool_id: poolId }); }       // добавить слово (по pool_id) в Учёбу
     learningRemove(poolId) { return this._send('POST', '/learning/remove', { pool_id: poolId }); } // убрать слово (по pool_id) из Учёбы
+    learningReport(poolId) { return this._send('POST', '/learning/report', { pool_id: poolId }); } // «не учить»: жалоба на мусорное слово + убрать у себя
     learningSession(size = 20, lang = 'ru') { return this._send('GET', `/learning/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
     learningGate() { return this._send('GET', '/learning/gate'); }
     learningGateExam(lang = "ru") { return this._send('GET', `/learning/gate/exam?lang=${encodeURIComponent(lang)}`); }
