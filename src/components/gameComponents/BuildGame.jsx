@@ -55,12 +55,8 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const canType = status === "ASKING" || status === "INCORRECT"; // в INCORRECT — повтор после показа ответа
 
     const submit = (sel = typed) => answer(norm(sel.join("")) === norm(target));
-    // ввод буквы с клавиатуры: добавить и авто-проверить, когда собрано слово целиком
-    const onType = (c) => {
-        const next = [...typed, c];
-        setTyped(next);
-        if (next.length === targetChars.length) submit(next);
-    };
+    // ввод буквы с клавиатуры: просто добавить. Проверка — по кнопке ✓ (не авто-завершение).
+    const onType = (c) => setTyped((prev) => [...prev, c]);
     const dontKnow = () => { if (status === "ASKING") answer(false); };
 
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;

@@ -107,6 +107,18 @@ export function GameKeyboard({
     };
     useEffect(() => bkStop, []);   // подчистить таймеры/слушатели при размонтировании
 
+    // ✓ «Проверить»: как буквы — поп-ап на нажатии (другого цвета), а СРАБАТЫВАЕТ на ОТПУСКАНИИ
+    // (уход пальца с кнопки — без отправки). Раньше отправлял на pointerdown.
+    const GO = "go";
+    const goPressRef = useRef(false);
+    const goDown = (e) => { e?.preventDefault(); if (!canSubmit) return; goPressRef.current = true; setPop(GO); buzz(); pressTsRef.current = Date.now(); };
+    const goUp = (e) => {
+        e?.currentTarget?.blur?.();
+        if (goPressRef.current && canSubmit) { onSubmit?.(); if (Date.now() - pressTsRef.current >= 200) buzz(); }
+        goPressRef.current = false; setPop((p) => (p === GO ? null : p));
+    };
+    const goCancel = () => { goPressRef.current = false; setPop((p) => (p === GO ? null : p)); };
+
     // Клавиша-символ (буква/дефис/пробел). cls — доп. класс (напр. для пробела).
     const symKey = (c, cls = "", ariaLabel) => {
         const b = badge(c);
@@ -124,18 +136,17 @@ export function GameKeyboard({
 
     return (
         <div className="kbd" ref={kbdRef} onContextMenu={(e) => e.preventDefault()}>
+            {/* «Не знаю» — НАД клавиатурой (а не клавишей среди букв): единообразно во всех экранных
+                клавиатурах, чтобы случайно не задеть. Неприметная, в правом углу над панелью. */}
+            {showDunno && onDunno && (
+                <button type="button" className="kbd-dunno" onClick={(e) => { onDunno(); e.currentTarget.blur(); }}>{dunnoLabel}</button>
+            )}
             {KBD_ROWS.map((row, ri) => {
                 const last = ri === KBD_ROWS.length - 1;
                 return (
                     <div className={"kbd__row" + (last ? " kbd__row--last" : "")} key={ri}>
-                        {/* левый край нижнего ряда: «Не знаю» (Сборка) ИЛИ нейтральная заглушка (Ввод —
-                            «Не знаю» вынесена в неприметный угол, а пустоту закрываем, чтоб не мозолила) */}
-                        {last && showDunno && onDunno && (
-                            <button type="button" className="kbd__key kbd__key--dunno" onClick={(e) => { onDunno(); e.currentTarget.blur(); }}>{dunnoLabel}</button>
-                        )}
-                        {last && leftFiller && !(showDunno && onDunno) && (
-                            <span className="kbd__key kbd__key--filler" aria-hidden="true" />
-                        )}
+                        {/* нижний буквенный ряд короче — слева заглушка для баланса с ⌫ справа (по центру) */}
+                        {last && <span className="kbd__key kbd__key--filler" aria-hidden="true" />}
                         {row.map((c) => symKey(c))}
                         {/* ⌫ — в конце последнего буквенного ряда (как в Gboard) */}
                         {last && (
@@ -155,8 +166,10 @@ export function GameKeyboard({
                 {/* пробел — всегда в клавиатуре */}
                 {symKey(" ", " kbd__key--space", "space")}
                 <button className="kbd__key kbd__key--go" disabled={!canSubmit} aria-label="check"
-                    onPointerDown={(e) => { e.preventDefault(); onSubmit?.(); }}
-                    onPointerUp={(e) => e.currentTarget.blur()}><Icon n="check" /></button>
+                    onPointerDown={goDown} onPointerUp={goUp} onPointerLeave={goCancel} onPointerCancel={goCancel}>
+                    <Icon n="check" />
+                    {pop === GO && <span className="kbd__pop kbd__pop--go" aria-hidden="true"><Icon n="check" /></span>}
+                </button>
             </div>
         </div>
     );

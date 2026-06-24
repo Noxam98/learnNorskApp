@@ -164,9 +164,10 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     {/* наша клавиатура (свободный режим — без подсказок-букв), только для норвежского ответа */}
                     {useKbd && canType && (
                         <GameKeyboard
-                            lang={aLang} extras={["-"]} leftFiller
+                            lang={aLang} extras={["-"]}
                             canSubmit={input.length > 0} canBackspace={input.length > 0}
-                            onType={(c) => setInput(input + c)} onBackspace={() => setInput((s) => s.slice(0, -1))} onSubmit={() => submit()} />
+                            onType={(c) => setInput(input + c)} onBackspace={() => setInput((s) => s.slice(0, -1))} onSubmit={() => submit()}
+                            onDunno={dontKnow} showDunno={status === "ASKING"} />
                     )}
 
                     <div className="pcta">
@@ -181,10 +182,11 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                 )}
             </div>
 
-            {/* «Не знаю» — неприметная угловая кнопка (прямой ребёнок .play, чтобы её не подрезал
-                overflow:hidden у .pstage). С клавиатурой низ занят — ставим кнопку прямо НАД ней справа. */}
-            {status === "ASKING" && (
-                <button className={"dunno-corner" + (useKbd ? " dunno-corner--kbd" : "")} onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
+            {/* «Не знаю»: с экранной клавиатурой — её рисует сама GameKeyboard (над панелью, единообразно).
+                Без неё (физическая клава / ввод в поле) — неприметная угловая кнопка, прямой ребёнок .play
+                (чтобы её не подрезал overflow:hidden у .pstage). */}
+            {status === "ASKING" && !useKbd && (
+                <button className="dunno-corner" onClick={dontKnow}>{DUNNO[currentLanguage]}</button>
             )}
         </div>
     );
