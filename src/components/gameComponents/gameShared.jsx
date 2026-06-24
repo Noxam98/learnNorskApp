@@ -147,8 +147,8 @@ export const RepeatBadge = () => {
     );
 };
 
-/** @param {{correctCount?:number, wrongCount?:number, onExit?:any, t:any, centerNode?:any, tag?:any}} props */
-export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = null, tag = null }) => {
+/** @param {{correctCount?:number, wrongCount?:number, onExit?:any, onReport?:any, t:any, centerNode?:any, tag?:any}} props */
+export const PlayTopBar = ({ correctCount, wrongCount, onExit, onReport = null, t, centerNode = null, tag = null }) => {
     return (
         <div className="ptop">
             <a className="ptop__brand" onClick={onExit} style={{ cursor: "pointer" }}>
@@ -165,6 +165,8 @@ export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = n
                 )}
             </div>
             <SoundControl t={t} />
+            {/* «Не учить» — пожаловаться на мусорное слово прямо в игре (убрать у себя + админу) */}
+            {onReport && <a className="preport" onClick={onReport} style={{ cursor: "pointer" }} title={t.dontLearn || "Не учить"}><Icon n="x-circle" sm /> <span className="preport__t">{t.dontLearn || "Не учить"}</span></a>}
             <a className="pexit" onClick={onExit} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
         </div>
     );
