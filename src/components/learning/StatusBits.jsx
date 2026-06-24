@@ -7,13 +7,13 @@ import { Icon } from "../ui/Icon.jsx";
 // learning/review оставлены алиасами на случай внутреннего статуса.
 const META = {
     new:         { fill: "new",    badge: "new",    icon: "spark-dot" },
-    in_progress: { fill: "learn",  badge: "learn",  icon: "book" },
+    in_progress: { fill: "learn",  badge: "learn",  icon: null },
     repeat:      { fill: "review", badge: "review", icon: "repeat" },
     mastered:    { fill: "master", badge: "master", icon: "check" },
     weak:        { fill: "weak",   badge: "weak",   icon: "alert" },
     archived:    { fill: "master", badge: "master", icon: "archive" },
-    learning:    { fill: "learn",  badge: "learn",  icon: "book" },   // алиас → in_progress
-    review:      { fill: "learn",  badge: "learn",  icon: "book" },   // алиас → in_progress
+    learning:    { fill: "learn",  badge: "learn",  icon: null },   // алиас → in_progress
+    review:      { fill: "learn",  badge: "learn",  icon: null },   // алиас → in_progress
 };
 
 export const STATUS_ORDER = ["new", "in_progress", "repeat", "mastered", "weak", "archived"];
@@ -41,7 +41,7 @@ export function StatusBadge({ status, lang = "ru" }) {
     const m = statusMeta(status);
     return (
         <span className={"sbadge sbadge--" + m.badge}>
-            <Icon n={m.icon} sm /> {statusLabel(status, lang)}
+            {m.icon && <Icon n={m.icon} sm />} {statusLabel(status, lang)}
         </span>
     );
 }

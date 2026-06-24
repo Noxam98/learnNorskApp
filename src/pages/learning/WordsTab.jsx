@@ -299,7 +299,7 @@ function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onReset, 
 
     const menuItems = [
         { key: "know", label: tt.knowMenu, icon: "check-circle", onClick: onKnow },
-        { key: "open", label: tt.openCard, icon: "book", onClick: onOpen },
+        { key: "open", label: tt.openCard, icon: "bookmark", onClick: onOpen },
         { key: "speak", label: tt.speak, icon: "volume", onClick: () => speakText(w.no) },
         { key: "reset", label: tt.reset, icon: "rotate", onClick: onReset },
         { key: "archive", label: tt.toArchive, icon: "archive", onClick: onKnow, danger: true },
