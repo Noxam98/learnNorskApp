@@ -167,7 +167,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                             lang={aLang} extras={["-"]}
                             canSubmit={input.length > 0} canBackspace={input.length > 0}
                             onType={(c) => setInput(input + c)} onBackspace={() => setInput((s) => s.slice(0, -1))} onSubmit={() => submit()}
-                            onDunno={dontKnow} showDunno={status === "ASKING"} />
+                            onDunno={dontKnow} showDunno={status === "ASKING"} dunnoLabel={DUNNO[currentLanguage]} />
                     )}
 
                     <div className="pcta">
