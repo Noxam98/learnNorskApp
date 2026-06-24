@@ -2,7 +2,7 @@
 // Игра «Выбор»: 4 варианта, каждое слово ровно один раз, переход по тапу после верного ответа.
 // Механика цикла (стейт-машина, SRS, ретрай, переход, финиш) — в useGameLoop; здесь деривация
 // слова, загрузка вариантов, озвучка и рендер.
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyLang } from "../ui/hyphenate.js";
@@ -19,6 +19,9 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     const [options, setOptions] = useState(/** @type {string[] | null} */(null));
     const [subOf, setSubOf] = useState({}); // вариант → второй перевод (вторая строка кнопки)
     const [armed, setArmed] = useState(false); // анти-ghost-click: свежий вопрос ~350мс не принимает выбор
+    // ПК: номера у вариантов + выбор клавишами 1–9 (раскладко-независимо, по e.code Digit/Numpad)
+    const [isDesktop] = useState(() => { try { return matchMedia("(hover: hover) and (pointer: fine) and (min-width: 641px)").matches; } catch { return false; } });
+    const keyRef = useRef(/** @type {any} */({}));
 
     const loop = useGameLoop({
         gmode: "choice", words: wordsProp, onResult, onFinish, onExit, setGameState,
@@ -104,6 +107,24 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     // После ошибки правильный вариант показан — продолжить можно тапом по ЛЮБОМУ месту.
     const onStageClick = () => { if (status === "INCORRECT") advance(); };
 
+    // ПК: выбор варианта клавишами 1–9 (по физ-позиции e.code, независимо от раскладки). Слушатель —
+    // один раз; свежие options/choose/status читаем через ref.
+    keyRef.current = { options, choose, status, armed };
+    useEffect(() => {
+        if (!isDesktop) return;
+        const onKey = (e) => {
+            if (e.metaKey || e.ctrlKey || e.altKey) return;
+            const m = /^(?:Digit|Numpad)([1-9])$/.exec(e.code || "");
+            if (!m) return;
+            const k = keyRef.current;
+            if (k.status !== "ASKING" || !k.armed || !k.options) return;
+            const idx = +m[1] - 1;
+            if (idx < k.options.length) { e.preventDefault(); k.choose(k.options[idx]); }
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [isDesktop]);
+
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
 
     const correctCount = results.filter((r) => r.ok).length;
@@ -138,6 +159,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     countText={`${t.word} ${qIndex} / ${qTotal}`}
                     disabled={status !== "ASKING"}
                     loading={!options}
+                    numbered={isDesktop}
                 >
                     {status === "INCORRECT" && descriptionText && (
                         <div className="feedback" style={{ display: "flex" }}>

@@ -25,13 +25,13 @@ import { BrandLoader } from "../ui/Spinner.jsx";
  *   prompt?: string, promptLang?: string, options?: string[] | null, optionLang?: string,
  *   optionSub?: Record<string, string>, picked?: string | null, correct?: string | null,
  *   reveal?: boolean, allowRetry?: boolean, onPick?: (opt: string) => void,
- *   posText?: string, hint?: any, countText?: any, disabled?: boolean, loading?: boolean, children?: any,
+ *   posText?: string, hint?: any, countText?: any, disabled?: boolean, loading?: boolean, numbered?: boolean, children?: any,
  * }} props
  */
 export const ChoiceQuestion = ({
     prompt, promptLang, options, optionLang, optionSub = {},
     picked = null, correct = null, reveal = false, allowRetry = false,
-    onPick, posText, hint, countText, disabled = false, loading = false, children,
+    onPick, posText, hint, countText, disabled = false, loading = false, numbered = false, children,
 }) => (
     <div className="qcard">
         {countText && <div className="qcount">{countText}</div>}
@@ -44,7 +44,7 @@ export const ChoiceQuestion = ({
         )}
 
         <div className="choices">
-            {(options || []).map((opt) => {
+            {(options || []).map((opt, i) => {
                 const cls = reveal
                     ? (opt === correct ? " is-correct" : (opt === picked ? " is-wrong" : ""))
                     : (opt === picked ? " is-picked" : "");   // нейтральная подсветка выбора (без раскрытия)
@@ -54,11 +54,12 @@ export const ChoiceQuestion = ({
                 return (
                     <button
                         key={opt}
-                        className={`choice${cls}${sub ? " choice--2line" : ""}${allowRetry && opt === correct ? " choice--retry" : ""}`}
+                        className={`choice${cls}${sub ? " choice--2line" : ""}${allowRetry && opt === correct ? " choice--retry" : ""}${numbered ? " choice--num" : ""}`}
                         lang={optionLang}
                         disabled={btnDisabled}
                         onClick={() => onPick?.(opt)}
                     >
+                        {numbered && i < 9 && <span className="choice__num" aria-hidden="true">{i + 1}</span>}
                         <span className="choice__main">{hyphenate(opt, optionLang)}</span>
                         {sub && <span className="choice__sub">{hyphenate(sub, optionLang)}</span>}
                     </button>

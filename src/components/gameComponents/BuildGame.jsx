@@ -63,6 +63,24 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const posText = posLabel(current.part_of_speech, t);
     const descriptionText = current.description?.description?.[currentLanguage] || "";
 
+    // Импровизированный инпут: тусклый ШАБЛОН слова; по мере ввода буквы становятся яркими (верные)
+    // или красными (символ не на своём месте). Мигающий курсор на текущей позиции (как в реальном поле).
+    const caretAt = status === "ASKING" ? typed.length : -1;
+    const slots = [];
+    const n = Math.max(targetChars.length, typed.length);
+    for (let i = 0; i < n; i++) {
+        if (i === caretAt) slots.push(<span key="caret" className="build-line__caret" />);
+        const ch = typed[i];
+        if (i < targetChars.length) {
+            slots.push(ch == null
+                ? <span key={i} className="build-line__ghost">{targetChars[i] === " " ? " " : targetChars[i]}</span>
+                : <span key={i} className={ch === targetChars[i] ? undefined : "build-line__bad"}>{ch === " " ? " " : ch}</span>);
+        } else {
+            slots.push(<span key={i} className="build-line__bad">{ch === " " ? " " : ch}</span>);   // лишние сверх длины
+        }
+    }
+    if (caretAt >= n) slots.push(<span key="caret" className="build-line__caret" />);
+
     return (
         <div className="play play--kbd" data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={baseCorrect + knownFirstTry} wrongCount={baseWrong + missedIds.size} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
@@ -78,11 +96,9 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     </h1>
                     {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
 
-                    {/* собранное слово */}
-                    <div className="build-line" lang={aLang}>
-                        {typed.length
-                            ? typed.map((c, i) => <span key={i} className={needed[c] ? undefined : "build-line__bad"}>{c}</span>)
-                            : <span className="build-line__ph">_ _ _</span>}
+                    {/* собранное слово — тусклый шаблон + подсветка по позициям + мигающий курсор */}
+                    <div className="build-line build-line--tpl" lang={aLang}>
+                        {slots.length ? slots : <span className="build-line__ph">_ _ _</span>}
                     </div>
 
                     {/* QWERTY-клавиатура (режим «сборка»: активны только буквы слова, бейдж-счётчик повторов) */}

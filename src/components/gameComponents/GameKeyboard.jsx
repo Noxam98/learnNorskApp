@@ -35,6 +35,7 @@ const KBD_HINT = {
     ukr: "Можна друкувати з клавіатури", pl: "Możesz pisać na klawiaturze", lt: "Galima rinkti klaviatūra",
 };
 const GOT_IT = { ru: "Понял", en: "Got it", ukr: "Зрозуміло", pl: "Rozumiem", lt: "Supratau" };
+let _hintShownSession = false;   // тост-подсказку показываем максимум раз за сессию (не мешать каждое слово)
 // Только лептоп/десктоп-вёрстка: мышь (hover+точный указатель) И широкий экран (не мобильный layout ≤640px).
 const _isDesktop = () => { try { return window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 641px)").matches; } catch { return false; } };
 
@@ -63,17 +64,21 @@ export function GameKeyboard({
     const kbdRef = useRef(null);
     const [isDesktop] = useState(_isDesktop);
     const hintSeenDB = useAuthStore((s) => s.user?.gamePrefs?.kbdHintSeen);   // флаг из БД (между устройствами)
-    const [startedScreen, setStartedScreen] = useState(false);   // начат набор с ЭКРАННОЙ (мышью)
-    const [hintDismissed, setHintDismissed] = useState(() => { try { return !!hintSeenDB || !!localStorage.getItem(HINT_KEY); } catch { return !!hintSeenDB; } });
-    const seenRef = useRef(hintDismissed);
-    // «Понял» / первый физ-ввод → скрыть и запомнить навсегда: localStorage + БД (gamePrefs). Один раз.
+    const [showHint, setShowHint] = useState(false);   // тост-подсказка про физ-клавиатуру (ПК)
+    const seenRef = useRef(undefined);
+    if (seenRef.current === undefined) { try { seenRef.current = !!hintSeenDB || !!localStorage.getItem(HINT_KEY); } catch { seenRef.current = !!hintSeenDB; } }
+    // «Понял» / первый физ-ввод → скрыть тост и запомнить навсегда: localStorage + БД (gamePrefs).
     const persistSeen = () => {
+        setShowHint(false);
         if (seenRef.current) return;
         seenRef.current = true;
-        setHintDismissed(true);
         try { localStorage.setItem(HINT_KEY, "1"); } catch { /* no-op */ }
         api.setGamePrefs({ kbdHintSeen: true }).catch(() => { /* офлайн — localStorage уже хватит */ });
     };
+    // ПК: показать тост ОДИН раз за сессию (если ещё не «Понял»), как только видна экранная клавиатура
+    useEffect(() => {
+        if (isDesktop && !seenRef.current && !_hintShownSession) { _hintShownSession = true; setShowHint(true); }
+    }, []);
 
     // Гасим системный long-press жест Android (его haptic-тик «через секунду» + callout): нативный
     // touchstart c preventDefault. React вешает touch-листенеры пассивно — preventDefault там молча
@@ -99,8 +104,6 @@ export function GameKeyboard({
         pressingRef.current = c; setPop(c);
         pressTsRef.current = Date.now();
         buzz();   // одна вибрация на нажатие
-        // начат набор с ЭКРАННОЙ на ПК → показать сноску про физ-клавиатуру (если ещё не «Понял»)
-        if (isDesktop && !seenRef.current && !startedScreen) setStartedScreen(true);
     };
     const keyUp = (c, e) => {
         if (pressingRef.current === c) {
@@ -239,9 +242,9 @@ export function GameKeyboard({
                     {pop === GO && <span className="kbd__pop kbd__pop--go" aria-hidden="true"><Icon n="check" /></span>}
                 </button>
             </div>
-            {/* ПК: сноска «можно печатать с клавиатуры» — после начала набора с экранной; «Понял» гасит навсегда (в БД) */}
-            {isDesktop && startedScreen && !hintDismissed && (
-                <div className="kbd-hint">
+            {/* ПК: тост «можно печатать с клавиатуры» — постоянный (не гаснет по таймеру), «Понял» убирает навсегда (в БД) */}
+            {showHint && (
+                <div className="kbd-hint" role="status">
                     <Icon n="info" sm /> <span>{KBD_HINT[lang] || KBD_HINT.en}</span>
                     <button type="button" className="kbd-hint__ok" onClick={persistSeen}>{GOT_IT[lang] || GOT_IT.en}</button>
                 </div>
