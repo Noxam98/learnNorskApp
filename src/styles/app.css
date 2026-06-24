@@ -378,6 +378,16 @@
 .kbd__pop .ic { width: 26px; height: 26px; }   /* иконка ⌫ в поп-апе крупнее */
 @keyframes kpop { from { opacity: 0; transform: translateX(-50%) translateY(6px) scale(.8); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
 
+/* Прибавка прогресса на финале сессии: вырастает слева и кратко подсвечивается — заметно даже пару px */
+.finbar__gain { transform-origin: left center; animation: finGain 1s ease-out .25s both; }
+@keyframes finGain {
+    0% { transform: scaleX(0); }
+    45% { transform: scaleX(1); box-shadow: 0 0 0 0 transparent; }
+    62%, 80% { transform: scaleX(1); box-shadow: 0 0 9px 2px var(--st-master); }
+    100% { transform: scaleX(1); box-shadow: 0 0 0 0 transparent; }
+}
+@media (prefers-reduced-motion: reduce) { .finbar__gain { animation: none; } }
+
 /* Мобилка: клавиатура ПРИЖАТА К НИЗУ, во всю ширину; ⌫ слева, ✓ внизу-справа. */
 @media (max-width: 640px) {
     /* клавиатура: во всю ширину, прижата к низу; «повыше» — за счёт нижнего паддинга (клавиши не у края) */

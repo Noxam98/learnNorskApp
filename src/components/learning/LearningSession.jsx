@@ -27,11 +27,11 @@ const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: Stu
 const LEGACY_DIR = "int2no";
 
 const T = {
-    ru: { done: "Сессия завершена", acc: "верно", cardsShown: "карточек показано", shown: "показано", masteredLabel: "Выучено", protectedLabel: "Защищено", protectedTypoLabel: "Защищено с опечаткой", of: "из", perSession: "за сессию", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", examNote: "Готова пачка слов — сдай экзамен, чтобы открыть новые", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
-    en: { done: "Session complete", acc: "correct", cardsShown: "cards shown", shown: "shown", masteredLabel: "Learned", protectedLabel: "Protected", protectedTypoLabel: "Protected with a typo", of: "of", perSession: "this session", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", examNote: "A word pack is ready — pass the exam to unlock new ones", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
-    ukr: { done: "Сесію завершено", acc: "правильно", cardsShown: "карток показано", shown: "показано", masteredLabel: "Вивчено", protectedLabel: "Захищено", protectedTypoLabel: "Захищено з опискою", of: "з", perSession: "за сесію", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", examNote: "Пачка слів готова — склади екзамен, щоб відкрити нові", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
-    pl: { done: "Sesja zakończona", acc: "poprawnie", cardsShown: "kart pokazano", shown: "pokazano", masteredLabel: "Nauczono", protectedLabel: "Chronione", protectedTypoLabel: "Chronione z literówką", of: "z", perSession: "w sesji", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", examNote: "Paczka słów gotowa — zdaj egzamin, aby odblokować nowe", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
-    lt: { done: "Sesija baigta", acc: "teisingai", cardsShown: "kortelių parodyta", shown: "parodyta", masteredLabel: "Išmokta", protectedLabel: "Apsaugota", protectedTypoLabel: "Apsaugota su klaida", of: "iš", perSession: "sesijoje", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", examNote: "Žodžių paketas paruoštas — išlaikyk egzaminą, kad atrakintum naujus", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
+    ru: { done: "Сессия завершена", acc: "верно", cardsShown: "карточек показано", shown: "показано", masteredLabel: "Выучено", protectedLabel: "Защищено", protectedTypoLabel: "Защищено с опечаткой", of: "из", perSession: "за сессию", levelTo: "До уровня", maxLevel: "Максимальный уровень 🎉", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", examNote: "Готова пачка слов — сдай экзамен, чтобы открыть новые", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
+    en: { done: "Session complete", acc: "correct", cardsShown: "cards shown", shown: "shown", masteredLabel: "Learned", protectedLabel: "Protected", protectedTypoLabel: "Protected with a typo", of: "of", perSession: "this session", levelTo: "To level", maxLevel: "Top level 🎉", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", examNote: "A word pack is ready — pass the exam to unlock new ones", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
+    ukr: { done: "Сесію завершено", acc: "правильно", cardsShown: "карток показано", shown: "показано", masteredLabel: "Вивчено", protectedLabel: "Захищено", protectedTypoLabel: "Захищено з опискою", of: "з", perSession: "за сесію", levelTo: "До рівня", maxLevel: "Максимальний рівень 🎉", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", examNote: "Пачка слів готова — склади екзамен, щоб відкрити нові", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
+    pl: { done: "Sesja zakończona", acc: "poprawnie", cardsShown: "kart pokazano", shown: "pokazano", masteredLabel: "Nauczono", protectedLabel: "Chronione", protectedTypoLabel: "Chronione z literówką", of: "z", perSession: "w sesji", levelTo: "Do poziomu", maxLevel: "Najwyższy poziom 🎉", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", examNote: "Paczka słów gotowa — zdaj egzamin, aby odblokować nowe", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
+    lt: { done: "Sesija baigta", acc: "teisingai", cardsShown: "kortelių parodyta", shown: "parodyta", masteredLabel: "Išmokta", protectedLabel: "Apsaugota", protectedTypoLabel: "Apsaugota su klaida", of: "iš", perSession: "sesijoje", levelTo: "Iki lygio", maxLevel: "Aukščiausias lygis 🎉", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", examNote: "Žodžių paketas paruoštas — išlaikyk egzaminą, kad atrakintum naujus", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
 };
 
 const STAGE = { position: "fixed", inset: 0, zIndex: 95, background: "var(--game-bg)", color: "var(--game-ink)", display: "flex", flexDirection: "column", overflow: "auto" };
@@ -234,9 +234,20 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         const examGate = isSystem && !!gate?.open;   // ворота экзамена открыты → нужен экзамен, не новые слова
         // всего выучено (mastered) из всех слов учёбы; «+N за сессию» = слов выпущено за эту сессию
         // (ввод с штатной клавы с 1-й попытки — они прошли рампу и больше не придут)
-        const masteredNow = after?.byStatus?.mastered || 0;
-        const totalWords = after?.total || 0;
         const learned = graduated;
+        // Осязаемая цель вместо «N из total» (total растёт и сбивает): прогресс к след. уровню CEFR —
+        // весь активный словарь против кумулятивного порога уровня (как на карточке «Сегодня»).
+        const by = after?.byStatus || {};
+        const masteredAll = (by.mastered || 0) + (by.repeat || 0) + (by.archived || 0);
+        const CEFR = ["A1", "A2", "B1", "B2", "C1", "C2"];
+        const curLevel = after?.currentLevel || "A1";
+        const nextLevel = CEFR[CEFR.indexOf(curLevel) + 1] || null;
+        const nextTarget = nextLevel ? (after?.byLevel?.[nextLevel]?.target || 0) : 0;
+        const toNext = nextLevel ? Math.max(0, nextTarget - masteredAll) : 0;
+        // прогресс-бар к уровню: база (было до сессии) + ЗЕЛЁНАЯ прибавка за сессию (+learned)
+        const baseMastered = Math.max(0, masteredAll - learned);
+        const basePct = nextTarget ? Math.min(100, (baseMastered / nextTarget) * 100) : 0;
+        const gainPct = nextTarget ? Math.min(100 - basePct, (learned / nextTarget) * 100) : 0;
         return (
             <div style={STAGE}>
                 <div style={{ margin: "auto", textAlign: "center", padding: "var(--sp-5)", maxWidth: 460, width: "100%" }}>
@@ -251,10 +262,9 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                         <p style={{ opacity: .8, marginTop: 4 }}>{cards} {pl(lang, cards, "card")} {t.shown}</p>
                     )}
 
-                    {totalWords > 0 && (
-                        <p style={{ opacity: .9, marginTop: 6, fontWeight: 700 }}>
-                            <Icon n="award" sm /> {t.masteredLabel} {masteredNow} {t.of} {totalWords}
-                            {learned > 0 && <span style={{ color: "var(--st-master)" }}> (+{learned} {t.perSession})</span>}
+                    {learned > 0 && (
+                        <p style={{ opacity: .9, marginTop: 6, fontWeight: 700, color: "var(--st-master)" }}>
+                            <Icon n="award" sm /> +{learned} {t.masteredLabel.toLowerCase()} {t.perSession}
                         </p>
                     )}
 
@@ -268,6 +278,23 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                         <p style={{ opacity: .9, marginTop: 6, fontWeight: 700, color: "#d98a2b" }}>
                             <Icon n="lock" sm /> {t.protectedTypoLabel}: {protectedTypo}
                         </p>
+                    )}
+
+                    {after?.currentLevel && (
+                        <div style={{ marginTop: 12, maxWidth: 320, marginLeft: "auto", marginRight: "auto" }}>
+                            <p style={{ opacity: .8, fontSize: "var(--fs-14)", margin: 0 }}>
+                                {nextLevel
+                                    ? <>{t.levelTo} <b>{nextLevel}</b>: {toNext} {pl(lang, toNext, "word")}</>
+                                    : t.maxLevel}
+                            </p>
+                            {nextLevel && nextTarget > 0 && (
+                                <div style={{ height: 10, borderRadius: 999, background: "var(--game-border)", overflow: "hidden", display: "flex", marginTop: 8 }}>
+                                    {/* база (было) — приглушённый зелёный; прибавка за сессию — яркий зелёный, с анимацией */}
+                                    <div style={{ width: basePct + "%", background: "var(--st-master)", opacity: .4 }} />
+                                    {gainPct > 0 && <div className="finbar__gain" style={{ width: gainPct + "%", minWidth: 6, background: "var(--st-master)" }} title={`+${learned}`} />}
+                                </div>
+                            )}
+                        </div>
                     )}
 
                     <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", margin: "var(--sp-5) 0" }}>
