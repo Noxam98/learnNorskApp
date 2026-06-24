@@ -28,7 +28,7 @@ const filterChosenWords = (dictList) =>
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
 // words/onExit передаёт «Учёба» (переиспользует игру). Карточки — пассивный режим, в SRS не пишет.
-export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
+export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, onReport = null, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -124,7 +124,9 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                 <div className="pstats">
                     <span className="stat"><Icon n="layers" sm /> {useStep ? dispNo : Math.min(idx + (finished ? 0 : 1), total)} / {dispTotal}</span>
                 </div>
-                <a className="pexit" onClick={backToSelection} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
+                {/* «Не учить» — пожаловаться на мусорное слово прямо с карточки в сессии */}
+                {onReport && !finished && <a className="preport" onClick={onReport} style={{ cursor: "pointer", marginLeft: "auto" }} title={t.dontLearn || "Не учить"}><Icon n="x-circle" sm /> <span className="preport__t">{t.dontLearn || "Не учить"}</span></a>}
+                <a className="pexit" onClick={backToSelection} style={{ cursor: "pointer", marginLeft: onReport && !finished ? 0 : "auto" }}><Icon n="x" sm /> {t.exit}</a>
             </div>
 
             {/* системная сессия — единые сегменты-стадии (как в играх; карточка = текущий сегмент,
