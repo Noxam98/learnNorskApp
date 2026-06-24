@@ -89,8 +89,10 @@ export function useGameLoop({
         }
         const ok = response;
         if (status === "INCORRECT") {
-            if (ok) { playSound("correct"); advance(); }
-            else { playSound("wrong"); onWrong?.(); }
+            if (ok) {
+                if (opts?.hold) { setStatus("CORRECT"); setHeld(true); }   // принято с опечаткой — ждём тап (звук играет игра)
+                else { playSound("correct"); advance(); }
+            } else { playSound("wrong"); onWrong?.(); }
             return;
         }
         if (status !== "ASKING") return; // CORRECT/FINISHED — игнорируем

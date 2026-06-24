@@ -26,6 +26,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const useKbd = !isNo2Int && !nativeKeyboard;
     const [input, setInput] = useState("");
     const [typoOk, setTypoOk] = useState(false);   // ответ принят с одной опечаткой (повтор)
+    const [armed, setArmed] = useState(false);     // анти-ghost-click: тап-продолжение активируется не сразу
     const typoRef = useRef(false);                  // тот же флаг для onFinish (без гонок ререндера)
     const inputRef = useRef(/** @type {HTMLInputElement | null} */(null));
     // Очистить поле и (для штатного инпута) вернуть фокус — чтобы после ошибки сразу вводить заново.
@@ -90,8 +91,18 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         setTypoOk(false); typoRef.current = false; answer(false);
     };
     const dontKnow = () => { if (status === "ASKING") answer(false); };
-    // принято с опечаткой: авто-перехода нет — продолжаем тапом по любому месту сцены
-    const onStageClick = () => { if (status === "CORRECT" && typoOk) advance(); };
+    // принято с опечаткой: авто-перехода нет — продолжаем тапом по любому месту сцены.
+    // «Взвод» (~400мс): иначе тот же тап, что отправил ответ, долетает «ghost click» по сцене
+    // (клавиатура исчезла) и мгновенно перескакивает, не дав прочитать верное написание.
+    useEffect(() => {
+        if (status === "CORRECT" && typoOk) {
+            setArmed(false);
+            const tm = setTimeout(() => setArmed(true), 400);
+            return () => clearTimeout(tm);
+        }
+        setArmed(false);
+    }, [status, typoOk]);
+    const onStageClick = () => { if (status === "CORRECT" && typoOk && armed) advance(); };
 
     if (total === 0 || !current) return <NoWords t={t} onBack={backToSelection} />;
 
