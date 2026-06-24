@@ -63,20 +63,21 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const posText = posLabel(current.part_of_speech, t);
     const descriptionText = current.description?.description?.[currentLanguage] || "";
 
-    // Импровизированный инпут: тусклый ШАБЛОН слова; по мере ввода буквы становятся яркими (верные)
-    // или красными (символ не на своём месте). Мигающий курсор на текущей позиции (как в реальном поле).
-    const caretAt = status === "ASKING" ? typed.length : -1;
+    // Импровизированный инпут с мигающим курсором (как реальное поле). ШАБЛОН-подсказку (тусклое
+    // слово + подсветка верных/красных букв по позициям) показываем ТОЛЬКО ПОСЛЕ ошибки (INCORRECT);
+    // до этого — обычный ввод (что набрал + курсор), слово не подсказываем.
+    const showTpl = status === "INCORRECT";
+    const caretAt = (status === "ASKING" || status === "INCORRECT") ? typed.length : -1;
     const slots = [];
-    const n = Math.max(targetChars.length, typed.length);
+    const n = showTpl ? Math.max(targetChars.length, typed.length) : typed.length;
     for (let i = 0; i < n; i++) {
         if (i === caretAt) slots.push(<span key="caret" className="build-line__caret" />);
         const ch = typed[i];
-        if (i < targetChars.length) {
-            slots.push(ch == null
-                ? <span key={i} className="build-line__ghost">{targetChars[i] === " " ? " " : targetChars[i]}</span>
-                : <span key={i} className={ch === targetChars[i] ? undefined : "build-line__bad"}>{ch === " " ? " " : ch}</span>);
-        } else {
-            slots.push(<span key={i} className="build-line__bad">{ch === " " ? " " : ch}</span>);   // лишние сверх длины
+        if (ch != null) {
+            const bad = showTpl && (i >= targetChars.length || ch !== targetChars[i]);   // не на своём месте / лишняя
+            slots.push(<span key={i} className={bad ? "build-line__bad" : undefined}>{ch === " " ? "\u00a0" : ch}</span>);
+        } else if (showTpl && i < targetChars.length) {
+            slots.push(<span key={i} className="build-line__ghost">{targetChars[i] === " " ? "\u00a0" : targetChars[i]}</span>);
         }
     }
     if (caretAt >= n) slots.push(<span key="caret" className="build-line__caret" />);
