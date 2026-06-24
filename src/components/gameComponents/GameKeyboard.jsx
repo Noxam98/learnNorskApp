@@ -7,6 +7,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { useSystemStore, VIBE_MS } from "../../store/systemStore.jsx";
+import { useAuthStore } from "../../store/AuthStore.jsx";
+import api from "../tools/api.js";
 
 // Норвежская раскладка QWERTY (нижний регистр).
 export const KBD_ROWS = [
@@ -15,6 +17,26 @@ export const KBD_ROWS = [
     ["z", "x", "c", "v", "b", "n", "m"],
 ];
 export const KBD_SET = new Set(KBD_ROWS.flat());
+
+// Физическая клавиатура (ПК): позиция клавиши (e.code) → буква НАШЕЙ норв. раскладки.
+// По code, а НЕ по e.key — чтобы НЕ зависеть от раскладки ОС (рус/eng/no дают тот же результат).
+const CODE_MAP = {
+    KeyQ: "q", KeyW: "w", KeyE: "e", KeyR: "r", KeyT: "t", KeyY: "y", KeyU: "u", KeyI: "i", KeyO: "o", KeyP: "p", BracketLeft: "å",
+    KeyA: "a", KeyS: "s", KeyD: "d", KeyF: "f", KeyG: "g", KeyH: "h", KeyJ: "j", KeyK: "k", KeyL: "l", Semicolon: "ø", Quote: "æ",
+    KeyZ: "z", KeyX: "x", KeyC: "c", KeyV: "v", KeyB: "b", KeyN: "n", KeyM: "m",
+    Minus: "-", Slash: "-", Space: " ",
+};
+
+// Сноска «можно печатать с клавиатуры» — показываем ОДИН раз (localStorage), только на ПК и
+// только когда юзер начал набор с ЭКРАННОЙ (тыкает мышью). Чтобы не мешать каждый раз.
+const HINT_KEY = "kbd_phys_hint_seen";
+const KBD_HINT = {
+    ru: "Можно печатать с клавиатуры", en: "You can type on your keyboard",
+    ukr: "Можна друкувати з клавіатури", pl: "Możesz pisać na klawiaturze", lt: "Galima rinkti klaviatūra",
+};
+const GOT_IT = { ru: "Понял", en: "Got it", ukr: "Зрозуміло", pl: "Rozumiem", lt: "Supratau" };
+// Только лептоп/десктоп-вёрстка: мышь (hover+точный указатель) И широкий экран (не мобильный layout ≤640px).
+const _isDesktop = () => { try { return window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 641px)").matches; } catch { return false; } };
 
 /**
  * @param {{
@@ -39,6 +61,19 @@ export function GameKeyboard({
     const pressingRef = useRef(null);
     const pressTsRef = useRef(0);   // момент нажатия — для вибрации «на отпускании» при долгом тапе (≥200мс)
     const kbdRef = useRef(null);
+    const [isDesktop] = useState(_isDesktop);
+    const hintSeenDB = useAuthStore((s) => s.user?.gamePrefs?.kbdHintSeen);   // флаг из БД (между устройствами)
+    const [startedScreen, setStartedScreen] = useState(false);   // начат набор с ЭКРАННОЙ (мышью)
+    const [hintDismissed, setHintDismissed] = useState(() => { try { return !!hintSeenDB || !!localStorage.getItem(HINT_KEY); } catch { return !!hintSeenDB; } });
+    const seenRef = useRef(hintDismissed);
+    // «Понял» / первый физ-ввод → скрыть и запомнить навсегда: localStorage + БД (gamePrefs). Один раз.
+    const persistSeen = () => {
+        if (seenRef.current) return;
+        seenRef.current = true;
+        setHintDismissed(true);
+        try { localStorage.setItem(HINT_KEY, "1"); } catch { /* no-op */ }
+        api.setGamePrefs({ kbdHintSeen: true }).catch(() => { /* офлайн — localStorage уже хватит */ });
+    };
 
     // Гасим системный long-press жест Android (его haptic-тик «через секунду» + callout): нативный
     // touchstart c preventDefault. React вешает touch-листенеры пассивно — preventDefault там молча
@@ -64,6 +99,8 @@ export function GameKeyboard({
         pressingRef.current = c; setPop(c);
         pressTsRef.current = Date.now();
         buzz();   // одна вибрация на нажатие
+        // начат набор с ЭКРАННОЙ на ПК → показать сноску про физ-клавиатуру (если ещё не «Понял»)
+        if (isDesktop && !seenRef.current && !startedScreen) setStartedScreen(true);
     };
     const keyUp = (c, e) => {
         if (pressingRef.current === c) {
@@ -119,6 +156,37 @@ export function GameKeyboard({
     };
     const goCancel = () => { goPressRef.current = false; setPop((p) => (p === GO ? null : p)); };
 
+    // ── Физическая клавиатура (ПК): печать + СИНХРОН с экранной (поп-ап над нажатой клавишей) ──
+    // Раскладка-независимо: мапим по e.code. Буквы НЕ из слова в «сборке» НЕ блокируем — пробрасываем
+    // в onType (игра подсветит их красным). Свежие колбэки/флаги читаем через ref (слушатель — один раз).
+    const physRef = useRef({});
+    physRef.current = { onType, onBackspace, onSubmit, canBackspace, canSubmit, buzz, persistSeen };
+    useEffect(() => {
+        const isField = (el) => el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
+        // воспользовались физ-клавиатурой → сноска больше не нужна (скрыть + запомнить навсегда, в т.ч. в БД)
+        const markPhys = () => physRef.current.persistSeen?.();
+        const down = (e) => {
+            if (e.metaKey || e.ctrlKey || e.altKey || isField(e.target)) return;
+            const p = physRef.current;
+            if (e.code === "Backspace") { e.preventDefault(); if (p.canBackspace) { p.onBackspace?.(); p.buzz(); setPop(BK); markPhys(); } return; }
+            if (e.code === "Enter" || e.code === "NumpadEnter") { e.preventDefault(); if (p.canSubmit && !e.repeat) { p.onSubmit?.(); p.buzz(); setPop(GO); markPhys(); } return; }
+            if (e.repeat) return;                     // буквы — один ввод на нажатие
+            const c = CODE_MAP[e.code];
+            if (!c) return;
+            e.preventDefault();
+            p.onType?.(c); p.buzz(); setPop(c); markPhys();   // ВВОД на keydown; поп-ап = синхрон с экранной
+        };
+        const up = (e) => {
+            if (e.code === "Backspace") return setPop((x) => (x === BK ? null : x));
+            if (e.code === "Enter" || e.code === "NumpadEnter") return setPop((x) => (x === GO ? null : x));
+            const c = CODE_MAP[e.code];
+            if (c) setPop((x) => (x === c ? null : x));
+        };
+        window.addEventListener("keydown", down);
+        window.addEventListener("keyup", up);
+        return () => { window.removeEventListener("keydown", down); window.removeEventListener("keyup", up); };
+    }, []);
+
     // Клавиша-символ (буква/дефис/пробел). cls — доп. класс (напр. для пробела).
     const symKey = (c, cls = "", ariaLabel) => {
         const b = badge(c);
@@ -171,6 +239,13 @@ export function GameKeyboard({
                     {pop === GO && <span className="kbd__pop kbd__pop--go" aria-hidden="true"><Icon n="check" /></span>}
                 </button>
             </div>
+            {/* ПК: сноска «можно печатать с клавиатуры» — после начала набора с экранной; «Понял» гасит навсегда (в БД) */}
+            {isDesktop && startedScreen && !hintDismissed && (
+                <div className="kbd-hint">
+                    <Icon n="info" sm /> <span>{KBD_HINT[lang] || KBD_HINT.en}</span>
+                    <button type="button" className="kbd-hint__ok" onClick={persistSeen}>{GOT_IT[lang] || GOT_IT.en}</button>
+                </div>
+            )}
         </div>
     );
 }

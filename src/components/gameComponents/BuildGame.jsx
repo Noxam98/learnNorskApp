@@ -38,7 +38,6 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     }, [current]); // eslint-disable-line
     const extras = useMemo(() => Object.keys(needed).filter((c) => !KBD_SET.has(c)), [current]); // eslint-disable-line
     const remainingOf = (c) => (needed[c] || 0) - typed.filter((x) => x === c).length;
-    const built = typed.join("");
     const qLang = hyLang(currentLanguage, false);  // язык подсказки — родной
     const aLang = hyLang(currentLanguage, true);   // ответ — норвежский
 
@@ -81,7 +80,9 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
 
                     {/* собранное слово */}
                     <div className="build-line" lang={aLang}>
-                        {built || <span className="build-line__ph">_ _ _</span>}
+                        {typed.length
+                            ? typed.map((c, i) => <span key={i} className={needed[c] ? undefined : "build-line__bad"}>{c}</span>)
+                            : <span className="build-line__ph">_ _ _</span>}
                     </div>
 
                     {/* QWERTY-клавиатура (режим «сборка»: активны только буквы слова, бейдж-счётчик повторов) */}
