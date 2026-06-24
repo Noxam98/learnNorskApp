@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import api from "../../components/tools/api.js";
 import { Icon } from "../../components/ui/Icon.jsx";
-import { StatusBadge, StrengthBar } from "../../components/learning/StatusBits.jsx";
+import { StatusBadge, StrengthBar, RampBar } from "../../components/learning/StatusBits.jsx";
 import { ActionMenu } from "../../components/ui/Dropdown.jsx";
 import { FilterChipsPopup } from "../../components/ui/FilterChipsPopup.jsx";
 import { SortControl } from "../../components/ui/SortControl.jsx";
@@ -327,7 +327,10 @@ function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onReset, 
                 <div className="sword__meta">
                     <span className={"chip pos " + posMeta(w.part_of_speech).cls}>{posLabel(w.part_of_speech, t)}</span>
                     <StatusBadge status={ds} lang={lang} />
-                    <StrengthBar value={w.strength} status={ds} sm showVal />
+                    {/* «в процессе» — прогресс по рампе (ступени), у остальных — сила (% недавних верных) */}
+                    {ds === "in_progress"
+                        ? <RampBar done={w.ramp?.done} total={w.ramp?.total} sm />
+                        : <StrengthBar value={w.strength} status={ds} sm showVal />}
                     {due && <span className="sword__due"><Icon n="clock" /> {due}</span>}
                 </div>
             </div>

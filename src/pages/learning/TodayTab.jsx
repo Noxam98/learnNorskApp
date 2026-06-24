@@ -514,7 +514,6 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                 <span className="review-cta__halo" /><span className="review-cta__halo2" />
                                 <span className="review-cta__eyebrow"><Icon n="repeat" sm /> {t.smartReview}</span>
                                 <div className="review-cta__big"><b>{learnable} {pl(lang, learnable, "word")}</b> {t.readyB.split("\n").map((l, i) => <span key={i}>{i ? <br /> : null}{l}</span>)}</div>
-                                <p className="review-cta__desc">{t.reviewDesc}</p>
                                 <div className="review-cta__chips">
                                     {composition.review > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-review)" }} />{composition.review} {t.chReview}</span>}
                                     {composition.progress > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-learn)" }} />{composition.progress} {pl(lang, composition.progress, "started")}</span>}

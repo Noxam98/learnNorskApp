@@ -61,3 +61,16 @@ export function StrengthBar({ value = 0, status, sm = false, showVal = false }) 
 export function StatusDot({ status }) {
     return <span className={"sdot sdot--" + statusMeta(status).badge} />;
 }
+
+// Прогресс по рампе (для «в процессе»): сколько ступеней пройдено из total. Цвет — «learn».
+export function RampBar({ done = 0, total = 0, sm = false }) {
+    const pct = total ? Math.round((100 * done) / total) : 0;
+    return (
+        <span className={"strength" + (sm ? " strength--sm" : "")} title={`${done}/${total}`}>
+            <span className="strength__track">
+                <span className="strength__fill strength__fill--learn" style={{ width: pct + "%" }} />
+            </span>
+            <span className="strength__val">{done}/{total}</span>
+        </span>
+    );
+}
