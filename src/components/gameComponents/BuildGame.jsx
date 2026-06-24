@@ -15,7 +15,7 @@ import { useGameLoop } from "./useGameLoop.js";
 
 const norm = (s) => (s || "").trim().toLowerCase();
 
-export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false }) => {
+export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
     const [typed, setTyped] = useState(/** @type {string[]} */([]));   // введённые буквы по порядку (с клавиатуры)
 
     const loop = useGameLoop({
@@ -70,7 +70,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
 
     return (
         <div className="play play--kbd" data-state={status.toLowerCase()} style={PLAY_STYLE}>
-            <PlayTopBar correctCount={doneCount} wrongCount={missedIds.size} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
+            <PlayTopBar correctCount={baseCorrect + knownFirstTry} wrongCount={baseWrong + missedIds.size} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
             <div className="pstage">

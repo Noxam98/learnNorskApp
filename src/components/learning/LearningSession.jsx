@@ -317,6 +317,8 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 stepTotal={elements.length}
                 segs={sessionSegs}
                 repeat={el.repeat}
+                baseCorrect={res.correct}
+                baseWrong={res.total - res.correct}
                 // записываем по АВТОРИТЕТНОМУ шагу системы (el.mode/el.dir), а не по тому, что
                 // сообщит игра — иначе клетка рампы могла бы не совпасть и слово застряло бы
                 onResult={isStudy ? undefined : (w, ok) => onResult(w, ok, el.mode, el.dir)}
