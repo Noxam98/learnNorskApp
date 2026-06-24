@@ -276,15 +276,14 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const placed = stats?.placed;
 
     // Состав сессии повторения (ориентировочно, из доступных данных).
-    const composition = useMemo(() => {
-        const weak = by.weak || 0;
-        const fresh = by.new || 0;
-        const review = by.repeat || 0;   // «Повторение» = выученные, у кого подошёл срок (display-статус)
-        return { review, weak, fresh };
-    }, [by.weak, by.new, by.repeat]);
-    // Что реально можно учить сейчас: просроченные + слабые + новые (как собирает get_due).
-    // ВАЖНО: новые слова из словаря имеют due=null, поэтому только по `due` их не видно.
-    const learnable = due + (by.new || 0) + (by.weak || 0);
+    const composition = useMemo(() => ({
+        review: by.repeat || 0,        // Повторение (выучено + подошёл срок)
+        progress: by.in_progress || 0, // В процессе (начато, ещё не выучено)
+        weak: by.weak || 0,            // Слабые
+        fresh: by.new || 0,            // Новые
+    }), [by.repeat, by.in_progress, by.weak, by.new]);
+    // Всё, что попадёт в сессию: повтор + в процессе + слабые + новые (как собирает build_session).
+    const learnable = (by.repeat || 0) + (by.in_progress || 0) + (by.weak || 0) + (by.new || 0);
 
     // Авто-добор: у юзера ВООБЩЕ нет слов в учёбе (total=0) и ворота не закрыты — система сама
     // подсыпает новые из Базы (сборка сессии на бэке делает suggest_words). Один раз за монтирование,
@@ -514,9 +513,10 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                 <div className="review-cta__big"><b>{learnable} {pl(lang, learnable, "word")}</b> {t.readyB.split("\n").map((l, i) => <span key={i}>{i ? <br /> : null}{l}</span>)}</div>
                                 <p className="review-cta__desc">{t.reviewDesc}</p>
                                 <div className="review-cta__chips">
-                                    <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-review)" }} />{composition.review} {t.chReview}</span>
-                                    <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {pl(lang, composition.weak, "weak")}</span>
-                                    <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-new)" }} />{composition.fresh} {pl(lang, composition.fresh, "fresh")}</span>
+                                    {composition.review > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-review)" }} />{composition.review} {t.chReview}</span>}
+                                    {composition.progress > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-learn)" }} />{composition.progress} {pl(lang, composition.progress, "started")}</span>}
+                                    {composition.weak > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {pl(lang, composition.weak, "weak")}</span>}
+                                    {composition.fresh > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-new)" }} />{composition.fresh} {pl(lang, composition.fresh, "fresh")}</span>}
                                 </div>
                                 <button className="review-cta__btn" onClick={runReview} disabled={sessionLoading}>
                                     {sessionLoading ? <BtnSpinner /> : <Icon n="play" />} {t.startReview}

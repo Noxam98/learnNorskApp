@@ -29,6 +29,7 @@ const FORMS = {
     day:  { ru: ["день", "дня", "дней"], ukr: ["день", "дні", "днів"], en: ["day", "days"], pl: ["dzień", "dni", "dni"], lt: ["diena", "dienos", "dienų"] },
     weak: { ru: ["слабое", "слабых", "слабых"], ukr: ["слабке", "слабких", "слабких"], en: ["weak", "weak"], pl: ["słabe", "słabe", "słabych"], lt: ["silpnas", "silpni", "silpnų"] },
     fresh: { ru: ["новое", "новых", "новых"], ukr: ["нове", "нових", "нових"], en: ["new", "new"], pl: ["nowe", "nowe", "nowych"], lt: ["naujas", "nauji", "naujų"] },
+    started: { ru: ["начатое", "начатых", "начатых"], ukr: ["розпочате", "розпочатих", "розпочатих"], en: ["started", "started"], pl: ["rozpoczęte", "rozpoczęte", "rozpoczętych"], lt: ["pradėtas", "pradėti", "pradėtų"] },
 };
 
 // Вернуть правильную форму слова `key` для числа n на языке lang.
