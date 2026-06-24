@@ -24,7 +24,6 @@ export const useSystemStore = create(persist(
         soundVolume: 1,      // громкость звука 0..1 (общий множитель для синтез-звуков и TTS)
         vibration: true,     // тактильный отклик нашей экранной клавиатуры (по умолчанию вкл)
         vibrationStrength: "mid", // сила (длительность) вибрации: low | mid | high
-        nativeKeyboard: false, // печатать клавиатурой устройства вместо встроенной (где игра поддерживает)
         pushEnabled: false,    // включены ли пуш-напоминания (намерение юзера; сама подписка — в браузере)
 
         setCurrentLanguage: (newLanguage) =>
@@ -60,7 +59,6 @@ export const useSystemStore = create(persist(
         })),
         setVibration: (v) => set(produce((state) => { state.vibration = !!v; })),
         setVibrationStrength: (v) => set(produce((state) => { state.vibrationStrength = VIBE_MS[v] ? v : "mid"; })),
-        setNativeKeyboard: (v) => set(produce((state) => { state.nativeKeyboard = !!v; })),
         setPushEnabled: (v) => set(produce((state) => { state.pushEnabled = !!v; })),
 
     }),
@@ -73,7 +71,7 @@ export const useSystemStore = create(persist(
             showArticles: state.showArticles, showVerbAa: state.showVerbAa,
             soundOn: state.soundOn, soundVolume: state.soundVolume,
             vibration: state.vibration, vibrationStrength: state.vibrationStrength,
-            nativeKeyboard: state.nativeKeyboard, pushEnabled: state.pushEnabled,
+            pushEnabled: state.pushEnabled,
         }),
     }
 ));

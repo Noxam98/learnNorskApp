@@ -87,7 +87,6 @@
  *   soundVolume: number,
  *   vibration: boolean,
  *   vibrationStrength: VibeStrength,
- *   nativeKeyboard: boolean,
  *   setCurrentLanguage: (l: UiLang) => void,
  *   setTheme: (t: 'light' | 'dark') => void,
  *   toggleTheme: () => void,
@@ -98,7 +97,6 @@
  *   setSoundVolume: (v: number) => void,
  *   setVibration: (v: boolean) => void,
  *   setVibrationStrength: (v: VibeStrength) => void,
- *   setNativeKeyboard: (v: boolean) => void,
  * }} SystemState
  */
 

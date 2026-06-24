@@ -21,9 +21,8 @@ const TYPO_OK = { ru: "С опечаткой — но засчитано:", ukr:
 
 export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
     const isNo2Int = mode !== "int2no";
-    const nativeKeyboard = useSystemStore((s) => s.nativeKeyboard);
-    // печатаем норвежское → наша клавиатура; для родного и при выборе «системная клавиатура» — штатный инпут
-    const useKbd = !isNo2Int && !nativeKeyboard;
+    // печатаем норвежское → наша экранная клавиатура; для ввода родного перевода (no2int) — штатный инпут
+    const useKbd = !isNo2Int;
     const [input, setInput] = useState("");
     const [typoOk, setTypoOk] = useState(false);   // ответ принят с одной опечаткой (повтор)
     const [armed, setArmed] = useState(false);     // анти-ghost-click: тап-продолжение активируется не сразу

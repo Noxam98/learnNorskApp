@@ -85,7 +85,6 @@ const MyPage = () => {
     const soundOn = useSystemStore((state) => state.soundOn);
     const vibration = useSystemStore((state) => state.vibration);
     const vibrationStrength = useSystemStore((state) => state.vibrationStrength);
-    const nativeKeyboard = useSystemStore((state) => state.nativeKeyboard);
     const pushEnabled = useSystemStore((state) => state.pushEnabled);
     const [pushBusy, setPushBusy] = useState(false);
     const [lstats, setLstats] = useState(null);
@@ -299,11 +298,6 @@ const MyPage = () => {
                                     ]} />
                             </div>
                         )}
-                        <div className="setrow">
-                            <span className="setrow__ic"><Icon n="grid" sm /></span>
-                            <span className="setrow__meta"><span className="setrow__t">{t.nativeKbd}</span><span className="setrow__d">{t.nativeKbdDesc}</span></span>
-                            <span className={`toggle${nativeKeyboard ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setNativeKeyboard(!nativeKeyboard)} />
-                        </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="alert" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.notifications}</span><span className="setrow__d">{t.notificationsDesc}</span></span>

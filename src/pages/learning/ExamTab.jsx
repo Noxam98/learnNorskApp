@@ -23,7 +23,6 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
     const soundOn = useSystemStore((s) => s.soundOn);
     const vibration = useSystemStore((s) => s.vibration);
-    const nativeKeyboard = useSystemStore((s) => s.nativeKeyboard);
     const answersRef = useRef([]);
     const loop = useGameLoop({
         gmode: "exam", words: questions, reveal: false, autoAdvanceMs: 900,
@@ -58,7 +57,7 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
     const optionLang = (isInt2no || isCloze) ? "no" : lang;
     const hint = isInt2no ? t.hintInt2no : isCloze ? t.hintCloze : `${t.dir}${ENDONYM[lang] || lang}`;
     const onInputSubmit = () => { if (picked == null && typed.trim()) pick(typed.trim()); };
-    const useKbd = !nativeKeyboard;   // кастомная клавиатура (как в игре «Ввод»), если не выбрана системная
+    const useKbd = true;   // всегда наша экранная клавиатура (как в игре «Ввод»)
     // ЕДИНЫЙ СКЕЛЕТ с играми: .play + PlayTopBar + ProgressSegments + .pstage. Поведение СВОЁ —
     // нейтрально (без ✓/✗ по ходу), счётчик «N/30» вместо них, прогресс нейтральный (is-done),
     // грейд пачкой на сервере. Клавиатура хостится как у игр (.play--kbd) → одинаково везде.
