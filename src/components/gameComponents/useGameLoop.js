@@ -16,6 +16,9 @@ import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { filterChosenWords, shuffle, useScrollLock } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
 
+const ANSWER_TAIL_MS = 250;    // пауза ПОСЛЕ окончания озвучки ответа, затем авто-переход
+const ANSWER_MAX_MS = 6000;    // страховка: если аудио не отрапортует конец — всё равно идём дальше
+
 /**
  * @param {{
  *   gmode: string,
@@ -27,6 +30,7 @@ import { playSound, playWin } from "../tools/sound.js";
  *   stepNo?: number, stepTotal?: number,
  *   segs?: import('../../types.js').ProgressSeg[] | null,
  *   autoAdvanceMs?: number,
+ *   speakAnswer?: (() => (Promise<any> | null)) | null,
  *   onAdvance?: (() => void) | null,
  *   onWrong?: (() => void) | null,
  *   reveal?: boolean,
@@ -37,6 +41,8 @@ export function useGameLoop({
     onResult, onFinish, onExit, setGameState,
     stepNo = 0, stepTotal = 0, segs: segsOverride = null,
     autoAdvanceMs = 0,   // 0 — переход по тапу (Выбор); >0 — авто-переход (Сборка/Ввод)
+    speakAnswer = null,  // () => Promise(конец озвучки ответа) | null. Есть → пауза = длина аудио+хвост;
+    //                      вернул null (звук выкл.) → фолбэк на фикс. autoAdvanceMs.
     onAdvance,           // () => сбросить локальный стейт ответа для нового слова
     onWrong,             // () => очистить локальный ввод после неверного (для повтора)
     reveal = true,       // false (экзамен): нейтральный режим — без CORRECT/INCORRECT, без ретрая,
@@ -107,10 +113,20 @@ export function useGameLoop({
         }
     };
 
-    // Авто-переход после верного (Сборка/Ввод). Выбор (ms=0) — переход по тапу через advance().
-    // held (принято с опечаткой) — авто-перехода НЕТ, ждём тап игрока.
+    // Авто-переход после верного. С озвучкой (speakAnswer вернул промис) пауза = длина аудио ответа
+    // + ANSWER_TAIL_MS; без звука — фиксированная autoAdvanceMs. held (принято с опечаткой) — авто-
+    // перехода НЕТ, ждём тап игрока. Выбор без звука (ms=0) — тоже по тапу.
     useEffect(() => {
-        if (status === "CORRECT" && autoAdvanceMs > 0 && !held) {
+        if (status !== "CORRECT" || held) return;
+        const p = speakAnswer ? speakAnswer() : null;
+        if (p) {
+            let tail = null, guard = null, done = false;
+            const go = () => { if (done) return; done = true; if (guard) clearTimeout(guard); tail = setTimeout(advance, ANSWER_TAIL_MS); };
+            guard = setTimeout(go, ANSWER_MAX_MS);   // аудио не отрапортовало конец → всё равно идём
+            p.then(go, go);                          // и успех, и ошибка/прерывание озвучки → переход
+            return () => { done = true; if (guard) clearTimeout(guard); if (tail) clearTimeout(tail); };
+        }
+        if (autoAdvanceMs > 0) {
             const tm = setTimeout(advance, autoAdvanceMs);
             return () => clearTimeout(tm);
         }

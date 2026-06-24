@@ -7,7 +7,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyLang } from "../ui/hyphenate.js";
 import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
-import { speakText, prefetchTts } from "../ui/tts.js";
+import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
 import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
@@ -39,7 +39,9 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
 
     const loop = useGameLoop({
         gmode: "choice", words: wordsProp, onResult, onFinish, onExit, setGameState,
-        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, // после верного — показать «верно» ~1с, затем авто-переход
+        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, // фолбэк без звука: ~1с, затем авто-переход
+        // со звуком пауза = длина озвучки ответа + хвост (correctPrimary/aLang ниже — коллбэк зовётся позже)
+        speakAnswer: () => (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null,
         onAdvance: () => setChosen(null),
     });
     const { t, currentLanguage, total, current, status, words: wordsToGame, results, knownFirstTry, score, qIndex, qTotal, answer, advance, restart, backToSelection } = loop;
@@ -81,9 +83,10 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         if (question) speakText(question, qLang).catch(() => {});
         if (correctPrimary) prefetchTts(correctPrimary, aLang);
     }, [current, sound]); // eslint-disable-line
-    // Озвучка правильного ответа после ответа.
+    // После ОШИБКИ озвучиваем верный ответ. После ВЕРНОГО озвучкой+паузой управляет useGameLoop
+    // (speakAnswer), чтобы авто-переход совпал с длиной аудио.
     useEffect(() => {
-        if (sound && (status === "CORRECT" || status === "INCORRECT") && correctPrimary) speakText(correctPrimary, aLang).catch(() => {});
+        if (sound && status === "INCORRECT" && correctPrimary) speakText(correctPrimary, aLang).catch(() => {});
     }, [status]); // eslint-disable-line
 
     // Подгрузка вариантов.

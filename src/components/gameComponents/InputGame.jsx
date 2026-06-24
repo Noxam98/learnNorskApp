@@ -9,7 +9,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { posLabel, wordForms } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
-import { speakText, prefetchTts } from "../ui/tts.js";
+import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import { playSound } from "../tools/sound.js";
 import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots } from "./gameShared.jsx";
 import { GameKeyboard } from "./GameKeyboard.jsx";
@@ -39,10 +39,13 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         onFinish: onFinish ? (s) => onFinish({ ...s, typo: typoRef.current }) : null,
         onExit,
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100,
+        // со звуком пауза перед переходом = длина озвучки ответа + хвост (correctPrimary/aLang ниже).
+        // При опечатке (held) переход по тапу — там озвучивает сама игра, см. эффект ниже.
+        speakAnswer: () => (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null,
         onAdvance: () => { setInput(""); setTypoOk(false); typoRef.current = false; },   // новое слово — чистое поле
         onWrong: () => { resetInput(); setTypoOk(false); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
-    const { t, currentLanguage, total, current, status, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, advance, restart, backToSelection } = loop;
+    const { t, currentLanguage, total, current, status, held, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, advance, restart, backToSelection } = loop;
 
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -82,9 +85,13 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (question) speakText(question, qLang).catch(() => {});
         if (correctPrimary) prefetchTts(correctPrimary, aLang);
     }, [current, sound]); // eslint-disable-line
-    // Озвучка правильного ответа после ответа.
+    // Озвучка верного ответа: после ОШИБКИ, а также при принятой ОПЕЧАТКЕ (held — переход по тапу).
+    // После обычного ВЕРНОГО озвучкой+паузой управляет useGameLoop (speakAnswer), чтобы авто-переход
+    // совпал с длиной аудио.
     useEffect(() => {
-        if (sound && (status === "CORRECT" || status === "INCORRECT") && correctPrimary) speakText(correctPrimary, aLang).catch(() => {});
+        if (sound && correctPrimary && (status === "INCORRECT" || (status === "CORRECT" && held))) {
+            speakText(correctPrimary, aLang).catch(() => {});
+        }
     }, [status]); // eslint-disable-line
 
     const submit = (e) => {

@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { hyLang } from "../ui/hyphenate.js";
 import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
-import { speakText } from "../ui/tts.js";
+import { speakText, speakTextEnd } from "../ui/tts.js";
 import { PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 
@@ -19,6 +19,8 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const loop = useGameLoop({
         gmode: "cloze", words: wordsProp, onResult, onFinish, onExit, setGameState,
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100,
+        // со звуком пауза = длина озвучки предложения с верным словом + хвост (cloze/correct/aLang ниже)
+        speakAnswer: () => (sound && cloze.blank) ? speakTextEnd((cloze.blank || "").replace("___", correct), aLang) : null,
         onAdvance: () => setChosen(null),
     });
     const { t, currentLanguage, total, current, status, results, knownFirstTry, score, qIndex, qTotal, answer, advance, restart, backToSelection } = loop;
@@ -29,9 +31,10 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const options = cloze.options || [];
     const prompt = (cloze.blank || "").replace("___", "＿＿＿");   // видимый пропуск
 
-    // Озвучка полного предложения (с верным словом) после ответа.
+    // После ОШИБКИ озвучиваем полное предложение с верным словом. После ВЕРНОГО озвучкой+паузой
+    // управляет useGameLoop (speakAnswer), чтобы авто-переход совпал с длиной аудио.
     useEffect(() => {
-        if (sound && (status === "CORRECT" || status === "INCORRECT") && cloze.blank) {
+        if (sound && status === "INCORRECT" && cloze.blank) {
             speakText((cloze.blank || "").replace("___", correct), aLang).catch(() => {});
         }
     }, [status]); // eslint-disable-line

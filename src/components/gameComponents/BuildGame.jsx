@@ -8,7 +8,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
-import { speakText, prefetchTts } from "../ui/tts.js";
+import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import { DUNNO, PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, tplSlots } from "./gameShared.jsx";
 import { GameKeyboard, KBD_SET } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
@@ -22,6 +22,8 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const loop = useGameLoop({
         gmode: "build", words: wordsProp, onResult, onFinish, onExit, setGameState,
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100,
+        // пауза перед переходом = длина озвучки ответа + хвост (target/aLang ниже — коллбэк зовётся позже)
+        speakAnswer: () => (sound && target) ? speakTextEnd(target, aLang) : null,
         onAdvance: () => setTyped([]),   // новое слово — чистый ввод
         onWrong: () => setTyped([]),     // после ошибки — очистить, собрать заново
     });
@@ -48,8 +50,10 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
         if (trArr[0]) speakText(trArr[0], qLang).catch(() => {});
         if (target) prefetchTts(target, aLang);
     }, [current, sound]); // eslint-disable-line
+    // После ОШИБКИ озвучиваем верное слово. После ВЕРНОГО озвучкой+паузой управляет useGameLoop
+    // (speakAnswer), чтобы переход совпал с длиной аудио.
     useEffect(() => {
-        if (sound && (status === "CORRECT" || status === "INCORRECT") && target) speakText(target, aLang).catch(() => {});
+        if (sound && status === "INCORRECT" && target) speakText(target, aLang).catch(() => {});
     }, [status]); // eslint-disable-line
 
     const canType = status === "ASKING" || status === "INCORRECT"; // в INCORRECT — повтор после показа ответа
