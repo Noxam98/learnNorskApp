@@ -532,7 +532,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                 <div className="spanel__body" style={{ paddingTop: "var(--sp-2)" }}>
                                     <div className="setlist">
                                         <SetRow icon="repeat" color="--st-review" title={t.setReview} desc={t.setReviewD}
-                                            n={by.review || 0} loading={busy === "s-review"} onClick={() => runSet("review", "s-review")} badge="review" />
+                                            n={due} loading={busy === "s-review"} onClick={() => runSet("due", "s-review")} badge="review" />
                                         <SetRow icon="alert" color="--st-weak" title={t.setWeak} desc={t.setWeakD}
                                             n={by.weak || 0} loading={busy === "s-weak"} onClick={() => runSet("weak", "s-weak")} />
                                         <SetRow icon="spark-dot" color="--st-new" title={t.setNew}
