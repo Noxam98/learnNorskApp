@@ -22,8 +22,6 @@ import { stageRank } from "../gameComponents/gameShared.jsx";
 
 // mode элемента/сессии → игровой компонент.
 const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: StudyGame, study: StudyGame, cloze: ClozeGame };
-// «Не учить» прямо в игре (мусорное слово выпало в сессии): убрать у себя + отправить админу
-const REPORTED_T = { ru: "не учим, отправлено на модерацию", ukr: "не вчимо, надіслано на модерацію", en: "won't be taught, sent for review", pl: "nie uczymy, wysłano do moderacji", lt: "nemokysime, išsiųsta peržiūrai" };
 
 // Направление перевода для легаси-набора (единое на сессию: родной → норвежский).
 const LEGACY_DIR = "int2no";
@@ -190,8 +188,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         if (!gw) return;
         const pid = gw.pool_id ?? gw.id;
         try { await api.learningReport(pid); } catch { /* офлайн — не критично */ }
-        const no = gw.no || gw.translate?.no?.[0] || "";
-        useSystemStore.getState().showToast(`«${no}» — ${REPORTED_T[lang] || REPORTED_T.en}`, "success");
+        // без тоста — просто убираем слово и идём дальше
         setHist((h) => [...h, "skip"]);
         if (idx + 1 < elements.length) setIdx((n) => n + 1);
         else showSummary();
