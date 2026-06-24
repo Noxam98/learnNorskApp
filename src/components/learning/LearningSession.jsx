@@ -85,6 +85,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
 
     const [phase, setPhase] = useState(isSystem ? "load" : "play"); // load | play | summary | empty
     const [round, setRound] = useState(0);   // ключ перезапуска всей сессии
+    const [isDesktop] = useState(() => { try { return matchMedia("(hover: hover) and (pointer: fine) and (min-width: 641px)").matches; } catch { return false; } });
 
     // Системная программа: список элементов + указатель.
     const [elements, setElements] = useState([]);
@@ -222,6 +223,18 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         } finally { setBusy(false); }
     };
 
+    // Десктоп: Enter на экране результата → «Ещё сессия» (если кнопка доступна — не ворота экзамена / есть что учить)
+    useEffect(() => {
+        if (phase !== "summary") return;
+        const examGate = isSystem && !!gate?.open;
+        const sLeft = (after?.due ?? 0) + (after?.byStatus?.new || 0) + (after?.byStatus?.weak || 0);
+        const noneLeft = sLeft <= 0 || after?._empty;
+        if (!((isSystem && !examGate) || (!isSystem && !noneLeft))) return;
+        const onKey = (e) => { if (e.code === "Enter" || e.code === "NumpadEnter") { e.preventDefault(); again(); } };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [phase, after, gate, isSystem]); // eslint-disable-line
+
     // --- Экран загрузки системной программы ---
     if (phase === "load") {
         return (
@@ -332,6 +345,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                     {((isSystem && !examGate) || (!isSystem && !noneLeft)) && (
                         <button className="btn btn--accent btn--lg btn--block" onClick={again} disabled={busy || (isSystem && sessionLoading)}>
                             {(isSystem && sessionLoading) ? <BtnSpinner /> : <Icon n="play" sm />} {t.more}
+                            {isDesktop && <span style={{ opacity: .6, fontWeight: 400, marginLeft: 6 }}>(Enter)</span>}
                         </button>
                     )}
                     <button className="btn btn--ghost btn--block" style={{ marginTop: 8, color: "var(--game-ink)", borderColor: "var(--game-border)" }} onClick={() => onClose?.(true)}>

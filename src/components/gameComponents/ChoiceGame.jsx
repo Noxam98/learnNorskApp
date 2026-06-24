@@ -12,6 +12,17 @@ import api from "../tools/api.js";
 import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
+import { useAuthStore } from "../../store/AuthStore.jsx";
+
+// Десктоп-подсказка (системный тост) «можно выбирать цифрами» — ОТДЕЛЬНЫЙ флаг от клавиатурной.
+const CHOICE_HINT = {
+    ru: "Можно выбирать ответ цифрами на клавиатуре", en: "You can pick the answer with number keys",
+    ukr: "Можна обирати відповідь цифрами на клавіатурі", pl: "Odpowiedź można wybrać cyframi na klawiaturze",
+    lt: "Atsakymą galima rinktis skaičių klavišais",
+};
+const CHOICE_GOT_IT = { ru: "Понял", en: "Got it", ukr: "Зрозуміло", pl: "Rozumiem", lt: "Supratau" };
+const CHOICE_HINT_KEY = "choice_num_hint_seen";
+let _choiceHintShown = false;   // максимум раз за сессию
 
 export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0 }) => {
     const isNo2Int = mode !== "int2no";
@@ -22,6 +33,9 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     // ПК: номера у вариантов + выбор клавишами 1–9 (раскладко-независимо, по e.code Digit/Numpad)
     const [isDesktop] = useState(() => { try { return matchMedia("(hover: hover) and (pointer: fine) and (min-width: 641px)").matches; } catch { return false; } });
     const keyRef = useRef(/** @type {any} */({}));
+    const choiceHintSeenDB = useAuthStore((s) => s.user?.gamePrefs?.choiceHintSeen);   // отдельный флаг (БД)
+    const choiceSeenRef = useRef(/** @type {boolean|undefined} */(undefined));
+    if (choiceSeenRef.current === undefined) { try { choiceSeenRef.current = !!choiceHintSeenDB || !!localStorage.getItem(CHOICE_HINT_KEY); } catch { choiceSeenRef.current = !!choiceHintSeenDB; } }
 
     const loop = useGameLoop({
         gmode: "choice", words: wordsProp, onResult, onFinish, onExit, setGameState,
@@ -29,6 +43,25 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         onAdvance: () => setChosen(null),
     });
     const { t, currentLanguage, total, current, status, words: wordsToGame, results, knownFirstTry, score, qIndex, qTotal, answer, advance, restart, backToSelection } = loop;
+
+    // Десктоп-подсказка «можно выбирать цифрами» (системный тост, отдельный флаг). Показываем при
+    // выборе МЫШЬЮ; выбор цифрой/«Понял» — помечает «видел» (localStorage + БД), один раз за сессию.
+    const persistChoiceSeen = () => {
+        try { useSystemStore.getState().showToast(""); } catch { /* */ }
+        if (choiceSeenRef.current) return;
+        choiceSeenRef.current = true;
+        try { localStorage.setItem(CHOICE_HINT_KEY, "1"); } catch { /* no-op */ }
+        api.setGamePrefs({ choiceHintSeen: true }).catch(() => { /* офлайн */ });
+    };
+    const maybeShowChoiceHint = () => {
+        if (!isDesktop || choiceSeenRef.current || _choiceHintShown) return;
+        _choiceHintShown = true;
+        try {
+            useSystemStore.getState().showToast(CHOICE_HINT[currentLanguage] || CHOICE_HINT.en, "info", {
+                persist: true, action: { label: CHOICE_GOT_IT[currentLanguage] || CHOICE_GOT_IT.en, onClick: persistChoiceSeen },
+            });
+        } catch { /* */ }
+    };
 
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -109,7 +142,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
 
     // ПК: выбор варианта клавишами 1–9 (по физ-позиции e.code, независимо от раскладки). Слушатель —
     // один раз; свежие options/choose/status читаем через ref.
-    keyRef.current = { options, choose, status, armed };
+    keyRef.current = { options, choose, status, armed, persistChoiceSeen };
     useEffect(() => {
         if (!isDesktop) return;
         const onKey = (e) => {
@@ -119,7 +152,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
             const k = keyRef.current;
             if (k.status !== "ASKING" || !k.armed || !k.options) return;
             const idx = +m[1] - 1;
-            if (idx < k.options.length) { e.preventDefault(); k.choose(k.options[idx]); }
+            if (idx < k.options.length) { e.preventDefault(); k.persistChoiceSeen?.(); k.choose(k.options[idx]); }   // цифрами — уже знает, скрыть/не показывать
         };
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
@@ -153,7 +186,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     picked={chosen}
                     correct={correctPrimary}
                     reveal={status === "CORRECT" || status === "INCORRECT"}
-                    onPick={choose}
+                    onPick={(opt) => { maybeShowChoiceHint(); choose(opt); }}
                     posText={posText}
                     hint={`${t.translateTo} ${promptTarget}`}
                     countText={`${t.word} ${qIndex} / ${qTotal}`}
