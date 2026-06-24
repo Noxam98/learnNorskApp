@@ -28,7 +28,7 @@ const filterChosenWords = (dictList) =>
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
 // words/onExit передаёт «Учёба» (переиспользует игру). Карточки — пассивный режим, в SRS не пишет.
-export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, onReport = null, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
+export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, onReport = null, onKnow = null, stepNo = 0, stepTotal = 0, segs: segsOverride = null }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -146,12 +146,21 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                     </div>
                 ) : (
                     <>
-                        {/* «Не учить» — НАД карточкой слова (не в хедере, не на самой карточке —
-                            чтобы не задеть при тапе по карточке). Жалоба на мусорное слово. */}
-                        {onReport && (
-                            <button type="button" className="dontlearn-above" onClick={onReport}>
-                                <Icon n="x-circle" sm /> {t.dontLearn || "Не учить"}
-                            </button>
+                        {/* Кнопки НАД карточкой (не на ней — чтобы не задеть при тапе по карточке):
+                            «Уже знаю» появляется только ПОСЛЕ показа перевода (флип); «Не учить» — всегда. */}
+                        {(onReport || (onKnow && flipped)) && (
+                            <div className="card-skip">
+                                {onKnow && flipped && (
+                                    <button type="button" className="card-skip__btn card-skip__know" onClick={onKnow}>
+                                        <Icon n="check" sm /> {t.alreadyKnow || "Уже знаю"}
+                                    </button>
+                                )}
+                                {onReport && (
+                                    <button type="button" className="card-skip__btn card-skip__report" onClick={onReport}>
+                                        <Icon n="x-circle" sm /> {t.dontLearn || "Не учить"}
+                                    </button>
+                                )}
+                            </div>
                         )}
                         <AnimatePresence mode="wait" initial={false}>
                             <motion.div key={idx} className="qcard flashcard" onClick={advance} style={{ cursor: "pointer" }}

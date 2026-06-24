@@ -194,6 +194,16 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         else showSummary();
     };
 
+    // «Уже знаю» из карточки: слово сразу в Выучено (mastered), без тоста, и идём дальше.
+    const knowCurrent = async () => {
+        const gw = elements[idx]?.gw;
+        if (!gw) return;
+        try { await api.learningStatus(gw.pool_id ?? gw.id, "known"); } catch { /* офлайн — не критично */ }
+        setHist((h) => [...h, "ok"]);
+        if (idx + 1 < elements.length) setIdx((n) => n + 1);
+        else showSummary();
+    };
+
     // Запустить ещё одну сессию заново.
     const again = async () => {
         if (busy) return;
@@ -362,6 +372,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 onResult={isStudy ? undefined : (w, ok) => onResult(w, ok, el.mode, el.dir)}
                 onFinish={isStudy ? (s) => { recordIntro(el.gw); onGameFinish(s, true); } : (s) => onGameFinish(s, false, el.mode)}
                 onReport={reportCurrent}
+                onKnow={knowCurrent}
                 onExit={() => onClose?.(true)}
                 setGameState={() => onClose?.(true)}
             />
