@@ -429,6 +429,9 @@
 /* панель «похоже на опечатку?»: две кнопки Да/Нет под найденным написанием */
 .typo-ask__btns { display: flex; gap: var(--sp-2); margin-top: var(--sp-3); flex-wrap: wrap; justify-content: center; }
 .typo-ask__btns .gbtn { min-width: 132px; }
+/* тихая подсказка «правильно пишется»: подсветка спецбукв å/ø/æ в слове */
+.lh-word { letter-spacing: .02em; }
+.lh-spec { color: var(--game-accent); font-weight: 900; }
 @media (max-width: 360px) {
     .build-line { margin-top: var(--sp-4); }
     .kbd { --kbd-gap: 4px; }

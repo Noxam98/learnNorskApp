@@ -23,6 +23,8 @@ const TYPO_ASK = { ru: "Похоже на опечатку. Это она?", ukr
 const TYPO_YES = { ru: "Да, опечатка", ukr: "Так, описка", en: "Yes, a typo", pl: "Tak, literówka", lt: "Taip, klaida" };
 const TYPO_NO = { ru: "Нет, ошибся", ukr: "Ні, помилився", en: "No, I was wrong", pl: "Nie, błąd", lt: "Ne, suklydau" };
 const TYPO_NEXT_MS = 600;   // после выбора Да/Нет — короткая пауза (показать результат), затем авто-переход
+// тихая подсказка: ввели базовую букву вместо å/ø/æ — зачтено, но показываем правильное написание.
+const LETTER_HINT = { ru: "Правильно пишется:", ukr: "Правильно пишеться:", en: "Correct spelling:", pl: "Poprawna pisownia:", lt: "Teisinga rašyba:" };
 
 export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const isNo2Int = mode !== "int2no";
@@ -33,6 +35,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const [resolving, setResolving] = useState(false);   // после выбора Да/Нет — короткая пауза до авто-перехода (клавиатуру прячем)
     const typoTmrRef = useRef(/** @type {any} */(null)); // таймер этого авто-перехода
     const [typoOk, setTypoOk] = useState(false);   // ответ принят с одной опечаткой (повтор)
+    const [letterHint, setLetterHint] = useState(/** @type {string|null} */(null)); // зачтено, но ввели базу вместо å/ø/æ — показать написание
     const [armed, setArmed] = useState(false);     // анти-ghost-click: тап-продолжение активируется не сразу
     const typoRef = useRef(false);                  // тот же флаг для onFinish (без гонок ререндера)
     const inputRef = useRef(/** @type {HTMLInputElement | null} */(null));
@@ -50,8 +53,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         // со звуком пауза перед переходом = длина озвучки ответа + хвост (correctPrimary/aLang ниже).
         // При опечатке (held) переход по тапу — там озвучивает сама игра, см. эффект ниже.
         speakAnswer: () => (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null,
-        onAdvance: () => { setInput(""); setTypoOk(false); setTypoAsk(null); setResolving(false); typoRef.current = false; },   // новое слово — чистое поле
-        onWrong: () => { resetInput(); setTypoOk(false); setTypoAsk(null); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
+        onAdvance: () => { setInput(""); setTypoOk(false); setTypoAsk(null); setResolving(false); setLetterHint(null); typoRef.current = false; },   // новое слово — чистое поле
+        onWrong: () => { resetInput(); setTypoOk(false); setTypoAsk(null); setLetterHint(null); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
     const { t, currentLanguage, total, current, status, held, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, advance, restart, backToSelection } = loop;
 
@@ -106,7 +109,13 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         e?.preventDefault?.();
         if (!submitArmedRef.current || typoAsk) return;   // дебаунс + не отправляем, пока ждём ответа на «опечатка?»
         const fin = foldLoose(input);
-        if (acceptSet.some((a) => foldLoose(a) === fin)) { setTypoOk(false); typoRef.current = false; answer(true); return; }
+        const exactHit = acceptSet.find((a) => foldLoose(a) === fin);
+        if (exactHit) {
+            // зачтено. Если ввели БАЗОВУЮ букву вместо å/ø/æ (foldLight различается) — тихо показать
+            // правильное написание (всегда верно, снисходительность сохраняется).
+            setLetterHint(useKbd && foldLight(input) !== foldLight(exactHit) ? exactHit : null);
+            setTypoOk(false); typoRef.current = false; answer(true); return;
+        }
         // Близкая опечатка: ОДНА правка (замена — только соседних по клаве букв / перестановка / пропуск-
         // лишняя), слова от 4 букв (на коротких 1 правка ≈ другое слово). НЕ зачитываем сами — показываем
         // что нашли и спрашиваем пользователя (он сам отвечает за свою учёбу). Только при вводе норвежского
@@ -201,6 +210,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(98,192,131,.16)", color: "var(--game-correct)" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-correct)" }}>{t.correctly}</div>
+                            {/* тихая подсказка: ввели базовую букву вместо å/ø/æ — показать правильное написание (å/ø/æ подсвечены) */}
+                            {letterHint && <div className="fb-line">{LETTER_HINT[currentLanguage] || LETTER_HINT.en} <b className="lh-word" lang={aLang}>{[...letterHint].map((ch, i) => /[åøæ]/i.test(ch) ? <span key={i} className="lh-spec">{ch}</span> : ch)}</b></div>}
                             {otherAccepted.length > 0 && <div className="fb-line">{t.alsoAccepted} <b lang={aLang}>{hyphenate(otherAccepted.join(", "), aLang)}</b></div>}
                         </div>
                     )}
