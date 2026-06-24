@@ -251,7 +251,6 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         return (
             <div style={STAGE}>
                 <div style={{ margin: "auto", textAlign: "center", padding: "var(--sp-5)", maxWidth: 460, width: "100%" }}>
-                    <div className="session-orb session-orb--ok" style={{ margin: "0 auto" }} />
                     <h1 style={{ fontSize: "var(--fs-28)", margin: "var(--sp-4) 0 var(--sp-2)" }}>{t.done}</h1>
                     {res.total > 0 ? (
                         <>
@@ -288,10 +287,10 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                                     : t.maxLevel}
                             </p>
                             {nextLevel && nextTarget > 0 && (
-                                <div style={{ height: 10, borderRadius: 999, background: "var(--game-border)", overflow: "hidden", display: "flex", marginTop: 8 }}>
-                                    {/* база (было) — приглушённый зелёный; прибавка за сессию — яркий зелёный, с анимацией */}
-                                    <div style={{ width: basePct + "%", background: "var(--st-master)", opacity: .4 }} />
-                                    {gainPct > 0 && <div className="finbar__gain" style={{ width: gainPct + "%", minWidth: 6, background: "var(--st-master)" }} title={`+${learned}`} />}
+                                <div style={{ height: 10, borderRadius: 999, background: "var(--game-border)", display: "flex", marginTop: 8 }}>
+                                    {/* база (было) — приглушённый зелёный; прибавка за сессию — яркий зелёный, постоянно мерцает/светится */}
+                                    <div style={{ width: basePct + "%", background: "var(--st-master)", opacity: .4, borderRadius: "999px 0 0 999px" }} />
+                                    {gainPct > 0 && <div className="finbar__gain" style={{ width: gainPct + "%", minWidth: 6, background: "var(--st-master)", borderRadius: "0 999px 999px 0" }} title={`+${learned}`} />}
                                 </div>
                             )}
                         </div>
