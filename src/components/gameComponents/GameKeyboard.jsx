@@ -75,10 +75,11 @@ export function GameKeyboard({
         try { localStorage.setItem(HINT_KEY, "1"); } catch { /* no-op */ }
         api.setGamePrefs({ kbdHintSeen: true }).catch(() => { /* офлайн — localStorage уже хватит */ });
     };
-    // ПК: показать тост ОДИН раз за сессию (если ещё не «Понял»), как только видна экранная клавиатура
-    useEffect(() => {
+    // ПК: показать тост ОДИН раз за сессию, когда юзер НАЧАЛ набор МЫШЬЮ по экранной клавише
+    // (если ещё не нажимал «Понял»). Тригерится из keyDown (клик по букве).
+    const maybeShowHint = () => {
         if (isDesktop && !seenRef.current && !_hintShownSession) { _hintShownSession = true; setShowHint(true); }
-    }, []);
+    };
 
     // Гасим системный long-press жест Android (его haptic-тик «через секунду» + callout): нативный
     // touchstart c preventDefault. React вешает touch-листенеры пассивно — preventDefault там молча
@@ -104,6 +105,7 @@ export function GameKeyboard({
         pressingRef.current = c; setPop(c);
         pressTsRef.current = Date.now();
         buzz();   // одна вибрация на нажатие
+        maybeShowHint();   // начал набор мышью на ПК → подсказать про физ-клавиатуру
     };
     const keyUp = (c, e) => {
         if (pressingRef.current === c) {
