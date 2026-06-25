@@ -6,9 +6,13 @@ import { interfaceTranslate } from '../../interface/interfaceTranslation';
 // Глобальный тост при сбоях запроса. Показываем только то, в чём пользователь не виноват:
 // сеть недоступна (status 0) либо перегрузка/сбой AI-провайдера (429/5xx). Прочие 4xx
 // (валидация и т.п.) — молча, их разбирает вызывающий код. Возвращает на нужном языке.
+let _lastNetToast = 0;
 function toastForError(status) {
     const transient = status === 0 || status === 429 || status >= 500;
     if (!transient) return;
+    const now = Date.now();
+    if (now - _lastNetToast < 6000) return;   // антиспам: один тост на серию (ретраи/параллельные запросы)
+    _lastNetToast = now;
     const lang = useSystemStore.getState().currentLanguage;
     const t = interfaceTranslate[lang] || interfaceTranslate.en;
     useSystemStore.getState().showToast(status === 0 ? t.connectionError : t.providerError);
@@ -128,7 +132,14 @@ class ApiService {
             }
         };
 
-        return ky(`${this.baseUrl}${path}`, mergedOptions);
+        try {
+            return await ky(`${this.baseUrl}${path}`, mergedOptions);
+        } catch (e) {
+            // Сетевой сбой (нет ответа вовсе: офлайн/таймаут/CORS-провал/сервер недоступен) — тост на
+            // ЛЮБОМ запросе. HTTPError (есть .response) тут не тостим: 5xx/429 разбирает _send, 4xx — вызыватели.
+            if (!(/** @type {any} */(e)?.response)) toastForError(0);
+            throw e;
+        }
     }
 
     // --- Публичные методы ---
@@ -210,13 +221,7 @@ class ApiService {
         const opts = { method };
         if (body !== undefined) opts.json = body;
         opts.throwHttpErrors = false;
-        let response;
-        try {
-            response = await this.apiRequest(endpoint, opts);
-        } catch (e) {
-            toastForError(0); // сеть/таймаут — ответа нет вовсе
-            throw e;
-        }
+        const response = await this.apiRequest(endpoint, opts);   // сетевой сбой тостит apiRequest и пробрасывает
         if (!response.ok) {
             const err = await response.json().catch(() => ({}));
             toastForError(response.status);

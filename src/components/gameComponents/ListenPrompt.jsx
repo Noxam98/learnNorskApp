@@ -52,8 +52,25 @@ export function ListenPrompt({ word, ttsLang, uiLang = "ru", asking = true, onEn
     const [diag, setDiag] = useState(false);
     const leadRef = useRef(0);
     const btnRef = useRef(/** @type {HTMLButtonElement | null} */(null));
-    const fgRef = useRef(/** @type {SVGCircleElement | null} */(null));   // дугу прогресса пишем ПРЯМО в DOM (без re-render → без мерцания)
-    const setRing = (p) => { if (fgRef.current) fgRef.current.style.strokeDashoffset = String(RING_C * (1 - Math.max(0, Math.min(1, p || 0)))); };
+    const fgRef = useRef(/** @type {SVGCircleElement | null} */(null));   // дугой прогресса управляем ИМПЕРАТИВНО (вне React — иначе re-render сбрасывает offset)
+    // Перевести дугу offset from→to за durSec одной CSS-transition. Ключевой момент — форс-рефлоу
+    // ПОСЛЕ установки стартового значения с transition:none: иначе Chromium, видя смену transition и
+    // offset в одном пересчёте стиля, не запускает анимацию и дуга «телепортируется».
+    const animateRing = (fromOff, toOff, durSec, easing) => {
+        const el = fgRef.current; if (!el) return;
+        el.style.transition = "none";
+        el.style.strokeDashoffset = String(fromOff);
+        void el.getBoundingClientRect();   // зафиксировать старт отдельным пересчётом
+        el.style.transition = `stroke-dashoffset ${durSec}s ${easing}`;
+        el.style.strokeDashoffset = String(toOff);
+    };
+    // заполнить кольцо за время звучания (durSec) — линейно от пустого к полному
+    const fillRing = (durSec) => animateRing(RING_C, 0, Math.max(0.15, durSec || 0.6), "linear");
+    // сбросить к пустому: quick=true → видимый быстрый ОТКАТ назад от полного (.22s); иначе мгновенно
+    const resetRing = (quick) => {
+        if (quick) { animateRing(0, RING_C, 0.22, "ease"); return; }
+        const el = fgRef.current; if (el) { el.style.transition = "none"; el.style.strokeDashoffset = String(RING_C); }
+    };
     const clearTimers = () => { if (leadRef.current) { clearTimeout(leadRef.current); leadRef.current = 0; } };
     // короткая анимация «перезапуск воспроизведения» — отскок кнопки + проворот иконки
     const animateRestart = () => {
@@ -65,19 +82,20 @@ export function ListenPrompt({ word, ttsLang, uiLang = "ru", asking = true, onEn
     // Звук — координированным speakTextEnd (единый канал, не пересекается). Кольцо — по РЕАЛЬНОМУ
     // прогрессу аудио, но пишем в DOM напрямую (setRing) — без React-ре-рендера 40×/сек, поэтому без
     // мерцания; плавность — CSS-transition на stroke-dashoffset. Пауза 300мс перед звуком.
-    const play = () => {
+    const play = (fromClick = false) => {
         if (state === "playing") return;   // пока слово играет — повторный запуск заблокирован
         clearTimers();
         animateRestart();
-        setRing(0); setState("playing"); setDiag(false);
+        resetRing(fromClick && state === "ended");   // клик по уже доигравшему → быстрый откат кольца назад; иначе мгновенно пусто
+        setState("playing"); setDiag(false);
         leadRef.current = window.setTimeout(() => {
-            speakTextEnd(word, ttsLang, setRing)
-                .then(() => { setRing(1); setState("ended"); onEnded?.(); })   // слово доиграло → loop отпускает переход
-                .catch((e) => { const m = String(e?.message || e); if (m.includes("interrupt")) { setState("ended"); return; } setState("blocked"); onEnded?.(); });
+            speakTextEnd(word, ttsLang, fillRing)   // fillRing получит длину аудио и запустит CSS-transition на дугу
+                .then(() => { setState("ended"); onEnded?.(); })   // слово доиграло → кольцо полное, loop отпускает переход
+                .catch((e) => { const m = String(e?.message || e); if (m.includes("interrupt")) { setState("ended"); return; } resetRing(false); setState("blocked"); onEnded?.(); });
         }, LEAD_MS);
     };
 
-    useEffect(() => { play(); return clearTimers; }, [word]); // eslint-disable-line
+    useEffect(() => { play(false); return clearTimers; }, [word]); // eslint-disable-line
 
     // слоёная диагностика «не слышно»: точное → гадательное
     const advice = soundVolume === 0 ? "vol" : state === "blocked" ? "blocked" : "device";
@@ -86,11 +104,11 @@ export function ListenPrompt({ word, ttsLang, uiLang = "ru", asking = true, onEn
     return (
         <div className="listen">
             <button ref={btnRef} type="button" className={"listen__play" + (state === "playing" ? " is-playing" : "")}
-                disabled={state === "playing"} onClick={play} aria-label={t.replay}>
+                disabled={state === "playing"} onClick={() => play(true)} aria-label={t.replay}>
                 <svg className="listen__ring" viewBox="0 0 100 100" aria-hidden="true">
                     <circle className="listen__ring-bg" cx="50" cy="50" r={RING_R} />
                     <circle ref={fgRef} className="listen__ring-fg" cx="50" cy="50" r={RING_R}
-                        style={{ strokeDasharray: RING_C, strokeDashoffset: RING_C }} />
+                        style={{ strokeDasharray: RING_C }} />
                 </svg>
                 <Icon n="volume" />
             </button>
@@ -108,12 +126,12 @@ export function ListenPrompt({ word, ttsLang, uiLang = "ru", asking = true, onEn
                     <div className="listen__diagacts">
                         {advice === "vol" && (
                             <button type="button" className="gbtn gbtn--accent"
-                                onClick={() => { useSystemStore.getState().setSoundVolume(0.8); setDiag(false); play(); }}>
+                                onClick={() => { useSystemStore.getState().setSoundVolume(0.8); setDiag(false); play(true); }}>
                                 <Icon n="volume" sm /> {t.turnOn}
                             </button>
                         )}
                         {advice === "blocked" && (
-                            <button type="button" className="gbtn gbtn--accent" onClick={() => { setDiag(false); play(); }}>
+                            <button type="button" className="gbtn gbtn--accent" onClick={() => { setDiag(false); play(true); }}>
                                 <Icon n="volume" sm /> {t.replay}
                             </button>
                         )}

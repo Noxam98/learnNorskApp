@@ -25,9 +25,11 @@ export const ttsLang = (uiLang) => ({ ru: "ru", ukr: "uk", en: "en", pl: "pl", l
 
 // Проиграть один фрагмент. waitEnd=false → резолв на старте воспроизведения
 // (как было); waitEnd=true → резолв по окончании (нужно для очереди фрагментов).
-const play = (text, lang, waitEnd, onTick) => new Promise((resolve, reject) => {
+// onMeta(durSec) — необяз.: ОДИН раз на старте отдаём длительность аудио наружу, чтобы потребитель
+// сам прокрутил анимацию прогресса по этой длине (без поллинга currentTime десятки раз в секунду).
+const play = (text, lang, waitEnd, onMeta) => new Promise((resolve, reject) => {
     const t = (text || "").trim();
-    if (!t) { if (onTick) onTick(1); resolve(); return; }
+    if (!t) { resolve(); return; }
 
     stopAudio();
 
@@ -35,29 +37,22 @@ const play = (text, lang, waitEnd, onTick) => new Promise((resolve, reject) => {
     audio.volume = soundLevel();   // общий уровень громкости (0 = тишина)
     _audio = audio;
 
-    // Прогресс воспроизведения (onTick 0..1) по РЕАЛЬНОМУ времени аудио. Ведём setInterval'ом (а НЕ
-    // rAF — он тормозится в неактивной вкладке), читая currentTime/duration. duration обычно конечная;
-    // если нет — оценка по длине слова, чтобы кольцо всё равно ехало.
-    let timer = 0;
-    const estDur = Math.max(0.6, t.length * 0.09 + 0.4);
-    const stopTimer = () => { if (timer) { clearInterval(timer); timer = 0; } };
-    const tick = () => {
-        // нас сменило новое воспроизведение / поставили на паузу — гасим СВОЙ таймер (иначе два
-        // таймера дерутся за кольцо после быстрого повторного клика → дёрганье/не доходит до конца)
-        if (audio !== _audio || audio.paused || audio.ended) { stopTimer(); return; }
-        const d = audio.duration;
-        const p = (isFinite(d) && d > 0.1) ? (audio.currentTime / d) : Math.min(0.95, audio.currentTime / estDur);
-        if (onTick) onTick(Math.min(0.999, p));
-    };
+    const estDur = Math.max(0.6, t.length * 0.09 + 0.4);  // запасная оценка, если длительность не известна
 
-    audio.onerror = () => { stopTimer(); if (_reject === reject) _reject = null; reject(new Error("audio")); };
+    audio.onerror = () => { if (_reject === reject) _reject = null; reject(new Error("audio")); };
     if (waitEnd) {
         _reject = reject; // позволяем прервать ожидание окончания извне (stopAudio)
-        audio.onended = () => { stopTimer(); if (onTick) onTick(1); if (_reject === reject) _reject = null; resolve(); };
+        audio.onended = () => { if (_reject === reject) _reject = null; resolve(); };
     } else {
         audio.onplaying = () => resolve(); // одиночный режим: аудио играет дальше само
     }
-    audio.play().then(() => { if (onTick) timer = setInterval(tick, 25); }).catch((e) => { stopTimer(); reject(e); });
+    audio.play().then(() => {
+        if (!onMeta || audio !== _audio) return;
+        // длительность отдаём, как только она известна; если метаданные ещё не подъехали — ждём их
+        const fire = () => { if (audio !== _audio) return; const d = audio.duration; onMeta(isFinite(d) && d > 0.1 ? d : estDur); };
+        if (isFinite(audio.duration) && audio.duration > 0.1) fire();
+        else audio.addEventListener("loadedmetadata", fire, { once: true });
+    }).catch((e) => { reject(e); });
 });
 
 // Озвучка текста. lang не задан → норвежский (как было); задан → голос перевода.
@@ -65,8 +60,8 @@ const play = (text, lang, waitEnd, onTick) => new Promise((resolve, reject) => {
 export const speakText = (text, lang) => { _gen++; return play(text, lang, false); };
 
 // Как speakText, но промис резолвится по ОКОНЧАНИИ воспроизведения (а не на старте).
-// onTick(0..1) — необяз. прогресс по реальному времени аудио (для кольца). Прерывание → реджект.
-export const speakTextEnd = (text, lang, onTick) => { _gen++; return play(text, lang, true, onTick); };
+// onMeta(durSec) — необяз.: длительность аудио на старте (для анимации кольца). Прерывание → реджект.
+export const speakTextEnd = (text, lang, onMeta) => { _gen++; return play(text, lang, true, onMeta); };
 
 // Озвучить фрагменты подряд: следующий стартует после окончания предыдущего.
 // segments: [{ text, lang }] (lang не задан → норвежский). Если запуск перебили

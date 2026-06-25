@@ -168,12 +168,12 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                             <div className="card-skip">
                                 {onKnow && (
                                     <button type="button" className="card-skip__btn card-skip__know" onClick={onKnow}>
-                                        <Icon n="check" sm /> {t.alreadyKnow || "Уже знаю"}
+                                        <span className="card-skip__key">1</span><Icon n="check" sm /> {t.alreadyKnow || "Уже знаю"}
                                     </button>
                                 )}
                                 {onReport && (
                                     <button type="button" className="card-skip__btn card-skip__report" onClick={onReport}>
-                                        <Icon n="x-circle" sm /> {t.dontLearn || "Не учить"}
+                                        <span className="card-skip__key">2</span><Icon n="x-circle" sm /> {t.dontLearn || "Не учить"}
                                     </button>
                                 )}
                             </div>

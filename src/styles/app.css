@@ -486,7 +486,7 @@
 .listen__play { position: relative; width: 92px; height: 92px; border-radius: 50%; border: none; cursor: pointer; padding: 0; display: grid; place-items: center; background: var(--surface); box-shadow: var(--shadow-sm); }
 .listen__ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
 .listen__ring-bg { fill: none; stroke: color-mix(in srgb, var(--game-accent) 16%, var(--surface)); stroke-width: 7; }
-.listen__ring-fg { fill: none; stroke: var(--game-accent); stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset .12s linear; }
+.listen__ring-fg { fill: none; stroke: var(--game-accent); stroke-width: 7; stroke-linecap: round; stroke-dashoffset: 282.743; }  /* старт — пустое кольцо; offset/transition дальше задаются императивно */
 .listen__play .ic { position: relative; width: 38px; height: 38px; color: var(--game-accent); }
 .listen__play:disabled { cursor: default; opacity: 1; }   /* играет — клик заблокирован, но кольцо/иконку не тускним */
 .listen__hint { font-size: var(--fs-14); color: var(--ink-2); }

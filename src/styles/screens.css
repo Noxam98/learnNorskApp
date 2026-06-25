@@ -360,6 +360,7 @@
   .card-skip__btn:hover { opacity: 1; }
   .card-skip__know:hover { color: var(--game-correct); border-color: var(--game-correct); }
   .card-skip__report:hover { color: var(--game-incorrect); border-color: var(--game-incorrect); }
+  .card-skip__key { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 4px; margin-right: 1px; border-radius: 6px; background: color-mix(in srgb, var(--game-ink-2) 16%, transparent); color: var(--game-ink-2); font-size: var(--fs-12); font-weight: 800; line-height: 1; }
   .qcount { font-size: var(--fs-14); font-weight: 700; letter-spacing: var(--ls-wide); text-transform: uppercase; color: var(--game-ink-2); }
   .qprompt { font-size: var(--fs-15); color: var(--game-ink-2); margin-top: var(--sp-6); }
   .qword {

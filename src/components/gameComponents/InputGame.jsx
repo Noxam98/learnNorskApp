@@ -117,17 +117,17 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
             setTypoOk(false); typoRef.current = false; answer(true); return;
         }
         // Близкая опечатка: ОДНА правка (замена — только соседних по клаве букв / перестановка / пропуск-
-        // лишняя), слова от 4 букв (на коротких 1 правка ≈ другое слово). НЕ зачитываем сами — показываем
-        // что нашли и спрашиваем пользователя (он сам отвечает за свою учёбу). Только при вводе норвежского
-        // (наша раскладка → карта соседства валидна).
+        // лишняя), слова от 3 букв (на 2-буквенных 1 правка ≈ совсем другое слово). НЕ зачитываем сами —
+        // показываем что нашли и спрашиваем пользователя (он сам отвечает за свою учёбу). Только при вводе
+        // норвежского (наша раскладка → карта соседства валидна).
         if (useKbd) {
             // соседство проверяем ДВАЖДЫ: по свёрнутой строке (a/o/ae — для тех, кто печатает базовые буквы)
             // И по «сырой» с сохранёнными å/ø/æ (соседство по фактическим клавишам: å рядом с ø/p/æ).
             const finRaw = foldLight(input);
             const hit = acceptSet.find((a) => {
                 const fa = foldLoose(a), faRaw = foldLight(a);
-                return (fa.length >= 4 && fin.length >= 4 && withinOneEdit(fa, fin, keysAdjacent))
-                    || (faRaw.length >= 4 && finRaw.length >= 4 && withinOneEdit(faRaw, finRaw, keysAdjacent));
+                return (fa.length >= 3 && fin.length >= 3 && withinOneEdit(fa, fin, keysAdjacent))
+                    || (faRaw.length >= 3 && finRaw.length >= 3 && withinOneEdit(faRaw, finRaw, keysAdjacent));
             });
             if (hit) { setTypoAsk({ typed: input.trim(), correct: hit }); return; }
         }
