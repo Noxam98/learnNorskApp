@@ -15,6 +15,7 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { filterChosenWords, shuffle, useScrollLock, semisOf } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
+import { dbg } from "../ui/tts.js";   // ВРЕМЕННО: отладка аудио
 
 const ANSWER_LEAD_MS = 300;    // пауза ПЕРЕД озвучкой ответа (даём прошлому звуку улечься / экрану смениться)
 const ANSWER_TAIL_MS = 250;    // пауза ПОСЛЕ окончания озвучки ответа, затем авто-переход

@@ -2,14 +2,16 @@
 // Аудио-подсказка для задания «на слух» (стадия choice_no2int): норвежское слово ПРОИГРЫВАЕТСЯ,
 // текст скрыт — игрок узнаёт на слух и выбирает перевод. Кнопка ▶ с кольцом прогресса (плавно
 // заполняется по ходу аудио), автоплей, кнопка «не слышно?» со слоёной диагностикой и эскейпы
-// «показать текст» / «всегда текстом». Звук — через ЕДИНЫЙ канал tts.js (speakProgress), чтобы
-// воспроизведения НЕ пересекались с озвучкой ответа (общий stopAudio гасит предыдущее).
+// «показать текст» / «всегда текстом». Звук — через ЕДИНЫЙ канал tts.js (speakTextEnd с onTick),
+// чтобы воспроизведения НЕ пересекались (общий stopAudio гасит предыдущее); кольцо — по реальному
+// прогрессу аудио, пишем dashoffset напрямую в DOM (без re-render → без мерцания).
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { speakTextEnd } from "../ui/tts.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 
 const LEAD_MS = 300;   // пауза перед воспроизведением аудио
+const RING_R = 45, RING_C = 2 * Math.PI * 45;   // радиус/длина окружности SVG-кольца прогресса
 
 const T = {
     ru:  { hint: "Послушай и выбери перевод", cantHear: "Не слышно?", showText: "Показать текст",
@@ -46,27 +48,32 @@ const T = {
 export function ListenPrompt({ word, ttsLang, uiLang = "ru", asking = true, onEnded, onShowText, onDisableAlways }) {
     const t = T[uiLang] || T.en;
     const soundVolume = useSystemStore((s) => s.soundVolume);
-    const [prog, setProg] = useState(0);          // 0..1 ход проигрывания (по таймеру — надёжно рисуется)
     const [state, setState] = useState("idle");   // idle | playing | ended | blocked
     const [diag, setDiag] = useState(false);
-    const tickRef = useRef(0);
     const leadRef = useRef(0);
-    const clearTimers = () => {
-        if (tickRef.current) { clearInterval(tickRef.current); tickRef.current = 0; }
-        if (leadRef.current) { clearTimeout(leadRef.current); leadRef.current = 0; }
+    const btnRef = useRef(/** @type {HTMLButtonElement | null} */(null));
+    const fgRef = useRef(/** @type {SVGCircleElement | null} */(null));   // дугу прогресса пишем ПРЯМО в DOM (без re-render → без мерцания)
+    const setRing = (p) => { if (fgRef.current) fgRef.current.style.strokeDashoffset = String(RING_C * (1 - Math.max(0, Math.min(1, p || 0)))); };
+    const clearTimers = () => { if (leadRef.current) { clearTimeout(leadRef.current); leadRef.current = 0; } };
+    // короткая анимация «перезапуск воспроизведения» — отскок кнопки + проворот иконки
+    const animateRestart = () => {
+        try {
+            btnRef.current?.animate([{ transform: "scale(1)" }, { transform: "scale(.88)" }, { transform: "scale(1)" }], { duration: 280, easing: "ease-out" });
+            btnRef.current?.querySelector(".ic")?.animate([{ transform: "rotate(-12deg)" }, { transform: "rotate(0)" }], { duration: 300, easing: "ease-out" });
+        } catch { /* нет WAAPI — ок */ }
     };
-    // Звук — координированным speakTextEnd (единый канал, не пересекается). Кольцо — по ТАЙМЕРУ
-    // (не зависит от событий аудио, всегда плавно рисуется), снап в 100% по окончании. Пауза 300мс.
+    // Звук — координированным speakTextEnd (единый канал, не пересекается). Кольцо — по РЕАЛЬНОМУ
+    // прогрессу аудио, но пишем в DOM напрямую (setRing) — без React-ре-рендера 40×/сек, поэтому без
+    // мерцания; плавность — CSS-transition на stroke-dashoffset. Пауза 300мс перед звуком.
     const play = () => {
+        if (state === "playing") return;   // пока слово играет — повторный запуск заблокирован
         clearTimers();
-        setProg(0); setState("playing"); setDiag(false);
-        const dur = Math.max(700, (word || "").trim().length * 95 + 400);   // оценка длительности, мс
+        animateRestart();
+        setRing(0); setState("playing"); setDiag(false);
         leadRef.current = window.setTimeout(() => {
-            const t0 = Date.now();
-            tickRef.current = window.setInterval(() => { setProg(Math.min(0.985, (Date.now() - t0) / dur)); }, 50);
-            speakTextEnd(word, ttsLang)
-                .then(() => { clearTimers(); setProg(1); setState("ended"); onEnded?.(); })   // слово доиграло → loop отпускает переход
-                .catch((e) => { clearTimers(); const m = String(e?.message || e); if (m.includes("interrupt")) return; setState("blocked"); onEnded?.(); });
+            speakTextEnd(word, ttsLang, setRing)
+                .then(() => { setRing(1); setState("ended"); onEnded?.(); })   // слово доиграло → loop отпускает переход
+                .catch((e) => { const m = String(e?.message || e); if (m.includes("interrupt")) { setState("ended"); return; } setState("blocked"); onEnded?.(); });
         }, LEAD_MS);
     };
 
@@ -78,8 +85,13 @@ export function ListenPrompt({ word, ttsLang, uiLang = "ru", asking = true, onEn
 
     return (
         <div className="listen">
-            <button type="button" className={"listen__play" + (state === "playing" ? " is-playing" : "")}
-                style={/** @type {any} */({ "--p": Math.round(prog * 100) })} onClick={play} aria-label={t.replay}>
+            <button ref={btnRef} type="button" className={"listen__play" + (state === "playing" ? " is-playing" : "")}
+                disabled={state === "playing"} onClick={play} aria-label={t.replay}>
+                <svg className="listen__ring" viewBox="0 0 100 100" aria-hidden="true">
+                    <circle className="listen__ring-bg" cx="50" cy="50" r={RING_R} />
+                    <circle ref={fgRef} className="listen__ring-fg" cx="50" cy="50" r={RING_R}
+                        style={{ strokeDasharray: RING_C, strokeDashoffset: RING_C }} />
+                </svg>
                 <Icon n="volume" />
             </button>
             {asking && <div className="listen__hint">{t.hint}</div>}

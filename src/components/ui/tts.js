@@ -25,9 +25,9 @@ export const ttsLang = (uiLang) => ({ ru: "ru", ukr: "uk", en: "en", pl: "pl", l
 
 // Проиграть один фрагмент. waitEnd=false → резолв на старте воспроизведения
 // (как было); waitEnd=true → резолв по окончании (нужно для очереди фрагментов).
-const play = (text, lang, waitEnd) => new Promise((resolve, reject) => {
+const play = (text, lang, waitEnd, onTick) => new Promise((resolve, reject) => {
     const t = (text || "").trim();
-    if (!t) { resolve(); return; }
+    if (!t) { if (onTick) onTick(1); resolve(); return; }
 
     stopAudio();
 
@@ -35,14 +35,29 @@ const play = (text, lang, waitEnd) => new Promise((resolve, reject) => {
     audio.volume = soundLevel();   // общий уровень громкости (0 = тишина)
     _audio = audio;
 
-    audio.onerror = () => { if (_reject === reject) _reject = null; reject(new Error("audio")); };
+    // Прогресс воспроизведения (onTick 0..1) по РЕАЛЬНОМУ времени аудио. Ведём setInterval'ом (а НЕ
+    // rAF — он тормозится в неактивной вкладке), читая currentTime/duration. duration обычно конечная;
+    // если нет — оценка по длине слова, чтобы кольцо всё равно ехало.
+    let timer = 0;
+    const estDur = Math.max(0.6, t.length * 0.09 + 0.4);
+    const stopTimer = () => { if (timer) { clearInterval(timer); timer = 0; } };
+    const tick = () => {
+        // нас сменило новое воспроизведение / поставили на паузу — гасим СВОЙ таймер (иначе два
+        // таймера дерутся за кольцо после быстрого повторного клика → дёрганье/не доходит до конца)
+        if (audio !== _audio || audio.paused || audio.ended) { stopTimer(); return; }
+        const d = audio.duration;
+        const p = (isFinite(d) && d > 0.1) ? (audio.currentTime / d) : Math.min(0.95, audio.currentTime / estDur);
+        if (onTick) onTick(Math.min(0.999, p));
+    };
+
+    audio.onerror = () => { stopTimer(); if (_reject === reject) _reject = null; reject(new Error("audio")); };
     if (waitEnd) {
         _reject = reject; // позволяем прервать ожидание окончания извне (stopAudio)
-        audio.onended = () => { if (_reject === reject) _reject = null; resolve(); };
+        audio.onended = () => { stopTimer(); if (onTick) onTick(1); if (_reject === reject) _reject = null; resolve(); };
     } else {
         audio.onplaying = () => resolve(); // одиночный режим: аудио играет дальше само
     }
-    audio.play().catch((e) => reject(e));
+    audio.play().then(() => { if (onTick) timer = setInterval(tick, 25); }).catch((e) => { stopTimer(); reject(e); });
 });
 
 // Озвучка текста. lang не задан → норвежский (как было); задан → голос перевода.
@@ -50,33 +65,8 @@ const play = (text, lang, waitEnd) => new Promise((resolve, reject) => {
 export const speakText = (text, lang) => { _gen++; return play(text, lang, false); };
 
 // Как speakText, но промис резолвится по ОКОНЧАНИИ воспроизведения (а не на старте).
-// Нужно, чтобы пауза «между экранами» равнялась длине озвучки слова. Прерывание
-// (новый запуск/стоп) → реджект «interrupted» (обрабатывать через .catch/.then(_,_)).
-export const speakTextEnd = (text, lang) => { _gen++; return play(text, lang, true); };
-
-// Озвучка с ПРОГРЕССОМ: onTick(0..1) по ходу, резолв по окончании. Тот же единый канал, что и
-// speakText (stopAudio гасит предыдущее, новый запуск отменяет этот) — чтобы воспроизведения НЕ
-// пересекались. duration у TTS часто Infinity/NaN → прогресс ведём по currentTime против реальной
-// длительности (из метаданных) либо оценки по длине слова. Реджект «interrupted»/«audio» — в .catch.
-export const speakProgress = (text, lang, onTick) => {
-    _gen++;
-    return new Promise((resolve, reject) => {
-        const t = (text || "").trim();
-        if (!t) { resolve(); return; }
-        stopAudio();
-        const audio = new Audio(api.ttsUrl(t, lang));
-        audio.volume = soundLevel();
-        _audio = audio;
-        _reject = reject;   // позволяем прервать ожидание извне (stopAudio при новом запуске)
-        let raf = 0, total = Math.max(0.6, t.length * 0.09 + 0.35), settled = false;
-        const stopRaf = () => { if (raf) { cancelAnimationFrame(raf); raf = 0; } };
-        const tick = () => { if (onTick && total > 0) onTick(Math.min(0.995, audio.currentTime / total)); if (!audio.paused && !audio.ended) raf = requestAnimationFrame(tick); };
-        audio.onloadedmetadata = () => { if (isFinite(audio.duration) && audio.duration > 0.1) total = audio.duration; };
-        audio.onerror = () => { if (settled) return; settled = true; stopRaf(); if (_reject === reject) _reject = null; reject(new Error("audio")); };
-        audio.onended = () => { if (settled) return; settled = true; stopRaf(); if (_reject === reject) _reject = null; if (onTick) onTick(1); resolve(); };
-        audio.play().then(() => { raf = requestAnimationFrame(tick); }).catch((e) => { if (settled) return; settled = true; stopRaf(); reject(e); });
-    });
-};
+// onTick(0..1) — необяз. прогресс по реальному времени аудио (для кольца). Прерывание → реджект.
+export const speakTextEnd = (text, lang, onTick) => { _gen++; return play(text, lang, true, onTick); };
 
 // Озвучить фрагменты подряд: следующий стартует после окончания предыдущего.
 // segments: [{ text, lang }] (lang не задан → норвежский). Если запуск перебили
