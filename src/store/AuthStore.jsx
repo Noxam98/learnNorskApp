@@ -26,6 +26,11 @@ const getError = (error, currentLanguage) => {
     return (t['unexpectedError'] || '') + msg;
 };
 
+// Язык интерфейса с сервера (gamePrefs.lang) → в локальный systemStore. Для новых устройств:
+// локально дефолт, но если у аккаунта сохранён язык — подтягиваем его при входе.
+const LANGS = ["ru", "ukr", "en", "pl", "lt"];
+const _syncLang = (me) => { const l = me?.gamePrefs?.lang; if (l && LANGS.includes(l)) useSystemStore.getState().setCurrentLanguage(l); };
+
 // Привести ответ /me к объекту user в сторе (включая email/привязку Google для настроек).
 const _userFrom = (me) => ({
     username: me.username,
@@ -61,6 +66,7 @@ export const useAuthStore = create((set, get) => ({
             if (userData.theme === "light" || userData.theme === "dark") {
                 useSystemStore.getState().setTheme(userData.theme);  // тема юзера с сервера
             }
+            _syncLang(userData);   // язык интерфейса юзера с сервера (для новых устройств)
             return true;
         } catch {
             // apiRequest сам пытается обновить токен по 401; сюда попадаем только если не вышло.
@@ -100,6 +106,7 @@ export const useAuthStore = create((set, get) => ({
             // подтянуть тему и роль юзера с сервера
             api.getProtectedData().then((me) => {
                 if (me?.theme === "light" || me?.theme === "dark") useSystemStore.getState().setTheme(me.theme);
+                _syncLang(me);
                 if (me) set({ user: _userFrom(me) });
             }).catch(() => {});
             return data;

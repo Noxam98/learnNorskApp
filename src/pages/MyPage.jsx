@@ -247,7 +247,7 @@ const MyPage = () => {
                             <span className="setrow__ic"><Icon n="globe" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.interfaceLang}</span><span className="setrow__d">{t.interfaceLangDesc}</span></span>
                             <Dropdown value={currentLanguage}
-                                onChange={(v) => useSystemStore.getState().setCurrentLanguage(v)}
+                                onChange={(v) => { useSystemStore.getState().setCurrentLanguage(v); if (api.accessToken) api.setGamePrefs({ lang: v }).catch(() => {}); }}
                                 options={[
                                     { value: "ukr", label: "Українська", emoji: "🇺🇦" },
                                     { value: "ru", label: "Русский", emoji: "🇷🇺" },

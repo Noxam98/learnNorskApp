@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from "framer-motion";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { Icon } from "./ui/Icon.jsx";
+import api from "./tools/api.js";
 
 const languages = {
     ukr: "Українська",
@@ -54,7 +55,7 @@ const LanguageChooser = ({ className = "hide-mobile" }) => {
                                     background: code === currentLanguage ? "var(--fjord-50)" : "transparent",
                                     color: code === currentLanguage ? "var(--fjord-600)" : "var(--ink-2)",
                                 }}
-                                onClick={() => { setCurrentLanguage(code); setIsOpen(false); }}
+                                onClick={() => { setCurrentLanguage(code); setIsOpen(false); if (api.accessToken) api.setGamePrefs({ lang: code }).catch(() => {}); }}
                             >
                                 {name}
                             </button>
