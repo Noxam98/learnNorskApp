@@ -434,12 +434,18 @@
 .lh-spec { color: var(--game-accent); font-weight: 900; }
 
 /* ── Рейтинг (leaderboard) ── */
+/* медали топ-3 — нарисованная иконка i-medal, цвет = место */
+.lb-medal { width: 20px; height: 20px; vertical-align: middle; }
+.lb-medal--lg { width: 26px; height: 26px; }
+.lb-medal--gold { color: #efb01e; }
+.lb-medal--silver { color: #a7b0bb; }
+.lb-medal--bronze { color: #c77b3b; }
+.lb-rankn { font-weight: 800; color: var(--ink-2); }
 .lb-card { cursor: pointer; transition: box-shadow var(--dur), transform var(--dur); }
 .lb-card:hover { box-shadow: var(--shadow-sm); }
 .lb-card__all { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-13); font-weight: 700; color: var(--fjord-600); }
 .lb-card__me { display: flex; align-items: center; gap: var(--sp-2); }
-.lb-card__rank { font-weight: 800; min-width: 34px; font-size: var(--fs-18); }
-.lb-card__rank--medal { font-size: var(--fs-22); }
+.lb-card__rank { font-weight: 800; min-width: 34px; font-size: var(--fs-18); display: inline-flex; align-items: center; }
 .lb-card__metab { font-size: var(--fs-15); }
 .lb-card__of { margin-left: auto; color: var(--ink-2); font-size: var(--fs-13); }
 .lb-card__top { margin-top: var(--sp-3); display: flex; flex-direction: column; gap: 5px; border-top: 1px solid var(--border); padding-top: var(--sp-3); }
@@ -463,8 +469,7 @@
 .lb-list { overflow-y: auto; padding: 0 var(--sp-3) var(--sp-2); }
 .lb-row { display: flex; align-items: center; gap: var(--sp-3); padding: 10px var(--sp-2); border-radius: var(--r-md); }
 .lb-row--me { background: color-mix(in srgb, var(--fjord-600) 12%, var(--surface)); }
-.lb-row__rank { min-width: 30px; font-weight: 800; color: var(--ink-2); font-size: var(--fs-14); }
-.lb-row__rank--medal { font-size: var(--fs-18); }
+.lb-row__rank { min-width: 30px; font-weight: 800; color: var(--ink-2); font-size: var(--fs-14); display: inline-flex; align-items: center; }
 .lb-row__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 .lb-row__you { color: var(--fjord-600); font-weight: 700; }
 .lb-row__lvl { font-size: var(--fs-11); font-weight: 700; color: var(--ink-2); background: var(--surface-3); border-radius: var(--r-full); padding: 2px 7px; }

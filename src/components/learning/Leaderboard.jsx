@@ -34,12 +34,17 @@ const T = {
            hidden: "Tu paslėptas reitinge — įjunk Profilyje.", loading: "Kraunama…" },
 };
 
-const medal = (rank) => (rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : null);
+const MEDAL_CLS = { 1: "lb-medal--gold", 2: "lb-medal--silver", 3: "lb-medal--bronze" };
+// Ранг: топ-3 — нарисованная медаль (золото/серебро/бронза), дальше — «#N».
+/** @param {{ rank: number, lg?: boolean }} p */
+const Rank = ({ rank, lg }) => (rank >= 1 && rank <= 3)
+    ? <Icon n="medal" className={`lb-medal ${MEDAL_CLS[rank]}${lg ? " lb-medal--lg" : ""}`} />
+    : <span className="lb-rankn">#{rank}</span>;
 
 /** @param {{ e: any, t: any, period: string }} p */
 const Row = ({ e, t, period }) => (
     <div className={"lb-row" + (e.me ? " lb-row--me" : "")}>
-        <span className={"lb-row__rank" + (medal(e.rank) ? " lb-row__rank--medal" : "")}>{medal(e.rank) || ("#" + e.rank)}</span>
+        <span className="lb-row__rank"><Rank rank={e.rank} /></span>
         <span className="lb-row__name">{e.name || t.anon}{e.me ? <span className="lb-row__you"> · {t.you}</span> : null}</span>
         {e.level ? <span className="lb-row__lvl">{e.level}</span> : null}
         <span className="lb-row__pts">{e.points} <i>{period === "all" ? t.words : t.pts}</i></span>
@@ -105,7 +110,7 @@ export function LeaderboardCard({ lang = "ru", onOpen }) {
             <div className="spanel__body">
                 {me ? (
                     <div className="lb-card__me">
-                        <span className={"lb-card__rank" + (medal(me.rank) ? " lb-card__rank--medal" : "")}>{medal(me.rank) || ("#" + me.rank)}</span>
+                        <span className="lb-card__rank"><Rank rank={me.rank} lg /></span>
                         <span className="lb-card__metab"><b>{t.you}</b> · {me.points} {t.pts}</span>
                         <span className="lb-card__of">{t.of} {data.count}</span>
                     </div>
@@ -116,7 +121,7 @@ export function LeaderboardCard({ lang = "ru", onOpen }) {
                     <div className="lb-card__top">
                         {data.top.slice(0, 3).map((/** @type {any} */ e) => (
                             <div key={e.rank} className={"lb-mini" + (e.me ? " lb-mini--me" : "")}>
-                                <span className="lb-mini__r">{medal(e.rank)}</span>
+                                <span className="lb-mini__r"><Rank rank={e.rank} /></span>
                                 <span className="lb-mini__n">{e.name || t.anon}</span>
                                 <span className="lb-mini__p">{e.points}</span>
                             </div>
