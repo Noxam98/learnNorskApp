@@ -49,10 +49,15 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     const loop = useGameLoop({
         gmode: "choice", words: wordsProp, onResult, onFinish, onExit, setGameState,
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, rank, // фолбэк без звука: ~1с, затем авто-переход
-        // на слух — НЕ переигрываем слово (иначе обрывается ASKING-озвучка): ждём, пока слово доиграет
-        // (ListenPrompt сигналит onEnded), потом переход. Иначе — озвучка перевода-ответа до конца.
+        // на слух: если слово ещё играет (ASKING) — даём доиграть (ListenPrompt сигналит onEnded), НЕ
+        // обрывая; если уже доиграло к моменту ответа — проигрываем его ЕЩЁ РАЗ, чтобы после выбора была
+        // звуковая обратная связь (раньше тут был тихий Promise.resolve → «после ответа звука нет»).
+        // Иначе (обычный выбор) — озвучка перевода-ответа до конца.
         speakAnswer: () => {
-            if (listenMode) return wordEndRef.current.ended ? Promise.resolve() : new Promise((res) => { wordEndRef.current.resolve = res; });
+            if (listenMode) {
+                if (wordEndRef.current.ended) return sound ? speakTextEnd(no, qLang) : Promise.resolve();
+                return new Promise((res) => { wordEndRef.current.resolve = res; });
+            }
             return (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null;
         },
         onAdvance: () => setChosen(null),
