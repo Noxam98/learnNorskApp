@@ -2,11 +2,11 @@
 // Аудио-подсказка для задания «на слух» (стадия choice_no2int): норвежское слово ПРОИГРЫВАЕТСЯ,
 // текст скрыт — игрок узнаёт на слух и выбирает перевод. Кнопка ▶ с кольцом прогресса (плавно
 // заполняется по ходу аудио), автоплей, кнопка «не слышно?» со слоёной диагностикой и эскейпы
-// «показать текст» / «всегда текстом». Аудио владеет сам компонент (свой Audio) — чтобы вести прогресс.
-import { useEffect, useRef, useState } from "react";
+// «показать текст» / «всегда текстом». Звук — через ЕДИНЫЙ канал tts.js (speakProgress), чтобы
+// воспроизведения НЕ пересекались с озвучкой ответа (общий stopAudio гасит предыдущее).
+import { useEffect, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
-import api from "../tools/api.js";
-import { soundLevel } from "../tools/audioCore.js";
+import { speakProgress } from "../ui/tts.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 
 const T = {
@@ -47,39 +47,16 @@ export function ListenPrompt({ word, ttsLang, uiLang = "ru", asking = true, onSh
     const [prog, setProg] = useState(0);          // 0..1 ход проигрывания
     const [state, setState] = useState("idle");   // idle | playing | ended | blocked
     const [diag, setDiag] = useState(false);
-    const audioRef = useRef(/** @type {HTMLAudioElement | null} */(null));
-    const rafRef = useRef(0);
-
-    const stopRaf = () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); rafRef.current = 0; };
-    const tick = () => {
-        const a = audioRef.current;
-        if (a && a.duration) setProg(Math.min(1, a.currentTime / a.duration));
-        if (a && !a.paused && !a.ended) rafRef.current = requestAnimationFrame(tick);
-    };
+    // Воспроизведение через единый канал tts.js: прогресс по onTick, координация со всей озвучкой.
     const play = () => {
-        stopRaf();
-        try { audioRef.current?.pause(); } catch { /* */ }
-        const a = new Audio(api.ttsUrl(word, ttsLang));
-        a.volume = soundLevel();
-        audioRef.current = a;
-        setProg(0); setState("playing");
-        a.onended = () => { stopRaf(); setProg(1); setState("ended"); };
-        a.onerror = () => { stopRaf(); setState("blocked"); };
-        a.play().then(() => { setState("playing"); rafRef.current = requestAnimationFrame(tick); })
-            .catch(() => { stopRaf(); setState("blocked"); });   // автоплей заблокирован браузером
+        setProg(0); setState("playing"); setDiag(false);
+        speakProgress(word, ttsLang, setProg)
+            .then(() => setState("ended"))
+            .catch((e) => { const m = String(e?.message || e); setState(m.includes("interrupt") ? "idle" : "blocked"); });
     };
 
-    // автоплей при появлении нового слова
-    useEffect(() => {
-        setDiag(false);
-        play();
-        return () => { stopRaf(); try { audioRef.current?.pause(); } catch { /* */ } };
-    }, [word]); // eslint-disable-line
-
-    // ответ дан — гасим слово, чтобы его хвост не накладывался на озвучку перевода (replay по кнопке остаётся)
-    useEffect(() => {
-        if (!asking) { stopRaf(); try { audioRef.current?.pause(); } catch { /* */ } }
-    }, [asking]); // eslint-disable-line
+    // автоплей при появлении нового слова (на ответ слово гасит/доигрывает уже сам loop — единый канал)
+    useEffect(() => { play(); }, [word]); // eslint-disable-line
 
     // слоёная диагностика «не слышно»: точное → гадательное
     const advice = soundVolume === 0 ? "vol" : state === "blocked" ? "blocked" : "device";

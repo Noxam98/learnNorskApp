@@ -54,6 +54,30 @@ export const speakText = (text, lang) => { _gen++; return play(text, lang, false
 // (новый запуск/стоп) → реджект «interrupted» (обрабатывать через .catch/.then(_,_)).
 export const speakTextEnd = (text, lang) => { _gen++; return play(text, lang, true); };
 
+// Озвучка с ПРОГРЕССОМ: onTick(0..1) по ходу, резолв по окончании. Тот же единый канал, что и
+// speakText (stopAudio гасит предыдущее, новый запуск отменяет этот) — чтобы воспроизведения НЕ
+// пересекались. duration у TTS часто Infinity/NaN → прогресс ведём по currentTime против реальной
+// длительности (из метаданных) либо оценки по длине слова. Реджект «interrupted»/«audio» — в .catch.
+export const speakProgress = (text, lang, onTick) => {
+    _gen++;
+    return new Promise((resolve, reject) => {
+        const t = (text || "").trim();
+        if (!t) { resolve(); return; }
+        stopAudio();
+        const audio = new Audio(api.ttsUrl(t, lang));
+        audio.volume = soundLevel();
+        _audio = audio;
+        _reject = reject;   // позволяем прервать ожидание извне (stopAudio при новом запуске)
+        let raf = 0, total = Math.max(0.6, t.length * 0.09 + 0.35), settled = false;
+        const stopRaf = () => { if (raf) { cancelAnimationFrame(raf); raf = 0; } };
+        const tick = () => { if (onTick && total > 0) onTick(Math.min(0.995, audio.currentTime / total)); if (!audio.paused && !audio.ended) raf = requestAnimationFrame(tick); };
+        audio.onloadedmetadata = () => { if (isFinite(audio.duration) && audio.duration > 0.1) total = audio.duration; };
+        audio.onerror = () => { if (settled) return; settled = true; stopRaf(); if (_reject === reject) _reject = null; reject(new Error("audio")); };
+        audio.onended = () => { if (settled) return; settled = true; stopRaf(); if (_reject === reject) _reject = null; if (onTick) onTick(1); resolve(); };
+        audio.play().then(() => { raf = requestAnimationFrame(tick); }).catch((e) => { if (settled) return; settled = true; stopRaf(); reject(e); });
+    });
+};
+
 // Озвучить фрагменты подряд: следующий стартует после окончания предыдущего.
 // segments: [{ text, lang }] (lang не задан → норвежский). Если запуск перебили
 // (клик по другой карточке/стоп) — очередь завершается, перевод не «доигрывается».

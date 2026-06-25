@@ -22,7 +22,7 @@ const TYPO_OK = { ru: "С опечаткой — но засчитано:", ukr:
 const TYPO_ASK = { ru: "Похоже на опечатку. Это она?", ukr: "Схоже на описку. Це вона?", en: "Looks like a typo. Was it?", pl: "Wygląda na literówkę. To ona?", lt: "Panašu į klaidą. Ar taip?" };
 const TYPO_YES = { ru: "Да, опечатка", ukr: "Так, описка", en: "Yes, a typo", pl: "Tak, literówka", lt: "Taip, klaida" };
 const TYPO_NO = { ru: "Нет, ошибся", ukr: "Ні, помилився", en: "No, I was wrong", pl: "Nie, błąd", lt: "Ne, suklydau" };
-const TYPO_NEXT_MS = 600;   // после выбора Да/Нет — короткая пауза (показать результат), затем авто-переход
+const TYPO_NEXT_MS = 250;   // хвост после окончания озвучки ответа (Да/Нет), затем авто-переход
 // тихая подсказка: ввели базовую букву вместо å/ø/æ — зачтено, но показываем правильное написание.
 const LETTER_HINT = { ru: "Правильно пишется:", ukr: "Правильно пишеться:", en: "Correct spelling:", pl: "Poprawna pisownia:", lt: "Teisinga rašyba:" };
 
@@ -96,11 +96,11 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (question) speakText(question, qLang).catch(() => {});
         if (correctPrimary) prefetchTts(correctPrimary, aLang);
     }, [current, sound]); // eslint-disable-line
-    // Озвучка верного ответа: после ОШИБКИ, а также при принятой ОПЕЧАТКЕ (held — переход по тапу).
-    // После обычного ВЕРНОГО озвучкой+паузой управляет useGameLoop (speakAnswer), чтобы авто-переход
-    // совпал с длиной аудио.
+    // Озвучка верного ответа: после ОШИБКИ или принятой опечатке (held), НО не в resolving — там
+    // confirm/deny сами озвучивают и ждут конца аудио (afterTypoAudio), чтобы не было двойной озвучки.
+    // После обычного ВЕРНОГО озвучкой+паузой управляет useGameLoop (speakAnswer).
     useEffect(() => {
-        if (sound && correctPrimary && (status === "INCORRECT" || (status === "CORRECT" && held))) {
+        if (sound && correctPrimary && !resolving && (status === "INCORRECT" || (status === "CORRECT" && held))) {
             speakText(correctPrimary, aLang).catch(() => {});
         }
     }, [status]); // eslint-disable-line
@@ -138,13 +138,22 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         }
         setTypoOk(false); typoRef.current = false; answer(false);
     };
-    // После выбора Да/Нет — короткая пауза (увидеть результат), затем сами идём дальше (без ожидания тапа).
+    // После выбора Да/Нет — озвучиваем верное слово ДО КОНЦА, потом короткий хвост и дальше (без тапа).
+    // Пейсим по концу аудио (а не фикс. таймером), чтобы слово не обрезалось. Страховка по времени.
     const clearTypoTmr = () => { if (typoTmrRef.current) { clearTimeout(typoTmrRef.current); typoTmrRef.current = null; } };
-    const afterTypoDelay = () => { clearTypoTmr(); typoTmrRef.current = setTimeout(() => { typoTmrRef.current = null; advance(); }, TYPO_NEXT_MS); };
+    const afterTypoAudio = () => {
+        clearTypoTmr();
+        const go = () => { clearTypoTmr(); typoTmrRef.current = setTimeout(() => { typoTmrRef.current = null; advance(); }, TYPO_NEXT_MS); };
+        const p = (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null;
+        if (!p) { go(); return; }
+        let done = false; const once = () => { if (done) return; done = true; go(); };
+        const guard = setTimeout(once, 6000);
+        p.then(() => { clearTimeout(guard); once(); }, () => { clearTimeout(guard); once(); });
+    };
     // «Да, опечатка» — засчитываем верно (тег «с опечаткой»).
-    const confirmTypo = () => { setTypoAsk(null); setResolving(true); setTypoOk(true); typoRef.current = true; playSound("typo"); answer(true, { hold: true, silent: true }); afterTypoDelay(); };
+    const confirmTypo = () => { setTypoAsk(null); setResolving(true); setTypoOk(true); typoRef.current = true; playSound("typo"); answer(true, { hold: true, silent: true }); afterTypoAudio(); };
     // «Нет, ошибся» — обычная ошибка (ответ уже показан панелью, поэтому не заставляем перепечатывать — пауза и дальше).
-    const denyTypo = () => { setTypoAsk(null); setResolving(true); setTypoOk(false); typoRef.current = false; answer(false); afterTypoDelay(); };
+    const denyTypo = () => { setTypoAsk(null); setResolving(true); setTypoOk(false); typoRef.current = false; answer(false); afterTypoAudio(); };
     useEffect(() => clearTypoTmr, []);   // снять таймер при размонтировании
     const dontKnow = () => { if (status === "ASKING") answer(false); };
     // принято с опечаткой: авто-перехода нет — продолжаем тапом по любому месту сцены.

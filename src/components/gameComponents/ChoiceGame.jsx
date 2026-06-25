@@ -49,7 +49,8 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         gmode: "choice", words: wordsProp, onResult, onFinish, onExit, setGameState,
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, rank, // фолбэк без звука: ~1с, затем авто-переход
         // со звуком пауза = длина озвучки ответа + хвост (correctPrimary/aLang ниже — коллбэк зовётся позже)
-        speakAnswer: () => (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null,
+        // на слух — доигрываем САМО слово (норвежское) до конца, потом переход; иначе — перевод-ответ
+        speakAnswer: () => { const w = listenMode ? no : correctPrimary, l = listenMode ? qLang : aLang; return (sound && w) ? speakTextEnd(w, l) : null; },
         onAdvance: () => setChosen(null),
     });
     const { t, currentLanguage, total, current, status, words: wordsToGame, results, knownFirstTry, score, qIndex, qTotal, answer, advance, restart, backToSelection } = loop;
