@@ -7,6 +7,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { posLabel } from "../ui/pos.js";
 import { hyLang } from "../ui/hyphenate.js";
 import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
+import { ListenPrompt } from "./ListenPrompt.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
 import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
@@ -24,8 +25,10 @@ const CHOICE_GOT_IT = { ru: "Понял", en: "Got it", ukr: "Зрозуміло
 const CHOICE_HINT_KEY = "choice_num_hint_seen";
 let _choiceHintShown = false;   // максимум раз за сессию
 
-export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
+export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0, listen = false }) => {
     const isNo2Int = mode !== "int2no";
+    const listenMode = listen && isNo2Int;   // «на слух»: слово проигрывается, текст скрыт (только no2int)
+    const [revealText, setRevealText] = useState(false);   // в listen-режиме показали текст (после ответа / по кнопке)
     const [chosen, setChosen] = useState(/** @type {string | null} */(null));
     const [options, setOptions] = useState(/** @type {string[] | null} */(null));
     const [subOf, setSubOf] = useState({}); // вариант → второй перевод (вторая строка кнопки)
@@ -78,9 +81,11 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     const aLang = hyLang(currentLanguage, !isNo2Int);   // язык ответа/вариантов
 
     // Озвучка видимого слова при показе (+ прогрев правильного ответа заранее).
+    // В режиме «на слух» слово проигрывает ListenPrompt (со своим прогрессом) — тут не дублируем.
     useEffect(() => {
+        setRevealText(false);   // новое слово — снова прячем текст (listen-режим)
         if (!sound || status !== "ASKING") return;
-        if (question) speakText(question, qLang).catch(() => {});
+        if (question && !listenMode) speakText(question, qLang).catch(() => {});
         if (correctPrimary) prefetchTts(correctPrimary, aLang);
     }, [current, sound]); // eslint-disable-line
     // После ОШИБКИ озвучиваем верный ответ. После ВЕРНОГО озвучкой+паузой управляет useGameLoop
@@ -196,6 +201,12 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     disabled={status !== "ASKING"}
                     loading={!options}
                     numbered={isDesktop}
+                    showWord={!listenMode || revealText || status === "CORRECT" || status === "INCORRECT"}
+                    listenSlot={listenMode ? (
+                        <ListenPrompt word={no} ttsLang={qLang} uiLang={currentLanguage} asking={status === "ASKING"}
+                            onShowText={() => setRevealText(true)}
+                            onDisableAlways={() => { useSystemStore.getState().setListenOffLocal(true); setRevealText(true); }} />
+                    ) : null}
                 >
                     {status === "INCORRECT" && descriptionText && (
                         <div className="feedback" style={{ display: "flex" }}>

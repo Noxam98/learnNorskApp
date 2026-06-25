@@ -86,7 +86,9 @@ const MyPage = () => {
     const vibration = useSystemStore((state) => state.vibration);
     const vibrationStrength = useSystemStore((state) => state.vibrationStrength);
     const pushEnabled = useSystemStore((state) => state.pushEnabled);
+    const listenOffLocal = useSystemStore((state) => state.listenOffLocal);
     const [pushBusy, setPushBusy] = useState(false);
+    const [listenScope, setListenScope] = useState(/** @type {null|boolean} */(null)); // !=null → открыта модалка «тут/везде», значение = целевое «выключено»
     const [lstats, setLstats] = useState(null);
     useEffect(() => {
         let on = true;
@@ -133,6 +135,22 @@ const MyPage = () => {
         const next = !lbOptOut;
         useAuthStore.setState((s) => ({ user: { ...s.user, gamePrefs: { ...(s.user?.gamePrefs || {}), leaderboardOptOut: next } } }));
         api.setGamePrefs({ leaderboardOptOut: next }).catch(() => { /* офлайн — не критично */ });
+    };
+
+    // Задания «на слух»: эффективно выключено = локальное переопределение (если задано) поверх аккаунта.
+    const acctListenOff = !!user?.gamePrefs?.listenOff;
+    const listenDisabled = listenOffLocal != null ? listenOffLocal : acctListenOff;
+    // Клик по тумблеру открывает выбор «тут/везде»; целевое «выключено» = инверсия текущего.
+    const applyListen = (scope) => {
+        const off = !!listenScope;   // целевое значение «выключено»
+        if (scope === "device") {
+            useSystemStore.getState().setListenOffLocal(off);
+        } else {
+            useSystemStore.getState().setListenOffLocal(null);   // снимаем локальное — рулит аккаунт
+            useAuthStore.setState((s) => ({ user: { ...s.user, gamePrefs: { ...(s.user?.gamePrefs || {}), listenOff: off } } }));
+            api.setGamePrefs({ listenOff: off }).catch(() => { /* офлайн */ });
+        }
+        setListenScope(null);
     };
 
 
@@ -294,6 +312,11 @@ const MyPage = () => {
                             <span className={`toggle${!lbOptOut ? " is-on" : ""}`} onClick={toggleLeaderboard} />
                         </div>
                         <div className="setrow">
+                            <span className="setrow__ic"><Icon n="volume" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{t.listenTasks}</span><span className="setrow__d">{t.listenTasksDesc}</span></span>
+                            <span className={`toggle${!listenDisabled ? " is-on" : ""}`} onClick={() => setListenScope(!listenDisabled)} />
+                        </div>
+                        <div className="setrow">
                             <span className="setrow__ic"><Icon n="zap" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.vibration}</span><span className="setrow__d">{t.vibrationDesc}</span></span>
                             <span className={`toggle${vibration ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setVibration(!vibration)} />
@@ -362,6 +385,24 @@ const MyPage = () => {
                             onKeyDown={(e) => { if (e.key === "Enter") savePw(); }} />
                     </div>
                     {pwError && <span className="alert"><Icon n="x" sm /> {pwError}</span>}
+                </div>
+            </Modal>
+
+            {/* Выбор охвата для «Заданий на слух»: только это устройство или весь аккаунт (по-простому) */}
+            <Modal
+                open={listenScope !== null}
+                onClose={() => setListenScope(null)}
+                title={listenScope ? t.listenScopeOff : t.listenScopeOn}
+            >
+                <div className="scopechoice">
+                    <button type="button" className="scopechoice__b" onClick={() => applyListen("device")}>
+                        <span className="scopechoice__t"><Icon n="user" sm /> {t.scopeDevice}</span>
+                        <span className="scopechoice__d">{t.scopeDeviceDesc}</span>
+                    </button>
+                    <button type="button" className="scopechoice__b" onClick={() => applyListen("account")}>
+                        <span className="scopechoice__t"><Icon n="globe" sm /> {t.scopeAccount}</span>
+                        <span className="scopechoice__d">{t.scopeAccountDesc}</span>
+                    </button>
                 </div>
             </Modal>
         </main>

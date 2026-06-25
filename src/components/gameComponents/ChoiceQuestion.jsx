@@ -25,18 +25,23 @@ import { BrandLoader } from "../ui/Spinner.jsx";
  *   prompt?: string, promptLang?: string, options?: string[] | null, optionLang?: string,
  *   optionSub?: Record<string, string>, picked?: string | null, correct?: string | null,
  *   reveal?: boolean, allowRetry?: boolean, onPick?: (opt: string) => void,
- *   posText?: string, hint?: any, countText?: any, disabled?: boolean, loading?: boolean, numbered?: boolean, children?: any,
+ *   posText?: string, hint?: any, countText?: any, disabled?: boolean, loading?: boolean, numbered?: boolean,
+ *   listenSlot?: any, showWord?: boolean, children?: any,
  * }} props
  */
 export const ChoiceQuestion = ({
     prompt, promptLang, options, optionLang, optionSub = {},
     picked = null, correct = null, reveal = false, allowRetry = false,
-    onPick, posText, hint, countText, disabled = false, loading = false, numbered = false, children,
+    onPick, posText, hint, countText, disabled = false, loading = false, numbered = false,
+    listenSlot = null, showWord = true, children,
 }) => (
     <div className="qcard">
         {countText && <div className="qcount">{countText}</div>}
-        {hint && <div className="qprompt">{hint}</div>}
-        <h1 className="qword" lang={promptLang}>{hyphenate(prompt, promptLang)}</h1>
+        {hint && !listenSlot && <div className="qprompt">{hint}</div>}
+        {/* режим «на слух»: вместо слова — аудио-плеер; само слово показываем только когда showWord
+            (после ответа или по «показать текст»). Обычный режим — listenSlot нет, слово как раньше. */}
+        {listenSlot}
+        {(!listenSlot || showWord) && <h1 className="qword" lang={promptLang}>{hyphenate(prompt, promptLang)}</h1>}
         {posText && (
             <span className="qpos">
                 <span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}

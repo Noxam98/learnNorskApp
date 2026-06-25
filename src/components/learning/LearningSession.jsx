@@ -8,6 +8,7 @@
 // «ещё сессия» / «в Учёбу». Финиш отдельной игры подавляется через onFinish.
 import { useEffect, useState } from "react";
 import { useSystemStore } from "../../store/systemStore.jsx";
+import { useAuthStore } from "../../store/AuthStore.jsx";
 import { useSessionStore } from "../../store/sessionStore.jsx";
 import { pl } from "../ui/plural.js";
 import { Icon } from "../ui/Icon.jsx";
@@ -78,6 +79,10 @@ const toElements = (list, lang) => (list || [])
 export default function LearningSession({ words = [], mode = "choice", system = false, lang = "ru", onClose }) {
     const t = T[lang] || T.ru;
     const soundOn = useSystemStore((s) => s.soundOn);
+    // Задания «на слух»: локальное переопределение устройства (null=следовать аккаунту) поверх gamePrefs.listenOff.
+    const listenOffLocal = useSystemStore((s) => s.listenOffLocal);
+    const acctListenOff = useAuthStore((s) => !!s.user?.gamePrefs?.listenOff);
+    const listenDisabled = listenOffLocal != null ? listenOffLocal : acctListenOff;
     const sessionLoading = useSessionStore((s) => s.loading); // следующая сессия ещё грузится фоном
 
     // Системный путь — когда явно сказано system или набор не передан.
@@ -379,6 +384,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 stepTotal={elements.length}
                 segs={sessionSegs}
                 rank={stageRank(segCell(el))}   // стадия рампы слова → высота звуков «вход»/«верно»
+                listen={el.mode === "choice" && el.dir === "no2int" && !listenDisabled}   // стадия choice_no2int → «на слух»
                 repeat={el.repeat}
                 baseCorrect={res.correct}
                 baseWrong={res.total - res.correct}
