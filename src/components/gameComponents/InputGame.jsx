@@ -230,6 +230,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                             <div className="fb-title" style={{ color: "var(--game-incorrect)" }}>{t.notQuite}</div>
                             <div className="fb-line">{t.mistake}</div>
                             <div className="fb-answer" lang={aLang}>{hyphenate(answerDisp, aLang)}</div>
+                            <div className="fb-line fb-line--cta"><Icon n="edit" sm /> {t.typeRightToGo}</div>
                             {descriptionText && <div className="fb-line muted">{descriptionText}</div>}
                         </div>
                     )}

@@ -1,5 +1,5 @@
 // @ts-check
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -44,8 +44,19 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
 
     const [idx, setIdx] = useState(0);
     const [flipped, setFlipped] = useState(false);
+    const advanceRef = useRef(/** @type {(() => void) | null} */(null));   // актуальный advance для клавиш
 
     useScrollLock();   // блокируем скролл фона на время карточек (общий ref-counted замок)
+
+    // ПК: пробел/энтер — как тап по карточке (сначала перевернуть/показать, затем — следующая).
+    useEffect(() => {
+        const onKey = (e) => {
+            if (e.metaKey || e.ctrlKey || e.altKey) return;
+            if (e.code === "Space" || e.code === "Enter" || e.code === "NumpadEnter") { e.preventDefault(); advanceRef.current?.(); }
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, []);
 
     // Озвучка по направлению: видимое слово — при показе карточки, ответ — при перевороте.
     const _sides = (i) => {
@@ -95,6 +106,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (idx + 1 < total) { setIdx(idx + 1); setFlipped(false); }
         else { setIdx(total); playSound("finish"); if (onFinish) onFinish({ total, correct: total }); } // финиш
     };
+    advanceRef.current = finished ? null : advance;   // клавиши работают, пока есть карточка
     const restart = () => { setIdx(0); setFlipped(false); };
 
     const cur = finished ? null : words[idx];

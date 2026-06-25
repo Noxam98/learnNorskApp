@@ -156,14 +156,18 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
 
     // ПК: выбор варианта клавишами 1–9 (по физ-позиции e.code, независимо от раскладки). Слушатель —
     // один раз; свежие options/choose/status читаем через ref.
-    keyRef.current = { options, choose, status, armed, persistChoiceSeen };
+    keyRef.current = { options, choose, status, armed, persistChoiceSeen, advance };
     useEffect(() => {
         if (!isDesktop) return;
         const onKey = (e) => {
             if (e.metaKey || e.ctrlKey || e.altKey) return;
-            const m = /^(?:Digit|Numpad)([1-9])$/.exec(e.code || "");
-            if (!m) return;
             const k = keyRef.current;
+            const m = /^(?:Digit|Numpad)([1-9])$/.exec(e.code || "");
+            // после ОШИБКИ: 1–4 / пробел / энтер — завершить задание (как тап по сцене)
+            if (k.status === "INCORRECT" && (e.code === "Space" || e.code === "Enter" || e.code === "NumpadEnter" || (m && +m[1] <= 4))) {
+                e.preventDefault(); k.advance?.(); return;
+            }
+            if (!m) return;
             if (k.status !== "ASKING" || !k.armed || !k.options) return;
             const idx = +m[1] - 1;
             if (idx < k.options.length) { e.preventDefault(); k.persistChoiceSeen?.(); k.choose(k.options[idx]); }   // цифрами — уже знает, скрыть/не показывать
