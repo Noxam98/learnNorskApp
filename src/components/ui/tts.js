@@ -82,7 +82,10 @@ export const speakSequence = async (segments) => {
 export const prefetchTts = (text, lang) => {
     const t = (text || "").trim();
     if (!t) return;
-    try { fetch(api.ttsUrl(t, lang)).catch(() => {}); } catch { /* */ }
+    // no-cors: префетч лишь ГРЕЕТ HTTP-кеш для последующего <audio> (тоже no-cors media). Ответ мы не
+    // читаем, поэтому CORS-режим здесь не нужен и только вреден — на любом сетевом сбое (напр. рестарт
+    // бэка при деплое) обычный fetch сыпал «No Access-Control-Allow-Origin» в консоль. no-cors молчит.
+    try { fetch(api.ttsUrl(t, lang), { mode: "no-cors" }).catch(() => {}); } catch { /* */ }
 };
 
 export const speakNorwegian = (text) => speakText(text);
