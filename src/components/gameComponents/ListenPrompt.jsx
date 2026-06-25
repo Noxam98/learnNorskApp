@@ -41,9 +41,9 @@ const T = {
 
 /**
  * @param {{ word: string, ttsLang?: string, uiLang?: string, asking?: boolean,
- *   onShowText?: () => void, onDisableAlways?: () => void }} p
+ *   onEnded?: () => void, onShowText?: () => void, onDisableAlways?: () => void }} p
  */
-export function ListenPrompt({ word, ttsLang, uiLang = "ru", asking = true, onShowText, onDisableAlways }) {
+export function ListenPrompt({ word, ttsLang, uiLang = "ru", asking = true, onEnded, onShowText, onDisableAlways }) {
     const t = T[uiLang] || T.en;
     const soundVolume = useSystemStore((s) => s.soundVolume);
     const [prog, setProg] = useState(0);          // 0..1 ход проигрывания (по таймеру — надёжно рисуется)
@@ -65,8 +65,8 @@ export function ListenPrompt({ word, ttsLang, uiLang = "ru", asking = true, onSh
             const t0 = Date.now();
             tickRef.current = window.setInterval(() => { setProg(Math.min(0.985, (Date.now() - t0) / dur)); }, 50);
             speakTextEnd(word, ttsLang)
-                .then(() => { clearTimers(); setProg(1); setState("ended"); })
-                .catch((e) => { clearTimers(); const m = String(e?.message || e); if (!m.includes("interrupt")) setState("blocked"); });
+                .then(() => { clearTimers(); setProg(1); setState("ended"); onEnded?.(); })   // слово доиграло → loop отпускает переход
+                .catch((e) => { clearTimers(); const m = String(e?.message || e); if (m.includes("interrupt")) return; setState("blocked"); onEnded?.(); });
         }, LEAD_MS);
     };
 

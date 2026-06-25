@@ -41,6 +41,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     // ПК: номера у вариантов + выбор клавишами 1–9 (раскладко-независимо, по e.code Digit/Numpad)
     const [isDesktop] = useState(() => { try { return matchMedia("(hover: hover) and (pointer: fine) and (min-width: 641px)").matches; } catch { return false; } });
     const keyRef = useRef(/** @type {any} */({}));
+    const wordEndRef = useRef(/** @type {{ended: boolean, resolve: ((v?: any) => void) | null}} */({ ended: false, resolve: null }));   // на слух: слово (ListenPrompt) доиграло
     const choiceHintSeenDB = useAuthStore((s) => s.user?.gamePrefs?.choiceHintSeen);   // отдельный флаг (БД)
     const choiceSeenRef = useRef(/** @type {boolean|undefined} */(undefined));
     if (choiceSeenRef.current === undefined) { try { choiceSeenRef.current = !!choiceHintSeenDB || !!localStorage.getItem(CHOICE_HINT_KEY); } catch { choiceSeenRef.current = !!choiceHintSeenDB; } }
@@ -48,9 +49,12 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     const loop = useGameLoop({
         gmode: "choice", words: wordsProp, onResult, onFinish, onExit, setGameState,
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, rank, // фолбэк без звука: ~1с, затем авто-переход
-        // со звуком пауза = длина озвучки ответа + хвост (correctPrimary/aLang ниже — коллбэк зовётся позже)
-        // на слух — доигрываем САМО слово (норвежское) до конца, потом переход; иначе — перевод-ответ
-        speakAnswer: () => { const w = listenMode ? no : correctPrimary, l = listenMode ? qLang : aLang; return (sound && w) ? speakTextEnd(w, l) : null; },
+        // на слух — НЕ переигрываем слово (иначе обрывается ASKING-озвучка): ждём, пока слово доиграет
+        // (ListenPrompt сигналит onEnded), потом переход. Иначе — озвучка перевода-ответа до конца.
+        speakAnswer: () => {
+            if (listenMode) return wordEndRef.current.ended ? Promise.resolve() : new Promise((res) => { wordEndRef.current.resolve = res; });
+            return (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null;
+        },
         onAdvance: () => setChosen(null),
     });
     const { t, currentLanguage, total, current, status, words: wordsToGame, results, knownFirstTry, score, qIndex, qTotal, answer, advance, restart, backToSelection } = loop;
@@ -144,6 +148,9 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         return () => clearTimeout(tm);
     }, [status, current]);
 
+    // на слух: слово доиграло (ListenPrompt) → отпускаем ожидающий переход (speakAnswer)
+    const onWordEnded = () => { wordEndRef.current.ended = true; const r = wordEndRef.current.resolve; wordEndRef.current.resolve = null; if (r) r(); };
+
     const choose = (opt) => {
         if (status !== "ASKING" || !armed) return;
         setChosen(opt);
@@ -223,6 +230,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     showWord={!listenMode || revealText || status === "CORRECT" || status === "INCORRECT"}
                     listenSlot={listenMode ? (
                         <ListenPrompt word={no} ttsLang={qLang} uiLang={currentLanguage} asking={status === "ASKING"}
+                            onEnded={onWordEnded}
                             onShowText={() => setRevealText(true)}
                             onDisableAlways={() => { useSystemStore.getState().setListenOffLocal(true); setRevealText(true); }} />
                     ) : null}
