@@ -4,10 +4,12 @@
 // заполняется по ходу аудио), автоплей, кнопка «не слышно?» со слоёной диагностикой и эскейпы
 // «показать текст» / «всегда текстом». Звук — через ЕДИНЫЙ канал tts.js (speakProgress), чтобы
 // воспроизведения НЕ пересекались с озвучкой ответа (общий stopAudio гасит предыдущее).
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
-import { speakProgress } from "../ui/tts.js";
+import { speakTextEnd } from "../ui/tts.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
+
+const LEAD_MS = 300;   // пауза перед воспроизведением аудио
 
 const T = {
     ru:  { hint: "Послушай и выбери перевод", cantHear: "Не слышно?", showText: "Показать текст",
@@ -44,19 +46,31 @@ const T = {
 export function ListenPrompt({ word, ttsLang, uiLang = "ru", asking = true, onShowText, onDisableAlways }) {
     const t = T[uiLang] || T.en;
     const soundVolume = useSystemStore((s) => s.soundVolume);
-    const [prog, setProg] = useState(0);          // 0..1 ход проигрывания
+    const [prog, setProg] = useState(0);          // 0..1 ход проигрывания (по таймеру — надёжно рисуется)
     const [state, setState] = useState("idle");   // idle | playing | ended | blocked
     const [diag, setDiag] = useState(false);
-    // Воспроизведение через единый канал tts.js: прогресс по onTick, координация со всей озвучкой.
+    const tickRef = useRef(0);
+    const leadRef = useRef(0);
+    const clearTimers = () => {
+        if (tickRef.current) { clearInterval(tickRef.current); tickRef.current = 0; }
+        if (leadRef.current) { clearTimeout(leadRef.current); leadRef.current = 0; }
+    };
+    // Звук — координированным speakTextEnd (единый канал, не пересекается). Кольцо — по ТАЙМЕРУ
+    // (не зависит от событий аудио, всегда плавно рисуется), снап в 100% по окончании. Пауза 300мс.
     const play = () => {
+        clearTimers();
         setProg(0); setState("playing"); setDiag(false);
-        speakProgress(word, ttsLang, setProg)
-            .then(() => setState("ended"))
-            .catch((e) => { const m = String(e?.message || e); setState(m.includes("interrupt") ? "idle" : "blocked"); });
+        const dur = Math.max(700, (word || "").trim().length * 95 + 400);   // оценка длительности, мс
+        leadRef.current = window.setTimeout(() => {
+            const t0 = Date.now();
+            tickRef.current = window.setInterval(() => { setProg(Math.min(0.985, (Date.now() - t0) / dur)); }, 50);
+            speakTextEnd(word, ttsLang)
+                .then(() => { clearTimers(); setProg(1); setState("ended"); })
+                .catch((e) => { clearTimers(); const m = String(e?.message || e); if (!m.includes("interrupt")) setState("blocked"); });
+        }, LEAD_MS);
     };
 
-    // автоплей при появлении нового слова (на ответ слово гасит/доигрывает уже сам loop — единый канал)
-    useEffect(() => { play(); }, [word]); // eslint-disable-line
+    useEffect(() => { play(); return clearTimers; }, [word]); // eslint-disable-line
 
     // слоёная диагностика «не слышно»: точное → гадательное
     const advice = soundVolume === 0 ? "vol" : state === "blocked" ? "blocked" : "device";

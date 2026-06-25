@@ -240,6 +240,14 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         return () => window.removeEventListener("keydown", onKey);
     }, [phase, after, gate, isSystem]); // eslint-disable-line
 
+    // Esc в любой игре — выйти из учёбы (общий обработчик на сессию)
+    useEffect(() => {
+        if (phase !== "play") return;
+        const onKey = (e) => { if (e.code === "Escape") { e.preventDefault(); onClose?.(true); } };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [phase]); // eslint-disable-line
+
     // --- Экран загрузки системной программы ---
     if (phase === "load") {
         return (

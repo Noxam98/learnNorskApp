@@ -44,15 +44,18 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
 
     const [idx, setIdx] = useState(0);
     const [flipped, setFlipped] = useState(false);
-    const advanceRef = useRef(/** @type {(() => void) | null} */(null));   // актуальный advance для клавиш
+    const keysRef = useRef(/** @type {{advance?: (() => void) | null, know?: (() => void) | null, report?: (() => void) | null}} */({}));
 
     useScrollLock();   // блокируем скролл фона на время карточек (общий ref-counted замок)
 
-    // ПК: пробел/энтер — как тап по карточке (сначала перевернуть/показать, затем — следующая).
+    // ПК: пробел/энтер — как тап (перевернуть → следующая); 1 — «Уже знаю», 2 — «Не учить».
     useEffect(() => {
         const onKey = (e) => {
             if (e.metaKey || e.ctrlKey || e.altKey) return;
-            if (e.code === "Space" || e.code === "Enter" || e.code === "NumpadEnter") { e.preventDefault(); advanceRef.current?.(); }
+            const k = keysRef.current;
+            if ((e.code === "Digit1" || e.code === "Numpad1") && k.know) { e.preventDefault(); k.know(); return; }
+            if ((e.code === "Digit2" || e.code === "Numpad2") && k.report) { e.preventDefault(); k.report(); return; }
+            if (e.code === "Space" || e.code === "Enter" || e.code === "NumpadEnter") { e.preventDefault(); k.advance?.(); }
         };
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
@@ -106,7 +109,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (idx + 1 < total) { setIdx(idx + 1); setFlipped(false); }
         else { setIdx(total); playSound("finish"); if (onFinish) onFinish({ total, correct: total }); } // финиш
     };
-    advanceRef.current = finished ? null : advance;   // клавиши работают, пока есть карточка
+    keysRef.current = finished ? {} : { advance, know: onKnow, report: onReport };   // актуальные обработчики для клавиш
     const restart = () => { setIdx(0); setFlipped(false); };
 
     const cur = finished ? null : words[idx];
@@ -161,9 +164,9 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                     <>
                         {/* Кнопки НАД карточкой (не на ней — чтобы не задеть при тапе по карточке):
                             «Уже знаю» появляется только ПОСЛЕ показа перевода (флип); «Не учить» — всегда. */}
-                        {(onReport || (onKnow && flipped)) && (
+                        {(onReport || onKnow) && (
                             <div className="card-skip">
-                                {onKnow && flipped && (
+                                {onKnow && (
                                     <button type="button" className="card-skip__btn card-skip__know" onClick={onKnow}>
                                         <Icon n="check" sm /> {t.alreadyKnow || "Уже знаю"}
                                     </button>

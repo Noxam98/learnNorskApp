@@ -16,6 +16,7 @@ import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { filterChosenWords, shuffle, useScrollLock, semisOf } from "./gameShared.jsx";
 import { playSound, playWin } from "../tools/sound.js";
 
+const ANSWER_LEAD_MS = 300;    // пауза ПЕРЕД озвучкой ответа (даём прошлому звуку улечься / экрану смениться)
 const ANSWER_TAIL_MS = 250;    // пауза ПОСЛЕ окончания озвучки ответа, затем авто-переход
 const ANSWER_MAX_MS = 6000;    // страховка: если аудио не отрапортует конец — всё равно идём дальше
 
@@ -127,18 +128,15 @@ export function useGameLoop({
     // перехода НЕТ, ждём тап игрока. Выбор без звука (ms=0) — тоже по тапу.
     useEffect(() => {
         if (status !== "CORRECT" || held) return;
-        const p = speakAnswer ? speakAnswer() : null;
-        if (p) {
-            let tail = null, guard = null, done = false;
-            const go = () => { if (done) return; done = true; if (guard) clearTimeout(guard); tail = setTimeout(advance, ANSWER_TAIL_MS); };
-            guard = setTimeout(go, ANSWER_MAX_MS);   // аудио не отрапортовало конец → всё равно идём
-            p.then(go, go);                          // и успех, и ошибка/прерывание озвучки → переход
-            return () => { done = true; if (guard) clearTimeout(guard); if (tail) clearTimeout(tail); };
-        }
-        if (autoAdvanceMs > 0) {
-            const tm = setTimeout(advance, autoAdvanceMs);
-            return () => clearTimeout(tm);
-        }
+        let tail = null, guard = null, done = false;
+        const go = () => { if (done) return; done = true; if (guard) clearTimeout(guard); tail = setTimeout(advance, ANSWER_TAIL_MS); };
+        // ПАУЗА перед озвучкой ответа, затем играем и пейсим переход по КОНЦУ аудио (или фикс. без звука)
+        const lead = setTimeout(() => {
+            const p = speakAnswer ? speakAnswer() : null;
+            if (p) { guard = setTimeout(go, ANSWER_MAX_MS); p.then(go, go); }
+            else if (autoAdvanceMs > 0) { tail = setTimeout(advance, autoAdvanceMs); }
+        }, ANSWER_LEAD_MS);
+        return () => { done = true; clearTimeout(lead); if (guard) clearTimeout(guard); if (tail) clearTimeout(tail); };
     }, [status]); // eslint-disable-line
     // Нейтральный режим (экзамен): показать выбор ~паузу, затем следующий вопрос/финиш.
     useEffect(() => {

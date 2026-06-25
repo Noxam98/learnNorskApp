@@ -144,11 +144,13 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const afterTypoAudio = () => {
         clearTypoTmr();
         const go = () => { clearTypoTmr(); typoTmrRef.current = setTimeout(() => { typoTmrRef.current = null; advance(); }, TYPO_NEXT_MS); };
-        const p = (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null;
-        if (!p) { go(); return; }
-        let done = false; const once = () => { if (done) return; done = true; go(); };
-        const guard = setTimeout(once, 6000);
-        p.then(() => { clearTimeout(guard); once(); }, () => { clearTimeout(guard); once(); });
+        typoTmrRef.current = setTimeout(() => {   // пауза 300мс перед озвучкой ответа
+            const p = (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null;
+            if (!p) { go(); return; }
+            let done = false; const once = () => { if (done) return; done = true; go(); };
+            const guard = setTimeout(once, 6000);
+            p.then(() => { clearTimeout(guard); once(); }, () => { clearTimeout(guard); once(); });
+        }, 300);
     };
     // «Да, опечатка» — засчитываем верно (тег «с опечаткой»).
     const confirmTypo = () => { setTypoAsk(null); setResolving(true); setTypoOk(true); typoRef.current = true; playSound("typo"); answer(true, { hold: true, silent: true }); afterTypoAudio(); };
