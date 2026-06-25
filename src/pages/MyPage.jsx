@@ -394,6 +394,7 @@ const MyPage = () => {
                 onClose={() => setListenScope(null)}
                 title={listenScope ? t.listenScopeOff : t.listenScopeOn}
             >
+                {listenScope && <div className="scopechoice__warn"><Icon n="headphones" sm /> {t.listenOffWarn}</div>}
                 <div className="scopechoice">
                     <button type="button" className="scopechoice__b" onClick={() => applyListen("device")}>
                         <span className="scopechoice__t"><Icon n="user" sm /> {t.scopeDevice}</span>

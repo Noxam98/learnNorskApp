@@ -24,11 +24,16 @@ const CHOICE_HINT = {
 const CHOICE_GOT_IT = { ru: "Понял", en: "Got it", ukr: "Зрозуміло", pl: "Rozumiem", lt: "Supratau" };
 const CHOICE_HINT_KEY = "choice_num_hint_seen";
 let _choiceHintShown = false;   // максимум раз за сессию
+let _listenNudgeOff = false;    // нудж «вернуть на слух» закрыт на эту сессию (модульный, переживает ремоунты игр)
 
-export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0, listen = false }) => {
+export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0, listen = false, listenMuted = false }) => {
     const isNo2Int = mode !== "int2no";
     const listenMode = listen && isNo2Int;   // «на слух»: слово проигрывается, текст скрыт (только no2int)
     const [revealText, setRevealText] = useState(false);   // в listen-режиме показали текст (после ответа / по кнопке)
+    // нудж «вернуть на слух» на стадии, которая ДОЛЖНА быть на слух, но аудирование выключено.
+    const [nudgeOpen, setNudgeOpen] = useState(() => !_listenNudgeOff);
+    const enableListen = () => { _listenNudgeOff = true; setNudgeOpen(false); useSystemStore.getState().setListenOffLocal(false); };
+    const dismissNudge = () => { _listenNudgeOff = true; setNudgeOpen(false); };
     const [chosen, setChosen] = useState(/** @type {string | null} */(null));
     const [options, setOptions] = useState(/** @type {string[] | null} */(null));
     const [subOf, setSubOf] = useState({}); // вариант → второй перевод (вторая строка кнопки)
@@ -185,6 +190,15 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
 
             <div className="pstage" onClick={onStageClick}
                 style={status === "INCORRECT" ? { cursor: "pointer" } : undefined}>
+                {/* нудж: стадия должна быть на слух, но аудирование выключено — мягко предлагаем вернуть */}
+                {listenMuted && status === "ASKING" && nudgeOpen && (
+                    <div className="listen-nudge" onClick={(e) => e.stopPropagation()}>
+                        <Icon n="headphones" sm />
+                        <span className="listen-nudge__t">{t.listenBack}</span>
+                        <button type="button" className="listen-nudge__btn" onClick={enableListen}>{t.listenBackBtn}</button>
+                        <button type="button" className="listen-nudge__x" onClick={dismissNudge} aria-label="close"><Icon n="x" sm /></button>
+                    </div>
+                )}
                 <ChoiceQuestion
                     prompt={promptDisp}
                     promptLang={qLang}
@@ -216,6 +230,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
 
                     <div className="pcta">
                         {status === "CORRECT" && <span className="qhint qhint--ok"><Icon n="check" sm /> {t.correctly}</span>}
+                        {status === "CORRECT" && listenMode && <span className="qhint qhint--listen"><Icon n="headphones" sm /> {t.byEar}</span>}
                         {status === "INCORRECT" && <span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span>}
                     </div>
                 </ChoiceQuestion>

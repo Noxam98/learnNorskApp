@@ -501,6 +501,17 @@
 .scopechoice__b:hover { border-color: var(--fjord-600); background: var(--surface-3); }
 .scopechoice__t { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-size: var(--fs-15); color: var(--ink); }
 .scopechoice__d { font-size: var(--fs-13); color: var(--ink-2); line-height: 1.45; }
+.scopechoice__warn { display: flex; align-items: flex-start; gap: 8px; margin-bottom: var(--sp-3); font-size: var(--fs-13); color: var(--ink-2); line-height: 1.45; }
+.scopechoice__warn .ic { color: var(--fjord-600); flex: none; margin-top: 1px; }
+
+/* «на слух» тег на верном ответе + нудж «вернуть на слух» на отключённой стадии */
+.qhint--listen { color: var(--fjord-600); }
+.listen-nudge { display: flex; align-items: center; gap: 8px; margin-bottom: var(--sp-3); padding: 8px 12px; border-radius: var(--r-full); font-size: var(--fs-13); color: var(--ink-2);
+    background: color-mix(in srgb, var(--fjord-600) 10%, var(--surface)); border: 1px solid color-mix(in srgb, var(--fjord-600) 25%, var(--border)); }
+.listen-nudge > .ic { color: var(--fjord-600); flex: none; }
+.listen-nudge__t { flex: 1; min-width: 0; }
+.listen-nudge__btn { background: var(--fjord-600); color: #fff; border: none; border-radius: var(--r-full); padding: 5px 12px; font-weight: 700; font-size: var(--fs-13); cursor: pointer; font-family: inherit; flex: none; }
+.listen-nudge__x { background: none; border: none; color: var(--ink-2); cursor: pointer; display: inline-flex; padding: 2px; flex: none; }
 @media (max-width: 360px) {
     .build-line { margin-top: var(--sp-4); }
     .kbd { --kbd-gap: 4px; }

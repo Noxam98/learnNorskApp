@@ -385,6 +385,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 segs={sessionSegs}
                 rank={stageRank(segCell(el))}   // стадия рампы слова → высота звуков «вход»/«верно»
                 listen={el.mode === "choice" && el.dir === "no2int" && !listenDisabled}   // стадия choice_no2int → «на слух»
+                listenMuted={el.mode === "choice" && el.dir === "no2int" && listenDisabled}   // та же стадия, но аудирование выкл → нудж «вернуть»
                 repeat={el.repeat}
                 baseCorrect={res.correct}
                 baseWrong={res.total - res.correct}
