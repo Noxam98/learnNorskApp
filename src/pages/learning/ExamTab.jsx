@@ -16,6 +16,7 @@ import { playSound, playWin } from "../../components/tools/sound.js";
 import { speakText } from "../../components/ui/tts.js";
 import { hyLang } from "../../components/ui/hyphenate.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 // Прогон экзамена/аудита поверх ОБЩЕГО игрового цикла (useGameLoop) в нейтральном режиме
 // (reveal=false): без раскрытия правильного, нейтральная подсветка выбора, пауза и переход —
@@ -114,7 +115,7 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
 
 
 // ---------- Локальная i18n (ru/en/ukr/pl/lt) ----------
-const T = {
+const T = langGuard({
     ru: {
         eyebrow: "Экзамен · ворота к новым словам",
         loading: "Готовим экзамен…", grading: "Считаем результат…",
@@ -291,7 +292,7 @@ const T = {
         allClearTitle: "Viskas po kontrole",
         allClearDesc: "Dabar nei vartų, nei audito. Tęsk kasdienes sesijas — egzaminas atsivers pats, kai susikaups rinkinys.",
     },
-};
+}, "ExamTab.T");
 
 export default function ExamTab({ lang, go, refresh }) {
     const t = T[lang] || T.ru;

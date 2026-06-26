@@ -13,9 +13,10 @@ import { posMeta, posLabel } from "../../components/ui/pos.js";
 import { speakText } from "../../components/ui/tts.js";
 import { SkeletonWordlist } from "../../components/ui/Spinner.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 // --- Локальные 5-язычные строки (i18n этого файла; interfaceTranslation не трогаем) ---
-const L = {
+const L = langGuard({
     ru: {
         chips: { all: "Все", new: "Новые", in_progress: "В процессе", repeat: "Повторение", mastered: "Выучено", weak: "Слабые", archived: "Архив" },
         searchPh: "Поиск по всем языкам — norsk, рус, eng…",
@@ -81,7 +82,7 @@ const L = {
         inMin: (n) => `po ${n} min`, inHours: (n) => `po ${n} val`,
         inDays: (n) => `po ${n} ${plLt(n)}`,
     },
-};
+}, "WordsTab.L");
 
 // Множественные формы «день» для относительного срока.
 function plRu(n) { const m10 = n % 10, m100 = n % 100; if (m10 === 1 && m100 !== 11) return "день"; if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "дня"; return "дней"; }

@@ -12,13 +12,14 @@ import { posLabel, posMeta, chipPrefix } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { playSound } from "../tools/sound.js";
 import { useScrollLock, ProgressSegments, semisOf } from "./gameShared.jsx";
-const HINTS = {
+import { langGuard } from "../../interface/i18nGuard.js";
+const HINTS = langGuard({
     ru: { reveal: "нажми — перевод", next: "нажми — дальше", studied: "Просмотрено" },
     ukr: { reveal: "натисни — переклад", next: "натисни — далі", studied: "Переглянуто" },
     en: { reveal: "tap to reveal", next: "tap for next", studied: "Reviewed" },
     pl: { reveal: "dotknij — tłumaczenie", next: "dotknij — dalej", studied: "Przejrzano" },
     lt: { reveal: "bakstelėk — vertimas", next: "bakstelėk — toliau", studied: "Peržiūrėta" },
-};
+}, "StudyGame.HINTS");
 
 const filterChosenWords = (dictList) =>
     dictList.flatMap((d) => d.words.filter((w) => w?.gameData?.isChoosedToGame));

@@ -10,8 +10,9 @@ import { Icon } from "../components/ui/Icon.jsx";
 import { BtnSpinner, SkeletonWordlist } from "../components/ui/Spinner.jsx";
 import { posMeta, posLabel } from "../components/ui/pos.js";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
+import { langGuard } from "../interface/i18nGuard.js";
 
-const T = {
+const T = langGuard({
     ru:  { title: "Модерация", sub: "Слова, созданные пользователями. Одобрить → в общую базу; отклонить → останется приватным у автора.", empty: "Очередь пуста — новых слов нет.", approve: "Одобрить", reject: "Отклонить", by: "от",
            repTitle: "Жалобы «не учить»", repSub: "Пользователи отметили слово как мусорное. «Убрать из учёбы» → больше никому не предлагаем; «Оставить» → следующие 5 жалоб гасим автоматически.", repEmpty: "Жалоб нет.", exclude: "Убрать из учёбы", keep: "Оставить", reports: "жалоб" },
     en:  { title: "Moderation", sub: "Words created by users. Approve → shared base; reject → stays private to the author.", empty: "Queue is empty.", approve: "Approve", reject: "Reject", by: "by",
@@ -22,7 +23,7 @@ const T = {
            repTitle: "Zgłoszenia „nie ucz”", repSub: "Użytkownicy oznaczyli słowo jako śmieci. „Usuń z nauki” → już nie proponujemy; „Zostaw” → kolejne 5 zgłoszeń pomijamy automatycznie.", repEmpty: "Brak zgłoszeń.", exclude: "Usuń z nauki", keep: "Zostaw", reports: "zgłoszeń" },
     lt:  { title: "Moderacija", sub: "Vartotojų sukurti žodžiai. Patvirtinti → bendra bazė; atmesti → liks privatus.", empty: "Eilė tuščia.", approve: "Patvirtinti", reject: "Atmesti", by: "nuo",
            repTitle: "Skundai „nemokyti“", repSub: "Vartotojai pažymėjo žodį kaip šiukšlę. „Pašalinti iš mokymosi“ → daugiau nesiūlome; „Palikti“ → kitus 5 skundus atmetame automatiškai.", repEmpty: "Skundų nėra.", exclude: "Pašalinti iš mokymosi", keep: "Palikti", reports: "skundų" },
-};
+}, "ModerationPage.T");
 
 export default function ModerationPage() {
     const lang = useSystemStore((s) => s.currentLanguage);

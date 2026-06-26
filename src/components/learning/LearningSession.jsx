@@ -20,6 +20,7 @@ import StudyGame from "../gameComponents/StudyGame.jsx";
 import BuildGame from "../gameComponents/BuildGame.jsx";
 import ClozeGame from "../gameComponents/ClozeGame.jsx";
 import { stageRank } from "../gameComponents/gameShared.jsx";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 // mode элемента/сессии → игровой компонент.
 const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: StudyGame, study: StudyGame, cloze: ClozeGame };
@@ -27,13 +28,13 @@ const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: Stu
 // Направление перевода для легаси-набора (единое на сессию: родной → норвежский).
 const LEGACY_DIR = "int2no";
 
-const T = {
+const T = langGuard({
     ru: { done: "Сессия завершена", acc: "верно", cardsShown: "карточек показано", shown: "показано", masteredLabel: "Выучено", protectedLabel: "Защищено", protectedTypoLabel: "Защищено с опечаткой", of: "из", perSession: "за сессию", levelTo: "До уровня", maxLevel: "Максимальный уровень 🎉", streak: "серия", days: "дн.", left: "ещё на сегодня", leftZero: "Дневная цель выполнена 🎯", examNote: "Готова пачка слов — сдай экзамен, чтобы открыть новые", more: "Ещё сессия", finish: "В Учёбу", words: "слов", loading: "Готовим сессию…", empty: "Пока нечего учить — добавь слова в Учёбу" },
     en: { done: "Session complete", acc: "correct", cardsShown: "cards shown", shown: "shown", masteredLabel: "Learned", protectedLabel: "Protected", protectedTypoLabel: "Protected with a typo", of: "of", perSession: "this session", levelTo: "To level", maxLevel: "Top level 🎉", streak: "streak", days: "d.", left: "left for today", leftZero: "Daily goal done 🎯", examNote: "A word pack is ready — pass the exam to unlock new ones", more: "One more", finish: "To Study", words: "words", loading: "Building session…", empty: "Nothing to learn yet — add words to Study" },
     ukr: { done: "Сесію завершено", acc: "правильно", cardsShown: "карток показано", shown: "показано", masteredLabel: "Вивчено", protectedLabel: "Захищено", protectedTypoLabel: "Захищено з опискою", of: "з", perSession: "за сесію", levelTo: "До рівня", maxLevel: "Максимальний рівень 🎉", streak: "серія", days: "дн.", left: "ще на сьогодні", leftZero: "Денну ціль виконано 🎯", examNote: "Пачка слів готова — склади екзамен, щоб відкрити нові", more: "Ще сесія", finish: "До Навчання", words: "слів", loading: "Готуємо сесію…", empty: "Поки нема чого вчити — додай слова до Навчання" },
     pl: { done: "Sesja zakończona", acc: "poprawnie", cardsShown: "kart pokazano", shown: "pokazano", masteredLabel: "Nauczono", protectedLabel: "Chronione", protectedTypoLabel: "Chronione z literówką", of: "z", perSession: "w sesji", levelTo: "Do poziomu", maxLevel: "Najwyższy poziom 🎉", streak: "seria", days: "dn.", left: "na dziś", leftZero: "Cel dzienny osiągnięty 🎯", examNote: "Paczka słów gotowa — zdaj egzamin, aby odblokować nowe", more: "Jeszcze raz", finish: "Do Nauki", words: "słów", loading: "Przygotowujemy sesję…", empty: "Na razie nie ma czego się uczyć — dodaj słowa do Nauki" },
     lt: { done: "Sesija baigta", acc: "teisingai", cardsShown: "kortelių parodyta", shown: "parodyta", masteredLabel: "Išmokta", protectedLabel: "Apsaugota", protectedTypoLabel: "Apsaugota su klaida", of: "iš", perSession: "sesijoje", levelTo: "Iki lygio", maxLevel: "Aukščiausias lygis 🎉", streak: "serija", days: "d.", left: "šiandienai", leftZero: "Dienos tikslas pasiektas 🎯", examNote: "Žodžių paketas paruoštas — išlaikyk egzaminą, kad atrakintum naujus", more: "Dar viena", finish: "Į Mokymąsi", words: "žodžių", loading: "Ruošiame sesiją…", empty: "Kol kas nėra ko mokytis — pridėk žodžių į Mokymąsi" },
-};
+}, "LearningSession.T");
 
 const STAGE = { position: "fixed", inset: 0, zIndex: 95, background: "var(--game-bg)", color: "var(--game-ink)", display: "flex", flexDirection: "column", overflow: "auto" };
 const chip = { display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, border: "1px solid var(--game-border)", background: "var(--game-surface)", fontWeight: 700, fontSize: "var(--fs-14)" };

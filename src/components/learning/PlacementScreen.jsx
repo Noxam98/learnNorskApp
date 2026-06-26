@@ -8,10 +8,11 @@ import { InputQuestion } from "../gameComponents/InputQuestion.jsx";
 import { hyLang } from "../ui/hyphenate.js";
 import api from "../tools/api.js";
 import { ENDONYM } from "../../interface/languages.js";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
-const T = {
+const T = langGuard({
     ru: {
         eyebrow: "Вводный тест · ~3 минуты", title1: "Определим твой", title2: "уровень норвежского",
         desc: "Адаптивный тест подстраивает сложность под твои ответы. Чем точнее уровень — тем лучше система подберёт слова и режим повторений. Можно пропустить любой вопрос.",
@@ -102,7 +103,7 @@ const T = {
         begin: "Pradėti mokytis",
         lvlD: { A1: "tik pradedu", A2: "bazinis", B1: "vidutinis", B2: "užtikrintas", C1: "pažengęs", C2: "laisvai" },
     },
-};
+}, "PlacementScreen.T");
 
 export default function PlacementScreen({ lang = "ru", onClose }) {
     const t = T[lang] || T.ru;

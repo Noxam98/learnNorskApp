@@ -9,11 +9,12 @@ import { useEffect, useRef, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { speakTextEnd } from "../ui/tts.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 const LEAD_MS = 300;   // пауза перед воспроизведением аудио
 const RING_R = 45, RING_C = 2 * Math.PI * 45;   // радиус/длина окружности SVG-кольца прогресса
 
-const T = {
+const T = langGuard({
     ru:  { hint: "Послушай и выбери перевод", cantHear: "Не слышно?", showText: "Показать текст",
            replay: "Ещё раз", turnOn: "Включить звук", alwaysText: "Всегда текстом",
            diagVol: "Звук выключен в приложении. Включи — и слово зазвучит.",
@@ -39,7 +40,7 @@ const T = {
            diagVol: "Garsas išjungtas programėlėje. Įjunk, kad išgirstum žodį.",
            diagBlocked: "Naršyklė užblokavo automatinį grojimą. Paspausk ▶, kad išgirstum.",
            diagDevice: "Patikrink garsą ir „tylųjį režimą“ įrenginyje. Arba atsakyk tekstu." },
-};
+}, "ListenPrompt.T");
 
 /**
  * @param {{ word: string, ttsLang?: string, uiLang?: string, asking?: boolean,

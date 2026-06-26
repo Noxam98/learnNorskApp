@@ -1,6 +1,7 @@
 // Общие примитивы статусов «Учёбы»: бейдж статуса, индикатор силы, точка-маркер.
 // Используются всеми вкладками раздела. Классы — из study.css (дизайн-хендофф).
 import { Icon } from "../ui/Icon.jsx";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 // Статусы для ОТОБРАЖЕНИЯ (приходят в dstatus с бэка): in_progress = начато-не-выучено (бывшие
 // learning+review), repeat = выученное с подошедшим сроком повтора, mastered = выученное без срока.
@@ -18,13 +19,13 @@ const META = {
 
 export const STATUS_ORDER = ["new", "in_progress", "repeat", "mastered", "weak", "archived"];
 
-export const STATUS_LABELS = {
+export const STATUS_LABELS = langGuard({
     ru:  { new: "Новое", in_progress: "В процессе", repeat: "Повторение", mastered: "Выучено", weak: "Слабое", archived: "Архив", learning: "В процессе", review: "В процессе" },
     en:  { new: "New", in_progress: "In progress", repeat: "Review", mastered: "Mastered", weak: "Weak", archived: "Archived", learning: "In progress", review: "In progress" },
     ukr: { new: "Нове", in_progress: "У процесі", repeat: "Повторення", mastered: "Вивчено", weak: "Слабке", archived: "Архів", learning: "У процесі", review: "У процесі" },
     pl:  { new: "Nowe", in_progress: "W trakcie", repeat: "Powtórka", mastered: "Opanowane", weak: "Słabe", archived: "Archiwum", learning: "W trakcie", review: "W trakcie" },
     lt:  { new: "Nauja", in_progress: "Eigoje", repeat: "Kartojimas", mastered: "Išmokta", weak: "Silpna", archived: "Archyvas", learning: "Eigoje", review: "Eigoje" },
-};
+}, "StatusBits.STATUS_LABELS");
 
 export function statusMeta(status) { return META[status] || META.new; }
 export function statusLabel(status, lang = "ru") { return (STATUS_LABELS[lang] || STATUS_LABELS.ru)[status] || status; }

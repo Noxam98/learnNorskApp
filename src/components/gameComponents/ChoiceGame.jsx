@@ -14,13 +14,14 @@ import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, RepeatBadge, Pro
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 // Десктоп-подсказка (системный тост) «можно выбирать цифрами» — ОТДЕЛЬНЫЙ флаг от клавиатурной.
-const CHOICE_HINT = {
+const CHOICE_HINT = langGuard({
     ru: "Можно выбирать ответ цифрами на клавиатуре", en: "You can pick the answer with number keys",
     ukr: "Можна обирати відповідь цифрами на клавіатурі", pl: "Odpowiedź można wybrać cyframi na klawiaturze",
     lt: "Atsakymą galima rinktis skaičių klavišais",
-};
+}, "ChoiceGame.CHOICE_HINT");
 const CHOICE_HINT_KEY = "choice_num_hint_seen";
 let _choiceHintShown = false;   // максимум раз за сессию
 let _listenNudgeOff = false;    // нудж «вернуть на слух» закрыт на эту сессию (модульный, переживает ремоунты игр)

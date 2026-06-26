@@ -3,14 +3,15 @@ import { useState } from "react";
 import { useVersionCheck } from "../tools/useVersionCheck.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { Icon } from "./Icon.jsx";
+import { langGuard } from "../../interface/i18nGuard.js";
 
-const T = {
+const T = langGuard({
     ru:  { msg: "Доступна новая версия", btn: "Обновить" },
     en:  { msg: "A new version is available", btn: "Refresh" },
     ukr: { msg: "Доступна нова версія", btn: "Оновити" },
     pl:  { msg: "Dostępna nowa wersja", btn: "Odśwież" },
     lt:  { msg: "Yra nauja versija", btn: "Atnaujinti" },
-};
+}, "UpdateBanner.T");
 
 export function UpdateBanner() {
     const update = useVersionCheck();

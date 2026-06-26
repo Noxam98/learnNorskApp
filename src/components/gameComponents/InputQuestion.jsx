@@ -6,16 +6,17 @@
 import { useState, useRef, useEffect } from "react";
 import { hyphenate } from "../ui/hyphenate.js";
 import { Icon } from "../ui/Icon.jsx";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 // Локальная подпись кнопки «Ответить» на 5 языках (компонент самодостаточен,
 // как и ChoiceQuestion — не тянет общий interfaceTranslate).
-const SUBMIT_LABEL = {
+const SUBMIT_LABEL = langGuard({
     ru: "Ответить",
     en: "Answer",
     ukr: "Відповісти",
     pl: "Odpowiedz",
     lt: "Atsakyti",
-};
+}, "InputQuestion.SUBMIT_LABEL");
 
 // props:
 //   prompt        — показываемое слово-вопрос (строка: перевод для no→int или лемма)

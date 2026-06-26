@@ -1,18 +1,19 @@
 /* Бегущий зверь для «Гонки слов» — силуэт с покадровой анимацией бега.
    Смотрит вправо, viewBox 0 0 96 54. Общий каркас тела/ног, своя голова/морда/хвост.
    Порт дизайн-макета (race-lanes.jsx) под ES-модули. */
+import { langGuard } from "../../interface/i18nGuard.js";
 
 export const ANIMAL_LIST = ["fox", "hare", "reindeer", "wolf", "elk", "lynx"];
 export const ANIMAL_EMOJI = { fox: "🦊", hare: "🐇", reindeer: "🦌", wolf: "🐺", elk: "🫎", lynx: "🐆" };
 // фирменный цвет каждого зверя (для аватара и силуэта)
 export const ANIMAL_COLORS = { fox: "#CE4A21", hare: "#3E8E9C", reindeer: "#3C7A4E", wolf: "#5E54B8", elk: "#A9781A", lynx: "#C24E8E" };
-const ANIMAL_NAMES = {
+const ANIMAL_NAMES = langGuard({
     ru: { fox: "Лиса", hare: "Заяц", reindeer: "Олень", wolf: "Волк", elk: "Лось", lynx: "Рысь" },
     en: { fox: "Fox", hare: "Hare", reindeer: "Reindeer", wolf: "Wolf", elk: "Elk", lynx: "Lynx" },
     ukr: { fox: "Лис", hare: "Заєць", reindeer: "Олень", wolf: "Вовк", elk: "Лось", lynx: "Рись" },
     pl: { fox: "Lis", hare: "Zając", reindeer: "Renifer", wolf: "Wilk", elk: "Łoś", lynx: "Ryś" },
     lt: { fox: "Lapė", hare: "Kiškis", reindeer: "Šiaurės elnias", wolf: "Vilkas", elk: "Briedis", lynx: "Lūšis" },
-};
+}, "RaceRunner.ANIMAL_NAMES");
 export function animalLabel(type, lang) { return (ANIMAL_NAMES[lang] || ANIMAL_NAMES.en)[type] || type; }
 
 // Стойка/посадка ног под каждого зверя: [плечоX, длина] для дальн./ближн. передних и задних.

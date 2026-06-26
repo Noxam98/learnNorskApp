@@ -13,6 +13,7 @@ import PlacementScreen from "../../components/learning/PlacementScreen.jsx";
 import LearningIntro from "../../components/learning/LearningIntro.jsx";
 import LevelUpToast from "../../components/learning/LevelUpToast.jsx";
 import api from "../../components/tools/api.js";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 import TodayTab from "./TodayTab.jsx";
@@ -26,13 +27,13 @@ const TABS = [
     { key: "exam", icon: "graduation" },
     { key: "progress", icon: "chart" },
 ];
-const TAB_LABELS = {
+const TAB_LABELS = langGuard({
     ru:  { title: "Учёба", today: "Сегодня", words: "Мой набор слов", exam: "Экзамен", progress: "Прогресс", hi: "Добрый день" },
     en:  { title: "Study", today: "Today", words: "My word set", exam: "Exam", progress: "Progress", hi: "Hello" },
     ukr: { title: "Навчання", today: "Сьогодні", words: "Мій набір слів", exam: "Екзамен", progress: "Прогрес", hi: "Доброго дня" },
     pl:  { title: "Nauka", today: "Dziś", words: "Mój zestaw słów", exam: "Egzamin", progress: "Postęp", hi: "Dzień dobry" },
     lt:  { title: "Mokymasis", today: "Šiandien", words: "Mano žodžių rinkinys", exam: "Egzaminas", progress: "Pažanga", hi: "Laba diena" },
-};
+}, "LearningPage.TAB_LABELS");
 
 export default function LearningPage() {
     const lang = useSystemStore((s) => s.currentLanguage);

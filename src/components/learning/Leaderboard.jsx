@@ -5,8 +5,9 @@
 import { useEffect, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import api from "../tools/api.js";
+import { langGuard } from "../../interface/i18nGuard.js";
 
-const T = {
+const T = langGuard({
     ru:  { title: "Рейтинг", weekTitle: "Рейтинг недели", week: "Неделя", all: "За всё время",
            you: "ты", of: "из", pts: "очк.", words: "слов", anon: "Аноним", seeAll: "Все",
            empty: "Пока пусто. Позанимайся — и попадёшь в рейтинг.",
@@ -32,7 +33,7 @@ const T = {
            empty: "Kol kas tuščia. Pasimokyk — ir pateksi į reitingą.",
            notYet: "Mokykis, kad patektum į savaitės reitingą",
            hidden: "Tu paslėptas reitinge — įjunk Profilyje.", loading: "Kraunama…" },
-};
+}, "Leaderboard.T");
 
 const MEDAL_CLS = { 1: "lb-medal--gold", 2: "lb-medal--silver", 3: "lb-medal--bronze" };
 // Ранг: топ-3 — нарисованная медаль (золото/серебро/бронза), дальше — «#N».

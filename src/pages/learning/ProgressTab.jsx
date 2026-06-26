@@ -11,9 +11,10 @@ import api from "../../components/tools/api.js";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { StatusDot, StrengthBar, statusLabel } from "../../components/learning/StatusBits.jsx";
 import { BrandLoader } from "../../components/ui/Spinner.jsx";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 // Локальная i18n (5 языков) — interfaceTranslation.jsx не трогаем.
-const T = {
+const T = langGuard({
     ru: {
         sub: "Как растёт твой активный словарь",
         masteredTotal: "Выучено всего", wordsTotal: "Всего слов", due: "К повторению", level: "Текущий уровень", retention: "Удержание", accuracy: "Точность", streak: "Серия", streakDays: "дней", perWeek: "+{n} за неделю", activity: "Активность",
@@ -59,16 +60,16 @@ const T = {
         toPractice: "Praktika", reinforce: "Įtvirtinti",
         empty: "Kol kas tuščia", noData: "nėra duomenų", toNext: "iki lygio",
     },
-};
+}, "ProgressTab.T");
 
 // Холодные состояния («нет данных ≠ 0»): баннер теста + что разблокируется.
-const COLD = {
+const COLD = langGuard({
     ru:  { t: "Определим твой уровень", d: "Пройди вводный тест — подберём слова и сложность под тебя.", btn: "Пройти тест", unlock: "Метрики появятся после первых сессий", heat: "Начни сегодня — клетки активности заполнятся" },
     en:  { t: "Let's find your level", d: "Take the placement test — we'll tailor words and difficulty.", btn: "Take test", unlock: "Metrics appear after your first sessions", heat: "Start today — activity cells will fill in" },
     ukr: { t: "Визначимо твій рівень", d: "Пройди вступний тест — підберемо слова й складність.", btn: "Пройти тест", unlock: "Метрики з'являться після перших сесій", heat: "Почни сьогодні — клітинки активності заповняться" },
     pl:  { t: "Określmy twój poziom", d: "Zrób test poziomujący — dobierzemy słowa i trudność.", btn: "Zrób test", unlock: "Metryki pojawią się po pierwszych sesjach", heat: "Zacznij dziś — komórki aktywności się wypełnią" },
     lt:  { t: "Nustatykime tavo lygį", d: "Atlik lygio testą — pritaikysime žodžius ir sudėtingumą.", btn: "Atlikti testą", unlock: "Metrikos atsiras po pirmų sesijų", heat: "Pradėk šiandien — aktyvumo langeliai užsipildys" },
-};
+}, "ProgressTab.COLD");
 
 const STATUS_VAR = {
     new: "var(--st-new)", in_progress: "var(--st-learn)", repeat: "var(--st-review)",

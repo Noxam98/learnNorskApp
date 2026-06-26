@@ -12,11 +12,12 @@ import { useSessionStore } from "../../store/sessionStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { pl } from "../../components/ui/plural.js";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 const CEFR = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 // ---------- i18n (ru/en/ukr/pl/lt) ----------
-const T = {
+const T = langGuard({
     ru: {
         smartReview: "Smart Review · на сегодня",
         readyA: "слов", readyB: "на сегодня",
@@ -222,7 +223,7 @@ const T = {
         placeDone: "Atlikta! Pradinis lygis išsaugotas.",
         close: "Uždaryti", err: "Nepavyko įkrasti",
     },
-};
+}, "TodayTab.T");
 
 const DAILY_GOAL = 20;
 
@@ -231,13 +232,13 @@ function fmt(s, vars) {
 }
 
 // Холодная дневная цель — пока нет ни одной сессии («нет данных ≠ 0»).
-const GCOLD = {
+const GCOLD = langGuard({
     ru:  ["Цель появится", "Подстроим дневную цель под тебя после первой сессии"],
     en:  ["Goal will appear", "We'll tune your daily goal after the first session"],
     ukr: ["Ціль з'явиться", "Підлаштуємо денну ціль після першої сесії"],
     pl:  ["Cel się pojawi", "Dopasujemy dzienny cel po pierwszej sesji"],
     lt:  ["Tikslas atsiras", "Pritaikysime dienos tikslą po pirmos sesijos"],
-};
+}, "TodayTab.GCOLD");
 
 export default function TodayTab({ lang, go, openSession, openWord, openPlacement, reloadKey, refresh }) {
     const t = T[lang] || T.ru;

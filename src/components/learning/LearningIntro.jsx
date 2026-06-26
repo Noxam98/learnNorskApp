@@ -1,8 +1,9 @@
 // Онбординг «Учёбы» — один раз при первом заходе. Коротко объясняет механику:
 // откуда берутся слова, что значит «выучено», как работают интервалы. Затем ведёт к калибровке.
 import { Icon } from "../ui/Icon.jsx";
+import { langGuard } from "../../interface/i18nGuard.js";
 
-const T = {
+const T = langGuard({
     ru: {
         eyebrow: "Как работает Учёба",
         title: "Учим слова по-умному",
@@ -43,7 +44,7 @@ const T = {
         p3t: "Kartojimas intervalais", p3d: "Sistema primena žodį prieš pat pamirštant — kaskart kiek vėliau. Grįžk po truputį kasdien.",
         cta: "Pradėti", skip: "Praleisti",
     },
-};
+}, "LearningIntro.T");
 
 export default function LearningIntro({ lang = "ru", onDone }) {
     const t = T[lang] || T.ru;

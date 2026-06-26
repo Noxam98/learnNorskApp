@@ -2,14 +2,15 @@
 import { useEffect } from "react";
 import confetti from "canvas-confetti";
 import { Icon } from "../ui/Icon.jsx";
+import { langGuard } from "../../interface/i18nGuard.js";
 
-const T = {
+const T = langGuard({
     ru: { eyebrow: "Новый уровень", title: "Поздравляю!", desc: "Теперь вы изучаете уровень {lv} 🎉 Дальше — слова посложнее.", cta: "Продолжить" },
     en: { eyebrow: "New level", title: "Congratulations!", desc: "You're now studying level {lv} 🎉 Next — harder words ahead.", cta: "Continue" },
     ukr: { eyebrow: "Новий рівень", title: "Вітаємо!", desc: "Тепер ви вивчаєте рівень {lv} 🎉 Далі — складніші слова.", cta: "Продовжити" },
     pl: { eyebrow: "Nowy poziom", title: "Gratulacje!", desc: "Uczysz się teraz poziomu {lv} 🎉 Dalej — trudniejsze słowa.", cta: "Dalej" },
     lt: { eyebrow: "Naujas lygis", title: "Sveikiname!", desc: "Dabar mokaisi {lv} lygį 🎉 Toliau — sunkesni žodžiai.", cta: "Tęsti" },
-};
+}, "LevelUpToast.T");
 
 export default function LevelUpToast({ lang = "ru", to = "A2", onClose }) {
     const t = T[lang] || T.ru;
