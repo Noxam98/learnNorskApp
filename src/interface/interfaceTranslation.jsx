@@ -166,7 +166,7 @@ export const interfaceTranslate = {
         addAllToNewDict: "В новый словарь", newDictTitle: "Новый словарь", create: "Создать",
         dictNameLabel: "Название словаря", willAddWords: "Будет добавлено слов", allWordsName: "Все слова",
         dictExistsError: "Словарь с таким именем уже есть",
-        topics: { family: "Семья", food: "Еда", home: "Дом", work: "Работа", school: "Учёба", travel: "Путешествия", health: "Здоровье", body: "Тело", clothing: "Одежда", nature: "Природа", animals: "Животные", weather: "Погода", city: "Город", transport: "Транспорт", shopping: "Покупки", time: "Время", sport: "Спорт", hobby: "Хобби", technology: "Технологии", communication: "Общение", emotions: "Эмоции", holidays: "Праздники", society: "Общество", other: "Прочее" },
+        topics: { family: "Семья", food: "Еда", home: "Дом", work: "Работа", school: "Учёба", travel: "Путешествия", health: "Здоровье", body: "Тело", clothing: "Одежда", nature: "Природа", animals: "Животные", weather: "Погода", city: "Город", transport: "Транспорт", traffic: "Дорожное движение", shopping: "Покупки", time: "Время", sport: "Спорт", hobby: "Хобби", technology: "Технологии", communication: "Общение", emotions: "Эмоции", holidays: "Праздники", society: "Общество", other: "Прочее" },
         
         wordsTotal: "Слов всего",
         dictionaries: "Словари",
@@ -376,7 +376,7 @@ export const interfaceTranslate = {
         addAllToNewDict: "To new dictionary", newDictTitle: "New dictionary", create: "Create",
         dictNameLabel: "Dictionary name", willAddWords: "Words to add", allWordsName: "All words",
         dictExistsError: "A dictionary with this name already exists",
-        topics: { family: "Family", food: "Food", home: "Home", work: "Work", school: "Study", travel: "Travel", health: "Health", body: "Body", clothing: "Clothing", nature: "Nature", animals: "Animals", weather: "Weather", city: "City", transport: "Transport", shopping: "Shopping", time: "Time", sport: "Sport", hobby: "Hobby", technology: "Technology", communication: "Communication", emotions: "Emotions", holidays: "Holidays", society: "Society", other: "Other" },
+        topics: { family: "Family", food: "Food", home: "Home", work: "Work", school: "Study", travel: "Travel", health: "Health", body: "Body", clothing: "Clothing", nature: "Nature", animals: "Animals", weather: "Weather", city: "City", transport: "Transport", traffic: "Road traffic", shopping: "Shopping", time: "Time", sport: "Sport", hobby: "Hobby", technology: "Technology", communication: "Communication", emotions: "Emotions", holidays: "Holidays", society: "Society", other: "Other" },
         
         wordsTotal: "Words total",
         dictionaries: "Dictionaries",
@@ -585,7 +585,7 @@ export const interfaceTranslate = {
         addAllToNewDict: "У новий словник", newDictTitle: "Новий словник", create: "Створити",
         dictNameLabel: "Назва словника", willAddWords: "Буде додано слів", allWordsName: "Усі слова",
         dictExistsError: "Словник із такою назвою вже існує",
-        topics: { family: "Сім'я", food: "Їжа", home: "Дім", work: "Робота", school: "Навчання", travel: "Подорожі", health: "Здоров'я", body: "Тіло", clothing: "Одяг", nature: "Природа", animals: "Тварини", weather: "Погода", city: "Місто", transport: "Транспорт", shopping: "Покупки", time: "Час", sport: "Спорт", hobby: "Хобі", technology: "Технології", communication: "Спілкування", emotions: "Емоції", holidays: "Свята", society: "Суспільство", other: "Інше" },
+        topics: { family: "Сім'я", food: "Їжа", home: "Дім", work: "Робота", school: "Навчання", travel: "Подорожі", health: "Здоров'я", body: "Тіло", clothing: "Одяг", nature: "Природа", animals: "Тварини", weather: "Погода", city: "Місто", transport: "Транспорт", traffic: "Дорожній рух", shopping: "Покупки", time: "Час", sport: "Спорт", hobby: "Хобі", technology: "Технології", communication: "Спілкування", emotions: "Емоції", holidays: "Свята", society: "Суспільство", other: "Інше" },
         
         wordsTotal: "Слів усього",
         dictionaries: "Словники",
@@ -794,7 +794,7 @@ export const interfaceTranslate = {
         addAllToNewDict: "Do nowego słownika", newDictTitle: "Nowy słownik", create: "Utwórz",
         dictNameLabel: "Nazwa słownika", willAddWords: "Słów do dodania", allWordsName: "Wszystkie słowa",
         dictExistsError: "Słownik o tej nazwie już istnieje",
-        topics: { family: "Rodzina", food: "Jedzenie", home: "Dom", work: "Praca", school: "Nauka", travel: "Podróże", health: "Zdrowie", body: "Ciało", clothing: "Ubrania", nature: "Natura", animals: "Zwierzęta", weather: "Pogoda", city: "Miasto", transport: "Transport", shopping: "Zakupy", time: "Czas", sport: "Sport", hobby: "Hobby", technology: "Technologia", communication: "Komunikacja", emotions: "Emocje", holidays: "Święta", society: "Społeczeństwo", other: "Inne" },
+        topics: { family: "Rodzina", food: "Jedzenie", home: "Dom", work: "Praca", school: "Nauka", travel: "Podróże", health: "Zdrowie", body: "Ciało", clothing: "Ubrania", nature: "Natura", animals: "Zwierzęta", weather: "Pogoda", city: "Miasto", transport: "Transport", traffic: "Ruch drogowy", shopping: "Zakupy", time: "Czas", sport: "Sport", hobby: "Hobby", technology: "Technologia", communication: "Komunikacja", emotions: "Emocje", holidays: "Święta", society: "Społeczeństwo", other: "Inne" },
         
         wordsTotal: "Słów łącznie",
         dictionaries: "Słowniki",
@@ -1003,7 +1003,7 @@ export const interfaceTranslate = {
         addAllToNewDict: "Į naują žodyną", newDictTitle: "Naujas žodynas", create: "Sukurti",
         dictNameLabel: "Žodyno pavadinimas", willAddWords: "Bus pridėta žodžių", allWordsName: "Visi žodžiai",
         dictExistsError: "Žodynas tokiu pavadinimu jau yra",
-        topics: { family: "Šeima", food: "Maistas", home: "Namai", work: "Darbas", school: "Mokslas", travel: "Kelionės", health: "Sveikata", body: "Kūnas", clothing: "Apranga", nature: "Gamta", animals: "Gyvūnai", weather: "Oras", city: "Miestas", transport: "Transportas", shopping: "Pirkiniai", time: "Laikas", sport: "Sportas", hobby: "Pomėgiai", technology: "Technologijos", communication: "Bendravimas", emotions: "Emocijos", holidays: "Šventės", society: "Visuomenė", other: "Kita" },
+        topics: { family: "Šeima", food: "Maistas", home: "Namai", work: "Darbas", school: "Mokslas", travel: "Kelionės", health: "Sveikata", body: "Kūnas", clothing: "Apranga", nature: "Gamta", animals: "Gyvūnai", weather: "Oras", city: "Miestas", transport: "Transportas", traffic: "Eismas", shopping: "Pirkiniai", time: "Laikas", sport: "Sportas", hobby: "Pomėgiai", technology: "Technologijos", communication: "Bendravimas", emotions: "Emocijos", holidays: "Šventės", society: "Visuomenė", other: "Kita" },
         
         wordsTotal: "Iš viso žodžių",
         dictionaries: "Žodynai",
@@ -1213,7 +1213,7 @@ export const interfaceTranslate = {
         addAllToNewDict: "Uz jaunu vārdnīcu", newDictTitle: "Jauna vārdnīca", create: "Izveidot",
         dictNameLabel: "Vārdnīcas nosaukums", willAddWords: "Pievienojamie vārdi", allWordsName: "Visi vārdi",
         dictExistsError: "Vārdnīca ar šādu nosaukumu jau pastāv",
-        topics: { family: "Ģimene", food: "Ēdiens", home: "Mājas", work: "Darbs", school: "Mācības", travel: "Ceļojumi", health: "Veselība", body: "Ķermenis", clothing: "Apģērbs", nature: "Daba", animals: "Dzīvnieki", weather: "Laikapstākļi", city: "Pilsēta", transport: "Transports", shopping: "Iepirkšanās", time: "Laiks", sport: "Sports", hobby: "Vaļasprieks", technology: "Tehnoloģijas", communication: "Saziņa", emotions: "Emocijas", holidays: "Svētki", society: "Sabiedrība", other: "Citi" },
+        topics: { family: "Ģimene", food: "Ēdiens", home: "Mājas", work: "Darbs", school: "Mācības", travel: "Ceļojumi", health: "Veselība", body: "Ķermenis", clothing: "Apģērbs", nature: "Daba", animals: "Dzīvnieki", weather: "Laikapstākļi", city: "Pilsēta", transport: "Transports", traffic: "Ceļu satiksme", shopping: "Iepirkšanās", time: "Laiks", sport: "Sports", hobby: "Vaļasprieks", technology: "Tehnoloģijas", communication: "Saziņa", emotions: "Emocijas", holidays: "Svētki", society: "Sabiedrība", other: "Citi" },
 
         wordsTotal: "Vārdu kopā",
         dictionaries: "Vārdnīcas",
@@ -1423,7 +1423,7 @@ export const interfaceTranslate = {
         addAllToNewDict: "إلى قاموس جديد", newDictTitle: "قاموس جديد", create: "إنشاء",
         dictNameLabel: "اسم القاموس", willAddWords: "الكلمات المراد إضافتها", allWordsName: "كل الكلمات",
         dictExistsError: "يوجد قاموس بهذا الاسم بالفعل",
-        topics: { family: "العائلة", food: "الطعام", home: "المنزل", work: "العمل", school: "الدراسة", travel: "السفر", health: "الصحة", body: "الجسم", clothing: "الملابس", nature: "الطبيعة", animals: "الحيوانات", weather: "الطقس", city: "المدينة", transport: "النقل", shopping: "التسوّق", time: "الوقت", sport: "الرياضة", hobby: "الهواية", technology: "التكنولوجيا", communication: "التواصل", emotions: "المشاعر", holidays: "العطلات", society: "المجتمع", other: "أخرى" },
+        topics: { family: "العائلة", food: "الطعام", home: "المنزل", work: "العمل", school: "الدراسة", travel: "السفر", health: "الصحة", body: "الجسم", clothing: "الملابس", nature: "الطبيعة", animals: "الحيوانات", weather: "الطقس", city: "المدينة", transport: "النقل", traffic: "حركة المرور", shopping: "التسوّق", time: "الوقت", sport: "الرياضة", hobby: "الهواية", technology: "التكنولوجيا", communication: "التواصل", emotions: "المشاعر", holidays: "العطلات", society: "المجتمع", other: "أخرى" },
 
         wordsTotal: "إجمالي الكلمات",
         dictionaries: "القواميس",

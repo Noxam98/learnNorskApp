@@ -122,7 +122,7 @@ const STATUS_CHIPS = ["all", "new", "in_progress", "repeat", "mastered", "weak",
 const STATUS_DOT = { new: "new", in_progress: "learn", repeat: "review", mastered: "master", weak: "weak" };
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const SORTS = ["strength", "due", "alpha"];
-const TOPIC_KEYS = ["family", "food", "home", "work", "school", "travel", "health", "body", "clothing", "nature", "animals", "weather", "city", "transport", "shopping", "time", "sport", "hobby", "technology", "communication", "emotions", "holidays", "society", "other"];
+const TOPIC_KEYS = ["family", "food", "home", "work", "school", "travel", "health", "body", "clothing", "nature", "animals", "weather", "city", "transport", "traffic", "shopping", "time", "sport", "hobby", "technology", "communication", "emotions", "holidays", "society", "other"];
 
 const MS_DAY = 86400000;
 
