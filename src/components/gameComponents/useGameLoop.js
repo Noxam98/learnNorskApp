@@ -143,8 +143,8 @@ export function useGameLoop({
                 armT = setTimeout(() => {
                     const stage = typeof document !== "undefined" ? document.querySelector(".pstage") : null;
                     window.addEventListener("keydown", onKey);
-                    if (stage) stage.addEventListener("pointerdown", adv);
-                    manualOff = () => { window.removeEventListener("keydown", onKey); if (stage) stage.removeEventListener("pointerdown", adv); };
+                    if (stage) stage.addEventListener("pointerup", adv);   // листаем по ОТПУСКАНИЮ (touch up), не по нажатию
+                    manualOff = () => { window.removeEventListener("keydown", onKey); if (stage) stage.removeEventListener("pointerup", adv); };
                 }, 450);
                 return;
             }
