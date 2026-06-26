@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import confetti from "canvas-confetti";
 import { Icon } from "../ui/Icon.jsx";
+import { useHistoryClose } from "../tools/useHistoryClose.js";
 import { langGuard } from "../../interface/i18nGuard.js";
 
 const T = langGuard({
@@ -16,6 +17,7 @@ const T = langGuard({
 
 export default function LevelUpToast({ lang = "ru", to = "A2", onClose }) {
     const t = T[lang] || T.ru;
+    useHistoryClose(true, () => onClose?.()); // монтируется только при показе → системная «Назад»/свайп закрывает
     useEffect(() => {
         try {
             confetti({ particleCount: 120, spread: 75, origin: { y: 0.35 }, zIndex: 99999 });

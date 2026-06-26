@@ -11,6 +11,7 @@ import { PlayerTag } from "../components/online/PlayerTag.jsx";
 import RaceScreen, { RacePodium } from "../components/online/RaceScreen.jsx";
 import { RaceRunner, ANIMAL_LIST, ANIMAL_COLORS, animalLabel } from "../components/online/RaceRunner.jsx";
 import { Dropdown } from "../components/ui/Dropdown.jsx";
+import { useHistoryClose } from "../components/tools/useHistoryClose.js";
 import api from "../components/tools/api.js";
 import { playSound, playWin, preloadSounds } from "../components/tools/sound.js";
 import { startRaceMusic, stopRaceMusic, playGallop, playFall } from "../components/tools/raceAudio.js";
@@ -553,6 +554,7 @@ const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", titl
         document.addEventListener("keydown", onKey);
         return () => document.removeEventListener("keydown", onKey);
     }, [open]); // eslint-disable-line
+    useHistoryClose(open, onClose); // системная «Назад»/свайп закрывает окно комнаты, а не уводит со страницы
     if (!open) return null;
     const set = (k, v) => setS((p) => ({ ...p, [k]: v }));
     const setSource = (v) => setS((p) => {

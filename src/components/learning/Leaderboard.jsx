@@ -5,6 +5,7 @@
 import { useEffect, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import api from "../tools/api.js";
+import { useHistoryClose } from "../tools/useHistoryClose.js";
 import { langGuard } from "../../interface/i18nGuard.js";
 
 const T = langGuard({
@@ -68,6 +69,7 @@ export function LeaderboardModal({ lang = "ru", onClose }) {
     const [period, setPeriod] = useState("week");
     const [data, setData] = useState(/** @type {any} */(null));
     const [loading, setLoading] = useState(true);
+    useHistoryClose(true, onClose); // монтируется только при открытии → системная «Назад»/свайп закрывает рейтинг
     useEffect(() => {
         let on = true; setLoading(true);
         api.leaderboard(period, 100).then((d) => { if (on) { setData(d); setLoading(false); } }).catch(() => { if (on) setLoading(false); });
