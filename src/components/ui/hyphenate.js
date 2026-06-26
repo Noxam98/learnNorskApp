@@ -4,13 +4,13 @@ import { hyphenateSync as uk } from "hyphen/uk";
 import { hyphenateSync as en } from "hyphen/en";
 import { hyphenateSync as pl } from "hyphen/pl";
 import { hyphenateSync as lt } from "hyphen/lt";
+import { bcpOf } from "../../interface/languages.js";
 
 const FN = { nb, ru, uk, en, pl, lt };
-const BCP = { ru: "ru", ukr: "uk", en: "en", pl: "pl", lt: "lt" };
 
-// Код языка для переноса: норвежский → nb, иначе по currentLanguage приложения.
+// Код языка для переноса: норвежский → nb, иначе BCP-47 из единого реестра языков (укр → uk).
 export const hyLang = (currentLanguage, isNorwegian) =>
-    (isNorwegian ? "nb" : (BCP[currentLanguage] || currentLanguage));
+    (isNorwegian ? "nb" : bcpOf(currentLanguage));
 
 // Вставляет мягкие переносы (U+00AD) по правилам языка — браузер рисует дефис
 // в точке разрыва строки (работает без словарей переносов браузера, на всех языках).

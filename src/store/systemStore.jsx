@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { produce } from "immer";
 import { createJSONStorage, persist } from 'zustand/middleware'
+import { dirOf } from "../interface/languages.js";
+
+// Применить язык к корню документа: lang (a11y/переносы) + dir (ltr/rtl — готовность к RTL).
+const applyDocLang = (code) => { try { const el = document.documentElement; el.lang = code; el.dir = dirOf(code); } catch { /* нет document */ } };
 
 // Сила вибрации → длительность импульса (мс). На вебе амплитуду не задать (Vibration API
 // умеет только длительность/паттерн), поэтому «сила» = насколько длинный импульс.
@@ -30,12 +34,10 @@ export const useSystemStore = create(persist(
         // (gamePrefs.listenOff), true/false = переопределение для этого устройства. См. MyPage (выбор «тут/везде»).
         listenOffLocal: null,
 
-        setCurrentLanguage: (newLanguage) =>
-            set(
-                produce((state) => {
-                    state.currentLanguage = newLanguage;
-                })
-            ),
+        setCurrentLanguage: (newLanguage) => {
+            applyDocLang(newLanguage);   // синхронно отражаем язык/направление на <html>
+            set(produce((state) => { state.currentLanguage = newLanguage; }));
+        },
 
         setTheme: (theme) => set(produce((state) => { state.theme = theme; })),
         toggleTheme: () => set(produce((state) => { state.theme = state.theme === "dark" ? "light" : "dark"; })),
@@ -82,5 +84,8 @@ export const useSystemStore = create(persist(
         }),
     }
 ));
+
+// При загрузке — сразу отразить сохранённый язык на <html> (lang/dir), не дожидаясь смены языка.
+try { applyDocLang(useSystemStore.getState().currentLanguage); } catch { /* */ }
 
 

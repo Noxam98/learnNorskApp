@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
+import { LANGUAGES } from "../interface/languages.js";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { useAuthStore } from "../store/AuthStore.jsx";
@@ -249,13 +250,7 @@ const MyPage = () => {
                             <span className="setrow__meta"><span className="setrow__t">{t.interfaceLang}</span><span className="setrow__d">{t.interfaceLangDesc}</span></span>
                             <Dropdown value={currentLanguage}
                                 onChange={(v) => { useSystemStore.getState().setCurrentLanguage(v); if (api.accessToken) api.setGamePrefs({ lang: v }).catch(() => {}); }}
-                                options={[
-                                    { value: "ukr", label: "Українська", emoji: "🇺🇦" },
-                                    { value: "ru", label: "Русский", emoji: "🇷🇺" },
-                                    { value: "en", label: "English", emoji: "🇬🇧" },
-                                    { value: "pl", label: "Polski", emoji: "🇵🇱" },
-                                    { value: "lt", label: "Lietuvių", emoji: "🇱🇹" },
-                                ]} />
+                                options={LANGUAGES.map((l) => ({ value: l.code, label: l.name, emoji: l.flag }))} />
                         </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n={theme === "dark" ? "moon" : "sun"} sm /></span>

@@ -3,14 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { Icon } from "./ui/Icon.jsx";
 import api from "./tools/api.js";
-
-const languages = {
-    ukr: "Українська",
-    ru: "Русский",
-    pl: "Polski",
-    lt: "Lietuvių",
-    en: "English",
-};
+import { LANGUAGES, LANG_BY } from "../interface/languages.js";
 
 const LanguageChooser = ({ className = "hide-mobile" }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +22,7 @@ const LanguageChooser = ({ className = "hide-mobile" }) => {
         <div style={{ position: "relative" }} ref={ref}>
             <button className={`select ${className}`} onClick={() => setIsOpen((p) => !p)} aria-label="Язык интерфейса">
                 <Icon n="globe" sm />
-                <span>{languages[currentLanguage] || currentLanguage}</span>
+                <span>{LANG_BY[currentLanguage]?.name || currentLanguage}</span>
                 <Icon n="chevron-down" sm />
             </button>
             <AnimatePresence>
@@ -46,7 +39,7 @@ const LanguageChooser = ({ className = "hide-mobile" }) => {
                             display: "flex", flexDirection: "column", gap: 2,
                         }}
                     >
-                        {Object.entries(languages).map(([code, name]) => (
+                        {LANGUAGES.map(({ code, name }) => (
                             <button
                                 key={code}
                                 className="nav__link"

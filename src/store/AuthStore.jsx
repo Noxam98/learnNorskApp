@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import api from "../components/tools/api.js";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { useSystemStore } from "./systemStore.jsx";
+import { isLang } from "../interface/languages.js";
 
 
 const getError = (error, currentLanguage) => {
@@ -28,8 +29,7 @@ const getError = (error, currentLanguage) => {
 
 // Язык интерфейса с сервера (gamePrefs.lang) → в локальный systemStore. Для новых устройств:
 // локально дефолт, но если у аккаунта сохранён язык — подтягиваем его при входе.
-const LANGS = ["ru", "ukr", "en", "pl", "lt"];
-const _syncLang = (me) => { const l = me?.gamePrefs?.lang; if (l && LANGS.includes(l)) useSystemStore.getState().setCurrentLanguage(l); };
+const _syncLang = (me) => { const l = me?.gamePrefs?.lang; if (l && isLang(l)) useSystemStore.getState().setCurrentLanguage(l); };
 
 // Привести ответ /me к объекту user в сторе (включая email/привязку Google для настроек).
 const _userFrom = (me) => ({

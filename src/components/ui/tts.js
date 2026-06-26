@@ -3,6 +3,7 @@
 // женский голос поверх серверного.
 import api from "../tools/api.js";
 import { soundLevel } from "../tools/audioCore.js";
+import { ttsLangOf } from "../../interface/languages.js";
 
 let _audio = null;     // текущий <audio>
 let _reject = null;    // reject ожидающего окончания фрагмента (для прерывания очереди)
@@ -20,8 +21,8 @@ const stopAudio = () => {
     try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch { /* */ }
 };
 
-// Код языка озвучки из языка интерфейса (украинский: ukr → uk).
-export const ttsLang = (uiLang) => ({ ru: "ru", ukr: "uk", en: "en", pl: "pl", lt: "lt" }[uiLang] || uiLang);
+// Код языка озвучки из языка интерфейса (укр: ukr → uk) — из единого реестра языков.
+export const ttsLang = (uiLang) => ttsLangOf(uiLang);
 
 // Проиграть один фрагмент. waitEnd=false → резолв на старте воспроизведения
 // (как было); waitEnd=true → резолв по окончании (нужно для очереди фрагментов).
