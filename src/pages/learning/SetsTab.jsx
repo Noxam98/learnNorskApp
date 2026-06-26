@@ -15,16 +15,16 @@ import { langGuard } from "../../interface/i18nGuard.js";
 import PoolSearchPanel from "../../components/learning/PoolSearchPanel.jsx";
 
 const L = langGuard({
-    ru:  { title: "Наборы", desc: "Свои подборки слов — учи их отдельно или подключай к ежедневной сессии", newSet: "Создать набор", create: "Создать", rename: "Переименовать", del: "Удалить", delConfirm: "Удалить набор? Прогресс по словам сохранится.", studySet: "Учить набор", searchWords: "Поиск слов", studying: "В ежедневной учёбе", studyingHint: "Слова набора попадают в умную сессию «Сегодня»", move: "Переместить в…", moveTitle: "Переместить в набор", remove: "Убрать из набора", noSets: "Пока нет наборов", noSetsHint: "Создай подборку слов и учи её отдельно", noWords: "В наборе пока нет слов", noWordsHint: "Найди слова в поиске и добавь их сюда", toStart: "ещё {k} до старта", namePh: "Название набора", save: "Сохранить", noOther: "Нет других наборов", words: "слов", openSearch: "Развернуть поиск", openSet: "Развернуть набор", learned: "выучено", generate: "Сгенерировать", genTitle: "Сгенерировать слова", genTopicPh: "Тема (необязательно)", levelAny: "Любой", count: "Количество", generating: "Генерирую…" },
-    en:  { title: "Sets", desc: "Your own word collections — study them on their own or feed the daily session", newSet: "New set", create: "Create", rename: "Rename", del: "Delete", delConfirm: "Delete this set? Word progress is kept.", studySet: "Study set", searchWords: "Search words", studying: "In daily study", studyingHint: "Set words join the smart “Today” session", move: "Move to…", moveTitle: "Move to set", remove: "Remove from set", noSets: "No sets yet", noSetsHint: "Create a word collection and study it on its own", noWords: "No words in this set yet", noWordsHint: "Find words in the search and add them here", toStart: "{k} more to start", namePh: "Set name", save: "Save", noOther: "No other sets", words: "words", openSearch: "Expand search", openSet: "Expand set", learned: "learned", generate: "Generate", genTitle: "Generate words", genTopicPh: "Topic (optional)", levelAny: "Any", count: "Count", generating: "Generating…" },
-    ukr: { title: "Набори", desc: "Власні добірки слів — вивчай їх окремо або підключай до щоденної сесії", newSet: "Створити набір", create: "Створити", rename: "Перейменувати", del: "Видалити", delConfirm: "Видалити набір? Прогрес за словами збережеться.", studySet: "Вчити набір", searchWords: "Пошук слів", studying: "У щоденному навчанні", studyingHint: "Слова набору потрапляють у розумну сесію «Сьогодні»", move: "Перемістити в…", moveTitle: "Перемістити в набір", remove: "Прибрати з набору", noSets: "Поки немає наборів", noSetsHint: "Створи добірку слів і вчи її окремо", noWords: "У наборі поки немає слів", noWordsHint: "Знайди слова в пошуку й додай їх сюди", toStart: "ще {k} до старту", namePh: "Назва набору", save: "Зберегти", noOther: "Немає інших наборів", words: "слів", openSearch: "Розгорнути пошук", openSet: "Розгорнути набір", learned: "вивчено", generate: "Згенерувати", genTitle: "Згенерувати слова", genTopicPh: "Тема (необов’язково)", levelAny: "Будь-який", count: "Кількість", generating: "Генерую…" },
-    pl:  { title: "Zestawy", desc: "Własne zbiory słów — ucz się ich osobno lub dołącz je do codziennej sesji", newSet: "Nowy zestaw", create: "Utwórz", rename: "Zmień nazwę", del: "Usuń", delConfirm: "Usunąć zestaw? Postępy w słowach zostaną zachowane.", studySet: "Ucz się zestawu", searchWords: "Szukaj słów", studying: "W codziennej nauce", studyingHint: "Słowa z zestawu trafiają do inteligentnej sesji „Dziś”", move: "Przenieś do…", moveTitle: "Przenieś do zestawu", remove: "Usuń z zestawu", noSets: "Brak zestawów", noSetsHint: "Utwórz zbiór słów i ucz się go osobno", noWords: "Brak słów w tym zestawie", noWordsHint: "Znajdź słowa w wyszukiwaniu i dodaj je tutaj", toStart: "jeszcze {k} do startu", namePh: "Nazwa zestawu", save: "Zapisz", noOther: "Brak innych zestawów", words: "słów", openSearch: "Rozwiń wyszukiwanie", openSet: "Rozwiń zestaw", learned: "nauczono", generate: "Wygeneruj", genTitle: "Wygeneruj słowa", genTopicPh: "Temat (opcjonalnie)", levelAny: "Dowolny", count: "Liczba", generating: "Generuję…" },
-    lt:  { title: "Rinkiniai", desc: "Savi žodžių rinkiniai — mokykis jų atskirai arba įtrauk į kasdienę sesiją", newSet: "Naujas rinkinys", create: "Sukurti", rename: "Pervadinti", del: "Ištrinti", delConfirm: "Ištrinti rinkinį? Žodžių pažanga išliks.", studySet: "Mokytis rinkinio", searchWords: "Ieškoti žodžių", studying: "Kasdienėje mokymosi sesijoje", studyingHint: "Rinkinio žodžiai patenka į išmaniąją „Šiandien“ sesiją", move: "Perkelti į…", moveTitle: "Perkelti į rinkinį", remove: "Pašalinti iš rinkinio", noSets: "Rinkinių dar nėra", noSetsHint: "Sukurk žodžių rinkinį ir mokykis jo atskirai", noWords: "Rinkinyje dar nėra žodžių", noWordsHint: "Surask žodžius paieškoje ir pridėk juos čia", toStart: "dar {k} iki starto", namePh: "Rinkinio pavadinimas", save: "Išsaugoti", noOther: "Kitų rinkinių nėra", words: "žodžių", openSearch: "Išskleisti paiešką", openSet: "Išskleisti rinkinį", learned: "išmokta", generate: "Generuoti", genTitle: "Generuoti žodžius", genTopicPh: "Tema (nebūtina)", levelAny: "Bet koks", count: "Kiekis", generating: "Generuoju…" },
-    lv:  { title: "Kopas", desc: "Savas vārdu kopas — mācies tās atsevišķi vai pievieno ikdienas sesijai", newSet: "Jauna kopa", create: "Izveidot", rename: "Pārdēvēt", del: "Dzēst", delConfirm: "Dzēst kopu? Vārdu progress tiks saglabāts.", studySet: "Mācīties kopu", searchWords: "Meklēt vārdus", studying: "Ikdienas mācībās", studyingHint: "Kopas vārdi nonāk gudrajā sesijā «Šodien»", move: "Pārvietot uz…", moveTitle: "Pārvietot uz kopu", remove: "Noņemt no kopas", noSets: "Vēl nav nevienas kopas", noSetsHint: "Izveido vārdu kopu un mācies to atsevišķi", noWords: "Kopā vēl nav vārdu", noWordsHint: "Atrodi vārdus meklēšanā un pievieno tos šeit", toStart: "vēl {k} līdz startam", namePh: "Kopas nosaukums", save: "Saglabāt", noOther: "Citu kopu nav", words: "vārdi", openSearch: "Izvērst meklēšanu", openSet: "Izvērst kopu", learned: "apgūts", generate: "Ģenerēt", genTitle: "Ģenerēt vārdus", genTopicPh: "Tēma (neobligāti)", levelAny: "Jebkurš", count: "Skaits", generating: "Ģenerēju…" },
-    ar:  { title: "المجموعات", desc: "مجموعات كلماتك الخاصة — ادرسها وحدها أو أضِفها إلى جلسة اليوم", newSet: "مجموعة جديدة", create: "إنشاء", rename: "إعادة تسمية", del: "حذف", delConfirm: "حذف المجموعة؟ سيُحفَظ تقدّم الكلمات.", studySet: "ادرس المجموعة", searchWords: "البحث عن كلمات", studying: "في الدراسة اليومية", studyingHint: "تدخل كلمات المجموعة جلسة «اليوم» الذكية", move: "نقل إلى…", moveTitle: "نقل إلى مجموعة", remove: "إزالة من المجموعة", noSets: "لا توجد مجموعات بعد", noSetsHint: "أنشئ مجموعة كلمات وادرسها وحدها", noWords: "لا توجد كلمات في هذه المجموعة بعد", noWordsHint: "ابحث عن كلمات وأضِفها هنا", toStart: "بعد {k} للبدء", namePh: "اسم المجموعة", save: "حفظ", noOther: "لا توجد مجموعات أخرى", words: "كلمات", openSearch: "توسيع البحث", openSet: "توسيع المجموعة", learned: "مُتعلَّم", generate: "توليد", genTitle: "توليد كلمات", genTopicPh: "الموضوع (اختياري)", levelAny: "أي", count: "العدد", generating: "جارٍ التوليد…" },
+    ru:  { title: "Наборы", desc: "Свои подборки слов — учи их отдельно или подключай к ежедневной сессии", newSet: "Создать набор", create: "Создать", rename: "Переименовать", del: "Удалить", delConfirm: "Удалить набор? Прогресс по словам сохранится.", studySet: "Учить набор", searchWords: "Поиск слов", studying: "В ежедневной учёбе", studyingHint: "Слова набора попадают в умную сессию «Сегодня»", move: "Переместить в…", moveTitle: "Переместить в набор", remove: "Убрать из набора", noSets: "Пока нет наборов", noSetsHint: "Создай подборку слов и учи её отдельно", noWords: "В наборе пока нет слов", noWordsHint: "Найди слова в поиске и добавь их сюда", toStart: "ещё {k} до старта", namePh: "Название набора", save: "Сохранить", noOther: "Нет других наборов", words: "слов", openSearch: "Развернуть поиск", openSet: "Развернуть набор", learned: "выучено", generate: "Сгенерировать", genTitle: "Сгенерировать слова", genTopicPh: "Тема (необязательно)", levelAny: "Любой", count: "Количество", generating: "Генерирую…", cancel: "Отмена", needUnlearned: "нужно ≥5 невыученных", allLearned: "всё выучено 🎉", resetRamp: "Учить заново", genTopicTpl: "Тема: «{n}», можно ввести свою", resetConfirm: "Сбросить прогресс {n} слов и учить заново?" },
+    en:  { title: "Sets", desc: "Your own word collections — study them on their own or feed the daily session", newSet: "New set", create: "Create", rename: "Rename", del: "Delete", delConfirm: "Delete this set? Word progress is kept.", studySet: "Study set", searchWords: "Search words", studying: "In daily study", studyingHint: "Set words join the smart “Today” session", move: "Move to…", moveTitle: "Move to set", remove: "Remove from set", noSets: "No sets yet", noSetsHint: "Create a word collection and study it on its own", noWords: "No words in this set yet", noWordsHint: "Find words in the search and add them here", toStart: "{k} more to start", namePh: "Set name", save: "Save", noOther: "No other sets", words: "words", openSearch: "Expand search", openSet: "Expand set", learned: "learned", generate: "Generate", genTitle: "Generate words", genTopicPh: "Topic (optional)", levelAny: "Any", count: "Count", generating: "Generating…", cancel: "Cancel", needUnlearned: "need ≥5 unlearned", allLearned: "all learned 🎉", resetRamp: "Study again", genTopicTpl: "Topic: “{n}”, or type your own", resetConfirm: "Reset progress of {n} words and study again?" },
+    ukr: { title: "Набори", desc: "Власні добірки слів — вивчай їх окремо або підключай до щоденної сесії", newSet: "Створити набір", create: "Створити", rename: "Перейменувати", del: "Видалити", delConfirm: "Видалити набір? Прогрес за словами збережеться.", studySet: "Вчити набір", searchWords: "Пошук слів", studying: "У щоденному навчанні", studyingHint: "Слова набору потрапляють у розумну сесію «Сьогодні»", move: "Перемістити в…", moveTitle: "Перемістити в набір", remove: "Прибрати з набору", noSets: "Поки немає наборів", noSetsHint: "Створи добірку слів і вчи її окремо", noWords: "У наборі поки немає слів", noWordsHint: "Знайди слова в пошуку й додай їх сюди", toStart: "ще {k} до старту", namePh: "Назва набору", save: "Зберегти", noOther: "Немає інших наборів", words: "слів", openSearch: "Розгорнути пошук", openSet: "Розгорнути набір", learned: "вивчено", generate: "Згенерувати", genTitle: "Згенерувати слова", genTopicPh: "Тема (необов’язково)", levelAny: "Будь-який", count: "Кількість", generating: "Генерую…", cancel: "Скасувати", needUnlearned: "потрібно ≥5 невивчених", allLearned: "усе вивчено 🎉", resetRamp: "Вчити заново", genTopicTpl: "Тема: «{n}», можна ввести свою", resetConfirm: "Скинути прогрес {n} слів і вчити заново?" },
+    pl:  { title: "Zestawy", desc: "Własne zbiory słów — ucz się ich osobno lub dołącz je do codziennej sesji", newSet: "Nowy zestaw", create: "Utwórz", rename: "Zmień nazwę", del: "Usuń", delConfirm: "Usunąć zestaw? Postępy w słowach zostaną zachowane.", studySet: "Ucz się zestawu", searchWords: "Szukaj słów", studying: "W codziennej nauce", studyingHint: "Słowa z zestawu trafiają do inteligentnej sesji „Dziś”", move: "Przenieś do…", moveTitle: "Przenieś do zestawu", remove: "Usuń z zestawu", noSets: "Brak zestawów", noSetsHint: "Utwórz zbiór słów i ucz się go osobno", noWords: "Brak słów w tym zestawie", noWordsHint: "Znajdź słowa w wyszukiwaniu i dodaj je tutaj", toStart: "jeszcze {k} do startu", namePh: "Nazwa zestawu", save: "Zapisz", noOther: "Brak innych zestawów", words: "słów", openSearch: "Rozwiń wyszukiwanie", openSet: "Rozwiń zestaw", learned: "nauczono", generate: "Wygeneruj", genTitle: "Wygeneruj słowa", genTopicPh: "Temat (opcjonalnie)", levelAny: "Dowolny", count: "Liczba", generating: "Generuję…", cancel: "Anuluj", needUnlearned: "potrzeba ≥5 nienauczonych", allLearned: "wszystko nauczone 🎉", resetRamp: "Ucz się od nowa", genTopicTpl: "Temat: „{n}”, lub wpisz własny", resetConfirm: "Zresetować postęp {n} słów i uczyć się od nowa?" },
+    lt:  { title: "Rinkiniai", desc: "Savi žodžių rinkiniai — mokykis jų atskirai arba įtrauk į kasdienę sesiją", newSet: "Naujas rinkinys", create: "Sukurti", rename: "Pervadinti", del: "Ištrinti", delConfirm: "Ištrinti rinkinį? Žodžių pažanga išliks.", studySet: "Mokytis rinkinio", searchWords: "Ieškoti žodžių", studying: "Kasdienėje mokymosi sesijoje", studyingHint: "Rinkinio žodžiai patenka į išmaniąją „Šiandien“ sesiją", move: "Perkelti į…", moveTitle: "Perkelti į rinkinį", remove: "Pašalinti iš rinkinio", noSets: "Rinkinių dar nėra", noSetsHint: "Sukurk žodžių rinkinį ir mokykis jo atskirai", noWords: "Rinkinyje dar nėra žodžių", noWordsHint: "Surask žodžius paieškoje ir pridėk juos čia", toStart: "dar {k} iki starto", namePh: "Rinkinio pavadinimas", save: "Išsaugoti", noOther: "Kitų rinkinių nėra", words: "žodžių", openSearch: "Išskleisti paiešką", openSet: "Išskleisti rinkinį", learned: "išmokta", generate: "Generuoti", genTitle: "Generuoti žodžius", genTopicPh: "Tema (nebūtina)", levelAny: "Bet koks", count: "Kiekis", generating: "Generuoju…", cancel: "Atšaukti", needUnlearned: "reikia ≥5 neišmoktų", allLearned: "viskas išmokta 🎉", resetRamp: "Mokytis iš naujo", genTopicTpl: "Tema: „{n}“, arba įveskite savo", resetConfirm: "Atstatyti {n} žodžių pažangą ir mokytis iš naujo?" },
+    lv:  { title: "Kopas", desc: "Savas vārdu kopas — mācies tās atsevišķi vai pievieno ikdienas sesijai", newSet: "Jauna kopa", create: "Izveidot", rename: "Pārdēvēt", del: "Dzēst", delConfirm: "Dzēst kopu? Vārdu progress tiks saglabāts.", studySet: "Mācīties kopu", searchWords: "Meklēt vārdus", studying: "Ikdienas mācībās", studyingHint: "Kopas vārdi nonāk gudrajā sesijā «Šodien»", move: "Pārvietot uz…", moveTitle: "Pārvietot uz kopu", remove: "Noņemt no kopas", noSets: "Vēl nav nevienas kopas", noSetsHint: "Izveido vārdu kopu un mācies to atsevišķi", noWords: "Kopā vēl nav vārdu", noWordsHint: "Atrodi vārdus meklēšanā un pievieno tos šeit", toStart: "vēl {k} līdz startam", namePh: "Kopas nosaukums", save: "Saglabāt", noOther: "Citu kopu nav", words: "vārdi", openSearch: "Izvērst meklēšanu", openSet: "Izvērst kopu", learned: "apgūts", generate: "Ģenerēt", genTitle: "Ģenerēt vārdus", genTopicPh: "Tēma (neobligāti)", levelAny: "Jebkurš", count: "Skaits", generating: "Ģenerēju…", cancel: "Atcelt", needUnlearned: "vajag ≥5 neapgūtus", allLearned: "viss apgūts 🎉", resetRamp: "Mācīties no jauna", genTopicTpl: "Tēma: «{n}», vai ievadiet savu", resetConfirm: "Atiestatīt {n} vārdu progresu un mācīties no jauna?" },
+    ar:  { title: "المجموعات", desc: "مجموعات كلماتك الخاصة — ادرسها وحدها أو أضِفها إلى جلسة اليوم", newSet: "مجموعة جديدة", create: "إنشاء", rename: "إعادة تسمية", del: "حذف", delConfirm: "حذف المجموعة؟ سيُحفَظ تقدّم الكلمات.", studySet: "ادرس المجموعة", searchWords: "البحث عن كلمات", studying: "في الدراسة اليومية", studyingHint: "تدخل كلمات المجموعة جلسة «اليوم» الذكية", move: "نقل إلى…", moveTitle: "نقل إلى مجموعة", remove: "إزالة من المجموعة", noSets: "لا توجد مجموعات بعد", noSetsHint: "أنشئ مجموعة كلمات وادرسها وحدها", noWords: "لا توجد كلمات في هذه المجموعة بعد", noWordsHint: "ابحث عن كلمات وأضِفها هنا", toStart: "بعد {k} للبدء", namePh: "اسم المجموعة", save: "حفظ", noOther: "لا توجد مجموعات أخرى", words: "كلمات", openSearch: "توسيع البحث", openSet: "توسيع المجموعة", learned: "مُتعلَّم", generate: "توليد", genTitle: "توليد كلمات", genTopicPh: "الموضوع (اختياري)", levelAny: "أي", count: "العدد", generating: "جارٍ التوليد…", cancel: "إلغاء", needUnlearned: "يلزم ≥5 غير متعلَّمة", allLearned: "كل شيء متعلَّم 🎉", resetRamp: "ادرس من جديد", genTopicTpl: "الموضوع: «{n}»، أو أدخل موضوعك", resetConfirm: "إعادة ضبط تقدّم {n} كلمة والدراسة من جديد؟" },
 }, "SetsTab.L");
 
-const MIN_STUDY = 10;   // «Учить набор» доступно только когда в наборе ≥ 10 слов
+const MIN_UNLEARNED = 5;   // «Учить набор» доступно, когда в наборе ≥5 НЕвыученных слов
 // Мобильная раскладка: высоты свёрнутых полосок и разделителя (для расчёта высот панелей + анимации)
 const DIVIDER_H = 30, SEARCH_COLLAPSED = 58, SET_COLLAPSED = 58;
 
@@ -49,8 +49,10 @@ export default function SetsTab({ lang, openSession, openWord }) {
     const [words, setWords] = useState([]);
     const [wLoading, setWLoading] = useState(false);
     const [prompt, setPrompt] = useState(null);   // { mode:'create'|'rename', value, id }
-    const [gen, setGen] = useState(null);         // null | { topic, level, count } — открыта модалка генерации
+    const [gen, setGen] = useState(null);         // null | { topic, levels, count } — открыта модалка генерации
     const [genBusy, setGenBusy] = useState(false);
+    const [confirmDel, setConfirmDel] = useState(null); // набор, ожидающий подтверждения удаления
+    const [confirmReset, setConfirmReset] = useState(false); // подтверждение сброса прогресса набора
     const [busy, setBusy] = useState(false);
     const [hoverPid, setHoverPid] = useState(null); // наведённое слева слово → подсветка в наборе справа
     const isMobile = useIsMobile();
@@ -123,7 +125,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
     };
 
     const delSet = async (id) => {
-        if (!window.confirm(ll.delConfirm)) return;
+        setConfirmDel(null);
         await api.setDelete(id).catch(() => {});
         await loadSets();
     };
@@ -135,21 +137,29 @@ export default function SetsTab({ lang, openSession, openWord }) {
 
     const addToSet = async (poolId) => { await api.setAddWords(activeId, [poolId]); await loadWords(activeId); await loadSets(activeId); };
     const removeWord = async (poolId) => { await api.setRemoveWord(activeId, poolId).catch(() => {}); await loadWords(activeId); await loadSets(activeId); };
-    const studySet = () => { if ((active?.count || 0) >= MIN_STUDY) openSession?.(null, "choice", { setId: active.id }); };
     const learned = useMemo(() => words.filter((w) => w.status === "mastered").length, [words]);
+    const unlearned = words.length - learned;
+    const allLearned = words.length > 0 && unlearned === 0;
+    const canStudy = unlearned >= MIN_UNLEARNED;
+    const studySet = () => { if (canStudy) openSession?.(null, "choice", { setId: active.id }); };
+    const doReset = async () => {
+        if (!activeId) return;
+        setConfirmReset(false);
+        await api.setReset(activeId).catch(() => {});
+        await loadWords(activeId); await loadSets(activeId);
+    };
     const doGenerate = async () => {
         if (genBusy || !activeId || !gen) return;
         setGenBusy(true);
         try {
-            await api.setGenerate(activeId, { topic: (gen.topic || "").trim(), level: gen.level || "", count: gen.count, lang });
+            await api.setGenerate(activeId, { topic: (gen.topic || "").trim() || (active?.name || ""), level: (gen.levels || []).join(", "), count: gen.count, lang });
             setGen(null);
             await loadWords(activeId); await loadSets(activeId);
         } catch { setGen(null); } finally { setGenBusy(false); }
     };
 
     // ---- готовые куски: используются и в десктоп-двухколонке, и в мобильной раскладке ----
-    const studyDisabled = (active?.count || 0) < MIN_STUDY;
-    const studyTitle = studyDisabled ? ll.toStart.replace("{k}", MIN_STUDY - (active?.count || 0)) : ll.studySet;
+    const studyTitle = allLearned ? ll.allLearned : (canStudy ? ll.studySet : ll.needUnlearned);
 
     const searchFull = (
         <PoolSearchPanel lang={lang} setId={activeId} inSet={inSet} onPick={addToSet} onRemove={removeWord}
@@ -170,19 +180,25 @@ export default function SetsTab({ lang, openSession, openWord }) {
                 <span className="sets-pane__title">
                     <b>{active.name}</b>
                     <span className="muted">· {active.count} {pl(lang, active.count, "word")}
-                        {active.count < MIN_STUDY && <> · {ll.toStart.replace("{k}", MIN_STUDY - active.count)}</>}
+                        {!canStudy && !allLearned && <> · {ll.needUnlearned}</>}
                     </span>
                 </span>
                 <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                    <button className="btn btn--ghost btn--sm" onClick={() => setGen({ topic: "", level: "", count: 10 })} title={ll.generate}>
-                        <Icon n="sparkles" sm /> {ll.generate}
+                    <button className="btn btn--sm btn--gen" onClick={() => setGen({ topic: "", levels: [], count: 10 })} title={ll.generate}>
+                        <Icon n="sparkles" /> <span className="hide-narrow">{ll.generate}</span>
                     </button>
-                    <button className="btn btn--accent btn--sm" disabled={studyDisabled} onClick={studySet} title={studyTitle}>
-                        <Icon n="play" sm /> {ll.studySet}
-                    </button>
+                    {allLearned ? (
+                        <button className="btn btn--accent btn--sm" onClick={() => setConfirmReset(true)} title={ll.resetRamp}>
+                            <Icon n="repeat" sm /> <span className="hide-narrow">{ll.resetRamp}</span>
+                        </button>
+                    ) : (
+                        <button className="btn btn--accent btn--sm" disabled={!canStudy} onClick={studySet} title={studyTitle}>
+                            <Icon n="play" sm /> <span className="hide-narrow">{ll.studySet}</span>
+                        </button>
+                    )}
                     <ActionMenu icon="more" align="right" items={[
                         { key: "rename", label: ll.rename, icon: "edit", onClick: () => setPrompt({ mode: "rename", value: active.name, id: active.id }) },
-                        { key: "del", label: ll.del, icon: "trash", danger: true, onClick: () => delSet(active.id) },
+                        { key: "del", label: ll.del, icon: "trash", danger: true, onClick: () => setConfirmDel(active) },
                     ]} />
                 </span>
             </div>
@@ -209,14 +225,14 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     <div className="empty__ic"><Icon n="sparkles" lg /></div>
                     <div className="empty__t">{ll.noWords}</div>
                     <div className="empty__d">{ll.noWordsHint}</div>
-                    <button className="btn btn--accent btn--sm" style={{ marginTop: "var(--sp-3)" }} onClick={() => setGen({ topic: "", level: "", count: 10 })}>
-                        <Icon n="sparkles" sm /> {ll.generate}
+                    <button className="btn btn--sm btn--gen" style={{ marginTop: "var(--sp-3)" }} onClick={() => setGen({ topic: "", levels: [], count: 10 })}>
+                        <Icon n="sparkles" /> {ll.generate}
                     </button>
                 </div>
             ) : (
                 <div className="wordlist" style={wLoading ? { opacity: .5 } : undefined}>
                     {words.map((w) => (
-                        <WordCard key={w.pool_id} word={w} lang={lang} t={t} flat status={w.status}
+                        <WordCard key={w.pool_id} word={w} lang={lang} t={t} flat status={w.status} ramp={w.ramp}
                             added highlight={hoverPid != null && w.pool_id === hoverPid}
                             onToggle={() => removeWord(w.pool_id)}
                             onInfo={openWord ? (() => openWord(w.norwegian)) : undefined} />
@@ -244,8 +260,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
         <div className="sets-tab">
             <div className="page-head" style={{ marginBottom: "var(--sp-3)" }}>
                 <div>
-                    <h2 style={{ margin: 0, fontSize: "var(--fs-22)", fontWeight: 700 }}>{ll.title}</h2>
-                    <p className="muted" style={{ margin: "2px 0 0" }}>{ll.desc}</p>
+                    <p className="muted" style={{ margin: 0 }}>{ll.desc}</p>
                 </div>
             </div>
 
@@ -317,33 +332,49 @@ export default function SetsTab({ lang, openSession, openWord }) {
             <Modal open={!!gen} onClose={() => { if (!genBusy) setGen(null); }} title={ll.genTitle} maxWidth={460}>
                 {gen && (
                     <>
-                        <input className="input" autoFocus value={gen.topic} placeholder={ll.genTopicPh}
+                        {/* тема по умолчанию = имя набора (в плейсхолдере: ввод нативно перезаписывает) */}
+                        <input className="input" autoFocus value={gen.topic} placeholder={active?.name ? ll.genTopicTpl.replace("{n}", active.name) : ll.genTopicPh}
                             onChange={(e) => setGen((g) => ({ ...g, topic: e.target.value }))} style={{ width: "100%" }} />
-                        <div className="chiprow chiprow--scroll" style={{ marginTop: "var(--sp-2)" }}>
-                            {Object.keys(t.topics || {}).map((k) => {
-                                const lbl = t.topics[k];
-                                return (
-                                    <button key={k} className={"fchip" + (gen.topic === lbl ? " is-on" : "")}
-                                        onClick={() => setGen((g) => ({ ...g, topic: g.topic === lbl ? "" : lbl }))}>{lbl}</button>
-                                );
-                            })}
-                        </div>
                         <div className="muted" style={{ fontSize: "var(--fs-13)", margin: "var(--sp-3) 0 4px" }}>CEFR</div>
-                        <div className="seg seg--wrap">
-                            <button className={"seg__item" + (!gen.level ? " is-active" : "")} onClick={() => setGen((g) => ({ ...g, level: "" }))}>{ll.levelAny}</button>
+                        {/* уровни — чипы, множественный выбор; «Любой» = пустой выбор (взаимоисключающе) */}
+                        <div className="chiprow" style={{ flexWrap: "wrap", gap: "var(--sp-2)" }}>
+                            <button className={"fchip" + (gen.levels.length === 0 ? " is-on" : "")} onClick={() => setGen((g) => ({ ...g, levels: [] }))}>{ll.levelAny}</button>
                             {["A1", "A2", "B1", "B2", "C1", "C2"].map((lv) => (
-                                <button key={lv} className={"seg__item" + (gen.level === lv ? " is-active" : "")} onClick={() => setGen((g) => ({ ...g, level: lv }))}>{lv}</button>
+                                <button key={lv} className={"fchip" + (gen.levels.includes(lv) ? " is-on" : "")}
+                                    onClick={() => setGen((g) => ({ ...g, levels: g.levels.includes(lv) ? g.levels.filter((x) => x !== lv) : [...g.levels, lv] }))}>{lv}</button>
                             ))}
                         </div>
                         <div className="muted" style={{ fontSize: "var(--fs-13)", margin: "var(--sp-3) 0 4px" }}>{ll.count}: <b style={{ color: "var(--ink)" }}>{gen.count}</b></div>
-                        <input type="range" min="1" max="20" value={gen.count} style={{ width: "100%" }}
+                        <input type="range" min="5" max="20" value={gen.count} style={{ width: "100%" }}
                             onChange={(e) => setGen((g) => ({ ...g, count: Number(e.target.value) }))} />
                         <button className="btn btn--accent btn--block" style={{ marginTop: "var(--sp-4)" }}
-                            disabled={genBusy || gen.count < 1} onClick={doGenerate}>
+                            disabled={genBusy || gen.count < 5} onClick={doGenerate}>
                             {genBusy ? <BtnSpinner /> : <Icon n="sparkles" sm />} {genBusy ? ll.generating : ll.generate}
                         </button>
                     </>
                 )}
+            </Modal>
+
+            {/* подтверждение удаления набора (модалка вместо системного confirm) */}
+            <Modal open={!!confirmDel} onClose={() => setConfirmDel(null)} title={ll.del} maxWidth={400}>
+                <p style={{ margin: "0 0 var(--sp-4)" }}>{ll.delConfirm}</p>
+                <div className="row" style={{ gap: "var(--sp-2)", justifyContent: "flex-end" }}>
+                    <button className="btn btn--ghost" onClick={() => setConfirmDel(null)}>{ll.cancel}</button>
+                    <button className="btn btn--danger" onClick={() => delSet(confirmDel.id)}>
+                        <Icon n="trash" sm /> {ll.del}
+                    </button>
+                </div>
+            </Modal>
+
+            {/* подтверждение сброса прогресса набора (рампа выученных слов → звуковое задание) */}
+            <Modal open={confirmReset} onClose={() => setConfirmReset(false)} title={ll.resetRamp} maxWidth={400}>
+                <p style={{ margin: "0 0 var(--sp-4)" }}>{ll.resetConfirm.replace("{n}", String(learned))}</p>
+                <div className="row" style={{ gap: "var(--sp-2)", justifyContent: "flex-end" }}>
+                    <button className="btn btn--ghost" onClick={() => setConfirmReset(false)}>{ll.cancel}</button>
+                    <button className="btn btn--accent" onClick={doReset}>
+                        <Icon n="repeat" sm /> {ll.resetRamp}
+                    </button>
+                </div>
             </Modal>
         </div>
     );

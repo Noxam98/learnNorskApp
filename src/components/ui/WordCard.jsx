@@ -8,6 +8,7 @@ import { BtnSpinner } from "./Spinner.jsx";
 import { SpeakButton } from "./SpeakButton.jsx";
 import { posMeta, posLabel, chipPrefix } from "./pos.js";
 import { ttsLang } from "./tts.js";
+import { RampBar } from "../learning/StatusBits.jsx";
 
 /**
  * @param {{
@@ -19,7 +20,7 @@ import { ttsLang } from "./tts.js";
  *   в «Наборах», где обе колонки должны выглядеть одинаково (иначе правая вся зелёная).
  *   onHover — наведение/уход (для подсветки того же слова в другой колонке).
  */
-export function WordCard({ word, lang, t, added = false, busy = false, highlight = false, flat = false, isAdmin = false, status = null, onToggle, onInfo, onAdminDelete, onHover }) {
+export function WordCard({ word, lang, t, added = false, busy = false, highlight = false, flat = false, isAdmin = false, status = null, ramp = null, onToggle, onInfo, onAdminDelete, onHover }) {
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const no = word.word ?? word.norwegian;
@@ -37,7 +38,8 @@ export function WordCard({ word, lang, t, added = false, busy = false, highlight
                     {no}
                 </span>
                 <span className="wcard__meta">
-                    {status && <span className={"wstatus wstatus--" + status} title={status} />}
+                    {ramp ? <RampBar done={ramp.done} total={ramp.total} sm />
+                        : status ? <span className={"wstatus wstatus--" + status} title={status} /> : null}
                     {word.level && <span className="chip lvl">{word.level}</span>}
                     <span className={`chip pos ${cls}`}>{posLabel(word.part_of_speech, t)}</span>
                     {isAdmin && !word.hasEmbedding && <span className="chip" style={{ background: "#fee2e2", color: "#b91c1c" }} title="нет эмбеддинга">emb</span>}

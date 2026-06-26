@@ -659,7 +659,7 @@
 /* ===== «Наборы» на мобилке (≤760): одна панель активна, вторая свёрнута в полоску ===== */
 /* Компактный поиск (набор активен): строка поиска; результаты — попап-ОВЕРЛЕЙ (position:fixed,
    вне вёрстки панели, над содержимым — не клипается overflow:hidden панелей и не двигает раскладку). */
-.searchpane--compact { gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); }
+.searchpane--compact { gap: 0; padding: 0; }
 .searchpop {
     position: fixed; z-index: 60; border: 1px solid var(--surface-3); box-shadow: var(--shadow-lg);
     border-radius: var(--r-md); background: var(--surface); max-height: 50vh; overflow-y: auto; padding: var(--sp-1);
@@ -681,6 +681,14 @@
 .fchip--add .ic { width: 16px; height: 16px; }
 .fchip--add:hover { background: var(--fjord-50, var(--surface-3)); color: var(--fjord-700, var(--fjord-600)); }
 
+/* кнопка генерации — голубой фон (адаптивно к теме через color-mix) + крупнее значок */
+.btn--gen { background: color-mix(in srgb, #2e90e0 16%, transparent); color: #2e90e0; border: 1px solid color-mix(in srgb, #2e90e0 28%, transparent); }
+.btn--gen:hover { background: color-mix(in srgb, #2e90e0 26%, transparent); }
+/* значок крупнее, но отрицательный верт. margin не даёт ему растянуть кнопку — высота как у btn--sm */
+.btn--gen .ic { width: 19px; height: 19px; margin-top: -3px; margin-bottom: -3px; }
+/* подпись, скрываемая на узких экранах (иконка остаётся) */
+@media (max-width: 560px) { .hide-narrow { display: none; } }
+
 /* статус-точка слова в наборе (новое/учится/выучено) */
 .wstatus { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
 .wstatus--new { background: var(--border); }
@@ -701,7 +709,8 @@
     .sets-tab .chiprow { margin-bottom: var(--sp-2) !important; }
 
     .sets-mob { display: flex; flex-direction: column; overflow: hidden; min-height: 240px;
-        border: 1px solid var(--surface-3); border-radius: var(--r-lg); }   /* высота — inline из JS (под экран) */
+        border: 1px solid var(--surface-3); border-bottom: none;
+        border-radius: var(--r-lg) var(--r-lg) 0 0; }   /* нижние углы без скругления; высота — inline из JS */
     /* высоту панелей задаём inline (searchH/setH) → анимируем height при переключении */
     .sets-mpane { display: flex; flex-direction: column; min-height: 0; overflow: hidden;
         transition: height .28s var(--ease); }

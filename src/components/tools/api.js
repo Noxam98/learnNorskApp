@@ -338,6 +338,7 @@ class ApiService {
     setsMembership(poolIds) { return this._send('POST', '/sets/membership', { pool_ids: poolIds }); } // pool_id → [set_id]
     setSession(id, size = 20, lang = 'ru') { return this._send('GET', `/sets/${id}/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
     setGenerate(id, { topic = "", level = "", count = 10, lang = 'ru' } = {}) { return this._send('POST', `/sets/${id}/generate`, { topic, level, count, lang }); } // ИИ-генерация слов в набор
+    setReset(id) { return this._send('POST', `/sets/${id}/reset`); }   // сброс рампы выученных слов набора
 
     // Веб-пуши (напоминания о бездействии)
     pushVapidKey() { return this._send('GET', '/push/vapid'); }
