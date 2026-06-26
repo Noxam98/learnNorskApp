@@ -17,12 +17,6 @@ import { wordCount } from "../components/tools/plural.js";
 const GOOGLE_ON = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 // Локальные подписи (статистика теперь из «Учёбы», а не из личных словарей).
-const MASTERED_LBL = { ru: "Выучено", ukr: "Вивчено", en: "Mastered", pl: "Opanowane", lt: "Išmokta" };
-const LEVEL_LBL = { ru: "Уровень", ukr: "Рівень", en: "Level", pl: "Poziom", lt: "Lygis" };
-const OPEN_STUDY = { ru: "Открыть Учёбу", ukr: "Відкрити Навчання", en: "Open Learning", pl: "Otwórz Naukę", lt: "Atverti mokymąsi" };
-const ADMIN_LBL = { ru: "Админ", ukr: "Адмін", en: "Admin", pl: "Admin", lt: "Administratorius" };
-const MOD_LBL = { ru: "Модерация", ukr: "Модерація", en: "Moderation", pl: "Moderacja", lt: "Moderacija" };
-const STATS_LBL = { ru: "Статистика", ukr: "Статистика", en: "Stats", pl: "Statystyki", lt: "Statistika" };
 const STATUS_ORDER = ["new", "in_progress", "repeat", "mastered"];
 const STATUS_LBL = {
     new: { ru: "Новые", ukr: "Нові", en: "New", pl: "Nowe", lt: "Nauji" },
@@ -175,7 +169,7 @@ const MyPage = () => {
                 <div className="pavatar">{avatar}</div>
                 <div className="phead__meta">
                     <div className="phead__name">{displayName}</div>
-                    <div className="phead__sub">{user?.name ? `@${username} · ` : ""}{wordCount(total, currentLanguage)} · {LEVEL_LBL[currentLanguage] || LEVEL_LBL.en} {currentLevel}</div>
+                    <div className="phead__sub">{user?.name ? `@${username} · ` : ""}{wordCount(total, currentLanguage)} · {t.levelLbl} {currentLevel}</div>
                 </div>
                 <button className="btn btn--outline" onClick={logOut}><Icon n="logout" sm /> {t.logout}</button>
             </div>
@@ -189,7 +183,7 @@ const MyPage = () => {
                 <div className="scard">
                     <div className="scard__ic" style={{ background: "var(--success-bg)", color: "var(--success)" }}><Icon n="target" /></div>
                     <div className="scard__n">{masteredTotal}</div>
-                    <div className="scard__l">{MASTERED_LBL[currentLanguage] || MASTERED_LBL.en}</div>
+                    <div className="scard__l">{t.masteredLbl}</div>
                 </div>
                 <div className="scard">
                     <div className="scard__ic" style={{ background: "var(--pos-adj-bg)", color: "var(--pos-adj)" }}><Icon n="check" /></div>
@@ -199,20 +193,20 @@ const MyPage = () => {
                 <div className="scard">
                     <div className="scard__ic" style={{ background: "var(--ember-50)", color: "var(--ember-600)" }}><Icon n="graduation" /></div>
                     <div className="scard__n">{currentLevel}</div>
-                    <div className="scard__l">{LEVEL_LBL[currentLanguage] || LEVEL_LBL.en}</div>
+                    <div className="scard__l">{t.levelLbl}</div>
                 </div>
             </div>
 
             {isAdmin && (
                 <div className="panel" style={{ marginBottom: "var(--sp-5)" }}>
-                    <div className="panel__head"><span className="panel__title">{ADMIN_LBL[currentLanguage] || ADMIN_LBL.en}</span></div>
+                    <div className="panel__head"><span className="panel__title">{t.adminLbl}</span></div>
                     <div className="panel__body" style={{ display: "flex", gap: "var(--sp-3)", flexWrap: "wrap" }}>
                         <button className="btn btn--outline" onClick={() => navigate("/moderation")}>
-                            <Icon n="check-circle" sm /> {MOD_LBL[currentLanguage] || MOD_LBL.en}
+                            <Icon n="check-circle" sm /> {t.modLbl}
                             {pendingCount > 0 && <span className="fchip__n" style={{ marginLeft: 6 }}>{pendingCount}</span>}
                         </button>
                         <button className="btn btn--outline" onClick={() => navigate("/stats")}>
-                            <Icon n="chart" sm /> {STATS_LBL[currentLanguage] || STATS_LBL.en}
+                            <Icon n="chart" sm /> {t.statsLbl}
                         </button>
                     </div>
                 </div>
@@ -237,7 +231,7 @@ const MyPage = () => {
                             );
                         })}
                         <button className="btn btn--outline" style={{ marginTop: "var(--sp-3)" }} onClick={() => navigate("/learning")}>
-                            <Icon n="graduation" sm /> {OPEN_STUDY[currentLanguage] || OPEN_STUDY.en}
+                            <Icon n="graduation" sm /> {t.openStudy}
                         </button>
                     </div>
                 </div>

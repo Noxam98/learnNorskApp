@@ -20,13 +20,6 @@ import { ttsLang } from "../components/ui/tts.js";
 const SEARCH_DEBOUNCE_MS = 550;
 const PAGE_SIZES = [30, 60, 120];
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
-const CATEGORIES_LBL = { ru: "Категории", ukr: "Категорії", en: "Categories", pl: "Kategorie", lt: "Kategorijos" };
-const POS_TOGGLE = { ru: "Часть речи", ukr: "Частина мови", en: "Part of speech", pl: "Część mowy", lt: "Kalbos dalis" };
-const CREATE_LBL = { ru: "Создать", ukr: "Створити", en: "Create", pl: "Utwórz", lt: "Sukurti" };
-const SHOW_LBL = { ru: "Показать", ukr: "Показати", en: "Show", pl: "Pokaż", lt: "Rodyti" };
-const ADDED_LRN = { ru: "добавлено в Учёбу", ukr: "додано до навчання", en: "added to Learning", pl: "dodano do nauki", lt: "pridėta į mokymąsi" };
-const REMOVED_LRN = { ru: "убрано из Учёбы", ukr: "прибрано з навчання", en: "removed from Learning", pl: "usunięto z nauki", lt: "pašalinta iš mokymosi" };
-const DATA_LBL = { ru: "Данные", ukr: "Дані", en: "Data", pl: "Dane", lt: "Duomenys" };
 
 const topicLabel = (t, key) => t.topics?.[key] || key;
 
@@ -171,7 +164,7 @@ export const PoolPage = () => {
         const id = w.pool_id;
         setAddingId(id);
         setAdded((a) => ({ ...a, [id]: true }));
-        try { await addToLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${ADDED_LRN[currentLanguage] || ADDED_LRN.en}`, "success"); }
+        try { await addToLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${t.addedToLearning}`, "success"); }
         catch { setAdded((a) => { const n = { ...a }; delete n[id]; return n; }); }
         setAddingId(null);
     };
@@ -220,7 +213,7 @@ export const PoolPage = () => {
             if (res?.pool_id) {
                 await addToLearning(res.pool_id);
                 setAdded((a) => ({ ...a, [res.pool_id]: true }));
-                useSystemStore.getState().showToast(`«${name}» ${ADDED_LRN[currentLanguage] || ADDED_LRN.en}`, "success");
+                useSystemStore.getState().showToast(`«${name}» ${t.addedToLearning}`, "success");
                 // закрепить созданное слово вверху списка — вдруг ИИ выдал другую форму/перевод и
                 // оно не попадает под текущий запрос (иначе кажется, что добавление не сработало).
                 try {
@@ -248,7 +241,7 @@ export const PoolPage = () => {
         const id = w.pool_id;
         setAdded((a) => { const n = { ...a }; delete n[id]; return n; });
         setAddingId(id);
-        try { await removeFromLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${REMOVED_LRN[currentLanguage] || REMOVED_LRN.en}`, "warning"); }
+        try { await removeFromLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${t.removedFromLearning}`, "warning"); }
         catch { setAdded((a) => ({ ...a, [id]: true })); }
         setAddingId(null);
     };
@@ -294,7 +287,7 @@ export const PoolPage = () => {
                     tabIndex={(showGen || showShow) ? 0 : -1}
                     onClick={() => (showShow ? onShow(poolExact.word) : onGenerateAdd(appliedQ.trim()))}>
                     {showShow ? <Icon n="arrow-down" sm /> : (smartBusy && smartBusy === appliedQ.trim() ? <BtnSpinner /> : <Icon n="sparkles" sm />)}
-                    <span>{showShow ? (SHOW_LBL[currentLanguage] || SHOW_LBL.en) : (CREATE_LBL[currentLanguage] || CREATE_LBL.en)}</span>
+                    <span>{showShow ? t.showLbl : t.createLbl}</span>
                 </button>
             </div>
 
@@ -302,7 +295,7 @@ export const PoolPage = () => {
             <div className="poolbar">
                 {/* Фильтры — отдельные чипы-поповеры: Категории и Часть речи (FilterChipsPopup) */}
                 <div className="poolbar__row" style={{ flexWrap: "wrap", gap: "var(--sp-2)" }}>
-                    <FilterChipsPopup icon="grid" label={CATEGORIES_LBL[currentLanguage] || CATEGORIES_LBL.en}
+                    <FilterChipsPopup icon="grid" label={t.categoriesLbl}
                         count={topics.length}
                         sections={[{
                             key: "cat", multi: true, selected: topics, onPick: toggleTopic,
@@ -311,14 +304,14 @@ export const PoolPage = () => {
                                 return { value: topic, label: topicLabel(t, topic), count: c, disabled: !topics.includes(topic) && c === 0 };
                             }),
                         }]} />
-                    <FilterChipsPopup icon="type" label={POS_TOGGLE[currentLanguage] || POS_TOGGLE.en}
+                    <FilterChipsPopup icon="type" label={t.posToggle}
                         count={pos ? 1 : 0}
                         sections={[{
                             key: "pos", multi: false, selected: pos, onPick: pickPos,
                             options: POS_ORDER.map((key) => ({ value: key, label: posLabel(posApiKey(key), t) })),
                         }]} />
                     {isAdmin && (
-                        <FilterChipsPopup icon="database" label={DATA_LBL[currentLanguage] || DATA_LBL.en} count={missing ? 1 : 0}
+                        <FilterChipsPopup icon="database" label={t.dataLbl} count={missing ? 1 : 0}
                             sections={[{
                                 key: "missing", title: "Без чего", multi: false, selected: missing, onPick: pickMissing,
                                 options: [["embedding", "эмбеддинга"], ["description", "описания"], ["tts", "озвучки"], ["meta", "уровня/тем"], ["forms", "форм"]].map(([value, label]) => ({ value, label })),

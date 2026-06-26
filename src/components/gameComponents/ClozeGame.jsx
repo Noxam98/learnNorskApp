@@ -11,8 +11,6 @@ import { speakText, speakTextEnd } from "../ui/tts.js";
 import { PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 
-const FILL = { ru: "Вставь пропущенное слово", en: "Fill in the gap", ukr: "Встав пропущене слово", pl: "Uzupełnij lukę", lt: "Įrašyk trūkstamą žodį" };
-
 export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const [chosen, setChosen] = useState(null);
     const [armed, setArmed] = useState(false); // анти-ghost-click: свежий вопрос ~350мс не принимает выбор
@@ -80,7 +78,7 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     correct={correct}
                     reveal={status === "CORRECT" || status === "INCORRECT"}
                     onPick={choose}
-                    hint={FILL[currentLanguage] || FILL.ru}
+                    hint={t.clozeFill}
                     countText={`${t.word} ${qIndex} / ${qTotal}`}
                     disabled={status !== "ASKING"}
                     loading={!options.length}

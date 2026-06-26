@@ -8,9 +8,7 @@ import { useAuthStore } from "./store/AuthStore.jsx";
 import { useSystemStore } from "./store/systemStore.jsx";
 import { resyncPush } from "./components/tools/push.js";
 import api from "./components/tools/api.js";
-
-// Тост админу при росте очереди модерации (при открытом приложении). 5 языков.
-const MOD_TOAST = { ru: "Новые слова на модерации", ukr: "Нові слова на модерації", en: "New words to moderate", pl: "Nowe słowa do moderacji", lt: "Nauji žodžiai moderacijai" };
+import { interfaceTranslate } from "./interface/interfaceTranslation.jsx";
 
 import { BrandLoader } from "./components/ui/Spinner.jsx";
 import Toast from "./components/tools/error.jsx";
@@ -84,7 +82,8 @@ function App() {
             api.adminPending().then((r) => {
                 const c = r?.count || 0;
                 if (prev !== null && c > prev) {
-                    useSystemStore.getState().showToast(`${MOD_TOAST[currentLanguage] || MOD_TOAST.en}: ${c}`, "success", "/moderation");
+                    const modToast = interfaceTranslate[currentLanguage]?.modToast || interfaceTranslate.en.modToast;
+                    useSystemStore.getState().showToast(`${modToast}: ${c}`, "success", "/moderation");
                 }
                 prev = c;
             }).catch(() => {});

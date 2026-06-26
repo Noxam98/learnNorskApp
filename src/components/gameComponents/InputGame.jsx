@@ -16,15 +16,7 @@ import { GameKeyboard, keysAdjacent } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 
-// «С опечаткой, но засчитано» — снисходительный зачёт (1 правка).
-const TYPO_OK = { ru: "С опечаткой — но засчитано:", ukr: "З опискою — але зараховано:", en: "Typo — but accepted:", pl: "Literówka — ale zaliczono:", lt: "Su klaida — bet užskaityta:" };
-// Вопрос при близкой опечатке (замена соседних клавиш / перестановка / пропуск-лишняя буква).
-const TYPO_ASK = { ru: "Похоже на опечатку. Это она?", ukr: "Схоже на описку. Це вона?", en: "Looks like a typo. Was it?", pl: "Wygląda na literówkę. To ona?", lt: "Panašu į klaidą. Ar taip?" };
-const TYPO_YES = { ru: "Да, опечатка", ukr: "Так, описка", en: "Yes, a typo", pl: "Tak, literówka", lt: "Taip, klaida" };
-const TYPO_NO = { ru: "Нет, ошибся", ukr: "Ні, помилився", en: "No, I was wrong", pl: "Nie, błąd", lt: "Ne, suklydau" };
 const TYPO_NEXT_MS = 250;   // хвост после окончания озвучки ответа (Да/Нет), затем авто-переход
-// тихая подсказка: ввели базовую букву вместо å/ø/æ — зачтено, но показываем правильное написание.
-const LETTER_HINT = { ru: "Правильно пишется:", ukr: "Правильно пишеться:", en: "Correct spelling:", pl: "Poprawna pisownia:", lt: "Teisinga rašyba:" };
 
 export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const isNo2Int = mode !== "int2no";
@@ -212,7 +204,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     {status === "CORRECT" && typoOk && (
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(232,170,72,.18)", color: "#d98a2b" }}><Icon n="check" lg /></div>
-                            <div className="fb-title" style={{ color: "#d98a2b" }}>{TYPO_OK[currentLanguage] || TYPO_OK.en}</div>
+                            <div className="fb-title" style={{ color: "#d98a2b" }}>{t.typoOk}</div>
                             <div className="fb-answer" lang={aLang}>{hyphenate(correctPrimary, aLang)}</div>
                             {!resolving && <div className="pcta"><span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span></div>}
                         </div>
@@ -222,7 +214,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                             <div className="fb-icon" style={{ background: "rgba(98,192,131,.16)", color: "var(--game-correct)" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-correct)" }}>{t.correctly}</div>
                             {/* тихая подсказка: ввели базовую букву вместо å/ø/æ — показать правильное написание (å/ø/æ подсвечены) */}
-                            {letterHint && <div className="fb-line">{LETTER_HINT[currentLanguage] || LETTER_HINT.en} <b className="lh-word" lang={aLang}>{[...letterHint].map((ch, i) => /[åøæ]/i.test(ch) ? <span key={i} className="lh-spec">{ch}</span> : ch)}</b></div>}
+                            {letterHint && <div className="fb-line">{t.letterHint} <b className="lh-word" lang={aLang}>{[...letterHint].map((ch, i) => /[åøæ]/i.test(ch) ? <span key={i} className="lh-spec">{ch}</span> : ch)}</b></div>}
                             {otherAccepted.length > 0 && <div className="fb-line">{t.alsoAccepted} <b lang={aLang}>{hyphenate(otherAccepted.join(", "), aLang)}</b></div>}
                         </div>
                     )}
@@ -241,11 +233,11 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     {typoAsk && (
                         <div className="feedback typo-ask" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(232,170,72,.18)", color: "#d98a2b" }}><Icon n="check" lg /></div>
-                            <div className="fb-title" style={{ color: "#d98a2b" }}>{TYPO_ASK[currentLanguage] || TYPO_ASK.en}</div>
+                            <div className="fb-title" style={{ color: "#d98a2b" }}>{t.typoAsk}</div>
                             <div className="fb-answer" lang={aLang}>{hyphenate(typoAsk.correct, aLang)}</div>
                             <div className="typo-ask__btns">
-                                <button className="gbtn gbtn--accent" onClick={confirmTypo}><Icon n="check" sm /> {TYPO_YES[currentLanguage] || TYPO_YES.en}</button>
-                                <button className="gbtn" onClick={denyTypo}><Icon n="x" sm /> {TYPO_NO[currentLanguage] || TYPO_NO.en}</button>
+                                <button className="gbtn gbtn--accent" onClick={confirmTypo}><Icon n="check" sm /> {t.typoYes}</button>
+                                <button className="gbtn" onClick={denyTypo}><Icon n="x" sm /> {t.typoNo}</button>
                             </div>
                         </div>
                     )}

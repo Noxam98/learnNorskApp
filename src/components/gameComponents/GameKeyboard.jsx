@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { useSystemStore, VIBE_MS } from "../../store/systemStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
+import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import api from "../tools/api.js";
 
 // Норвежская раскладка QWERTY (нижний регистр).
@@ -51,11 +52,6 @@ const CODE_MAP = {
 // Сноска «можно печатать с клавиатуры» — показываем ОДИН раз (localStorage), только на ПК и
 // только когда юзер начал набор с ЭКРАННОЙ (тыкает мышью). Чтобы не мешать каждый раз.
 const HINT_KEY = "kbd_phys_hint_seen";
-const KBD_HINT = {
-    ru: "Можно печатать с клавиатуры", en: "You can type on your keyboard",
-    ukr: "Можна друкувати з клавіатури", pl: "Możesz pisać na klawiaturze", lt: "Galima rinkti klaviatūra",
-};
-const GOT_IT = { ru: "Понял", en: "Got it", ukr: "Зрозуміло", pl: "Rozumiem", lt: "Supratau" };
 let _hintShownSession = false;   // тост-подсказку показываем максимум раз за сессию (не мешать каждое слово)
 // Только лептоп/десктоп-вёрстка: мышь (hover+точный указатель) И широкий экран (не мобильный layout ≤640px).
 const _isDesktop = () => { try { return window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 641px)").matches; } catch { return false; } };
@@ -85,6 +81,7 @@ export function GameKeyboard({
     const kbdRef = useRef(null);
     const [isDesktop] = useState(_isDesktop);
     const uiLang = useSystemStore((s) => s.currentLanguage);   // язык ИНТЕРФЕЙСА (не клавиш) — для текста тоста
+    const t = interfaceTranslate[uiLang] || interfaceTranslate.en;
     const hintSeenDB = useAuthStore((s) => s.user?.gamePrefs?.kbdHintSeen);   // флаг из БД (между устройствами)
     const seenRef = useRef(undefined);
     if (seenRef.current === undefined) { try { seenRef.current = !!hintSeenDB || !!localStorage.getItem(HINT_KEY); } catch { seenRef.current = !!hintSeenDB; } }
@@ -102,8 +99,8 @@ export function GameKeyboard({
         if (!isDesktop || seenRef.current || _hintShownSession) return;
         _hintShownSession = true;
         try {
-            useSystemStore.getState().showToast(KBD_HINT[uiLang] || KBD_HINT.en, "info", {
-                persist: true, action: { label: GOT_IT[uiLang] || GOT_IT.en, onClick: persistSeen },
+            useSystemStore.getState().showToast(t.kbdHint, "info", {
+                persist: true, action: { label: t.kbdGotIt, onClick: persistSeen },
             });
         } catch { /* */ }
     };

@@ -13,9 +13,6 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 import { useHistoryClose } from "../tools/useHistoryClose.js";
 import api from "../tools/api.js";
 
-const ADDED_LRN = { ru: "добавлено в Учёбу", ukr: "додано до навчання", en: "added to Learning", pl: "dodano do nauki", lt: "pridėta į mokymąsi" };
-const REMOVED_LRN = { ru: "убрано из Учёбы", ukr: "прибрано з навчання", en: "removed from Learning", pl: "usunięto z nauki", lt: "pašalinta iš mokymosi" };
-
 // Описание слова + похожие слова (кликабельные — навигация по пулу) +
 // кнопка добавить/удалить просматриваемое слово в текущий словарь.
 // wordId передаётся только для исходного слова словаря — тогда описание
@@ -203,7 +200,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
         try {
             if (next) await addToLearning(pid);
             else await removeFromLearning(pid);
-            const phrase = next ? (ADDED_LRN[lang] || ADDED_LRN.en) : (REMOVED_LRN[lang] || REMOVED_LRN.en);
+            const phrase = next ? t.addedToLearning : t.removedFromLearning;
             useSystemStore.getState().showToast(`«${view.no}» ${phrase}`, next ? "success" : "warning");
         } catch { setView((v) => (v ? { ...v, inLearning: !next } : v)); }
         setDictBusy(false);

@@ -21,7 +21,6 @@ const CHOICE_HINT = {
     ukr: "Можна обирати відповідь цифрами на клавіатурі", pl: "Odpowiedź można wybrać cyframi na klawiaturze",
     lt: "Atsakymą galima rinktis skaičių klavišais",
 };
-const CHOICE_GOT_IT = { ru: "Понял", en: "Got it", ukr: "Зрозуміло", pl: "Rozumiem", lt: "Supratau" };
 const CHOICE_HINT_KEY = "choice_num_hint_seen";
 let _choiceHintShown = false;   // максимум раз за сессию
 let _listenNudgeOff = false;    // нудж «вернуть на слух» закрыт на эту сессию (модульный, переживает ремоунты игр)
@@ -78,7 +77,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         _choiceHintShown = true;
         try {
             useSystemStore.getState().showToast(CHOICE_HINT[currentLanguage] || CHOICE_HINT.en, "info", {
-                persist: true, action: { label: CHOICE_GOT_IT[currentLanguage] || CHOICE_GOT_IT.en, onClick: persistChoiceSeen },
+                persist: true, action: { label: t.choiceGotIt, onClick: persistChoiceSeen },
             });
         } catch { /* */ }
     };
