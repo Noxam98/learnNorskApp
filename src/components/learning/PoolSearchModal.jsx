@@ -24,8 +24,8 @@ const L = langGuard({
     ukr: { title: "Пошук слів", placeholder: "Слово будь-якою мовою…", empty: "Нічого не знайдено", inSet: "У наборі", add: "У набір", notInBase: "Немає в базі:", create: "Створити", all: "Усі" },
     pl:  { title: "Szukaj słów", placeholder: "Słowo w dowolnym języku…", empty: "Nic nie znaleziono", inSet: "W zestawie", add: "Do zestawu", notInBase: "Brak w bazie:", create: "Utwórz", all: "Wszystkie" },
     lt:  { title: "Ieškoti žodžių", placeholder: "Žodis bet kuria kalba…", empty: "Nieko nerasta", inSet: "Rinkinyje", add: "Į rinkinį", notInBase: "Nėra bazėje:", create: "Sukurti", all: "Visi" },
-    lv:  { title: "Meklēt vārdus", placeholder: "Vārds jebkurā valodā…", empty: "Nekas nav atrasts", inSet: "Kopā", add: "Kopā", notInBase: "Nav bāzē:", create: "Izveidot", all: "Visi" },
-    ar:  { title: "البحث عن كلمات", placeholder: "كلمة بأي لغة…", empty: "لا شيء", inSet: "في المجموعة", add: "إلى المجموعة", notInBase: "غير موجودة:", create: "إنشاء", all: "الكل" },
+    lv:  { title: "Meklēt vārdus", placeholder: "Vārds jebkurā valodā…", empty: "Nekas nav atrasts", inSet: "Kopā", add: "Pievienot", notInBase: "Nav bāzē:", create: "Izveidot", all: "Visi" },
+    ar:  { title: "البحث عن كلمات", placeholder: "كلمة بأي لغة…", empty: "لا توجد نتائج", inSet: "في المجموعة", add: "إلى المجموعة", notInBase: "غير موجودة:", create: "إنشاء", all: "الكل" },
 }, "PoolSearchModal.L");
 
 /**
