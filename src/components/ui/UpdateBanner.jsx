@@ -11,6 +11,7 @@ const T = langGuard({
     ukr: { msg: "Доступна нова версія", btn: "Оновити" },
     pl:  { msg: "Dostępna nowa wersja", btn: "Odśwież" },
     lt:  { msg: "Yra nauja versija", btn: "Atnaujinti" },
+    lv:  { msg: "Ir pieejama jauna versija", btn: "Atjaunināt" },
 }, "UpdateBanner.T");
 
 export function UpdateBanner() {

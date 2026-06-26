@@ -28,6 +28,10 @@ const RACE_I18N = {
         go: "Pirmyn!", toNo: "Išverskite į norvegų", toLang: "Išverskite į", placeholder: "Įveskite vertimą…", check: "Tikrinti",
         correctRow: "iš eilės", bannerLeader: "{name} finiše!", bannerTimer: "Turite {n} s", hurry: "Laikas baigiasi!",
         podium: "Podiumas", yourPlace: "Tavo vieta", reached: "pasiekė {a}/{b}", playAgain: "Žaisti dar kartą", toLobby: "Į laukiamąjį", word: "žodis", of: "iš" },
+    lv: { tagline: "Uzvar pirmais, kurš pareizi atbild visus vārdus", you: "Tu", exit: "Iziet", ready: "tukšgaitā", moving: "rāviens!", stalled: "noslāpis", restarting: "iedarbina", finished: "finišs", dnf: "atvienojies",
+        go: "Brauc!", toNo: "Iztulko uz norvēģu", toLang: "Iztulko uz", placeholder: "Ievadi tulkojumu…", check: "Pārbaudīt",
+        correctRow: "pēc kārtas", bannerLeader: "{name} finišā!", bannerTimer: "Tev ir {n} s", hurry: "Laiks beidzas!",
+        podium: "Pjedestāls", yourPlace: "Tava vieta", reached: "sasniedza {a}/{b}", playAgain: "Spēlēt vēlreiz", toLobby: "Uz vestibilu", word: "vārds", of: "no" },
 };
 
 function badgeFor(state, T) {

@@ -10,6 +10,7 @@ const T = langGuard({
     ukr: { eyebrow: "Новий рівень", title: "Вітаємо!", desc: "Тепер ви вивчаєте рівень {lv} 🎉 Далі — складніші слова.", cta: "Продовжити" },
     pl: { eyebrow: "Nowy poziom", title: "Gratulacje!", desc: "Uczysz się teraz poziomu {lv} 🎉 Dalej — trudniejsze słowa.", cta: "Dalej" },
     lt: { eyebrow: "Naujas lygis", title: "Sveikiname!", desc: "Dabar mokaisi {lv} lygį 🎉 Toliau — sunkesni žodžiai.", cta: "Tęsti" },
+    lv: { eyebrow: "Jauns līmenis", title: "Apsveicam!", desc: "Tagad tu apgūsti {lv} līmeni 🎉 Tālāk — grūtāki vārdi.", cta: "Turpināt" },
 }, "LevelUpToast.T");
 
 export default function LevelUpToast({ lang = "ru", to = "A2", onClose }) {

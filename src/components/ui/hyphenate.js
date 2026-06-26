@@ -4,9 +4,10 @@ import { hyphenateSync as uk } from "hyphen/uk";
 import { hyphenateSync as en } from "hyphen/en";
 import { hyphenateSync as pl } from "hyphen/pl";
 import { hyphenateSync as lt } from "hyphen/lt";
+import { hyphenateSync as lv } from "hyphen/lv";
 import { bcpOf } from "../../interface/languages.js";
 
-const FN = { nb, ru, uk, en, pl, lt };
+const FN = { nb, ru, uk, en, pl, lt, lv };
 
 // Код языка для переноса: норвежский → nb, иначе BCP-47 из единого реестра языков (укр → uk).
 export const hyLang = (currentLanguage, isNorwegian) =>

@@ -33,6 +33,11 @@ const T = langGuard({
            empty: "Kol kas tuščia. Pasimokyk — ir pateksi į reitingą.",
            notYet: "Mokykis, kad patektum į savaitės reitingą",
            hidden: "Tu paslėptas reitinge — įjunk Profilyje.", loading: "Kraunama…" },
+    lv:  { title: "Reitings", weekTitle: "Nedēļas reitings", week: "Nedēļa", all: "Visu laiku",
+           you: "tu", of: "no", pts: "p.", words: "vārdi", anon: "Anonīms", seeAll: "Visi",
+           empty: "Pagaidām tukšs. Patrenējies — un nokļūsi reitingā.",
+           notYet: "Trenējies, lai nokļūtu šīs nedēļas reitingā",
+           hidden: "Tu esi paslēpts no reitinga — ieslēdz to Profilā.", loading: "Ielāde…" },
 }, "Leaderboard.T");
 
 const MEDAL_CLS = { 1: "lb-medal--gold", 2: "lb-medal--silver", 3: "lb-medal--bronze" };

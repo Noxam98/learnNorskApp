@@ -44,6 +44,14 @@ const T = langGuard({
         p3t: "Kartojimas intervalais", p3d: "Sistema primena žodį prieš pat pamirštant — kaskart kiek vėliau. Grįžk po truputį kasdien.",
         cta: "Pradėti", skip: "Praleisti",
     },
+    lv: {
+        eyebrow: "Kā darbojas Mācības",
+        title: "Mācies vārdus gudri",
+        p1t: "Vārdi nāk no tavas vārdnīcas", p1d: "Mācības ņem vārdus no „Manas vārdnīcas“ un Bāzes. Pievieno jaunus savam līmenim ar vienu pieskārienu.",
+        p2t: "„Apgūts“ nozīmē bez kļūdām", p2d: "Vārds ir apgūts, kad izej to bez kļūdām „Izvēlē“ un „Rakstīšanā“. Kartiņas ir tikai atsvaidzināšanai.",
+        p3t: "Atkārtošana ar intervāliem", p3d: "Sistēma atgādina vārdu tieši pirms tu to aizmirstu — katru reizi nedaudz vēlāk. Atgriezies pa druskai katru dienu.",
+        cta: "Sākt", skip: "Izlaist",
+    },
 }, "LearningIntro.T");
 
 export default function LearningIntro({ lang = "ru", onDone }) {

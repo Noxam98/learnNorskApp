@@ -8,6 +8,7 @@ const LABELS = langGuard({
     ukr: { very_common: "дуже часто", common: "часто", frequent: "доволі часто", occasional: "інколи", rare: "рідко", very_rare: "дуже рідко" },
     pl:  { very_common: "bardzo często", common: "często", frequent: "dość często", occasional: "czasem", rare: "rzadko", very_rare: "bardzo rzadko" },
     lt:  { very_common: "labai dažnai", common: "dažnai", frequent: "gana dažnai", occasional: "kartais", rare: "retai", very_rare: "labai retai" },
+    lv:  { very_common: "ļoti bieži", common: "bieži", frequent: "diezgan bieži", occasional: "reizēm", rare: "reti", very_rare: "ļoti reti" },
 }, "freq.LABELS");
 
 // Подпись бэнда на языке интерфейса.

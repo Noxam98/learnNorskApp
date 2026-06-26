@@ -15,6 +15,8 @@ export function pluralIndex(lang, n) {
             if (m10 === 1 && m100 !== 11) return 0;
             if (m10 >= 2 && m10 <= 9 && (m100 < 11 || m100 > 19)) return 1;
             return 2;
+        case "lv": // [одно (1, 21…), много] — латышский по числам сводим к 2 формам
+            return (m10 === 1 && m100 !== 11) ? 0 : 1;
         default: // ru, ukr (одинаковые правила)
             if (m10 === 1 && m100 !== 11) return 0;
             if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return 1;
@@ -24,12 +26,12 @@ export function pluralIndex(lang, n) {
 
 // Формы по ключу: [одно, мало, много] (для en — [one, other]).
 const FORMS = {
-    word: { ru: ["слово", "слова", "слов"], ukr: ["слово", "слова", "слів"], en: ["word", "words"], pl: ["słowo", "słowa", "słów"], lt: ["žodis", "žodžiai", "žodžių"] },
-    card: { ru: ["карточка", "карточки", "карточек"], ukr: ["картка", "картки", "карток"], en: ["card", "cards"], pl: ["karta", "karty", "kart"], lt: ["kortelė", "kortelės", "kortelių"] },
-    day:  { ru: ["день", "дня", "дней"], ukr: ["день", "дні", "днів"], en: ["day", "days"], pl: ["dzień", "dni", "dni"], lt: ["diena", "dienos", "dienų"] },
-    weak: { ru: ["слабое", "слабых", "слабых"], ukr: ["слабке", "слабких", "слабких"], en: ["weak", "weak"], pl: ["słabe", "słabe", "słabych"], lt: ["silpnas", "silpni", "silpnų"] },
-    fresh: { ru: ["новое", "новых", "новых"], ukr: ["нове", "нових", "нових"], en: ["new", "new"], pl: ["nowe", "nowe", "nowych"], lt: ["naujas", "nauji", "naujų"] },
-    started: { ru: ["начатое", "начатых", "начатых"], ukr: ["розпочате", "розпочатих", "розпочатих"], en: ["started", "started"], pl: ["rozpoczęte", "rozpoczęte", "rozpoczętych"], lt: ["pradėtas", "pradėti", "pradėtų"] },
+    word: { ru: ["слово", "слова", "слов"], ukr: ["слово", "слова", "слів"], en: ["word", "words"], pl: ["słowo", "słowa", "słów"], lt: ["žodis", "žodžiai", "žodžių"], lv: ["vārds", "vārdi"] },
+    card: { ru: ["карточка", "карточки", "карточек"], ukr: ["картка", "картки", "карток"], en: ["card", "cards"], pl: ["karta", "karty", "kart"], lt: ["kortelė", "kortelės", "kortelių"], lv: ["kartiņa", "kartiņas"] },
+    day:  { ru: ["день", "дня", "дней"], ukr: ["день", "дні", "днів"], en: ["day", "days"], pl: ["dzień", "dni", "dni"], lt: ["diena", "dienos", "dienų"], lv: ["diena", "dienas"] },
+    weak: { ru: ["слабое", "слабых", "слабых"], ukr: ["слабке", "слабких", "слабких"], en: ["weak", "weak"], pl: ["słabe", "słabe", "słabych"], lt: ["silpnas", "silpni", "silpnų"], lv: ["vājš", "vāji"] },
+    fresh: { ru: ["новое", "новых", "новых"], ukr: ["нове", "нових", "нових"], en: ["new", "new"], pl: ["nowe", "nowe", "nowych"], lt: ["naujas", "nauji", "naujų"], lv: ["jauns", "jauni"] },
+    started: { ru: ["начатое", "начатых", "начатых"], ukr: ["розпочате", "розпочатих", "розпочатих"], en: ["started", "started"], pl: ["rozpoczęte", "rozpoczęte", "rozpoczętych"], lt: ["pradėtas", "pradėti", "pradėtų"], lv: ["iesākts", "iesākti"] },
 };
 
 // Вернуть правильную форму слова `key` для числа n на языке lang.

@@ -21,6 +21,7 @@ const CHOICE_HINT = langGuard({
     ru: "Можно выбирать ответ цифрами на клавиатуре", en: "You can pick the answer with number keys",
     ukr: "Можна обирати відповідь цифрами на клавіатурі", pl: "Odpowiedź można wybrać cyframi na klawiaturze",
     lt: "Atsakymą galima rinktis skaičių klavišais",
+    lv: "Atbildi var izvēlēties ar ciparu taustiņiem",
 }, "ChoiceGame.CHOICE_HINT");
 const CHOICE_HINT_KEY = "choice_num_hint_seen";
 let _choiceHintShown = false;   // максимум раз за сессию

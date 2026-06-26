@@ -292,6 +292,40 @@ const T = langGuard({
         allClearTitle: "Viskas po kontrole",
         allClearDesc: "Dabar nei vartų, nei audito. Tęsk kasdienes sesijas — egzaminas atsivers pats, kai susikaups rinkinys.",
     },
+    lv: {
+        eyebrow: "Eksāmens · vārti uz jauniem vārdiem",
+        loading: "Sagatavojam eksāmenu…", grading: "Aprēķinām…",
+        lockedTitle: "Eksāmens vēl nav atvērts",
+        lockedDesc: (n) => `Tas atvērsies, kad apgūsi vēl ${n}. Tad kontrolpunkta eksāmens sertificēs paku un atvērs jaunus vārdus.`,
+        progressLbl: "Līdz eksāmenam",
+        ofThreshold: (a, b) => `${a} / ${b} apgūts`,
+        toExam: (n) => `Apgūt vēl ${n}`,
+        goStudy: "Mācīties",
+        openTitle: "Pakas eksāmens pieejams",
+        openDesc: (s, p) => `${s} nejauši vārdi no apgūtajiem. Lai nokārtotu, vajag ≥ ${p}. Nokārtošana sertificē paku un atkal atver jaunus vārdus.`,
+        startExam: "Sākt eksāmenu", neutralNote: "Rezultāts nemaina intervālus · kļūdas aizies uz atkārtošanu",
+        dir: "Norvēģu → ", whats: "Ko tas nozīmē?",
+        hintInt2no: "Izvēlies norvēģu vārdu", hintCloze: "Aizpildi tukšumu", listen: "Klausies un izvēlies tulkojumu", replay: "Atskaņot vēlreiz",
+        hintInput: "Uzraksti norvēģiski", inputSubmit: "Pārbaudīt",
+        qCount: (i, n) => `${i} / ${n}`,
+        passedTitle: "Paka sertificēta",
+        passedDesc: "Jaunie vārdi atkal ir atvērti — sāk krāties nākamā paka. Vecos tagad pārrauga audits.",
+        failedTitle: "Vēl nav nokārtots",
+        failedDesc: (n) => `${n} vārdi atgriezās atkārtošanā — apgūsti tos no jauna un kārto vēlreiz. Pārkārtošana atvērsies, kad paka atkal sakrāsies.`,
+        toRetake: (n) => `Apgūt ${n} līdz pārkārtošanai`,
+        backStudy: "Atpakaļ uz mācībām",
+        auditTitle: "Uzturēšanas pārbaude",
+        auditDesc: (n) => `${n} sen apgūti vārdi tiek pārbaudīti svaigumam. Atceries — pārbaudes termiņš pagarinās; aizmirsti — vārds atgriežas mācībās.`,
+        startAudit: "Veikt pārbaudi",
+        auditDoneTitle: "Pārbaude pabeigta",
+        auditDoneDesc: (refreshed, forgot) =>
+            forgot > 0
+                ? `Atsvaidzināti ${refreshed}, atgriezti mācībās ${forgot}.`
+                : `Atsvaidzināti ${refreshed} — viss saglabājies, lieliska atmiņa!`,
+        done: "Gatavs",
+        allClearTitle: "Viss zem kontroles",
+        allClearDesc: "Šobrīd nav ne vārtu, ne audita. Turpini ikdienas sesijas — eksāmens atvērsies pats, kad sakrāsies paka.",
+    },
 }, "ExamTab.T");
 
 export default function ExamTab({ lang, go, refresh }) {

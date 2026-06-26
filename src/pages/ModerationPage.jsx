@@ -23,6 +23,8 @@ const T = langGuard({
            repTitle: "Zgłoszenia „nie ucz”", repSub: "Użytkownicy oznaczyli słowo jako śmieci. „Usuń z nauki” → już nie proponujemy; „Zostaw” → kolejne 5 zgłoszeń pomijamy automatycznie.", repEmpty: "Brak zgłoszeń.", exclude: "Usuń z nauki", keep: "Zostaw", reports: "zgłoszeń" },
     lt:  { title: "Moderacija", sub: "Vartotojų sukurti žodžiai. Patvirtinti → bendra bazė; atmesti → liks privatus.", empty: "Eilė tuščia.", approve: "Patvirtinti", reject: "Atmesti", by: "nuo",
            repTitle: "Skundai „nemokyti“", repSub: "Vartotojai pažymėjo žodį kaip šiukšlę. „Pašalinti iš mokymosi“ → daugiau nesiūlome; „Palikti“ → kitus 5 skundus atmetame automatiškai.", repEmpty: "Skundų nėra.", exclude: "Pašalinti iš mokymosi", keep: "Palikti", reports: "skundų" },
+    lv:  { title: "Moderācija", sub: "Lietotāju izveidotie vārdi. Apstiprināt → kopīgā bāze; noraidīt → paliek privāts autoram.", empty: "Rinda ir tukša — jaunu vārdu nav.", approve: "Apstiprināt", reject: "Noraidīt", by: "no",
+           repTitle: "Sūdzības „nemācīties“", repSub: "Lietotāji atzīmēja vārdu kā nederīgu. „Noņemt no mācībām“ → vairs nevienam nepiedāvājam; „Atstāt“ → nākamās 5 sūdzības automātiski noraidām.", repEmpty: "Sūdzību nav.", exclude: "Noņemt no mācībām", keep: "Atstāt", reports: "sūdzības" },
 }, "ModerationPage.T");
 
 export default function ModerationPage() {

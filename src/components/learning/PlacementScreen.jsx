@@ -103,6 +103,24 @@ const T = langGuard({
         begin: "Pradėti mokytis",
         lvlD: { A1: "tik pradedu", A2: "bazinis", B1: "vidutinis", B2: "užtikrintas", C1: "pažengęs", C2: "laisvai" },
     },
+    lv: {
+        eyebrow: "Līmeņa tests · ~3 min", title1: "Noteiksim tavu", title2: "norvēģu valodas līmeni",
+        desc: "Adaptīvais tests pielāgo grūtību tavām atbildēm. Jebkuru jautājumu var izlaist.",
+        d1t: "CEFR līmenis", d1d: "A1–C1 — vārdu atlase tev",
+        d2t: "Atkārtošanas virziens", d2d: "sistēma pati izlems, kā jautāt",
+        d3t: "Sākuma kopums", d3d: "pirmie vārdi jau tavā līmenī",
+        start: "Sākt testu", self: "Novērtēt sevi pašam", skip: "Izlaist — kalibrēt fonā",
+        selfTitle: "Izvēlies līmeni pats", selfHint: "precizēsim pirmajās sesijās", save: "Saglabāt un sākt",
+        footer: "Testu var izpildīt vēlāk vai pārvērtēt līmeni jebkurā brīdī sadaļā „Profils“.",
+        loading: "Sagatavojam jautājumus…", dir: "Norvēģu → ", dirIn: " → Norvēģu", whats: "Ko tas nozīmē?", dontKnow: "Nezinu — izlaist",
+        grading: "Aprēķinām…", passed: "Tests pabeigts", resTitle: "Līmenis noteikts provizoriski",
+        resDesc: "Precizēsim to gaitā — precizitāte augs pirmajās sesijās.",
+        yourLevel: "tavs līmenis", confLow: "zema", confMid: "vidēja", confHigh: "augsta",
+        confLbl: "Novērtējuma ticamība", howAsk: "Kā mēs tev jautāsim", auto: "auto",
+        dirExplain: "Tulkojuma virzienu izvēlas sistēma — katram vārdam atsevišķi. Vārdam nostiprinoties, mēs pārslēdzam tevi no atpazīšanas uz atcerēšanos.",
+        begin: "Sākt mācīties",
+        lvlD: { A1: "tikai sāku", A2: "pamata", B1: "vidējais", B2: "pārliecināts", C1: "augstāks", C2: "brīvi" },
+    },
 }, "PlacementScreen.T");
 
 export default function PlacementScreen({ lang = "ru", onClose }) {

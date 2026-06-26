@@ -82,6 +82,19 @@ const L = langGuard({
         inMin: (n) => `po ${n} min`, inHours: (n) => `po ${n} val`,
         inDays: (n) => `po ${n} ${plLt(n)}`,
     },
+    lv: {
+        chips: { all: "Visi", new: "Jauni", in_progress: "Procesā", repeat: "Atkārtojums", mastered: "Apgūti", weak: "Vāji", archived: "Arhīvs" },
+        searchPh: "Meklē visās valodās — norsk, lv, eng…",
+        topicAll: "Tēma: visas", topic: "Tēma", levelAll: "Līmenis: visi", level: "Līmenis",
+        sortStrength: "Pēc stipruma", sortDue: "Drīz jāatkārto", sortAlpha: "Alfabētiski",
+        know: "Zinu", knowMenu: "To zinu", openCard: "Atvērt kartiņu", speak: "Ierunāt",
+        reset: "Atiestatīt progresu", toArchive: "Uz arhīvu",
+        selected: "Izvēlēti:", markMastered: "Atzīmēt kā apgūtus", practice: "Praktizēt izvēlētos", clear: "Notīrīt",
+        empty: "Vārdi nav atrasti", emptyHint: "Maini filtrus vai meklēšanas vaicājumu.",
+        today: "šodien", tomorrow: "rīt", overdue: "laiks",
+        inMin: (n) => `pēc ${n} min`, inHours: (n) => `pēc ${n} h`,
+        inDays: (n) => `pēc ${n} ${plLv(n)}`,
+    },
 }, "WordsTab.L");
 
 // Множественные формы «день» для относительного срока.
@@ -89,6 +102,7 @@ function plRu(n) { const m10 = n % 10, m100 = n % 100; if (m10 === 1 && m100 !==
 function plUk(n) { const m10 = n % 10, m100 = n % 100; if (m10 === 1 && m100 !== 11) return "день"; if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "дні"; return "днів"; }
 function plPl(n) { const m10 = n % 10, m100 = n % 100; if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "dni"; return "dni"; }
 function plLt(n) { const m10 = n % 10, m100 = n % 100; if (m10 === 0 || (m100 >= 11 && m100 <= 19)) return "dienų"; if (m10 === 1) return "dieną"; return "dienų"; }
+function plLv(n) { const m10 = n % 10, m100 = n % 100; if (m10 === 1 && m100 !== 11) return "diena"; return "dienas"; }
 
 const STATUS_CHIPS = ["all", "new", "in_progress", "repeat", "mastered", "weak", "archived"];
 const STATUS_DOT = { new: "new", in_progress: "learn", repeat: "review", mastered: "master", weak: "weak" };

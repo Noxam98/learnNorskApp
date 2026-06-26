@@ -13,6 +13,7 @@ const ANIMAL_NAMES = langGuard({
     ukr: { fox: "Лис", hare: "Заєць", reindeer: "Олень", wolf: "Вовк", elk: "Лось", lynx: "Рись" },
     pl: { fox: "Lis", hare: "Zając", reindeer: "Renifer", wolf: "Wilk", elk: "Łoś", lynx: "Ryś" },
     lt: { fox: "Lapė", hare: "Kiškis", reindeer: "Šiaurės elnias", wolf: "Vilkas", elk: "Briedis", lynx: "Lūšis" },
+    lv: { fox: "Lapsa", hare: "Zaķis", reindeer: "Ziemeļbriedis", wolf: "Vilks", elk: "Alnis", lynx: "Lūsis" },
 }, "RaceRunner.ANIMAL_NAMES");
 export function animalLabel(type, lang) { return (ANIMAL_NAMES[lang] || ANIMAL_NAMES.en)[type] || type; }
 

@@ -6,6 +6,7 @@ export const wordsNoun = (n, lang) => {
         case "ukr": return (b === 1 && a !== 11) ? "слово" : (b >= 2 && b <= 4 && !(a >= 12 && a <= 14)) ? "слова" : "слів";
         case "pl":  return (b === 1 && a !== 11) ? "słowo" : (b >= 2 && b <= 4 && !(a >= 12 && a <= 14)) ? "słowa" : "słów";
         case "lt":  return (b === 1 && a !== 11) ? "žodis" : (b >= 2 && b <= 9 && !(a >= 11 && a <= 19)) ? "žodžiai" : "žodžių";
+        case "lv":  return (b === 1 && a !== 11) ? "vārds" : "vārdi";
         default:    return n === 1 ? "word" : "words";
     }
 };
@@ -21,6 +22,7 @@ export const dictsNoun = (n, lang) => {
         case "ukr": return (b === 1 && a !== 11) ? "словник" : (b >= 2 && b <= 4 && !(a >= 12 && a <= 14)) ? "словники" : "словників";
         case "pl":  return (b === 1 && a !== 11) ? "słownik" : (b >= 2 && b <= 4 && !(a >= 12 && a <= 14)) ? "słowniki" : "słowników";
         case "lt":  return (b === 1 && a !== 11) ? "žodynas" : (b >= 2 && b <= 9 && !(a >= 11 && a <= 19)) ? "žodynai" : "žodynų";
+        case "lv":  return (b === 1 && a !== 11) ? "vārdnīca" : "vārdnīcas";
         default:    return n === 1 ? "dictionary" : "dictionaries";
     }
 };

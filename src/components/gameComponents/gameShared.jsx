@@ -45,7 +45,7 @@ export const noWithPrefix = (no, word, { articles = true, verbAa = true } = {}) 
 export { ENDONYM } from "../../interface/languages.js";   // самоназвания языков — из единого реестра
 
 // Честный «Не знаю» в заданиях: подсветит верный ответ, но засчитает как НЕ угадано.
-export const DUNNO = langGuard({ ru: "Не знаю", ukr: "Не знаю", en: "I don't know", pl: "Nie wiem", lt: "Nežinau" }, "gameShared.DUNNO");
+export const DUNNO = langGuard({ ru: "Не знаю", ukr: "Не знаю", en: "I don't know", pl: "Nie wiem", lt: "Nežinau", lv: "Nezinu" }, "gameShared.DUNNO");
 
 /** @type {import('react').CSSProperties} */
 export const PLAY_STYLE = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };
@@ -182,7 +182,7 @@ const SoundControl = ({ t }) => {
 // в экзамене, где ✓/✗ по ходу не показываем), регулятор громкости, выход.
 // Маленький ненавязчивый значок «повтор» — для слов из повторений (а не новых). Только иконка ↻
 // (подпись — в title/aria, по наведению/тапу), чтобы не мешать на экранах, где почти всё — повторы.
-const REPEAT_LBL = langGuard({ ru: "повтор", ukr: "повтор", en: "review", pl: "powtórka", lt: "kartojimas" }, "gameShared.REPEAT_LBL");
+const REPEAT_LBL = langGuard({ ru: "повтор", ukr: "повтор", en: "review", pl: "powtórka", lt: "kartojimas", lv: "atkārtojums" }, "gameShared.REPEAT_LBL");
 export const RepeatBadge = () => {
     const lang = useSystemStore((s) => s.currentLanguage);
     const txt = REPEAT_LBL[lang] || REPEAT_LBL.en;

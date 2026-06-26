@@ -40,6 +40,11 @@ const T = langGuard({
            diagVol: "Garsas išjungtas programėlėje. Įjunk, kad išgirstum žodį.",
            diagBlocked: "Naršyklė užblokavo automatinį grojimą. Paspausk ▶, kad išgirstum.",
            diagDevice: "Patikrink garsą ir „tylųjį režimą“ įrenginyje. Arba atsakyk tekstu." },
+    lv:  { hint: "Klausies un izvēlies tulkojumu", cantHear: "Nedzirdi?", showText: "Rādīt tekstu",
+           replay: "Vēlreiz", turnOn: "Ieslēgt skaņu", alwaysText: "Vienmēr ar tekstu",
+           diagVol: "Skaņa lietotnē ir izslēgta. Ieslēdz to, lai dzirdētu vārdu.",
+           diagBlocked: "Pārlūks bloķēja automātisko atskaņošanu. Pieskaries ▶, lai dzirdētu.",
+           diagDevice: "Pārbaudi ierīces skaļumu un klusuma režīmu. Vai atbildi ar tekstu." },
 }, "ListenPrompt.T");
 
 /**
