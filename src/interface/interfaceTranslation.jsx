@@ -1,3 +1,5 @@
+import { checkInterfaceTranslate } from "./i18nGuard.js";
+
 export const interfaceTranslate = {
     ru: {
         enterTranslationBelow: "Впиши ниже перевод для:",
@@ -836,6 +838,10 @@ export const interfaceTranslate = {
         }
     },
     lt: {
+        login: "Prisijungti",
+        logout: "Atsijungti",
+        noAccount: "Neturite paskyros?",
+        register: "Registruotis",
         guessedStats: ["atspėta", "iš"],
         mistakesMade: "Padaryta klaidų:",
         enterTranslationBelow: "Žemiau įveskite vertimą:",
@@ -1041,3 +1047,7 @@ export const interfaceTranslate = {
         }
     }
 };
+
+// Dev-страж: при загрузке проверяем, что все языки реестра присутствуют и набор ключей одинаков
+// во всех языковых блоках (паритет). В проде — no-op. См. interface/i18nGuard.js.
+checkInterfaceTranslate(interfaceTranslate);
