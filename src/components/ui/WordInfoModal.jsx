@@ -10,7 +10,6 @@ import { BtnSpinner, Dots } from "./Spinner.jsx";
 import { useWordsStore } from "../../store/wordStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
 import { useSystemStore } from "../../store/systemStore.jsx";
-import { useHistoryClose } from "../tools/useHistoryClose.js";
 import api from "../tools/api.js";
 
 // Описание слова + похожие слова (кликабельные — навигация по пулу) +
@@ -171,8 +170,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
         if (!open) { setView(null); setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); setEditOpen(false); setDelConfirm(false); }
     }, [open, word, wordId]); // eslint-disable-line
 
-    // Свайп/кнопка «Назад» закрывает карточку слова (на всех экранах, где она открыта)
-    useHistoryClose(open, onClose);
+    // (back/свайп-закрытие теперь обеспечивает сам <Modal> через useHistoryClose)
 
     const inDict = !!view?.inLearning;   // слово в «Учёбе» пользователя
     const posKey = view?.part_of_speech;

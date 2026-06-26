@@ -1,11 +1,16 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "./Icon.jsx";
+import { useHistoryClose } from "../tools/useHistoryClose.js";
 
 // Лёгкий модал в стиле дизайн-системы.
 // Крестик — единый для всех модалок: круглая кнопка, вынесенная за правый верхний угол
 // (как в карточке слова). Поэтому карточка всегда overflow:visible.
 export const Modal = ({ open, onClose, title, children, footer, headerExtra, maxWidth = 460 }) => {
+    // Пока модалка открыта — системная «Назад»/свайп (Android) закрывает ЕЁ, а не уводит
+    // со страницы: держим запись в истории, popstate → onClose (см. useHistoryClose).
+    useHistoryClose(open, onClose);
+
     // Пока модалка открыта — блокируем прокрутку фона (свайп под модалкой).
     useEffect(() => {
         if (!open) return;
