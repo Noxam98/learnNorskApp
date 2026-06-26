@@ -319,5 +319,20 @@
 .actionsmenu__item.is-danger { color: var(--danger); }
 
 /* Верхний паддинг шапки модалки (через класс — чтобы уменьшать на мобилке) */
-.modalhead { padding-top: var(--sp-5); }
+.modalhead { padding-top: var(--sp-5); padding-right: var(--sp-5); }
 @media (max-width: 560px) { .modalhead { padding-top: calc(var(--sp-5) / 1.5); } }
+
+/* Крестик закрытия модалки. Десктоп: вынесен за верхний-правый угол карточки (фирменный
+   стиль, как в карточке слова). Узкие экраны (≤768): карточка почти во всю ширину — вынесенный
+   крестик вылезал бы за вьюпорт и обрезался, поэтому кладём его ВНУТРЬ карточки (правый-верхний
+   угол), а шапке добавляем правый отступ, чтобы заголовок/действия не уезжали под него. */
+.modalx { position: absolute; top: var(--sp-5); right: var(--sp-5); transform: translate(100%, -100%);
+          z-index: 3; background: var(--surface); box-shadow: var(--shadow-sm); }
+/* Десктоп: overflow visible — вынесенный за угол крестик не обрезается карточкой. */
+.modalcard { overflow: visible; }
+@media (max-width: 768px) {
+  .modalx { top: 8px; right: 8px; transform: none; }
+  .modalhead { padding-right: 46px; }
+  /* Мобилка: крестик внутри карточки → клипаем возможный горизонтальный «выезд» контента. */
+  .modalcard { overflow: hidden; }
+}

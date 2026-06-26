@@ -33,7 +33,7 @@ export const Modal = ({ open, onClose, title, children, footer, headerExtra, max
                 }}
             >
                 <motion.div
-                    className="card"
+                    className="card modalcard"
                     initial={{ opacity: 0, y: 12, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 12, scale: 0.98 }}
@@ -43,19 +43,20 @@ export const Modal = ({ open, onClose, title, children, footer, headerExtra, max
                         width: "100%", maxWidth, boxShadow: "var(--shadow-lg)",
                         display: "flex", flexDirection: "column", position: "relative",
                         maxHeight: "calc(100dvh - 2 * var(--sp-5))",
-                        // крестик «выносится» за угол → карточку не обрезаем
-                        overflow: "visible",
+                        // min-width:0 — карточка это grid-элемент оверлея; иначе её min-content
+                        // (широкий контент) распирает шире вьюпорта. overflow — в .modalcard
+                        // (десктоп: visible под вынесенный крестик; мобилка: hidden).
+                        minWidth: 0,
                         borderRadius: "var(--r-lg)",
                     }}
                 >
-                    {/* Крестик — круглая кнопка, вынесенная за правый верхний угол (единый стиль, как в карточке слова). */}
-                    <button className="iconbtn" onClick={onClose} aria-label="Закрыть"
-                        style={{ position: "absolute", top: "var(--sp-5)", right: "var(--sp-5)", transform: "translate(100%, -100%)", zIndex: 3, background: "var(--surface)", boxShadow: "var(--shadow-sm)" }}><Icon n="x" /></button>
-                    <div className="modalhead" style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", paddingBottom: 0, paddingLeft: "var(--sp-5)", paddingRight: "var(--sp-5)" }}>
+                    {/* Крестик — позиционирование в .modalx (десктоп: за углом; мобилка: внутри карточки). */}
+                    <button className="iconbtn modalx" onClick={onClose} aria-label="Закрыть"><Icon n="x" /></button>
+                    <div className="modalhead" style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", paddingBottom: 0, paddingLeft: "var(--sp-5)" }}>
                         <span className="panel__title" style={{ fontSize: "var(--fs-18)", fontWeight: 700, minWidth: 0 }}>{title}</span>
                         {headerExtra && <span style={{ flexShrink: 0 }}>{headerExtra}</span>}
                     </div>
-                    <div style={{ padding: "var(--sp-5)", overflowY: "auto", overscrollBehavior: "contain", flex: "1 1 auto", minHeight: 0 }}>{children}</div>
+                    <div style={{ padding: "var(--sp-5)", overflowY: "auto", overflowX: "hidden", overscrollBehavior: "contain", flex: "1 1 auto", minHeight: 0, minWidth: 0 }}>{children}</div>
                     {footer && (
                         <div style={{ flexShrink: 0, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "flex-end", gap: "var(--sp-3)", rowGap: "var(--sp-2)", padding: "0 var(--sp-5) var(--sp-5)" }}>
                             {footer}
