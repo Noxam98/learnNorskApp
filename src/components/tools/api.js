@@ -337,6 +337,7 @@ class ApiService {
     setRemoveWord(id, poolId) { return this._send('DELETE', `/sets/${id}/words/${poolId}`); }
     setsMembership(poolIds) { return this._send('POST', '/sets/membership', { pool_ids: poolIds }); } // pool_id → [set_id]
     setSession(id, size = 20, lang = 'ru') { return this._send('GET', `/sets/${id}/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
+    setGenerate(id, { topic = "", level = "", count = 10, lang = 'ru' } = {}) { return this._send('POST', `/sets/${id}/generate`, { topic, level, count, lang }); } // ИИ-генерация слов в набор
 
     // Веб-пуши (напоминания о бездействии)
     pushVapidKey() { return this._send('GET', '/push/vapid'); }

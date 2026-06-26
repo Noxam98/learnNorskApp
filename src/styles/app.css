@@ -608,3 +608,109 @@
 [dir="rtl"] .kbd-dunno   { right: auto; left: 8px; }
 [dir="rtl"] .kbd__count  { right: auto; left: -6px; }
 [dir="rtl"] .auth__lang  { right: auto; left: var(--sp-5); }
+
+/* ====================== Вкладка «Наборы» — две панели рядом (ПК) ======================
+   Слева — встроенный поиск по Базе, справа — активный набор. Каждая панель скроллится
+   независимо (ощущение «двух окон»). На узких экранах схлопывается в одну колонку
+   (полноценный мобильный адаптив — отдельной задачей). */
+.sets-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--sp-4);
+    align-items: stretch;
+}
+.sets-pane {
+    display: flex; flex-direction: column; min-width: 0;
+    background: var(--surface); border: 1px solid var(--surface-3);
+    border-radius: var(--r-lg); overflow: hidden;
+    height: calc(100dvh - 250px); min-height: 420px;
+}
+.sets-pane__head {
+    flex: none; display: flex; align-items: center; justify-content: space-between;
+    gap: var(--sp-2); padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--surface-3); min-height: 56px;
+}
+.sets-pane__title { display: flex; align-items: baseline; gap: var(--sp-2); min-width: 0; }
+.sets-pane__title b { font-size: var(--fs-18); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sets-pane__bar {
+    flex: none; display: flex; align-items: center; justify-content: space-between;
+    gap: var(--sp-3); padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--surface-3);
+}
+.sets-pane__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: var(--sp-3) var(--sp-4); }
+
+/* Левая панель поиска заполняет .sets-pane: строка поиска фиксирована, результаты скроллятся. */
+.searchpane { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+.searchpane__top {
+    flex: none; display: flex; flex-direction: column; gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--surface-3);
+}
+.searchpane__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: var(--sp-3) var(--sp-4); }
+.seg--wrap { flex-wrap: wrap; }
+.empty--mini { padding: var(--sp-8) var(--sp-4); }
+.empty--mini .empty__ic .ic { width: 32px; height: 32px; }
+
+/* Узкие экраны — временно одна колонка (полноценная мобилка будет отдельно). */
+@media (max-width: 900px) {
+    .sets-cols { grid-template-columns: 1fr; }
+    .sets-pane { height: auto; max-height: 72vh; }
+}
+
+/* ===== «Наборы» на мобилке (≤760): одна панель активна, вторая свёрнута в полоску ===== */
+/* Компактный поиск (набор активен): строка поиска; результаты — попап-ОВЕРЛЕЙ (position:fixed,
+   вне вёрстки панели, над содержимым — не клипается overflow:hidden панелей и не двигает раскладку). */
+.searchpane--compact { gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); }
+.searchpop {
+    position: fixed; z-index: 60; border: 1px solid var(--surface-3); box-shadow: var(--shadow-lg);
+    border-radius: var(--r-md); background: var(--surface); max-height: 50vh; overflow-y: auto; padding: var(--sp-1);
+}
+
+/* Полоска свёрнутого набора: горизонтальные чипы (только норв. слово + ×), свайп вбок. */
+.setstrip { display: flex; gap: var(--sp-2); overflow-x: auto; padding: var(--sp-3); scrollbar-width: none; }
+.setstrip::-webkit-scrollbar { display: none; }
+.setchip { display: inline-flex; align-items: center; gap: 2px; flex: none; white-space: nowrap; cursor: pointer;
+    padding: 6px 4px 6px 12px; border-radius: 999px; background: var(--surface-3); font-weight: 600; font-size: var(--fs-14); }
+.setchip__w { unicode-bidi: plaintext; }
+.setchip__x { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
+    border: none; background: transparent; color: var(--ink-3); border-radius: 999px; cursor: pointer; }
+.setchip__x:hover { background: var(--danger-bg); color: var(--danger); }
+.setchip__x .ic { width: 14px; height: 14px; }
+
+/* кнопка «+» нового набора в ряду чипов (только плюс) */
+.fchip--add { color: var(--fjord-600); font-weight: 700; flex: none; }
+.fchip--add .ic { width: 16px; height: 16px; }
+.fchip--add:hover { background: var(--fjord-50, var(--surface-3)); color: var(--fjord-700, var(--fjord-600)); }
+
+/* статус-точка слова в наборе (новое/учится/выучено) */
+.wstatus { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.wstatus--new { background: var(--border); }
+.wstatus--learning { background: #e0a13a; }
+.wstatus--mastered { background: var(--success); }
+
+/* прогресс набора: «выучено N / M» */
+.setprog { display: flex; align-items: center; gap: var(--sp-2); padding: 0 var(--sp-4) var(--sp-3); }
+.setprog__bar { flex: 1; height: 6px; border-radius: 999px; background: var(--surface-3); overflow: hidden; }
+.setprog__fill { height: 100%; background: var(--success); border-radius: 999px; transition: width .3s var(--ease); }
+.setprog__txt { font-size: var(--fs-12); white-space: nowrap; }
+
+@media (max-width: 760px) {
+    /* всё в одну высоту экрана — скроллится только активная панель, страница не скроллится */
+    .sets-tab .page-head { margin-bottom: var(--sp-2) !important; }
+    .sets-tab .page-head p { display: none; }              /* описание прячем — экономим место */
+    .sets-tab .page-head h2 { font-size: var(--fs-18); }
+    .sets-tab .chiprow { margin-bottom: var(--sp-2) !important; }
+
+    .sets-mob { display: flex; flex-direction: column; overflow: hidden; min-height: 240px;
+        border: 1px solid var(--surface-3); border-radius: var(--r-lg); }   /* высота — inline из JS (под экран) */
+    /* высоту панелей задаём inline (searchH/setH) → анимируем height при переключении */
+    .sets-mpane { display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+        transition: height .28s var(--ease); }
+    .sets-mpane > .searchpane { flex: 1 1 auto; min-height: 0; }   /* поиск заполняет свою панель */
+
+    .sets-divider { flex: none; height: 30px; box-sizing: border-box; display: flex; align-items: center;
+        justify-content: center; gap: 7px; cursor: pointer; width: 100%; border: none;
+        background: var(--fjord-600); color: #fff; font-weight: 700; }
+    .sets-divider:active { background: var(--fjord-700, var(--fjord-600)); }
+    .sets-divider__txt { font-size: var(--fs-12); font-weight: 700; letter-spacing: .01em; }
+    .sets-divider .ic { width: 13px; height: 13px; }
+}

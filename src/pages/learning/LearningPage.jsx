@@ -30,13 +30,13 @@ const TABS = [
     { key: "progress", icon: "chart" },
 ];
 const TAB_LABELS = langGuard({
-    ru:  { title: "Учёба", today: "Сегодня", words: "Мой набор слов", sets: "Наборы", exam: "Экзамен", progress: "Прогресс", hi: "Добрый день" },
-    en:  { title: "Study", today: "Today", words: "My word set", sets: "Sets", exam: "Exam", progress: "Progress", hi: "Hello" },
-    ukr: { title: "Навчання", today: "Сьогодні", words: "Мій набір слів", sets: "Набори", exam: "Екзамен", progress: "Прогрес", hi: "Доброго дня" },
-    pl:  { title: "Nauka", today: "Dziś", words: "Mój zestaw słów", sets: "Zestawy", exam: "Egzamin", progress: "Postęp", hi: "Dzień dobry" },
-    lt:  { title: "Mokymasis", today: "Šiandien", words: "Mano žodžių rinkinys", sets: "Rinkiniai", exam: "Egzaminas", progress: "Pažanga", hi: "Laba diena" },
-    lv:  { title: "Mācības", today: "Šodien", words: "Mans vārdu kopums", sets: "Kopas", exam: "Eksāmens", progress: "Progress", hi: "Labdien" },
-    ar:  { title: "الدراسة", today: "اليوم", words: "مجموعة كلماتي", sets: "المجموعات", exam: "اختبار", progress: "التقدّم", hi: "مرحبًا" },
+    ru:  { title: "Учёба", today: "Сегодня", words: "Мои слова", sets: "Наборы", exam: "Экзамен", progress: "Прогресс", hi: "Добрый день" },
+    en:  { title: "Study", today: "Today", words: "My words", sets: "Sets", exam: "Exam", progress: "Progress", hi: "Hello" },
+    ukr: { title: "Навчання", today: "Сьогодні", words: "Мої слова", sets: "Набори", exam: "Екзамен", progress: "Прогрес", hi: "Доброго дня" },
+    pl:  { title: "Nauka", today: "Dziś", words: "Moje słowa", sets: "Zestawy", exam: "Egzamin", progress: "Postęp", hi: "Dzień dobry" },
+    lt:  { title: "Mokymasis", today: "Šiandien", words: "Mano žodžiai", sets: "Rinkiniai", exam: "Egzaminas", progress: "Pažanga", hi: "Laba diena" },
+    lv:  { title: "Mācības", today: "Šodien", words: "Mani vārdi", sets: "Kopas", exam: "Eksāmens", progress: "Progress", hi: "Labdien" },
+    ar:  { title: "الدراسة", today: "اليوم", words: "كلماتي", sets: "المجموعات", exam: "اختبار", progress: "التقدّم", hi: "مرحبًا" },
 }, "LearningPage.TAB_LABELS");
 
 export default function LearningPage() {

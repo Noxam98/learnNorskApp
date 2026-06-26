@@ -15,6 +15,7 @@ import { BtnSpinner, SkeletonWordlist, BrandLoader } from "../components/ui/Spin
 import { SearchBox } from "../components/ui/SearchBox.jsx";
 import { posMeta, posLabel, POS_INFO, POS_ORDER, posApiKey, chipPrefix } from "../components/ui/pos.js";
 import { SpeakButton } from "../components/ui/SpeakButton.jsx";
+import { WordCard } from "../components/ui/WordCard.jsx";
 import { ttsLang } from "../components/ui/tts.js";
 
 const SEARCH_DEBOUNCE_MS = 550;
@@ -373,55 +374,14 @@ export const PoolPage = () => {
             )}
             {display.length ? (
                 <div className="wordlist" style={loading ? { opacity: 0.4, pointerEvents: "none", transition: "opacity .15s ease" } : { transition: "opacity .15s ease" }}>
-                    {display.map((w) => {
-                        const { cls, key } = posMeta(w.part_of_speech);
-                        const prefix = chipPrefix(key, w.forms, { articles: showArticles, verbAa: showVerbAa });
-                        return (
-                            <div className={`wcard${added[w.pool_id] ? " is-added" : ""}${highlightWord === w.word ? " is-highlight" : ""}`} key={w.pool_id}
-                                data-word={w.word}
-                                onClick={() => (added[w.pool_id] ? onRemove(w) : onAdd(w))}>
-                                <div className="wcard__body">
-                                    <span className="wcard__word">
-                                        {prefix && <span className="muted" style={{ fontWeight: 400 }}>{prefix} </span>}
-                                        {w.word}
-                                    </span>
-                                    <span className="wcard__meta">
-                                        {w.level && <span className="chip lvl">{w.level}</span>}
-                                        <span className={`chip pos ${cls}`}>{posLabel(w.part_of_speech, t)}</span>
-                                        {isAdmin && !w.hasEmbedding && <span className="chip" style={{ background: "#fee2e2", color: "#b91c1c" }} title="нет эмбеддинга">emb</span>}
-                                        {isAdmin && !w.hasDescription && <span className="chip" style={{ background: "#fef3c7", color: "#92400e" }} title="нет описания">desc</span>}
-                                        {isAdmin && !w.hasTts && <span className="chip" style={{ background: "#e0e7ff", color: "#3730a3" }} title="нет озвучки">tts</span>}
-                                    </span>
-                                    <span className="wcard__tr">{w.translate?.[currentLanguage]?.join(", ")}</span>
-                                </div>
-                                <div className="wcard__actions" onClick={(e) => e.stopPropagation()}>
-                                    <button className="iconbtn" aria-label={t.description} title={t.description}
-                                        onClick={() => setDescWord(w.word)}>
-                                        <Icon n="info" />
-                                    </button>
-                                    <button className={`iconbtn${added[w.pool_id] ? " is-added" : ""}`}
-                                        aria-label={added[w.pool_id] ? t.removeFromDict : t.addToDict}
-                                        title={added[w.pool_id] ? t.removeFromDict : t.addToDict}
-                                        disabled={addingId === w.pool_id}
-                                        onClick={() => (added[w.pool_id] ? onRemove(w) : onAdd(w))}>
-                                        {addingId === w.pool_id ? <BtnSpinner /> : <Icon n={added[w.pool_id] ? "check" : "plus"} />}
-                                    </button>
-                                    <SpeakButton
-                                        segments={[
-                                            { text: w.word, hasTts: w.hasTts },
-                                            { text: w.translate?.[currentLanguage]?.join(", "), lang: ttsLang(currentLanguage) },
-                                        ]}
-                                        ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
-                                    {isAdmin && (
-                                        <button className="iconbtn is-danger" aria-label="delete" title="Удалить из базы (админ)"
-                                            onClick={() => onAdminDelete(w.word)}>
-                                            <Icon n="trash" />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })}
+                    {display.map((w) => (
+                        <WordCard key={w.pool_id} word={w} lang={currentLanguage} t={t}
+                            added={!!added[w.pool_id]} busy={addingId === w.pool_id} highlight={highlightWord === w.word}
+                            isAdmin={isAdmin}
+                            onToggle={() => (added[w.pool_id] ? onRemove(w) : onAdd(w))}
+                            onInfo={() => setDescWord(w.word)}
+                            onAdminDelete={() => onAdminDelete(w.word)} />
+                    ))}
                 </div>
             ) : (
                 (loading || searchPhase !== "idle")

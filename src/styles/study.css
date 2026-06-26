@@ -386,11 +386,12 @@
 .study-root .review-cta__big { font-size: var(--fs-34); }
 .study-root .study-head { gap: var(--sp-4); }
 .study-root .study-head__l { flex: 1 1 100%; }
-.study-root .seg { width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.study-root .seg { width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
 .study-root .seg--scroll { overflow: visible; }
 .study-root .seg__item {
-    flex-direction: column; gap: 4px; padding: 9px 2px;
-    font-size: 11.5px; font-weight: 700; line-height: 1.1; text-align: center;
+    flex-direction: column; gap: 4px; padding: 9px 1px;
+    font-size: 10.5px; font-weight: 700; line-height: 1.1; text-align: center;
+    min-width: 0; overflow: hidden;
   }
 .study-root .seg__item .ic { width: 19px; height: 19px; }
 }
@@ -493,8 +494,9 @@
 @media (max-width:760px){
   body.study-active .nav { display:none; }                 /* лого/профиль — в нижнем таб-баре */
   .study-root .study-main { padding-top: 0; }
-  .study-root .study-head { flex-direction: column; align-items: stretch; gap: var(--sp-3); margin: var(--sp-4) 0 var(--sp-4); }
-  .study-root .study-head .seg { display: none; }          /* сегмент — в липком хедере */
+  /* На мобилке приветствие («Добрый день…») и строка «Учёба · A1» съедают место — прячем весь
+     заголовок раздела; навигация по вкладкам и так в липком хедере .study-navbar. */
+  .study-root .study-head { display: none; }
 
   .study-root .study-navbar {
     display: block; position: sticky; top: 0; z-index: 40;
@@ -504,7 +506,7 @@
     will-change: transform;
   }
   .study-root .study-navbar .seg {
-    width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+    width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px;
     background: transparent; border: none; border-radius: 0; padding: 0;
   }
 }
