@@ -20,6 +20,7 @@ const HINTS = langGuard({
     pl: { reveal: "dotknij — tłumaczenie", next: "dotknij — dalej", studied: "Przejrzano" },
     lt: { reveal: "bakstelėk — vertimas", next: "bakstelėk — toliau", studied: "Peržiūrėta" },
     lv: { reveal: "pieskaries — tulkojums", next: "pieskaries — tālāk", studied: "Apskatīts" },
+    ar: { reveal: "انقر للكشف", next: "انقر للتالي", studied: "تمت المراجعة" },
 }, "StudyGame.HINTS");
 
 const filterChosenWords = (dictList) =>

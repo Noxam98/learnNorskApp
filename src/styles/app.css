@@ -581,3 +581,30 @@
 }
 .update-banner__x:hover { background: var(--surface-3); color: var(--ink); }
 .update-banner__x .ic { width: 15px; height: 15px; }
+
+/* ====================== RTL (арабский и пр. RTL-языки) ======================
+   Каркас уже зеркалится сам (flex/grid + <html dir="rtl"> из реестра). Здесь — ТОЛЬКО
+   точечная полировка под [dir="rtl"]; LTR-вёрстка не затрагивается вообще. */
+
+/* Направленные иконки зеркалим (стрелки «дальше/назад», перемотка автоперехода).
+   Ненаправленные (✓, ✕, звук) не трогаем. */
+[dir="rtl"] .ic:has(use[href="#i-arrow-right"]),
+[dir="rtl"] .ic:has(use[href="#i-arrow-left"]),
+[dir="rtl"] .ic:has(use[href="#i-chevron-right"]),
+[dir="rtl"] .ic:has(use[href="#i-chevron-left"]),
+[dir="rtl"] .ic:has(use[href="#i-fast-forward"]) { transform: scaleX(-1); }
+
+/* Двуязычный контент: норвежское слово / латиница / числа должны идти LTR даже в RTL-интерфейсе,
+   а арабский — RTL. unicode-bidi:plaintext выбирает направление по содержимому элемента. */
+[dir="rtl"] .qword,
+[dir="rtl"] .build-line,
+[dir="rtl"] .fb-answer,
+[dir="rtl"] .brand__name,
+[dir="rtl"] .stat,
+[dir="rtl"] .qcount { unicode-bidi: plaintext; }
+
+/* Абсолютно-спозиционированные элементы, что не флипаются сами — на зеркальную сторону. */
+[dir="rtl"] .choice__num { left: auto; right: 8px; }
+[dir="rtl"] .kbd-dunno   { right: auto; left: 8px; }
+[dir="rtl"] .kbd__count  { right: auto; left: -6px; }
+[dir="rtl"] .auth__lang  { right: auto; left: var(--sp-5); }

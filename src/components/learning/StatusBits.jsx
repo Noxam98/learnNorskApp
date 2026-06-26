@@ -26,6 +26,7 @@ export const STATUS_LABELS = langGuard({
     pl:  { new: "Nowe", in_progress: "W trakcie", repeat: "Powtórka", mastered: "Opanowane", weak: "Słabe", archived: "Archiwum", learning: "W trakcie", review: "W trakcie" },
     lt:  { new: "Nauja", in_progress: "Eigoje", repeat: "Kartojimas", mastered: "Išmokta", weak: "Silpna", archived: "Archyvas", learning: "Eigoje", review: "Eigoje" },
     lv:  { new: "Jauns", in_progress: "Procesā", repeat: "Atkārtojums", mastered: "Apgūts", weak: "Vājš", archived: "Arhīvs", learning: "Procesā", review: "Procesā" },
+    ar:  { new: "جديد", in_progress: "قيد التقدّم", repeat: "مراجعة", mastered: "متقَن", weak: "ضعيف", archived: "مؤرشف", learning: "قيد التقدّم", review: "قيد التقدّم" },
 }, "StatusBits.STATUS_LABELS");
 
 export function statusMeta(status) { return META[status] || META.new; }

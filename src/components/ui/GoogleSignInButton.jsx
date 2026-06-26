@@ -1,4 +1,6 @@
 import { useEffect, useRef } from "react";
+import { useSystemStore } from "../../store/systemStore.jsx";
+import { bcpOf } from "../../interface/languages.js";
 
 // Client ID веб-приложения (Google Cloud Console). Пусто → кнопку не показываем.
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
@@ -32,6 +34,8 @@ function loadGis() {
  */
 export default function GoogleSignInButton({ onCredential, text = "continue_with" }) {
     const ref = useRef(null);
+    // Локаль кнопки = язык интерфейса (иначе GSI рендерит на языке браузера/по умолчанию).
+    const locale = useSystemStore((s) => bcpOf(s.currentLanguage));
 
     useEffect(() => {
         if (!CLIENT_ID) return;
@@ -46,11 +50,11 @@ export default function GoogleSignInButton({ onCredential, text = "continue_with
             ref.current.innerHTML = "";
             g.renderButton(ref.current, {
                 theme: "outline", size: "large", shape: "pill",
-                text, width: ref.current.offsetWidth || 300,
+                text, locale, width: ref.current.offsetWidth || 300,
             });
         }).catch(() => {});
         return () => { cancelled = true; };
-    }, [onCredential, text]);
+    }, [onCredential, text, locale]);
 
     if (!CLIENT_ID) return null;
     return <div ref={ref} style={{ display: "flex", justifyContent: "center", minHeight: 40 }} />;

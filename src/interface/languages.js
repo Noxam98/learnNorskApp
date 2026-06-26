@@ -15,6 +15,7 @@ export const LANGUAGES = [
     { code: "pl",  name: "Polski",     flag: "🇵🇱", bcp: "pl", tts: "pl", dir: "ltr", endonym: "polski" },
     { code: "lt",  name: "Lietuvių",   flag: "🇱🇹", bcp: "lt", tts: "lt", dir: "ltr", endonym: "lietuvių" },
     { code: "lv",  name: "Latviešu",   flag: "🇱🇻", bcp: "lv", tts: "lv", dir: "ltr", endonym: "latviešu" },
+    { code: "ar",  name: "العربية",    flag: "🇸🇦", bcp: "ar", tts: "ar", dir: "rtl", endonym: "العربية" },
 ];
 
 /** карта code→endonym (совместимость с прежним ENDONYM-объектом) */

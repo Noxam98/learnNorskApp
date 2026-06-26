@@ -32,6 +32,10 @@ const RACE_I18N = {
         go: "Brauc!", toNo: "Iztulko uz norvēģu", toLang: "Iztulko uz", placeholder: "Ievadi tulkojumu…", check: "Pārbaudīt",
         correctRow: "pēc kārtas", bannerLeader: "{name} finišā!", bannerTimer: "Tev ir {n} s", hurry: "Laiks beidzas!",
         podium: "Pjedestāls", yourPlace: "Tava vieta", reached: "sasniedza {a}/{b}", playAgain: "Spēlēt vēlreiz", toLobby: "Uz vestibilu", word: "vārds", of: "no" },
+    ar: { tagline: "يفوز أول من يجيب عن كل الكلمات بشكل صحيح", you: "أنت", exit: "خروج", ready: "في وضع الخمول", moving: "اندفاع!", stalled: "متوقّف", restarting: "إعادة التشغيل", finished: "خط النهاية", dnf: "غادر",
+        go: "انطلق!", toNo: "ترجم إلى النرويجية", toLang: "ترجم إلى", placeholder: "اكتب الترجمة…", check: "تحقق",
+        correctRow: "على التوالي", bannerLeader: "{name} بلغ خط النهاية!", bannerTimer: "أمامك {n} ث", hurry: "الوقت ينفد!",
+        podium: "منصة التتويج", yourPlace: "مركزك", reached: "بلغ {a}/{b}", playAgain: "العب مرة أخرى", toLobby: "إلى الردهة", word: "كلمة", of: "من" },
 };
 
 function badgeFor(state, T) {

@@ -95,6 +95,19 @@ const L = langGuard({
         inMin: (n) => `pēc ${n} min`, inHours: (n) => `pēc ${n} h`,
         inDays: (n) => `pēc ${n} ${plLv(n)}`,
     },
+    ar: {
+        chips: { all: "الكل", new: "جديدة", in_progress: "قيد التقدّم", repeat: "مراجعة", mastered: "متقَنة", weak: "ضعيفة", archived: "أرشيف" },
+        searchPh: "ابحث بكل اللغات — norsk، عربي، eng…",
+        topicAll: "الموضوع: الكل", topic: "الموضوع", levelAll: "المستوى: الكل", level: "المستوى",
+        sortStrength: "حسب القوة", sortDue: "حان موعدها قريبًا", sortAlpha: "أبجديًا",
+        know: "أعرف", knowMenu: "أعرف هذه", openCard: "افتح البطاقة", speak: "انطق",
+        reset: "إعادة ضبط التقدّم", toArchive: "أرشفة",
+        selected: "المحدَّد:", markMastered: "وسمها كمتقَنة", practice: "تدرّب على المحدَّد", clear: "مسح",
+        empty: "لم يُعثر على كلمات", emptyHint: "غيّر الفلاتر أو استعلام البحث.",
+        today: "اليوم", tomorrow: "غدًا", overdue: "حان الموعد",
+        inMin: (n) => `بعد ${n} دقيقة`, inHours: (n) => `بعد ${n} ساعة`,
+        inDays: (n) => `بعد ${n} ${plAr(n)}`,
+    },
 }, "WordsTab.L");
 
 // Множественные формы «день» для относительного срока.
@@ -103,6 +116,7 @@ function plUk(n) { const m10 = n % 10, m100 = n % 100; if (m10 === 1 && m100 !==
 function plPl(n) { const m10 = n % 10, m100 = n % 100; if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "dni"; return "dni"; }
 function plLt(n) { const m10 = n % 10, m100 = n % 100; if (m10 === 0 || (m100 >= 11 && m100 <= 19)) return "dienų"; if (m10 === 1) return "dieną"; return "dienų"; }
 function plLv(n) { const m10 = n % 10, m100 = n % 100; if (m10 === 1 && m100 !== 11) return "diena"; return "dienas"; }
+function plAr(n) { if (n === 1) return "يوم"; if (n === 2) return "يومان"; if (n >= 3 && n <= 10) return "أيام"; return "يومًا"; }
 
 const STATUS_CHIPS = ["all", "new", "in_progress", "repeat", "mastered", "weak", "archived"];
 const STATUS_DOT = { new: "new", in_progress: "learn", repeat: "review", mastered: "master", weak: "weak" };

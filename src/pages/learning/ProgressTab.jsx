@@ -69,6 +69,15 @@ const T = langGuard({
         toPractice: "Uz praksi", reinforce: "Nostiprināt",
         empty: "Pagaidām tukšs", noData: "nav datu", toNext: "līdz līmenim",
     },
+    ar: {
+        sub: "كيف تنمو حصيلتك اللغوية النشطة",
+        masteredTotal: "إجمالي المتقَن", wordsTotal: "إجمالي الكلمات", due: "للمراجعة", level: "المستوى الحالي", retention: "الاحتفاظ", accuracy: "الدقة", streak: "السلسلة", streakDays: "أيام", perWeek: "+{n} هذا الأسبوع", activity: "النشاط",
+        byStatus: "الكلمات حسب الحالة", words: "كلمات", totalOf: "الإجمالي",
+        levels: "تقدّم مستويات CEFR",
+        weak: "كلماتك الضعيفة", almost: "أوشكت على الإتقان",
+        toPractice: "تدرّب", reinforce: "رسّخ",
+        empty: "لا شيء هنا بعد", noData: "لا توجد بيانات", toNext: "حتى المستوى",
+    },
 }, "ProgressTab.T");
 
 // Холодные состояния («нет данных ≠ 0»): баннер теста + что разблокируется.
@@ -79,6 +88,7 @@ const COLD = langGuard({
     pl:  { t: "Określmy twój poziom", d: "Zrób test poziomujący — dobierzemy słowa i trudność.", btn: "Zrób test", unlock: "Metryki pojawią się po pierwszych sesjach", heat: "Zacznij dziś — komórki aktywności się wypełnią" },
     lt:  { t: "Nustatykime tavo lygį", d: "Atlik lygio testą — pritaikysime žodžius ir sudėtingumą.", btn: "Atlikti testą", unlock: "Metrikos atsiras po pirmų sesijų", heat: "Pradėk šiandien — aktyvumo langeliai užsipildys" },
     lv:  { t: "Noteiksim tavu līmeni", d: "Izej līmeņa testu — pielāgosim vārdus un grūtību.", btn: "Iziet testu", unlock: "Rādītāji parādīsies pēc pirmajām sesijām", heat: "Sāc šodien — aktivitātes lauciņi aizpildīsies" },
+    ar:  { t: "لنحدّد مستواك", d: "أجرِ اختبار تحديد المستوى — سنخصّص الكلمات والصعوبة لك.", btn: "أجرِ الاختبار", unlock: "تظهر المقاييس بعد جلساتك الأولى", heat: "ابدأ اليوم — ستمتلئ خلايا النشاط" },
 }, "ProgressTab.COLD");
 
 const STATUS_VAR = {

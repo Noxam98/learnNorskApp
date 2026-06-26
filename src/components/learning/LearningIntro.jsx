@@ -52,6 +52,14 @@ const T = langGuard({
         p3t: "Atkārtošana ar intervāliem", p3d: "Sistēma atgādina vārdu tieši pirms tu to aizmirstu — katru reizi nedaudz vēlāk. Atgriezies pa druskai katru dienu.",
         cta: "Sākt", skip: "Izlaist",
     },
+    ar: {
+        eyebrow: "كيف تعمل الدراسة",
+        title: "تعلّم الكلمات بذكاء",
+        p1t: "الكلمات تأتي من قاموسك", p1d: "تأخذ الدراسة الكلمات من قاموسك والقاعدة. أضف كلمات جديدة لمستواك بنقرة واحدة.",
+        p2t: "«متقَن» يعني بلا أخطاء", p2d: "تُعدّ الكلمة متقَنة عندما تجتازها بلا أخطاء في «الاختيار» و«الكتابة». البطاقات للتذكير فقط.",
+        p3t: "تكرار متباعد", p3d: "يذكّرك النظام بالكلمة قبيل أن تنساها — في كل مرة بعد فترة أطول قليلًا. عُد قليلًا كل يوم.",
+        cta: "ابدأ", skip: "تخطّ",
+    },
 }, "LearningIntro.T");
 
 export default function LearningIntro({ lang = "ru", onDone }) {

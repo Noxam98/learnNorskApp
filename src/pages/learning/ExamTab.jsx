@@ -326,6 +326,40 @@ const T = langGuard({
         allClearTitle: "Viss zem kontroles",
         allClearDesc: "Šobrīd nav ne vārtu, ne audita. Turpini ikdienas sesijas — eksāmens atvērsies pats, kad sakrāsies paka.",
     },
+    ar: {
+        eyebrow: "الاختبار · بوابة الكلمات الجديدة",
+        loading: "نجهّز الاختبار…", grading: "جارٍ الحساب…",
+        lockedTitle: "الاختبار غير مفتوح بعد",
+        lockedDesc: (n) => `يُفتح عندما تتعلّم ${n} أخرى. عندئذٍ يصادق اختبار التحقق على الحزمة ويفتح كلمات جديدة.`,
+        progressLbl: "حتى الاختبار",
+        ofThreshold: (a, b) => `${a} / ${b} متعلَّمة`,
+        toExam: (n) => `تعلّم ${n} أخرى`,
+        goStudy: "ادرس",
+        openTitle: "اختبار الحزمة متاح",
+        openDesc: (s, p) => `${s} كلمات عشوائية من المتعلَّمة. تحتاج ≥ ${p} للنجاح. النجاح يصادق على الحزمة ويعيد فتح الكلمات الجديدة.`,
+        startExam: "ابدأ الاختبار", neutralNote: "الدرجة لا تحرّك الفترات · تذهب الأخطاء إلى المراجعة",
+        dir: "النرويجية ← ", whats: "ماذا يعني هذا؟",
+        hintInt2no: "اختر الكلمة النرويجية", hintCloze: "املأ الفراغ", listen: "استمع واختر الترجمة", replay: "أعد التشغيل",
+        hintInput: "اكتب بالنرويجية", inputSubmit: "تحقق",
+        qCount: (i, n) => `${i} / ${n}`,
+        passedTitle: "تمت المصادقة على الحزمة",
+        passedDesc: "الكلمات الجديدة مفتوحة مجددًا — تبدأ الحزمة التالية بالامتلاء. يراقب التدقيق القديمة الآن.",
+        failedTitle: "لم تنجح بعد",
+        failedDesc: (n) => `عادت ${n} كلمة إلى المراجعة — أعد تعلّمها وأعد المحاولة. تُفتح إعادة المحاولة عندما تمتلئ الحزمة مجددًا.`,
+        toRetake: (n) => `أعد تعلّم ${n} لإعادة المحاولة`,
+        backStudy: "العودة إلى الدراسة",
+        auditTitle: "فحص الصيانة",
+        auditDesc: (n) => `يُفحص ${n} من الكلمات المتعلَّمة منذ زمن للتأكد من نضارتها. استحضرها — يُمدَّد موعد فحصها؛ انسها — تعود إلى الدراسة.`,
+        startAudit: "أجرِ الفحص",
+        auditDoneTitle: "اكتمل الفحص",
+        auditDoneDesc: (refreshed, forgot) =>
+            forgot > 0
+                ? `جرى تنشيط ${refreshed}، وعادت إلى الدراسة ${forgot}.`
+                : `جرى تنشيط ${refreshed} — كلها محفوظة، ذاكرة ممتازة!`,
+        done: "تم",
+        allClearTitle: "كل شيء تحت السيطرة",
+        allClearDesc: "لا بوابة ولا تدقيق الآن. واصل جلساتك اليومية — يُفتح الاختبار تلقائيًا عندما تمتلئ حزمة.",
+    },
 }, "ExamTab.T");
 
 export default function ExamTab({ lang, go, refresh }) {

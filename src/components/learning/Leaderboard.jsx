@@ -38,6 +38,11 @@ const T = langGuard({
            empty: "Pagaidām tukšs. Patrenējies — un nokļūsi reitingā.",
            notYet: "Trenējies, lai nokļūtu šīs nedēļas reitingā",
            hidden: "Tu esi paslēpts no reitinga — ieslēdz to Profilā.", loading: "Ielāde…" },
+    ar:  { title: "لوحة المتصدرين", weekTitle: "لوحة الأسبوع", week: "الأسبوع", all: "كل الأوقات",
+           you: "أنت", of: "من", pts: "نقطة", words: "كلمات", anon: "مجهول", seeAll: "الكل",
+           empty: "فارغة الآن. تدرّب لتنضمّ إلى لوحة المتصدرين.",
+           notYet: "تدرّب لتنضمّ إلى لوحة هذا الأسبوع",
+           hidden: "أنت مخفيّ من اللوحة — فعّلها من الملف الشخصي.", loading: "جارٍ التحميل…" },
 }, "Leaderboard.T");
 
 const MEDAL_CLS = { 1: "lb-medal--gold", 2: "lb-medal--silver", 3: "lb-medal--bronze" };

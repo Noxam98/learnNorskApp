@@ -7,6 +7,7 @@ export const wordsNoun = (n, lang) => {
         case "pl":  return (b === 1 && a !== 11) ? "słowo" : (b >= 2 && b <= 4 && !(a >= 12 && a <= 14)) ? "słowa" : "słów";
         case "lt":  return (b === 1 && a !== 11) ? "žodis" : (b >= 2 && b <= 9 && !(a >= 11 && a <= 19)) ? "žodžiai" : "žodžių";
         case "lv":  return (b === 1 && a !== 11) ? "vārds" : "vārdi";
+        case "ar":  return a === 1 ? "كلمة" : a === 2 ? "كلمتان" : (a >= 3 && a <= 10) ? "كلمات" : "كلمة";
         default:    return n === 1 ? "word" : "words";
     }
 };
@@ -23,6 +24,7 @@ export const dictsNoun = (n, lang) => {
         case "pl":  return (b === 1 && a !== 11) ? "słownik" : (b >= 2 && b <= 4 && !(a >= 12 && a <= 14)) ? "słowniki" : "słowników";
         case "lt":  return (b === 1 && a !== 11) ? "žodynas" : (b >= 2 && b <= 9 && !(a >= 11 && a <= 19)) ? "žodynai" : "žodynų";
         case "lv":  return (b === 1 && a !== 11) ? "vārdnīca" : "vārdnīcas";
+        case "ar":  return a === 1 ? "قاموس" : a === 2 ? "قاموسان" : (a >= 3 && a <= 10) ? "قواميس" : "قاموس";
         default:    return n === 1 ? "dictionary" : "dictionaries";
     }
 };

@@ -34,6 +34,7 @@ const TAB_LABELS = langGuard({
     pl:  { title: "Nauka", today: "Dziś", words: "Mój zestaw słów", exam: "Egzamin", progress: "Postęp", hi: "Dzień dobry" },
     lt:  { title: "Mokymasis", today: "Šiandien", words: "Mano žodžių rinkinys", exam: "Egzaminas", progress: "Pažanga", hi: "Laba diena" },
     lv:  { title: "Mācības", today: "Šodien", words: "Mans vārdu kopums", exam: "Eksāmens", progress: "Progress", hi: "Labdien" },
+    ar:  { title: "الدراسة", today: "اليوم", words: "مجموعة كلماتي", exam: "اختبار", progress: "التقدّم", hi: "مرحبًا" },
 }, "LearningPage.TAB_LABELS");
 
 export default function LearningPage() {

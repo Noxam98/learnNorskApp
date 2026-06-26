@@ -25,6 +25,8 @@ const T = langGuard({
            repTitle: "Skundai „nemokyti“", repSub: "Vartotojai pažymėjo žodį kaip šiukšlę. „Pašalinti iš mokymosi“ → daugiau nesiūlome; „Palikti“ → kitus 5 skundus atmetame automatiškai.", repEmpty: "Skundų nėra.", exclude: "Pašalinti iš mokymosi", keep: "Palikti", reports: "skundų" },
     lv:  { title: "Moderācija", sub: "Lietotāju izveidotie vārdi. Apstiprināt → kopīgā bāze; noraidīt → paliek privāts autoram.", empty: "Rinda ir tukša — jaunu vārdu nav.", approve: "Apstiprināt", reject: "Noraidīt", by: "no",
            repTitle: "Sūdzības „nemācīties“", repSub: "Lietotāji atzīmēja vārdu kā nederīgu. „Noņemt no mācībām“ → vairs nevienam nepiedāvājam; „Atstāt“ → nākamās 5 sūdzības automātiski noraidām.", repEmpty: "Sūdzību nav.", exclude: "Noņemt no mācībām", keep: "Atstāt", reports: "sūdzības" },
+    ar:  { title: "المراجعة", sub: "كلمات أنشأها المستخدمون. الموافقة → القاعدة المشتركة؛ الرفض → تبقى خاصة بالمؤلّف.", empty: "قائمة الانتظار فارغة.", approve: "موافقة", reject: "رفض", by: "بواسطة",
+           repTitle: "بلاغات «لا تتعلّم»", repSub: "أبلغ المستخدمون عن الكلمة كغير مفيدة. «إزالة من التعلّم» → لن تُقترح مجددًا؛ «إبقاء» → تُرفض البلاغات الـ5 التالية تلقائيًا.", repEmpty: "لا توجد بلاغات.", exclude: "إزالة من التعلّم", keep: "إبقاء", reports: "بلاغات" },
 }, "ModerationPage.T");
 
 export default function ModerationPage() {

@@ -17,6 +17,7 @@ const SUBMIT_LABEL = langGuard({
     pl: "Odpowiedz",
     lt: "Atsakyti",
     lv: "Atbildēt",
+    ar: "إجابة",
 }, "InputQuestion.SUBMIT_LABEL");
 
 // props:

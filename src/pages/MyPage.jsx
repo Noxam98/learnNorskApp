@@ -19,10 +19,10 @@ const GOOGLE_ON = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 // Локальные подписи (статистика теперь из «Учёбы», а не из личных словарей).
 const STATUS_ORDER = ["new", "in_progress", "repeat", "mastered"];
 const STATUS_LBL = {
-    new: { ru: "Новые", ukr: "Нові", en: "New", pl: "Nowe", lt: "Nauji", lv: "Jauni" },
-    in_progress: { ru: "В процессе", ukr: "У процесі", en: "In progress", pl: "W trakcie", lt: "Eigoje", lv: "Procesā" },
-    repeat: { ru: "Повторение", ukr: "Повторення", en: "Review", pl: "Powtórka", lt: "Kartojimas", lv: "Atkārtojums" },
-    mastered: { ru: "Выучено", ukr: "Вивчено", en: "Mastered", pl: "Opanowane", lt: "Išmokta", lv: "Apgūts" },
+    new: { ru: "Новые", ukr: "Нові", en: "New", pl: "Nowe", lt: "Nauji", lv: "Jauni", ar: "جديدة" },
+    in_progress: { ru: "В процессе", ukr: "У процесі", en: "In progress", pl: "W trakcie", lt: "Eigoje", lv: "Procesā", ar: "قيد التقدّم" },
+    repeat: { ru: "Повторение", ukr: "Повторення", en: "Review", pl: "Powtórka", lt: "Kartojimas", lv: "Atkārtojums", ar: "مراجعة" },
+    mastered: { ru: "Выучено", ukr: "Вивчено", en: "Mastered", pl: "Opanowane", lt: "Išmokta", lv: "Apgūts", ar: "متقَنة" },
 };
 
 const MyPage = () => {

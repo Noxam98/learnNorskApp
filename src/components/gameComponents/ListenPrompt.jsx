@@ -45,6 +45,11 @@ const T = langGuard({
            diagVol: "Skaņa lietotnē ir izslēgta. Ieslēdz to, lai dzirdētu vārdu.",
            diagBlocked: "Pārlūks bloķēja automātisko atskaņošanu. Pieskaries ▶, lai dzirdētu.",
            diagDevice: "Pārbaudi ierīces skaļumu un klusuma režīmu. Vai atbildi ar tekstu." },
+    ar:  { hint: "استمع واختر الترجمة", cantHear: "لا تسمع؟", showText: "إظهار النص",
+           replay: "مرة أخرى", turnOn: "تشغيل الصوت", alwaysText: "دائمًا نص",
+           diagVol: "الصوت مُطفأ في التطبيق. شغّله لتسمع الكلمة.",
+           diagBlocked: "حظر المتصفّح التشغيل التلقائي. انقر ▶ لسماعها.",
+           diagDevice: "تحقّق من مستوى صوت جهازك ووضع الصمت. أو أجب بالنص." },
 }, "ListenPrompt.T");
 
 /**
