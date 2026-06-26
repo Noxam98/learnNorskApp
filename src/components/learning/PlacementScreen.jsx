@@ -7,9 +7,9 @@ import { ChoiceQuestion } from "../gameComponents/ChoiceQuestion.jsx";
 import { InputQuestion } from "../gameComponents/InputQuestion.jsx";
 import { hyLang } from "../ui/hyphenate.js";
 import api from "../tools/api.js";
+import { ENDONYM } from "../../interface/languages.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
-const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 
 const T = {
     ru: {

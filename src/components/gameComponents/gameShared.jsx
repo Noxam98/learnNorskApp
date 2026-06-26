@@ -41,7 +41,7 @@ export const noWithPrefix = (no, word, { articles = true, verbAa = true } = {}) 
     return pfx ? `${pfx} ${no}` : no;
 };
 
-export const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
+export { ENDONYM } from "../../interface/languages.js";   // самоназвания языков — из единого реестра
 
 // Честный «Не знаю» в заданиях: подсветит верный ответ, но засчитает как НЕ угадано.
 export const DUNNO = { ru: "Не знаю", ukr: "Не знаю", en: "I don't know", pl: "Nie wiem", lt: "Nežinau" };

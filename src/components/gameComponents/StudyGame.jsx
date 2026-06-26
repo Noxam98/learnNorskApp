@@ -12,8 +12,6 @@ import { posLabel, posMeta, chipPrefix } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { playSound } from "../tools/sound.js";
 import { useScrollLock, ProgressSegments, semisOf } from "./gameShared.jsx";
-
-const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 const HINTS = {
     ru: { reveal: "нажми — перевод", next: "нажми — дальше", studied: "Просмотрено" },
     ukr: { reveal: "натисни — переклад", next: "натисни — далі", studied: "Переглянуто" },

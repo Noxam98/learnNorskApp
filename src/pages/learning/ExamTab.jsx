@@ -10,7 +10,7 @@ import api from "../../components/tools/api.js";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { ChoiceQuestion } from "../../components/gameComponents/ChoiceQuestion.jsx";
 import { GameKeyboard } from "../../components/gameComponents/GameKeyboard.jsx";
-import { PLAY_STYLE, PlayTopBar, ProgressSegments } from "../../components/gameComponents/gameShared.jsx";
+import { PLAY_STYLE, PlayTopBar, ProgressSegments, ENDONYM } from "../../components/gameComponents/gameShared.jsx";
 import { useGameLoop } from "../../components/gameComponents/useGameLoop.js";
 import { playSound, playWin } from "../../components/tools/sound.js";
 import { speakText } from "../../components/ui/tts.js";
@@ -112,7 +112,6 @@ function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
     );
 }
 
-const ENDONYM = { ru: "русский", ukr: "українську", en: "English", pl: "polski", lt: "lietuvių" };
 
 // ---------- Локальная i18n (ru/en/ukr/pl/lt) ----------
 const T = {

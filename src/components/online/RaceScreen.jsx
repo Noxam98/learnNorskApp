@@ -4,9 +4,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { RaceRunner, ANIMAL_LIST, ANIMAL_COLORS } from "./RaceRunner.jsx";
 import { playYawn } from "../tools/raceAudio.js";
+import { ENDONYM } from "../../interface/languages.js";
 
-// Язык интерфейса игрока (для лейблов «Переведите на …») + строки гонки на 5 языках.
-const LANG_NAME = { ru: "русский", en: "English", ukr: "українську", pl: "polski", lt: "lietuvių" };
+// Самоназвания языков (для лейблов «Переведите на …») — из единого реестра. Строки гонки — ниже.
 const RACE_I18N = {
     ru: { tagline: "Кто первым правильно ответит все слова", you: "Ты", exit: "Выйти", ready: "на старте", moving: "рывок!", stalled: "заглох", restarting: "завёлся", finished: "финиш", dnf: "отключился",
         go: "Поехали!", toNo: "Переведите на норвежский", toLang: "Переведите на", placeholder: "Введите перевод…", check: "Проверить",
@@ -91,7 +91,7 @@ function AnswerZone({ word, lang, T, feedback, streak, onAnswer }) {
     const inputRef = useRef(null);
     const isType = word.mode !== "choice";
     const isNoPrompt = word.dir === "no2int";   // показываем норвежское слово
-    const promptLabel = isNoPrompt ? `${T.toLang} ${LANG_NAME[lang] || lang}` : T.toNo;
+    const promptLabel = isNoPrompt ? `${T.toLang} ${ENDONYM[lang] || lang}` : T.toNo;
 
     useEffect(() => { setVal(""); setPicked(null); }, [word.token]);
     useEffect(() => { if (isType && inputRef.current && !feedback) inputRef.current.focus(); }, [word.token, feedback, isType]);
