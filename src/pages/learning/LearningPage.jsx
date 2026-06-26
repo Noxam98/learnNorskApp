@@ -20,21 +20,23 @@ import TodayTab from "./TodayTab.jsx";
 import WordsTab from "./WordsTab.jsx";
 import ExamTab from "./ExamTab.jsx";
 import ProgressTab from "./ProgressTab.jsx";
+import SetsTab from "./SetsTab.jsx";
 
 const TABS = [
     { key: "today", icon: "zap" },
     { key: "words", icon: "list" },
+    { key: "sets", icon: "layers" },
     { key: "exam", icon: "graduation" },
     { key: "progress", icon: "chart" },
 ];
 const TAB_LABELS = langGuard({
-    ru:  { title: "Учёба", today: "Сегодня", words: "Мой набор слов", exam: "Экзамен", progress: "Прогресс", hi: "Добрый день" },
-    en:  { title: "Study", today: "Today", words: "My word set", exam: "Exam", progress: "Progress", hi: "Hello" },
-    ukr: { title: "Навчання", today: "Сьогодні", words: "Мій набір слів", exam: "Екзамен", progress: "Прогрес", hi: "Доброго дня" },
-    pl:  { title: "Nauka", today: "Dziś", words: "Mój zestaw słów", exam: "Egzamin", progress: "Postęp", hi: "Dzień dobry" },
-    lt:  { title: "Mokymasis", today: "Šiandien", words: "Mano žodžių rinkinys", exam: "Egzaminas", progress: "Pažanga", hi: "Laba diena" },
-    lv:  { title: "Mācības", today: "Šodien", words: "Mans vārdu kopums", exam: "Eksāmens", progress: "Progress", hi: "Labdien" },
-    ar:  { title: "الدراسة", today: "اليوم", words: "مجموعة كلماتي", exam: "اختبار", progress: "التقدّم", hi: "مرحبًا" },
+    ru:  { title: "Учёба", today: "Сегодня", words: "Мой набор слов", sets: "Наборы", exam: "Экзамен", progress: "Прогресс", hi: "Добрый день" },
+    en:  { title: "Study", today: "Today", words: "My word set", sets: "Sets", exam: "Exam", progress: "Progress", hi: "Hello" },
+    ukr: { title: "Навчання", today: "Сьогодні", words: "Мій набір слів", sets: "Набори", exam: "Екзамен", progress: "Прогрес", hi: "Доброго дня" },
+    pl:  { title: "Nauka", today: "Dziś", words: "Mój zestaw słów", sets: "Zestawy", exam: "Egzamin", progress: "Postęp", hi: "Dzień dobry" },
+    lt:  { title: "Mokymasis", today: "Šiandien", words: "Mano žodžių rinkinys", sets: "Rinkiniai", exam: "Egzaminas", progress: "Pažanga", hi: "Laba diena" },
+    lv:  { title: "Mācības", today: "Šodien", words: "Mans vārdu kopums", sets: "Kopas", exam: "Eksāmens", progress: "Progress", hi: "Labdien" },
+    ar:  { title: "الدراسة", today: "اليوم", words: "مجموعة كلماتي", sets: "المجموعات", exam: "اختبار", progress: "التقدّم", hi: "مرحبًا" },
 }, "LearningPage.TAB_LABELS");
 
 export default function LearningPage() {
@@ -115,14 +117,16 @@ export default function LearningPage() {
 
     // openSession() без слов → системная сессия (LearningSession сам тянет программу с бэка).
     // openSession(words, mode) — легаси-путь с готовым набором (полки/«Слабые» из других вкладок).
-    const openSession = (words = null, mode = "choice") => setSession({ words, mode, system: !words?.length });
+    // openSession(null, mode, { setId }) — дрилл по личному набору (сессия только из его слов).
+    const openSession = (words = null, mode = "choice", opts = {}) =>
+        setSession({ words, mode, system: !words?.length || !!opts.setId, setId: opts.setId || null });
     const openWord = (no, wordId) => setInfo({ no, wordId });
     const closeSession = (didPractice) => { setSession(null); if (didPractice) setReloadKey((k) => k + 1); };
     const openPlacement = () => setPlacement(true);
     const closePlacement = (didPlace) => { setPlacement(false); if (didPlace) setReloadKey((k) => k + 1); };
 
     const tabProps = { lang, go, openSession, openWord, openPlacement, placed, reloadKey, refresh: () => setReloadKey((k) => k + 1) };
-    const Active = { today: TodayTab, words: WordsTab, exam: ExamTab, progress: ProgressTab }[tab];
+    const Active = { today: TodayTab, words: WordsTab, sets: SetsTab, exam: ExamTab, progress: ProgressTab }[tab];
 
     const segEl = (
         <div className="seg" role="tablist">
@@ -151,7 +155,7 @@ export default function LearningPage() {
             {Active && <Active {...tabProps} />}
 
             {session && (
-                <LearningSession words={session.words} mode={session.mode} system={session.system} lang={lang} onClose={closeSession} />
+                <LearningSession words={session.words} mode={session.mode} system={session.system} setId={session.setId} lang={lang} onClose={closeSession} />
             )}
             <WordInfoModal open={!!info} word={info?.no} wordId={info?.wordId}
                 lang={lang} t={tg} onClose={() => { setInfo(null); }} />

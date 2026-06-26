@@ -326,6 +326,18 @@ class ApiService {
     rediff(a, b, lang, hint) { return this._send('POST', '/pool/rediff', { a, b, lang, hint }); }
     ttsUrl(word, lang) { return `${this.baseUrl}/tts?word=${encodeURIComponent(word)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`; }
 
+    // Личные наборы для изучения слов
+    setsList() { return this._send('GET', '/sets'); }                                              // [{id, name, studying, count}]
+    setCreate(name) { return this._send('POST', '/sets', { name }); }
+    setRename(id, name) { return this._send('PATCH', `/sets/${id}`, { name }); }
+    setDelete(id) { return this._send('DELETE', `/sets/${id}`); }
+    setStudying(id, studying) { return this._send('POST', `/sets/${id}/studying`, { studying }); }
+    setWords(id) { return this._send('GET', `/sets/${id}/words`); }                                 // {words:[{pool_id,...}]}
+    setAddWords(id, poolIds) { return this._send('POST', `/sets/${id}/words`, { pool_ids: poolIds }); }
+    setRemoveWord(id, poolId) { return this._send('DELETE', `/sets/${id}/words/${poolId}`); }
+    setsMembership(poolIds) { return this._send('POST', '/sets/membership', { pool_ids: poolIds }); } // pool_id → [set_id]
+    setSession(id, size = 20, lang = 'ru') { return this._send('GET', `/sets/${id}/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
+
     // Веб-пуши (напоминания о бездействии)
     pushVapidKey() { return this._send('GET', '/push/vapid'); }
     pushSubscribe(sub) { return this._send('POST', '/push/subscribe', sub); }

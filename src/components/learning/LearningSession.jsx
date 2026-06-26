@@ -79,7 +79,7 @@ const toElements = (list, lang) => (list || [])
         gw: toGameWord(e, lang),
     }));
 
-export default function LearningSession({ words = [], mode = "choice", system = false, lang = "ru", onClose }) {
+export default function LearningSession({ words = [], mode = "choice", system = false, setId = null, lang = "ru", onClose }) {
     const t = T[lang] || T.ru;
     const soundOn = useSystemStore((s) => s.soundOn);
     // Задания «на слух»: локальное переопределение устройства (null=следовать аккаунту) поверх gamePrefs.listenOff.
@@ -116,8 +116,9 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     // Подтянуть системную программу с бэка.
     const loadProgram = async () => {
         try {
-            // берём заранее прогретую сессию (мгновенно, если готова); следующую закажет экран итога
-            const r = await useSessionStore.getState().take(20);
+            // дрилл по набору (setId) — тянем сессию набора напрямую; иначе берём заранее
+            // прогретую общую сессию (мгновенно, если готова); следующую закажет экран итога
+            const r = setId ? await api.setSession(setId, 20, lang) : await useSessionStore.getState().take(20);
             const list = Array.isArray(r) ? r : (r?.elements || r?.items || r?.words || []);
             const els = toElements(list, lang);
             if (els.length) {
@@ -163,8 +164,9 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         try { setAfter(await api.learningStats()); } catch { /* */ }
         if (isSystem) { try { setGate(await api.learningGate()); } catch { /* */ } }
         // следующую сессию греем ПОСЛЕ статов — к этому моменту ответы записаны, и бэк отдаст
-        // свежий состав (со сдвинутыми по рампе словами), а не те же «выборы».
-        useSessionStore.getState().prefetch(20);
+        // свежий состав (со сдвинутыми по рампе словами), а не те же «выборы». В дрилле по набору
+        // общую сессию не греем (там «Ещё» перечитывает сессию набора напрямую в loadProgram).
+        if (!setId) useSessionStore.getState().prefetch(20);
     };
 
     // Финиш одной игры. isStudy=true — это была карточка-интро (НЕ ответ): считаем отдельно.
@@ -359,8 +361,8 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                         ? <p style={{ opacity: .85, marginBottom: "var(--sp-3)" }}>{t.examNote}</p>
                         : (noneLeft && <p style={{ opacity: .8, marginBottom: "var(--sp-3)" }}>{t.leftZero}</p>)}
                     {((isSystem && !examGate) || (!isSystem && !noneLeft)) && (
-                        <button className="btn btn--accent btn--lg btn--block" onClick={again} disabled={busy || (isSystem && sessionLoading)}>
-                            {(isSystem && sessionLoading) ? <BtnSpinner /> : <Icon n="play" sm />} {t.more}
+                        <button className="btn btn--accent btn--lg btn--block" onClick={again} disabled={busy || (isSystem && !setId && sessionLoading)}>
+                            {(isSystem && !setId && sessionLoading) ? <BtnSpinner /> : <Icon n="play" sm />} {t.more}
                             {isDesktop && <span style={{ opacity: .6, fontWeight: 400, marginLeft: 6 }}>(Enter)</span>}
                         </button>
                     )}
