@@ -52,6 +52,7 @@ export function useGameLoop({
                          // подсветка выбора нейтральная, ответ копится наружу (грейд снаружи/на сервере).
 }) {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
+    const autoAdvance = useSystemStore((s) => s.autoAdvance);   // false → после верного ждём тап (ручное листание)
     const dictList = useWordsStore((s) => s.dictList);
     const aiPlay = useWordsStore((s) => s.aiPlayWords);
     const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
@@ -128,15 +129,29 @@ export function useGameLoop({
     // перехода НЕТ, ждём тап игрока. Выбор без звука (ms=0) — тоже по тапу.
     useEffect(() => {
         if (status !== "CORRECT" || held) return;
-        let tail = null, guard = null, done = false;
+        let tail = null, guard = null, armT = null, done = false, manualOff = null;
         const go = () => { if (done) return; done = true; if (guard) clearTimeout(guard); tail = setTimeout(advance, ANSWER_TAIL_MS); };
         // ПАУЗА перед озвучкой ответа, затем играем и пейсим переход по КОНЦУ аудио (или фикс. без звука)
         const lead = setTimeout(() => {
-            const p = speakAnswer ? speakAnswer() : null;
+            const p = speakAnswer ? speakAnswer() : null;   // озвучка ответа играет в любом режиме
+            if (!autoAdvance) {
+                // РУЧНОЙ режим (автопереход выключен): переход НЕ планируем — ждём тап по карточке /
+                // пробел / энтер / →. Небольшая задержка перед арм-ом, чтобы не поймать тот же тап,
+                // которым дали верный ответ.
+                const adv = () => { if (done) return; done = true; advance(); };
+                const onKey = (e) => { if (e.code === "Space" || e.code === "Enter" || e.code === "NumpadEnter" || e.code === "ArrowRight") { e.preventDefault(); adv(); } };
+                armT = setTimeout(() => {
+                    const stage = typeof document !== "undefined" ? document.querySelector(".pstage") : null;
+                    window.addEventListener("keydown", onKey);
+                    if (stage) stage.addEventListener("pointerdown", adv);
+                    manualOff = () => { window.removeEventListener("keydown", onKey); if (stage) stage.removeEventListener("pointerdown", adv); };
+                }, 450);
+                return;
+            }
             if (p) { guard = setTimeout(go, ANSWER_MAX_MS); p.then(go, go); }
             else if (autoAdvanceMs > 0) { tail = setTimeout(advance, autoAdvanceMs); }
         }, ANSWER_LEAD_MS);
-        return () => { done = true; clearTimeout(lead); if (guard) clearTimeout(guard); if (tail) clearTimeout(tail); };
+        return () => { done = true; clearTimeout(lead); if (guard) clearTimeout(guard); if (tail) clearTimeout(tail); if (armT) clearTimeout(armT); if (manualOff) manualOff(); };
     }, [status]); // eslint-disable-line
     // Нейтральный режим (экзамен): показать выбор ~паузу, затем следующий вопрос/финиш.
     useEffect(() => {

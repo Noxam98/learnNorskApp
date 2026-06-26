@@ -131,6 +131,19 @@ export const withinOneEdit = (a, b, adjacent = null) => {
     return true;
 };
 
+// Тумблер «автопереход» прямо в шапке игры: тап переключает авто-переход после верного ответа
+// (выкл — листать тапом/пробелом). Иконка тускнеет, когда выключено (как кнопка звука).
+const AutoAdvanceToggle = ({ t }) => {
+    const autoAdvance = useSystemStore((s) => s.autoAdvance);
+    return (
+        <button className={"ptop__snd" + (autoAdvance ? "" : " is-off")}
+            title={t.autoAdvanceTip} aria-label={t.autoAdvanceTip} aria-pressed={autoAdvance}
+            onClick={(e) => { e.stopPropagation(); useSystemStore.getState().setAutoAdvance(!autoAdvance); }}>
+            <Icon n="fast-forward" sm />
+        </button>
+    );
+};
+
 // Регулятор громкости звука прямо в окне игры/экзамена: кнопка-иконка открывает
 // поповер с ползунком 0..100%. 0% = выкл (synced с soundOn). Закрытие — тап вне.
 const SoundControl = ({ t }) => {
@@ -200,6 +213,7 @@ export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = n
                     </>
                 )}
             </div>
+            <AutoAdvanceToggle t={t} />
             <SoundControl t={t} />
             <a className="pexit" onClick={onExit} style={{ cursor: "pointer" }}><Icon n="x" sm /> {t.exit}</a>
         </div>

@@ -22,6 +22,7 @@ export const useSystemStore = create(persist(
         showVerbAa: true,    // показывать «å» перед глаголами на чипах слов
         soundOn: true,       // звуки игры (онлайн-режим)
         soundVolume: 1,      // громкость звука 0..1 (общий множитель для синтез-звуков и TTS)
+        autoAdvance: true,   // авто-переход к след. заданию после верного ответа; false = листать тапом
         vibration: true,     // тактильный отклик нашей экранной клавиатуры (по умолчанию вкл)
         vibrationStrength: "mid", // сила (длительность) вибрации: low | mid | high
         pushEnabled: false,    // включены ли пуш-напоминания (намерение юзера; сама подписка — в браузере)
@@ -60,6 +61,7 @@ export const useSystemStore = create(persist(
             state.soundVolume = isNaN(n) ? 1 : n;
             state.soundOn = state.soundVolume > 0;
         })),
+        setAutoAdvance: (v) => set(produce((state) => { state.autoAdvance = !!v; })),
         setVibration: (v) => set(produce((state) => { state.vibration = !!v; })),
         setVibrationStrength: (v) => set(produce((state) => { state.vibrationStrength = VIBE_MS[v] ? v : "mid"; })),
         setPushEnabled: (v) => set(produce((state) => { state.pushEnabled = !!v; })),
@@ -74,7 +76,7 @@ export const useSystemStore = create(persist(
         partialize: (state) => ({
             currentLanguage: state.currentLanguage, theme: state.theme,
             showArticles: state.showArticles, showVerbAa: state.showVerbAa,
-            soundOn: state.soundOn, soundVolume: state.soundVolume,
+            soundOn: state.soundOn, soundVolume: state.soundVolume, autoAdvance: state.autoAdvance,
             vibration: state.vibration, vibrationStrength: state.vibrationStrength,
             pushEnabled: state.pushEnabled, listenOffLocal: state.listenOffLocal,
         }),

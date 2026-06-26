@@ -83,6 +83,7 @@ const MyPage = () => {
     const showArticles = useSystemStore((state) => state.showArticles);
     const showVerbAa = useSystemStore((state) => state.showVerbAa);
     const soundOn = useSystemStore((state) => state.soundOn);
+    const autoAdvance = useSystemStore((state) => state.autoAdvance);
     const vibration = useSystemStore((state) => state.vibration);
     const vibrationStrength = useSystemStore((state) => state.vibrationStrength);
     const pushEnabled = useSystemStore((state) => state.pushEnabled);
@@ -305,6 +306,11 @@ const MyPage = () => {
                             <span className="setrow__ic"><Icon n="volume" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.gameSounds}</span><span className="setrow__d">{t.gameSoundsDesc}</span></span>
                             <span className={`toggle${soundOn ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setSoundOn(!soundOn)} />
+                        </div>
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="fast-forward" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{t.autoAdvance}</span><span className="setrow__d">{t.autoAdvanceDesc}</span></span>
+                            <span className={`toggle${autoAdvance ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setAutoAdvance(!autoAdvance)} />
                         </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="award" sm /></span>
