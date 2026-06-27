@@ -21,6 +21,7 @@ const MODULES = {
     EditWordModal: () => import("../../components/ui/EditWordModal.jsx"),
     WordDiff: () => import("../../components/ui/WordDiff.jsx"),
     PoolPage: () => import("../PoolPage.jsx"),
+    OnlinePage: () => import("../OnlinePage.jsx"),
 };
 
 describe("рефакторенные модули грузятся без ошибок", () => {
