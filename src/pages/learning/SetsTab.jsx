@@ -124,7 +124,9 @@ export default function SetsTab({ lang, openSession, openWord }) {
             const el = mobRef.current; if (!el) return;
             const top = el.getBoundingClientRect().top + window.scrollY;     // позиция панели в документе
             const bar = document.querySelector(".tabbar");                   // нижний таб-бар (рендерится в App)
-            const barH = (bar && getComputedStyle(bar).display !== "none") ? bar.getBoundingClientRect().height : 0;
+            // авто-скрытый таб-бар (is-hidden) уехал за край → его место свободно, не вычитаем
+            const barH = (bar && !bar.classList.contains("is-hidden") && getComputedStyle(bar).display !== "none")
+                ? bar.getBoundingClientRect().height : 0;
             setMobH(Math.max(240, Math.floor(vh() - top - barH - 4)));
         };
         estimate();

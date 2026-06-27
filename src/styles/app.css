@@ -539,13 +539,35 @@
     .nav { display: none; }
     .nav__links { display: none; }            /* верхние ссылки прячем — они в таб-баре */
     .nav .nav__avatar { display: none; }       /* профиль — в таб-баре */
-    main, .prof-main, .words-main, .study-main { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+    main, .prof-main, .words-main, .study-main {
+        padding-bottom: calc(64px + env(safe-area-inset-bottom)); transition: padding-bottom .28s var(--ease);
+    }
+    /* авто-скрытие нижнего таб-бара: уехал вниз → ужимаем нижний отступ контента (даём место) */
+    html[data-tabbar-off] main, html[data-tabbar-off] .prof-main,
+    html[data-tabbar-off] .words-main, html[data-tabbar-off] .study-main {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
     .tabbar {
         display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
         background: var(--surface); border-top: 1px solid var(--border);
         padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
         box-shadow: 0 -4px 16px rgba(0,0,0,.06);
+        transition: transform .28s var(--ease);
     }
+    .tabbar.is-hidden { transform: translateY(120%); }   /* уезжает за нижний край */
+
+    /* грип скрытой панели — небольшой ярлык у края, тап возвращает панель */
+    .navgrip {
+        position: fixed; left: 50%; transform: translateX(-50%); z-index: 61;
+        display: inline-flex; align-items: center; justify-content: center;
+        border: none; background: var(--fjord-600); color: #fff; cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,.18); padding: 2px 26px;
+    }
+    .navgrip .ic { width: 18px; height: 18px; }
+    .navgrip--bottom { bottom: 0; padding-bottom: calc(2px + env(safe-area-inset-bottom));
+        border-radius: var(--r-md) var(--r-md) 0 0; }
+    .navgrip--top { top: 0; padding-top: calc(2px + env(safe-area-inset-top));
+        border-radius: 0 0 var(--r-md) var(--r-md); }
     .tabbar__item {
         flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
         padding: 6px 2px; border-radius: var(--r-md); color: var(--ink-3);

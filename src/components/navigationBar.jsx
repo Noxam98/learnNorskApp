@@ -5,8 +5,10 @@ import { useAuth } from "../hooks/useAuth.js";
 import LanguageChooser from "./languageChooser.jsx";
 import { BrandMark, BrandName } from "./ui/BrandMark.jsx";
 import { Icon } from "./ui/Icon.jsx";
+import { useAutoHideNav } from "../hooks/useAutoHideNav.js";
 
 export const NavigationBar = () => {
+    const tabbar = useAutoHideNav({ flag: "data-tabbar-off" });   // авто-скрытие нижнего таб-бара (смартфон)
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
     const { pathname } = useLocation();
@@ -68,14 +70,19 @@ export const NavigationBar = () => {
             </div>
         </header>
 
-        {/* Нижний таб-бар — только на мобилках (CSS) */}
-        <nav className="tabbar" aria-label="nav">
+        {/* Нижний таб-бар — только на мобилках (CSS). Авто-скрытие: уезжает вниз, остаётся грип. */}
+        <nav className={"tabbar" + (tabbar.hidden ? " is-hidden" : "")} aria-label="nav" onPointerDown={tabbar.ping}>
             {tabs.map((x) => (
-                <Link key={x.to} to={x.to} className={`tabbar__item${x.on ? " is-active" : ""}`}>
+                <Link key={x.to} to={x.to} className={`tabbar__item${x.on ? " is-active" : ""}`} onClick={tabbar.ping}>
                     <Icon n={x.icon} sm /> <span>{x.label}</span>
                 </Link>
             ))}
         </nav>
+        {tabbar.hidden && (
+            <button className="navgrip navgrip--bottom" onClick={tabbar.show} aria-label="nav">
+                <Icon n="chevron-up" sm />
+            </button>
+        )}
         </>
     );
 };

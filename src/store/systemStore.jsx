@@ -30,6 +30,7 @@ export const useSystemStore = create(persist(
         vibration: true,     // тактильный отклик нашей экранной клавиатуры (по умолчанию вкл)
         vibrationStrength: "mid", // сила (длительность) вибрации: low | mid | high
         pushEnabled: false,    // включены ли пуш-напоминания (намерение юзера; сама подписка — в браузере)
+        autoHideNav: true,     // авто-скрытие панелей навигации на смартфоне (через бездействие → за край, остаётся грип)
         // Задания «на слух» выключены ЛОКАЛЬНО (только это устройство). null = следовать аккаунту
         // (gamePrefs.listenOff), true/false = переопределение для этого устройства. См. MyPage (выбор «тут/везде»).
         listenOffLocal: null,
@@ -67,6 +68,7 @@ export const useSystemStore = create(persist(
         setVibration: (v) => set(produce((state) => { state.vibration = !!v; })),
         setVibrationStrength: (v) => set(produce((state) => { state.vibrationStrength = VIBE_MS[v] ? v : "mid"; })),
         setPushEnabled: (v) => set(produce((state) => { state.pushEnabled = !!v; })),
+        setAutoHideNav: (v) => set(produce((state) => { state.autoHideNav = !!v; })),
         // v: null (следовать аккаунту) | true (выкл на этом устройстве) | false (вкл на этом устройстве)
         setListenOffLocal: (v) => set(produce((state) => { state.listenOffLocal = (v === null ? null : !!v); })),
 
@@ -81,6 +83,7 @@ export const useSystemStore = create(persist(
             soundOn: state.soundOn, soundVolume: state.soundVolume, autoAdvance: state.autoAdvance,
             vibration: state.vibration, vibrationStrength: state.vibrationStrength,
             pushEnabled: state.pushEnabled, listenOffLocal: state.listenOffLocal,
+            autoHideNav: state.autoHideNav,
         }),
     }
 ));

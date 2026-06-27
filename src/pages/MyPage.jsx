@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
+import { langGuard } from "../interface/i18nGuard.js";
 import { LANGUAGES } from "../interface/languages.js";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
 import { useAuth } from "../hooks/useAuth.js";
@@ -15,6 +16,17 @@ import { enablePush, disablePush } from "../components/tools/push.js";
 import { wordCount } from "../components/tools/plural.js";
 
 const GOOGLE_ON = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+// Авто-скрытие панелей навигации — подписи (локальная карта, тоггл только на смартфоне).
+const AH = langGuard({
+    ru:  { t: "Автоскрытие панелей", d: "Панели навигации прячутся за край после паузы — больше места; грип возвращает." },
+    en:  { t: "Auto-hide nav bars", d: "Navigation bars slide off after a pause for more space; a grip brings them back." },
+    ukr: { t: "Автоприховування панелей", d: "Панелі навігації ховаються за край після паузи — більше місця; грип повертає." },
+    pl:  { t: "Auto-ukrywanie pasków", d: "Paski nawigacji chowają się po chwili — więcej miejsca; uchwyt je przywraca." },
+    lt:  { t: "Auto slėpti juostas", d: "Navigacijos juostos pasislepia po pauzės — daugiau vietos; rankenėlė grąžina." },
+    lv:  { t: "Auto paslēpt joslas", d: "Navigācijas joslas paslēpjas pēc pauzes — vairāk vietas; rokturis tās atgriež." },
+    ar:  { t: "إخفاء أشرطة التنقل تلقائيًا", d: "تنزلق أشرطة التنقل بعد توقف مؤقت لمساحة أكبر؛ المقبض يعيدها." },
+}, "MyPage.AH");
 
 // Локальные подписи (статистика теперь из «Учёбы», а не из личных словарей).
 const STATUS_ORDER = ["new", "in_progress", "repeat", "mastered"];
@@ -82,6 +94,15 @@ const MyPage = () => {
     const vibration = useSystemStore((state) => state.vibration);
     const vibrationStrength = useSystemStore((state) => state.vibrationStrength);
     const pushEnabled = useSystemStore((state) => state.pushEnabled);
+    const autoHideNav = useSystemStore((state) => state.autoHideNav);
+    const ah = AH[currentLanguage] || AH.en;
+    const [isPhone, setIsPhone] = useState(() => { try { return window.matchMedia("(max-width:760px)").matches; } catch { return false; } });
+    useEffect(() => {
+        let mq; try { mq = window.matchMedia("(max-width:760px)"); } catch { return undefined; }
+        const on = () => setIsPhone(mq.matches); on();
+        mq.addEventListener ? mq.addEventListener("change", on) : mq.addListener(on);
+        return () => { mq.removeEventListener ? mq.removeEventListener("change", on) : mq.removeListener(on); };
+    }, []);
     const listenOffLocal = useSystemStore((state) => state.listenOffLocal);
     const [pushBusy, setPushBusy] = useState(false);
     const [listenScope, setListenScope] = useState(/** @type {null|boolean} */(null)); // !=null → открыта модалка «тут/везде», значение = целевое «выключено»
@@ -279,6 +300,13 @@ const MyPage = () => {
                                 {user?.googleLinked
                                     ? <button className="btn btn--ghost" onClick={onUnlinkGoogle}>{t.unlink}</button>
                                     : <GoogleSignInButton onCredential={onLinkGoogle} text="continue_with" />}
+                            </div>
+                        )}
+                        {isPhone && (
+                            <div className="setrow">
+                                <span className="setrow__ic"><Icon n="grip" sm /></span>
+                                <span className="setrow__meta"><span className="setrow__t">{ah.t}</span><span className="setrow__d">{ah.d}</span></span>
+                                <span className={`toggle${autoHideNav ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setAutoHideNav(!autoHideNav)} />
                             </div>
                         )}
                         <div className="setrow">

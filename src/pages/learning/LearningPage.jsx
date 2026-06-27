@@ -7,6 +7,7 @@ import { useAuthStore } from "../../store/AuthStore.jsx";
 import { useSessionStore } from "../../store/sessionStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../../components/ui/Icon.jsx";
+import { useAutoHideNav } from "../../hooks/useAutoHideNav.js";
 import { WordInfoModal } from "../../components/ui/WordInfoModal.jsx";
 import LearningSession from "../../components/learning/LearningSession.jsx";
 import PlacementScreen from "../../components/learning/PlacementScreen.jsx";
@@ -89,30 +90,16 @@ export default function LearningPage() {
         return () => document.body.classList.remove("study-active");
     }, []);
 
-    // Мобильный хедер-навигация уезжает вместе со скроллом: смещаем на дельту прокрутки
-    // (1:1, без снапа) в пределах [-высота, 0]. Вниз скроллишь — прячется, вверх — выезжает.
+    // Мобильный хедер-навигация авто-скрывается по бездействию (за верхний край), оставляя грип.
+    // При скрытии тянем контент вверх отрицательным margin (= измеренная высота) — освобождаем место.
     const navRef = useRef(null);
+    const studyNav = useAutoHideNav({ flag: "data-studynav-off" });
+    const [navH, setNavH] = useState(0);
     useEffect(() => {
-        const mq = window.matchMedia("(max-width: 760px)");
-        let lastY = window.scrollY;
-        let offset = 0;
-        let raf = 0;
-        const apply = () => {
-            raf = 0;
-            const el = navRef.current;
-            if (!el) return;
-            if (!mq.matches) { el.style.transform = ""; offset = 0; lastY = window.scrollY; return; }
-            const y = Math.max(0, window.scrollY);
-            const h = el.offsetHeight || 64;
-            const dy = y - lastY;
-            lastY = y;
-            offset = Math.min(0, Math.max(-h, offset - dy));
-            if (y <= 0) offset = 0;                       // у самого верха всегда показан
-            el.style.transform = `translateY(${offset}px)`;
-        };
-        const onScroll = () => { if (!raf) raf = requestAnimationFrame(apply); };
-        window.addEventListener("scroll", onScroll, { passive: true });
-        return () => { window.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); };
+        const measure = () => { const el = navRef.current; if (el) setNavH(el.offsetHeight || 0); };
+        measure();
+        window.addEventListener("resize", measure);
+        return () => window.removeEventListener("resize", measure);
     }, []);
 
     // openSession() без слов → системная сессия (LearningSession сам тянет программу с бэка).
@@ -141,8 +128,15 @@ export default function LearningPage() {
 
     return (
         <main className="shell study-root study-main">
-            {/* Мобильный липкий хедер-навигация (на десктопе скрыт). Уезжает вместе со скроллом. */}
-            <div className="study-navbar" ref={navRef}>{segEl}</div>
+            {/* Мобильный липкий хедер-навигация (на десктопе скрыт). Авто-скрытие: уезжает вверх, остаётся грип. */}
+            <div className={"study-navbar" + (studyNav.hidden ? " is-hidden" : "")} ref={navRef}
+                style={studyNav.hidden ? { transform: "translateY(-100%)", marginBottom: -navH } : undefined}
+                onPointerDown={studyNav.ping}>{segEl}</div>
+            {studyNav.hidden && (
+                <button className="navgrip navgrip--top" onClick={studyNav.show} aria-label="nav">
+                    <Icon n="chevron-down" sm />
+                </button>
+            )}
 
             <div className="study-head">
                 <div>

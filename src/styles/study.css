@@ -507,7 +507,9 @@
     background: var(--canvas); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-xs);
     padding: max(env(safe-area-inset-top), var(--sp-2)) var(--sp-3) var(--sp-2);
     will-change: transform;
+    transition: transform .28s var(--ease), margin-bottom .28s var(--ease);   /* авто-скрытие: слайд + ужатие места */
   }
+  .study-root .study-navbar.is-hidden { box-shadow: none; pointer-events: none; }   /* transform/margin — inline из JS */
   .study-root .study-navbar .seg {
     width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px;
     background: transparent; border: none; border-radius: 0; padding: 0;
