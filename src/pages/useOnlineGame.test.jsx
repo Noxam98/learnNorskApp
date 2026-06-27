@@ -21,7 +21,7 @@ class MockWS {
     _msg(o) { if (this.onmessage) this.onmessage({ data: JSON.stringify(o) }); }
 }
 
-beforeEach(() => { global.WebSocket = MockWS; });
+beforeEach(() => { globalThis.WebSocket = MockWS; });
 afterEach(() => { cleanup(); });
 
 describe("useOnlineGame", () => {
