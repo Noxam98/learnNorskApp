@@ -24,6 +24,7 @@ const T = langGuard({
         reviewDesc: "Просроченные интервалы, слабые слова и немного новых — система собрала оптимальную сессию.",
         chReview: "повторить", chWeak: "слабых", chNew: "новое",
         startReview: "Заниматься",
+        portionNote: "Новые слова даём порциями — до 6 за сессию, остальное закрепляем заданиями.",
         sets: "Наборы для практики", setsHint: "тап — запустить",
         setReview: "На повторении", setReviewD: "Интервал подошёл — закрепить, пока не забылось",
         setWeak: "Слабые слова", setWeakD: "Много ошибок — в приоритете",
@@ -65,6 +66,7 @@ const T = langGuard({
         reviewDesc: "Overdue intervals, weak words and a few new ones — an optimal session.",
         chReview: "review", chWeak: "weak", chNew: "new",
         startReview: "Study",
+        portionNote: "New words come in portions — up to 6 per session, the rest are practice tasks.",
         sets: "Practice sets", setsHint: "tap to start",
         setReview: "Due for review", setReviewD: "The interval is up — reinforce before you forget",
         setWeak: "Weak words", setWeakD: "Many mistakes — priority",
@@ -106,6 +108,7 @@ const T = langGuard({
         reviewDesc: "Прострочені інтервали, слабкі слова й трохи нових — оптимальна сесія.",
         chReview: "повторити", chWeak: "слабких", chNew: "нове",
         startReview: "Займатися",
+        portionNote: "Нові слова даємо порціями — до 6 за сесію, решта — завдання на закріплення.",
         sets: "Набори для практики", setsHint: "тап — запустити",
         setReview: "На повторенні", setReviewD: "Інтервал підійшов — закріпи, поки не забулось",
         setWeak: "Слабкі слова", setWeakD: "Багато помилок — у пріоритеті",
@@ -147,6 +150,7 @@ const T = langGuard({
         reviewDesc: "Zaległe interwały, słabe słowa i kilka nowych — optymalna sesja.",
         chReview: "powtórka", chWeak: "słabych", chNew: "nowe",
         startReview: "Ucz się",
+        portionNote: "Nowe słowa dawkujemy — do 6 na sesję, reszta to zadania utrwalające.",
         sets: "Zestawy do ćwiczeń", setsHint: "dotknij — start",
         setReview: "Do powtórki", setReviewD: "Interwał minął — utrwal, zanim zapomnisz",
         setWeak: "Słabe słowa", setWeakD: "Dużo błędów — priorytet",
@@ -188,6 +192,7 @@ const T = langGuard({
         reviewDesc: "Pradelsti intervalai, silpni žodžiai ir keli nauji — optimali sesija.",
         chReview: "kartoti", chWeak: "silpnų", chNew: "nauja",
         startReview: "Mokytis",
+        portionNote: "Naujus žodžius duodame dalimis — iki 6 per sesiją, likusi dalis — užduotys.",
         sets: "Praktikos rinkiniai", setsHint: "bakstelėk — pradėk",
         setReview: "Kartojimui", setReviewD: "Intervalas atėjo — įtvirtink, kol nepamiršai",
         setWeak: "Silpni žodžiai", setWeakD: "Daug klaidų — prioritetas",
@@ -229,6 +234,7 @@ const T = langGuard({
         reviewDesc: "Nokavēti intervāli, vājie vārdi un nedaudz jaunu — optimāla sesija.",
         chReview: "atkārtot", chWeak: "vāji", chNew: "jauns",
         startReview: "Mācīties",
+        portionNote: "Jaunus vārdus dodam pa daļām — līdz 6 sesijā, pārējie ir nostiprināšanas uzdevumi.",
         sets: "Prakses kopumi", setsHint: "pieskaries, lai sāktu",
         setReview: "Jāatkārto", setReviewD: "Intervāls ir pienācis — nostiprini, pirms aizmirsti",
         setWeak: "Vājie vārdi", setWeakD: "Daudz kļūdu — prioritāte",
@@ -270,6 +276,7 @@ const T = langGuard({
         reviewDesc: "فترات متأخرة وكلمات ضعيفة وقليل من الجديدة — جلسة مثالية.",
         chReview: "مراجعة", chWeak: "ضعيفة", chNew: "جديدة",
         startReview: "ادرس",
+        portionNote: "نقدّم الكلمات الجديدة على دفعات — حتى 6 في الجلسة، والباقي تمارين تثبيت.",
         sets: "مجموعات التدريب", setsHint: "انقر للبدء",
         setReview: "حان موعد المراجعة", setReviewD: "انتهت الفترة — رسّخها قبل أن تنسى",
         setWeak: "الكلمات الضعيفة", setWeakD: "أخطاء كثيرة — أولوية",
@@ -362,15 +369,24 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const level = stats?.currentLevel || "—";
     const placed = stats?.placed;
 
-    // Состав сессии повторения (ориентировочно, из доступных данных).
-    const composition = useMemo(() => ({
+    // ЧЕСТНЫЙ состав: берём из реально собранной (префетч) следующей сессии — ровно то, что увидит
+    // пользователь (новых не больше NEW_PER_SESSION). Пока сессия не прогрелась — оценка из stats.
+    const sess = useSessionStore((s) => s.next);
+    const sessComp = (sess?.composition && sess.composition.total > 0) ? sess.composition : null;
+    const composition = useMemo(() => sessComp ? {
+        review: sessComp.review || 0,
+        progress: sessComp.progress || 0,
+        weak: sessComp.weak || 0,
+        fresh: sessComp.fresh || 0,
+    } : {
         review: by.repeat || 0,        // Повторение (выучено + подошёл срок)
         progress: by.in_progress || 0, // В процессе (начато, ещё не выучено)
         weak: by.weak || 0,            // Слабые
         fresh: by.new || 0,            // Новые
-    }), [by.repeat, by.in_progress, by.weak, by.new]);
-    // Всё, что попадёт в сессию: повтор + в процессе + слабые + новые (как собирает build_session).
-    const learnable = (by.repeat || 0) + (by.in_progress || 0) + (by.weak || 0) + (by.new || 0);
+    }, [sessComp, by.repeat, by.in_progress, by.weak, by.new]);
+    // Сколько реально будет в следующей сессии (для крупной цифры на кнопке). До прогрева — оценка из stats.
+    const learnable = sessComp ? sessComp.total
+        : (by.repeat || 0) + (by.in_progress || 0) + (by.weak || 0) + (by.new || 0);
 
     // Авто-добор: у юзера ВООБЩЕ нет слов в учёбе (total=0) и ворота не закрыты — система сама
     // подсыпает новые из Базы (сборка сессии на бэке делает suggest_words). Один раз за монтирование,
@@ -607,6 +623,9 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
                                     {composition.weak > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {pl(lang, composition.weak, "weak")}</span>}
                                     {composition.fresh > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-new)" }} />{composition.fresh} {pl(lang, composition.fresh, "fresh")}</span>}
                                 </div>
+                                {composition.fresh > 0 && (
+                                    <div className="review-cta__note"><Icon n="info" sm /> {t.portionNote}</div>
+                                )}
                                 <button className="review-cta__btn" onClick={runReview} disabled={sessionLoading}>
                                     {sessionLoading ? <BtnSpinner /> : <Icon n="play" />} {t.startReview}
                                 </button>

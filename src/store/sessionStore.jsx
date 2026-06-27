@@ -16,6 +16,7 @@ export const useSessionStore = create((set, get) => ({
     ready: false,      // следующая сессия загружена и ждёт
     loading: false,    // идёт фоновая загрузка следующей сессии
     _promise: null,    // промис загрузки (pending/resolved)
+    next: null,        // готовая программа следующей сессии {words, composition} — для ЧЕСТНОЙ кнопки старта
 
     // Начать фоновую загрузку следующей сессии (если ещё не греется и не готова).
     prefetch: (size = SIZE) => {
@@ -23,8 +24,8 @@ export const useSessionStore = create((set, get) => ({
         if (st._promise) return st._promise; // уже готова/в полёте — не дублируем
         set({ loading: true, ready: false });
         const p = api.learningSession(size, lang())
-            .then((r) => { if (get()._promise === p) set({ ready: true, loading: false }); return r; })
-            .catch((e) => { if (get()._promise === p) set({ _promise: null, ready: false, loading: false }); throw e; });
+            .then((r) => { if (get()._promise === p) set({ ready: true, loading: false, next: r }); return r; })
+            .catch((e) => { if (get()._promise === p) set({ _promise: null, ready: false, loading: false, next: null }); throw e; });
         set({ _promise: p });
         return p;
     },
@@ -33,7 +34,7 @@ export const useSessionStore = create((set, get) => ({
     take: (size = SIZE) => {
         let p = get()._promise;
         if (!p) p = get().prefetch(size);
-        set({ _promise: null, ready: false, loading: false });
+        set({ _promise: null, ready: false, loading: false, next: null });
         return p;
     },
 }));
