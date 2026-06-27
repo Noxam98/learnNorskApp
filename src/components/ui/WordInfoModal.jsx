@@ -7,6 +7,7 @@ import { posFormsRows, posLabelFull, posMeta } from "./pos.js";
 import { freqLabel, freqCls } from "./freq.js";
 import { ActionMenu } from "./Dropdown.jsx";
 import { BtnSpinner, Dots } from "./Spinner.jsx";
+import AskWordModal from "./AskWordModal.jsx";
 import { useWordsStore } from "../../store/wordStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -39,10 +40,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const [hint, setHint] = useState("");            // подсказка пользователя (часть речи и т.п.)
     const [delConfirm, setDelConfirm] = useState(false); // подтверждение удаления слова из БД (админ)
     const [delBusy, setDelBusy] = useState(false);
-    const [askOpen, setAskOpen] = useState(false);   // вопрос о слове нейросети
-    const [askQ, setAskQ] = useState("");
-    const [askA, setAskA] = useState("");
-    const [askBusy, setAskBusy] = useState(false);
+    const [askOpen, setAskOpen] = useState(false);   // открыт вопрос о слове нейросети (см. AskWordModal)
 
     const [revoiceBusy, setRevoiceBusy] = useState(false);
     const revoice = async () => {
@@ -55,17 +53,6 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             speakText(view.no).catch(() => {});
         } catch { /* не вышло — тихо */ }
         setRevoiceBusy(false);
-    };
-
-    const submitAsk = async () => {
-        const q = askQ.trim();
-        if (!q || askBusy || !view) return;
-        setAskBusy(true); setAskA("");
-        try {
-            const r = await api.askWord(view.no, q, lang);
-            setAskA(r?.answer || t.descUnavailable || "—");
-        } catch { setAskA(t.unexpectedError || "—"); }
-        setAskBusy(false);
     };
 
     const doDelete = async () => {
@@ -154,7 +141,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const loadWord = (no, id) => {
         setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null });
         setDiff(null); setFixOpen(false); setFixHint(""); setDfixOpen(false); setDfixHint(""); setDelConfirm(false);
-        setAskOpen(false); setAskQ(""); setAskA(""); setAskBusy(false);
+        setAskOpen(false);   // вопрос о слове сбрасывает своё поле сам (AskWordModal на open=false)
         const fresh = (v) => v && v.no === no; // игнорируем ответы устаревшей навигации
         const descP = id ? api.getWordDescription(id) : api.getPoolDescription(no);
         const synP = id ? api.getSynonyms(id, { lang }) : api.getPoolSynonyms(no, { lang });
@@ -372,25 +359,9 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             </div>
         </Modal>
 
-        {/* Отдельный модал «Спросить о слове» */}
-        <Modal open={askOpen} onClose={() => !askBusy && (setAskOpen(false), setAskQ(""), setAskA(""))} title={t.askWord || "Спросить о слове"}
-            footer={<>
-                <button className="btn btn--ghost" disabled={askBusy} onClick={() => { setAskOpen(false); setAskQ(""); setAskA(""); }}>{t.cancel}</button>
-                <button className="btn btn--primary" disabled={askBusy || !askQ.trim()} onClick={submitAsk}>
-                    {askBusy ? <><BtnSpinner /> {t.asking}</> : <><Icon n="sparkles" sm /> {t.askSend}</>}
-                </button>
-            </>}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--sp-3)" }}>
-                {wordRefNode}
-                <form onSubmit={(e) => { e.preventDefault(); submitAsk(); }}>
-                    <input className="input" value={askQ} autoFocus type="text"
-                        placeholder={t.askPlaceholder} onChange={(e) => setAskQ(e.target.value)} />
-                </form>
-                {askA && (
-                    <p className="muted" style={{ margin: 0, lineHeight: "var(--lh-normal)", whiteSpace: "pre-wrap" }}>{askA}</p>
-                )}
-            </div>
-        </Modal>
+        {/* Отдельный модал «Спросить о слове» (самодостаточный, view-независимый) */}
+        <AskWordModal open={askOpen} no={view?.no} lang={lang} t={t} header={wordRefNode}
+            onClose={() => setAskOpen(false)} />
 
         {/* Отдельный модал правки: норвежское слово + перевод на твой язык; «Дополнительно» — остальные языки. */}
         <Modal open={editOpen} onClose={() => !editBusy && setEditOpen(false)} title={t.editWord || "Изменить слово"}

@@ -15,6 +15,8 @@ const MODULES = {
     LearningSession: () => import("../../components/learning/LearningSession.jsx"),
     GenerateSetModal: () => import("../../components/sets/GenerateSetModal.jsx"),
     PhotoImportModal: () => import("../../components/sets/PhotoImportModal.jsx"),
+    WordInfoModal: () => import("../../components/ui/WordInfoModal.jsx"),
+    AskWordModal: () => import("../../components/ui/AskWordModal.jsx"),
 };
 
 describe("рефакторенные модули грузятся без ошибок", () => {
