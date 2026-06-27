@@ -632,11 +632,18 @@
 }
 .sets-pane__title { display: flex; align-items: baseline; gap: var(--sp-2); min-width: 0; }
 .sets-pane__title b { font-size: var(--fs-18); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sets-pane__bar {
-    flex: none; display: flex; align-items: center; justify-content: space-between;
-    gap: var(--sp-3); padding: var(--sp-3) var(--sp-4);
-    border-bottom: 1px solid var(--surface-3);
+/* компактный тоггл «в учёбе» в шапке (на месте бывшего названия) */
+.sets-pane__study { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; cursor: pointer; }
+.sets-pane__study-l { font-weight: 600; font-size: var(--fs-14); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* синяя полоска-разделитель: название набора (слева) + количество слов (справа) */
+.sets-pane__nameline {
+    flex: none; display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+    padding: var(--sp-2) var(--sp-4); border-bottom: 1px solid var(--surface-3);
+    background: color-mix(in srgb, #2e90e0 12%, transparent);
 }
+.sets-pane__name { font-size: var(--fs-16); font-weight: 700; min-width: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; unicode-bidi: plaintext; }
+.sets-pane__count { font-size: var(--fs-13); white-space: nowrap; flex: none; }
 .sets-pane__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: var(--sp-3) var(--sp-4); }
 
 /* Левая панель поиска заполняет .sets-pane: строка поиска фиксирована, результаты скроллятся. */
