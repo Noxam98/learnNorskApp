@@ -32,6 +32,7 @@ const MODULES = {
     useMobileSetsLayout: () => import("./useMobileSetsLayout.js"),
     PlacementScreen: () => import("../../components/learning/PlacementScreen.jsx"),
     usePlacement: () => import("../../components/learning/usePlacement.js"),
+    useToday: () => import("./useToday.js"),
 };
 
 describe("рефакторенные модули грузятся без ошибок", () => {
