@@ -12,6 +12,8 @@ import { WordCard } from "../../components/ui/WordCard.jsx";
 import { pl } from "../../components/ui/plural.js";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { langGuard } from "../../interface/i18nGuard.js";
+import { useIsMobile } from "../../hooks/useMediaQuery.js";
+import { downscaleImage } from "../../components/tools/imageScale.js";
 import PoolSearchPanel from "../../components/learning/PoolSearchPanel.jsx";
 
 const L = langGuard({
@@ -25,40 +27,8 @@ const L = langGuard({
 }, "SetsTab.L");
 
 const MIN_UNLEARNED = 5;   // «Учить набор» доступно, когда в наборе ≥5 НЕвыученных слов
-const IMG_MAX_DIM = 1280, IMG_QUALITY = 0.72;   // ужимаем фото перед отправкой (размер запроса + токены vision)
 // Мобильная раскладка: высоты свёрнутых полосок и разделителя (для расчёта высот панелей + анимации)
 const DIVIDER_H = 30, SEARCH_COLLAPSED = 58, SET_COLLAPSED = 58;
-
-// Прочитать файл-картинку и ужать до IMG_MAX_DIM (JPEG) → data-URL. Меньше байт по сети и меньше токенов.
-function downscaleImage(file) {
-    return new Promise((resolve, reject) => {
-        const url = URL.createObjectURL(file);
-        const im = new Image();
-        im.onload = () => {
-            URL.revokeObjectURL(url);
-            let w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
-            const big = Math.max(w, h);
-            if (big > IMG_MAX_DIM) { const k = IMG_MAX_DIM / big; w = Math.round(w * k); h = Math.round(h * k); }
-            const c = document.createElement("canvas"); c.width = w; c.height = h;
-            c.getContext("2d").drawImage(im, 0, 0, w, h);
-            try { resolve(c.toDataURL("image/jpeg", IMG_QUALITY)); } catch (e) { reject(e); }
-        };
-        im.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
-        im.src = url;
-    });
-}
-
-// ≤760px — мобильная раскладка (одна панель активна, вторая свёрнута в полоску).
-function useIsMobile(maxw = 760) {
-    const [m, setM] = useState(() => { try { return window.matchMedia(`(max-width:${maxw}px)`).matches; } catch { return false; } });
-    useEffect(() => {
-        let mq; try { mq = window.matchMedia(`(max-width:${maxw}px)`); } catch { return undefined; }
-        const on = () => setM(mq.matches); on();
-        mq.addEventListener ? mq.addEventListener("change", on) : mq.addListener(on);
-        return () => { mq.removeEventListener ? mq.removeEventListener("change", on) : mq.removeListener(on); };
-    }, [maxw]);
-    return m;
-}
 
 export default function SetsTab({ lang, openSession, openWord }) {
     const ll = L[lang] || L.ru;

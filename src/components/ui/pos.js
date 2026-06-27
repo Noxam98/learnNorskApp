@@ -59,10 +59,6 @@ export const posMeta = (pos) => {
     return { cls: "pos--other", key: "other", raw };
 };
 
-// Артикль существительного (en/ei/et) для подстановки перед словом в карточке. "" если не сущ.
-export const nounArticle = (forms) =>
-    (forms && forms.pos === "noun" && forms.gender) ? forms.gender : "";
-
 // Поверхностные формы слова: лемма + словоформы из forms (def_sg/indef_pl/present/past/…),
 // без служебных pos/gender. Для приёма ответа во «Вводе»: hunden/snakker засчитываем как слово.
 export const wordForms = (lemma, forms) => {

@@ -53,11 +53,6 @@ export const PLAY_STYLE = { position: "fixed", inset: 0, zIndex: 90, overflow: "
 export const filterChosenWords = (dictList) =>
     dictList.flatMap((d) => d.words.filter((w) => w?.gameData?.isChoosedToGame));
 
-export const pickWord = (pool, excludeIds) => {
-    const left = pool.filter((w) => !excludeIds.includes(w.id));
-    return left.length ? left[Math.floor(Math.random() * left.length)] : null;
-};
-
 export const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
 // Снисходительная сверка ввода: å≈a, ø≈o, æ≈ae + срезаем прочие диакритики (é→e).

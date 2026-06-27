@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSystemStore } from "../store/systemStore.jsx";
+import { useIsMobile } from "./useMediaQuery.js";
 
 // Авто-скрытие панели навигации на смартфонах: спустя `delay` мс «неиспользования» панель уезжает
 // за край экрана (даёт место контенту), остаётся только грип. Возвращает:
@@ -10,15 +11,7 @@ import { useSystemStore } from "../store/systemStore.jsx";
 // шлём 'resize', чтобы JS-раскладки (напр. «Наборы») пересчитали высоту под освободившееся место.
 export function useAutoHideNav({ delay = 4000, flag = null, active = true } = {}) {
     const setting = useSystemStore((s) => s.autoHideNav);   // тоггл из настроек (вкл/выкл фичу)
-    const [mobile, setMobile] = useState(() => {
-        try { return window.matchMedia("(max-width:760px)").matches; } catch { return false; }
-    });
-    useEffect(() => {
-        let mq; try { mq = window.matchMedia("(max-width:760px)"); } catch { return undefined; }
-        const on = () => setMobile(mq.matches); on();
-        mq.addEventListener ? mq.addEventListener("change", on) : mq.addListener(on);
-        return () => { mq.removeEventListener ? mq.removeEventListener("change", on) : mq.removeListener(on); };
-    }, []);
+    const mobile = useIsMobile();
     const enabled = mobile && setting !== false && active;   // смартфон + фича вкл + контекст активен (напр. «Учёба»)
 
     const [hidden, setHidden] = useState(false);

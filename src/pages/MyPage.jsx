@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { langGuard } from "../interface/i18nGuard.js";
 import { LANGUAGES } from "../interface/languages.js";
+import { useIsMobile } from "../hooks/useMediaQuery.js";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { useAuthStore } from "../store/AuthStore.jsx";
@@ -96,13 +97,7 @@ const MyPage = () => {
     const pushEnabled = useSystemStore((state) => state.pushEnabled);
     const autoHideNav = useSystemStore((state) => state.autoHideNav);
     const ah = AH[currentLanguage] || AH.en;
-    const [isPhone, setIsPhone] = useState(() => { try { return window.matchMedia("(max-width:760px)").matches; } catch { return false; } });
-    useEffect(() => {
-        let mq; try { mq = window.matchMedia("(max-width:760px)"); } catch { return undefined; }
-        const on = () => setIsPhone(mq.matches); on();
-        mq.addEventListener ? mq.addEventListener("change", on) : mq.addListener(on);
-        return () => { mq.removeEventListener ? mq.removeEventListener("change", on) : mq.removeListener(on); };
-    }, []);
+    const isPhone = useIsMobile();
     const listenOffLocal = useSystemStore((state) => state.listenOffLocal);
     const [pushBusy, setPushBusy] = useState(false);
     const [listenScope, setListenScope] = useState(/** @type {null|boolean} */(null)); // !=null → открыта модалка «тут/везде», значение = целевое «выключено»
