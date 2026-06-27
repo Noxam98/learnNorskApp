@@ -29,6 +29,7 @@ const MODULES = {
     PasswordModal: () => import("../../components/profile/PasswordModal.jsx"),
     ExamRun: () => import("./ExamRun.jsx"),
     useExam: () => import("./useExam.js"),
+    useMobileSetsLayout: () => import("./useMobileSetsLayout.js"),
 };
 
 describe("рефакторенные модули грузятся без ошибок", () => {
