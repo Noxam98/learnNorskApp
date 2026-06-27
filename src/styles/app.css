@@ -635,15 +635,21 @@
 /* компактный тоггл «в учёбе» в шапке (на месте бывшего названия) */
 .sets-pane__study { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; cursor: pointer; }
 .sets-pane__study-l { font-weight: 600; font-size: var(--fs-14); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* синяя полоска-разделитель: название набора (слева) + количество слов (справа) */
+/* синяя полоска: название (слева) + статистика в 2 строки (справа); заодно прогресс-бар набора */
 .sets-pane__nameline {
-    flex: none; display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+    position: relative; overflow: hidden; flex: none;
+    display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
     padding: var(--sp-2) var(--sp-4); border-bottom: 1px solid var(--surface-3);
     background: color-mix(in srgb, #2e90e0 12%, transparent);
 }
-.sets-pane__name { font-size: var(--fs-16); font-weight: 700; min-width: 0;
+/* выученная доля — насыщеннее (прогресс прямо в полоске) */
+.sets-pane__fill { position: absolute; left: 0; top: 0; bottom: 0; z-index: 0;
+    background: color-mix(in srgb, #2e90e0 22%, transparent); transition: width .3s var(--ease); }
+[dir="rtl"] .sets-pane__fill { left: auto; right: 0; }
+.sets-pane__name { position: relative; z-index: 1; font-size: var(--fs-16); font-weight: 700; min-width: 0;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; unicode-bidi: plaintext; }
-.sets-pane__count { font-size: var(--fs-13); white-space: nowrap; flex: none; }
+.sets-pane__stat { position: relative; z-index: 1; flex: none; display: flex; flex-direction: column;
+    align-items: flex-end; line-height: 1.2; text-align: end; font-size: var(--fs-11); white-space: nowrap; }
 .sets-pane__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: var(--sp-3) var(--sp-4); }
 
 /* Левая панель поиска заполняет .sets-pane: строка поиска фиксирована, результаты скроллятся. */
@@ -702,12 +708,6 @@
 .wstatus--learning { background: #e0a13a; }
 .wstatus--mastered { background: var(--success); }
 
-/* прогресс набора: «выучено N / M» */
-.setprog { display: flex; align-items: center; gap: var(--sp-2); padding: 0 var(--sp-4) var(--sp-3); }
-.setprog__bar { flex: 1; height: 6px; border-radius: 999px; background: var(--surface-3); overflow: hidden; }
-.setprog__fill { height: 100%; background: var(--success); border-radius: 999px; transition: width .3s var(--ease); }
-.setprog__txt { font-size: var(--fs-12); white-space: nowrap; }
-
 @media (max-width: 760px) {
     /* всё в одну высоту экрана — скроллится только активная панель, страница не скроллится */
     .sets-tab .page-head { margin-bottom: var(--sp-2) !important; }
@@ -723,16 +723,10 @@
         transition: height .28s var(--ease); }
     .sets-mpane > .searchpane { flex: 1 1 auto; min-height: 0; }   /* поиск заполняет свою панель */
 
-    .sets-divider { position: relative; overflow: hidden; flex: none; height: 30px; box-sizing: border-box;
-        display: flex; align-items: center; justify-content: center; gap: 7px; cursor: pointer; width: 100%; border: none;
+    .sets-divider { flex: none; height: 30px; box-sizing: border-box; display: flex; align-items: center;
+        justify-content: center; gap: 7px; cursor: pointer; width: 100%; border: none;
         background: var(--fjord-600); color: #fff; font-weight: 700; }
     .sets-divider:active { background: var(--fjord-700, var(--fjord-600)); }
-    /* полоска-разделитель заодно показывает прогресс набора: выученная доля — светлее */
-    .sets-divider__fill { position: absolute; left: 0; top: 0; bottom: 0; z-index: 0;
-        background: rgba(255, 255, 255, .26); transition: width .3s var(--ease); }
-    .sets-divider__txt, .sets-divider .ic { position: relative; z-index: 1; }
     .sets-divider__txt { font-size: var(--fs-12); font-weight: 700; letter-spacing: .01em; }
     .sets-divider .ic { width: 13px; height: 13px; }
-    [dir="rtl"] .sets-divider__fill { left: auto; right: 0; }
-    .sets-mob .setprog { display: none; }   /* прогресс теперь в самой полоске-разделителе */
 }

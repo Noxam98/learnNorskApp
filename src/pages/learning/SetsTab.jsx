@@ -200,19 +200,16 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     ]} />
                 </span>
             </div>
-            {/* прогресс набора: выучено N из M */}
-            {active.count > 0 && (
-                <div className="setprog">
-                    <div className="setprog__bar"><div className="setprog__fill" style={{ width: Math.round(learned / active.count * 100) + "%" }} /></div>
-                    <span className="setprog__txt muted">{ll.learned} {learned} / {active.count}</span>
-                </div>
-            )}
-            {/* синяя полоска-разделитель: название набора (в начале) и количество слов (в конце) */}
+            {/* полоска с названием — заодно прогресс-бар (выученная доля светлее);
+                справа подпись в 2 строки мелким шрифтом: «N слов» / «выучено: N» */}
             <div className="sets-pane__nameline">
+                {active.count > 0 && (
+                    <span className="sets-pane__fill" style={{ width: Math.round(learned / active.count * 100) + "%" }} />
+                )}
                 <b className="sets-pane__name">{active.name}</b>
-                <span className="sets-pane__count muted">
-                    {active.count} {pl(lang, active.count, "word")}
-                    {!canStudy && !allLearned && <> · {ll.needUnlearned}</>}
+                <span className="sets-pane__stat">
+                    <span>{active.count} {pl(lang, active.count, "word")}</span>
+                    <span className="muted">{ll.learned}: {learned}</span>
                 </span>
             </div>
         </>
@@ -299,9 +296,6 @@ export default function SetsTab({ lang, openSession, openWord }) {
                         {/* разделитель — тап переключает активную панель */}
                         <button className="sets-divider" onClick={() => setMob((m) => (m === "set" ? "search" : "set"))}
                             aria-label={mob === "set" ? ll.openSearch : ll.openSet}>
-                            {active && active.count > 0 && (
-                                <span className="sets-divider__fill" style={{ width: Math.round(learned / active.count * 100) + "%" }} />
-                            )}
                             <Icon n={mob === "set" ? "chevron-up" : "chevron-down"} sm />
                             <span className="sets-divider__txt">{mob === "set" ? ll.openSearch : ll.openSet}</span>
                             <Icon n={mob === "set" ? "chevron-up" : "chevron-down"} sm />
