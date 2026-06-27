@@ -20,6 +20,7 @@ const MODULES = {
     FixDescriptionModal: () => import("../../components/ui/FixDescriptionModal.jsx"),
     EditWordModal: () => import("../../components/ui/EditWordModal.jsx"),
     WordDiff: () => import("../../components/ui/WordDiff.jsx"),
+    PoolPage: () => import("../PoolPage.jsx"),
 };
 
 describe("рефакторенные модули грузятся без ошибок", () => {

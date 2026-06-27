@@ -1,6 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import api from "../components/tools/api.js";
-import { useWordsStore } from "../store/wordStore.jsx";
+import { useState } from "react";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { useAuthStore } from "../store/AuthStore.jsx";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
@@ -15,8 +13,8 @@ import { BtnSpinner, SkeletonWordlist, BrandLoader } from "../components/ui/Spin
 import { SearchBox } from "../components/ui/SearchBox.jsx";
 import { posMeta, posLabel, POS_INFO, POS_ORDER, posApiKey } from "../components/ui/pos.js";
 import { WordCard } from "../components/ui/WordCard.jsx";
+import { usePoolSearch, SEARCH_DEBOUNCE_MS } from "./usePoolSearch.js";
 
-const SEARCH_DEBOUNCE_MS = 550;
 const PAGE_SIZES = [30, 60, 120];
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
@@ -32,238 +30,23 @@ const pageWindow = (page, totalPages) => {
     return out;
 };
 
+// «База»: поиск/фильтры/пагинация пула + AI-добор. Вся логика — в usePoolSearch; здесь только разметка.
 export const PoolPage = () => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
-    const addToLearning = useWordsStore((s) => s.addToLearning);
-    const removeFromLearning = useWordsStore((s) => s.removeFromLearning);
     const isAdmin = useAuthStore((s) => s.user?.isAdmin);
-
-    const [q, setQ] = useState("");
-    const [appliedQ, setAppliedQ] = useState("");
-    const [items, setItems] = useState([]);
-    const [pinned, setPinned] = useState([]); // свежедобавленные слова — закреплены вверху списка
-    const [total, setTotal] = useState(0);
-    const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(60);
-    const [topics, setTopics] = useState([]);
-    const [level, setLevel] = useState("");
-    const [sort, setSort] = useState("alpha");
-    const [order, setOrder] = useState("asc");
-    const [missing, setMissing] = useState(""); // админ: "" | embedding | description | tts | meta | forms
-    const [pos, setPos] = useState("");          // фильтр по части речи (ключ pos.js: noun/verb/adj/...)
     const [posRefOpen, setPosRefOpen] = useState(false); // справочник частей речи
-    const [loading, setLoading] = useState(true);
-    const [searchPhase, setSearchPhase] = useState("idle"); // idle | counting | searching
-    const [addingId, setAddingId] = useState(null);
-    const [added, setAdded] = useState({});
-    const [smart, setSmart] = useState([]);          // слова не из пула (лексикон/fuzzy) под текущий запрос
-    const [poolExact, setPoolExact] = useState(null); // точное совпадение запроса со словом из пула (есть в базе)
-    const [highlightWord, setHighlightWord] = useState(""); // слово, подсвечиваемое после «Показать» (per-card)
-    const [highlightBox, setHighlightBox] = useState(null);  // одна обводка вокруг группы смежных карточек (омонимы)
-    const listWrapRef = useRef(null);                        // контейнер списка (для расчёта рамки)
-    const [smartBusy, setSmartBusy] = useState("");  // слово, которое сейчас генерим+добавляем
-    const [reloadTick, setReloadTick] = useState(0); // форс-обновление списка после генерации
-    const [descWord, setDescWord] = useState(null);   // слово, чьё описание открыто
-    const [facets, setFacets] = useState({ topics: [], levels: [] });
-    const [facetCounts, setFacetCounts] = useState(null); // динамические счётчики под текущий фильтр: { topics:{key:n} }
-    const firstRun = useRef(true);
-    const prevHadQ = useRef(false);
+    const [descWord, setDescWord] = useState(null);      // слово, чьё описание открыто
 
-    // При начале поиска — сортировка по релевантности (по умолчанию); при очистке — назад в А-Я.
-    // Между этим (запрос есть, юзер сам сменил сортировку) — уважаем его выбор.
-    useEffect(() => {
-        const hasQ = appliedQ.trim() !== "";
-        if (hasQ && !prevHadQ.current) { setSort("relevance"); setOrder("desc"); setPage(1); }
-        else if (!hasQ && prevHadQ.current && sort === "relevance") { setSort("alpha"); setOrder("asc"); setPage(1); }
-        prevHadQ.current = hasQ;
-        setPinned([]); // смена запроса — сбрасываем закреплённые свежие слова
-    }, [appliedQ]); // eslint-disable-line
-
-    // Список тем с количеством (для фильтра) — один раз.
-    useEffect(() => {
-        api.getPoolTopics().then((r) => setFacets({ topics: r.topics || [], levels: r.levels || [] })).catch(() => {});
-    }, []);
-
-    // Дебаунс поиска: кольцо отсчёта → применяем запрос (сброс на 1-ю страницу).
-    useEffect(() => {
-        if (firstRun.current) { firstRun.current = false; return; }
-        setSearchPhase("counting");
-        const id = setTimeout(() => { setAppliedQ(q.trim()); setPage(1); }, SEARCH_DEBOUNCE_MS);
-        return () => clearTimeout(id);
-    }, [q]);
-
-    // Загрузка страницы при изменении запроса/фильтров/сортировки/страницы.
-    useEffect(() => {
-        let cancelled = false;
-        setLoading(true);
-        setSearchPhase((p) => (p === "counting" ? "searching" : p));
-        api.getPool({ q: appliedQ, limit: pageSize, offset: (page - 1) * pageSize, topics, level, sort, order, missing, pos: posApiKey(pos), lang: currentLanguage })
-            .then((res) => {
-                if (cancelled) return;
-                setItems(res.words || []);
-                setTotal(res.total || 0);
-                // отметить уже добавленные в Учёбу слова (флаг inLearning с бэка), не теряя сессионные добавления
-                setAdded((prev) => {
-                    const next = { ...prev };
-                    for (const w of (res.words || [])) if (w.inLearning) next[w.pool_id] = true;
-                    return next;
-                });
-                if (res.facets) {
-                    setFacetCounts({
-                        topics: Object.fromEntries((res.facets.topics || []).map((x) => [x.topic, x.count])),
-                        levels: Object.fromEntries((res.facets.levels || []).map((x) => [x.level, x.count])),
-                    });
-                }
-            })
-            .catch(() => { if (!cancelled) setItems([]); })
-            .finally(() => { if (!cancelled) { setLoading(false); setSearchPhase("idle"); } });
-        return () => { cancelled = true; };
-    }, [appliedQ, page, pageSize, topics, level, sort, order, missing, pos, reloadTick, currentLanguage]);
-
-    // Умный добор «нет в базе»: слова из лексикона/похожие (inPool:false) под запрос — для AI-добавления.
-    useEffect(() => {
-        const term = appliedQ.trim();
-        if (!term) { setSmart([]); setPoolExact(null); return; }
-        let cancelled = false;
-        api.searchPool(term, currentLanguage)
-            .then((r) => {
-                if (cancelled) return;
-                const res = r?.results || [];
-                setSmart(res.filter((x) => !x.inPool).slice(0, 6));
-                const nq = term.toLowerCase();
-                // «есть в базе»: точное совпадение запроса со словом или его переводом (любой язык)
-                setPoolExact(res.find((x) => x.inPool && (
-                    (x.word || "").toLowerCase() === nq ||
-                    Object.values(x.translate || {}).some((arr) => (arr || []).some((s) => (s || "").toLowerCase() === nq))
-                )) || null);
-            })
-            .catch(() => { if (!cancelled) { setSmart([]); setPoolExact(null); } });
-        return () => { cancelled = true; };
-    }, [appliedQ, currentLanguage]);
-
-    const totalPages = Math.max(1, Math.ceil(total / pageSize));
-    useEffect(() => { if (page > totalPages) setPage(totalPages); }, [totalPages]); // eslint-disable-line
-
-    const toggleTopic = (key) => {
-        setPage(1);
-        setTopics((prev) => prev.includes(key) ? prev.filter((x) => x !== key) : [...prev, key]);
-    };
-    const pickLevel = (lv) => { setPage(1); setLevel((cur) => (cur === lv ? "" : lv)); };
-    const pickMissing = (val) => { setPage(1); setMissing((cur) => (cur === val ? "" : val)); };
-    const pickPos = (key) => { setPage(1); setPos((cur) => (cur === key ? "" : key)); };
-    const onPageSize = (n) => { setPage(1); setPageSize(n); };
-    const clearFilters = () => { setPage(1); setTopics([]); setLevel(""); setMissing(""); setPos(""); };
-
-    // Добавить слово из Базы прямо в «Учёбу» по pool_id (омонимы — разные записи; оптимистично).
-    const onAdd = async (w) => {
-        const id = w.pool_id;
-        setAddingId(id);
-        setAdded((a) => ({ ...a, [id]: true }));
-        try { await addToLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${t.addedToLearning}`, "success"); }
-        catch { setAdded((a) => { const n = { ...a }; delete n[id]; return n; }); }
-        setAddingId(null);
-    };
-
-    // «Показать» — проскроллить к карточке слова и подсветить. Для омонимов (несколько карточек
-    // одного слова): если они идут подряд — одна общая обводка вокруг группы; иначе — подсветка
-    // каждой по отдельности. Координаты рамки считаем относительно контейнера (стабильны при скролле).
-    const onShow = (word) => {
-        if (!word) return;
-        setHighlightBox(null);
-        setHighlightWord("");
-        try {
-            const sel = (typeof CSS !== "undefined" && CSS.escape) ? CSS.escape(word) : word;
-            const wrap = listWrapRef.current;
-            const cards = wrap ? [...wrap.querySelectorAll(`.wcard[data-word="${sel}"]`)] : [];
-            if (cards[0]) cards[0].scrollIntoView({ behavior: "smooth", block: "center" });
-            if (wrap && cards.length > 1) {
-                const all = [...wrap.querySelectorAll(".wcard")];
-                const idx = cards.map((c) => all.indexOf(c));
-                const contiguous = Math.max(...idx) - Math.min(...idx) + 1 === cards.length;
-                if (contiguous) {
-                    const cont = wrap.getBoundingClientRect();
-                    const rs = cards.map((c) => c.getBoundingClientRect());
-                    const top = Math.min(...rs.map((r) => r.top)) - cont.top;
-                    const left = Math.min(...rs.map((r) => r.left)) - cont.left;
-                    const w = Math.max(...rs.map((r) => r.right)) - cont.left - left;
-                    const h = Math.max(...rs.map((r) => r.bottom)) - cont.top - top;
-                    setHighlightBox({ top, left, w, h });
-                    setTimeout(() => setHighlightBox(null), 1800);
-                    return; // одна обводка — per-card не включаем
-                }
-            }
-        } catch { /* */ }
-        setHighlightWord(word);
-        setTimeout(() => setHighlightWord((cur) => (cur === word ? "" : cur)), 1800);
-    };
-
-    // «Нет в базе» → сгенерировать слово через ИИ (положить в пул) и добавить себе.
-    const onGenerateAdd = async (word) => {
-        const w = (word || "").trim();
-        if (!w || smartBusy) return;
-        setSmartBusy(w);
-        try {
-            const res = await api.generateWord(w);   // создаст в пуле (или вернёт существующее)
-            const name = res?.word || w;
-            if (res?.pool_id) {
-                await addToLearning(res.pool_id);
-                setAdded((a) => ({ ...a, [res.pool_id]: true }));
-                useSystemStore.getState().showToast(`«${name}» ${t.addedToLearning}`, "success");
-                // закрепить созданное слово вверху списка — вдруг ИИ выдал другую форму/перевод и
-                // оно не попадает под текущий запрос (иначе кажется, что добавление не сработало).
-                try {
-                    const m = await api.getPoolMeta(name);
-                    const card = {
-                        word: name, pool_id: res.pool_id ?? m?.pool_id,
-                        translate: m?.translate || res.translate || {},
-                        part_of_speech: m?.part_of_speech || "", level: m?.level || null,
-                        topics: m?.topics || [], forms: m?.forms || null, hasTts: !!m?.hasTts,
-                        hasEmbedding: true, hasDescription: true, inLearning: true,
-                    };
-                    setPinned((p) => [card, ...p.filter((x) => x.pool_id !== card.pool_id)]);
-                } catch { /* без меты просто не закрепим */ }
-            }
-            setReloadTick((k) => k + 1);             // подтянуть список — слово теперь в пуле
-            setSmart((s) => s.filter((x) => x.word !== w && x.word !== name));
-        } catch {
-            useSystemStore.getState().showToast(t.genFailed || "Не удалось сгенерировать слово");
-        }
-        setSmartBusy("");
-    };
-
-    // Убрать слово из «Учёбы» по pool_id (оптимистично, при ошибке возвращаем отметку).
-    const onRemove = async (w) => {
-        const id = w.pool_id;
-        setAdded((a) => { const n = { ...a }; delete n[id]; return n; });
-        setAddingId(id);
-        try { await removeFromLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${t.removedFromLearning}`, "warning"); }
-        catch { setAdded((a) => ({ ...a, [id]: true })); }
-        setAddingId(null);
-    };
-
-    const onAdminDelete = async (word) => {
-        if (!window.confirm(`Удалить «${word}» из базы слов? (у всех, без восстановления)`)) return;
-        try {
-            await api.adminDeleteWord(word);
-            setItems((prev) => prev.filter((w) => w.word !== word));
-            setTotal((tt) => Math.max(0, tt - 1));
-        } catch { /* ignore */ }
-    };
-
-    const hasFilters = topics.length > 0 || !!level || !!missing || !!pos;
-    // Кнопка-дополнение завязана на «есть ли слово в базе вообще», а не на «нет точного совпадения»:
-    //  • есть точное слово/перевод → «Показать» (скролл+подсветка к нему);
-    //  • нет точного совпадения → «Создать» (генерация именно введённого слова), даже если есть
-    //    похожие в списке (иначе короткое слово-подстрока вроде «rik» нельзя было бы создать).
-    const hasQuery = appliedQ.trim() !== "";
-    const showShow = hasQuery && !!poolExact;
-    const showGen = hasQuery && !poolExact && !loading;
-
-    // закреплённые свежие слова — вверху, без дублей с основным списком
-    const display = pinned.length
-        ? [...pinned.filter((p) => !items.some((w) => w.pool_id === p.pool_id)), ...items]
-        : items;
+    const {
+        q, setQ, appliedQ, searchPhase, total,
+        topics, level, sort, order, missing, pos, pageSize, hasFilters, facets, facetCounts,
+        toggleTopic, pickLevel, pickMissing, pickPos, onPageSize, clearFilters, pickSort,
+        display, page, setPage, totalPages, loading,
+        smart, poolExact, smartBusy, showShow, showGen,
+        added, addingId, highlightWord, highlightBox, listWrapRef,
+        onAdd, onRemove, onGenerateAdd, onAdminDelete, onShow,
+    } = usePoolSearch(currentLanguage, t);
 
     return (
         <main className="shell words-main">
@@ -329,7 +112,7 @@ export const PoolPage = () => {
                     {/* сортировка прижата влево */}
                     <SortControl value={sort} order={order}
                         options={sortOptions(t, [...(appliedQ.trim() ? ["relevance"] : []), "alpha", "level", "freq", "added"])}
-                        onChange={(s, o) => { setPage(1); setSort(s); setOrder(o); }} />
+                        onChange={pickSort} />
 
                     <div className="poolbar__sel">
                         <Dropdown value={pageSize} onChange={(v) => onPageSize(Number(v))}
