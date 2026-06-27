@@ -723,10 +723,16 @@
         transition: height .28s var(--ease); }
     .sets-mpane > .searchpane { flex: 1 1 auto; min-height: 0; }   /* поиск заполняет свою панель */
 
-    .sets-divider { flex: none; height: 30px; box-sizing: border-box; display: flex; align-items: center;
-        justify-content: center; gap: 7px; cursor: pointer; width: 100%; border: none;
+    .sets-divider { position: relative; overflow: hidden; flex: none; height: 30px; box-sizing: border-box;
+        display: flex; align-items: center; justify-content: center; gap: 7px; cursor: pointer; width: 100%; border: none;
         background: var(--fjord-600); color: #fff; font-weight: 700; }
     .sets-divider:active { background: var(--fjord-700, var(--fjord-600)); }
+    /* полоска-разделитель заодно показывает прогресс набора: выученная доля — светлее */
+    .sets-divider__fill { position: absolute; left: 0; top: 0; bottom: 0; z-index: 0;
+        background: rgba(255, 255, 255, .26); transition: width .3s var(--ease); }
+    .sets-divider__txt, .sets-divider .ic { position: relative; z-index: 1; }
     .sets-divider__txt { font-size: var(--fs-12); font-weight: 700; letter-spacing: .01em; }
     .sets-divider .ic { width: 13px; height: 13px; }
+    [dir="rtl"] .sets-divider__fill { left: auto; right: 0; }
+    .sets-mob .setprog { display: none; }   /* прогресс теперь в самой полоске-разделителе */
 }

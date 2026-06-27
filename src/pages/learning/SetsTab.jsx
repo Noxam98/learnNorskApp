@@ -299,6 +299,9 @@ export default function SetsTab({ lang, openSession, openWord }) {
                         {/* разделитель — тап переключает активную панель */}
                         <button className="sets-divider" onClick={() => setMob((m) => (m === "set" ? "search" : "set"))}
                             aria-label={mob === "set" ? ll.openSearch : ll.openSet}>
+                            {active && active.count > 0 && (
+                                <span className="sets-divider__fill" style={{ width: Math.round(learned / active.count * 100) + "%" }} />
+                            )}
                             <Icon n={mob === "set" ? "chevron-up" : "chevron-down"} sm />
                             <span className="sets-divider__txt">{mob === "set" ? ll.openSearch : ll.openSet}</span>
                             <Icon n={mob === "set" ? "chevron-up" : "chevron-down"} sm />
