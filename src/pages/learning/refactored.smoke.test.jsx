@@ -17,6 +17,9 @@ const MODULES = {
     PhotoImportModal: () => import("../../components/sets/PhotoImportModal.jsx"),
     WordInfoModal: () => import("../../components/ui/WordInfoModal.jsx"),
     AskWordModal: () => import("../../components/ui/AskWordModal.jsx"),
+    FixDescriptionModal: () => import("../../components/ui/FixDescriptionModal.jsx"),
+    EditWordModal: () => import("../../components/ui/EditWordModal.jsx"),
+    WordDiff: () => import("../../components/ui/WordDiff.jsx"),
 };
 
 describe("рефакторенные модули грузятся без ошибок", () => {
