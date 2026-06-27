@@ -21,11 +21,22 @@
 
 ```bash
 npm install
-npm run dev      # дев-сервер (--host), общается с прод-бэкендом на Fly
-npm run build    # прод-сборка в dist/
-npm run preview  # предпросмотр сборки
-npm run lint     # ESLint
+npm run dev        # дев-сервер (--host), общается с прод-бэкендом на Fly
+npm run build      # прод-сборка в dist/
+npm run preview    # предпросмотр сборки
 ```
+
+## Проверки качества (нужно держать зелёными)
+
+```bash
+npm run typecheck  # типы через JSDoc + tsc (jsconfig.json) — 0 ошибок
+npm run lint       # ESLint (ошибки блокируют; exhaustive-deps — предупреждения)
+npm test           # vitest (в т.ч. паритет i18n-блоков interfaceTranslate)
+npm run build      # сборка не должна падать
+```
+
+Все четыре прогоняются автоматически в **CI** (GitHub Actions,
+`.github/workflows/ci.yml`) на каждый push в `master` и каждый PR.
 
 ### Переменные окружения
 
