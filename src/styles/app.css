@@ -740,10 +740,16 @@
         transition: height .28s var(--ease); }
     .sets-mpane > .searchpane { flex: 1 1 auto; min-height: 0; }   /* поиск заполняет свою панель */
 
-    .sets-divider { flex: none; height: 30px; box-sizing: border-box; display: flex; align-items: center;
-        justify-content: center; gap: 7px; cursor: pointer; width: 100%; border: none;
-        background: var(--fjord-600); color: #fff; font-weight: 700; }
-    .sets-divider:active { background: var(--fjord-700, var(--fjord-600)); }
-    .sets-divider__txt { font-size: var(--fs-12); font-weight: 700; letter-spacing: .01em; }
+    /* разделитель: слева «Поиск слов» ↑, по центру грип, справа «Ваша коллекция» ↓ */
+    .sets-divider { flex: none; height: 30px; box-sizing: border-box; display: flex; align-items: stretch;
+        justify-content: space-between; width: 100%; background: var(--fjord-600); color: #fff; }
+    .sets-divider__side { display: inline-flex; align-items: center; gap: 5px; height: 100%; min-width: 0;
+        border: none; background: transparent; color: inherit; font-weight: 700; cursor: pointer; padding: 0 var(--sp-3); }
+    .sets-divider__side--r { justify-content: flex-end; }
+    .sets-divider__side:active, .sets-divider__side.is-active { background: var(--fjord-700, var(--fjord-600)); }
+    .sets-divider__grip { display: inline-flex; align-items: center; flex: none; opacity: .85; padding: 0 4px; }
+    .sets-divider__txt { font-size: var(--fs-12); font-weight: 700; letter-spacing: .01em;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sets-divider .ic { width: 13px; height: 13px; }
+    .sets-divider__grip .ic { width: 17px; height: 17px; }
 }
