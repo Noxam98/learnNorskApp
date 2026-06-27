@@ -22,6 +22,9 @@ const MODULES = {
     WordDiff: () => import("../../components/ui/WordDiff.jsx"),
     PoolPage: () => import("../PoolPage.jsx"),
     OnlinePage: () => import("../OnlinePage.jsx"),
+    useLearningSession: () => import("../../components/learning/useLearningSession.js"),
+    usePoolSearch: () => import("../usePoolSearch.js"),
+    useOnlineGame: () => import("../useOnlineGame.js"),
 };
 
 describe("рефакторенные модули грузятся без ошибок", () => {
