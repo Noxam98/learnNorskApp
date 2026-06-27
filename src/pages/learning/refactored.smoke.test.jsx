@@ -30,6 +30,8 @@ const MODULES = {
     ExamRun: () => import("./ExamRun.jsx"),
     useExam: () => import("./useExam.js"),
     useMobileSetsLayout: () => import("./useMobileSetsLayout.js"),
+    PlacementScreen: () => import("../../components/learning/PlacementScreen.jsx"),
+    usePlacement: () => import("../../components/learning/usePlacement.js"),
 };
 
 describe("рефакторенные модули грузятся без ошибок", () => {
