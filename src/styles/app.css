@@ -751,9 +751,9 @@
 
 @media (max-width: 760px) {
     /* всё в одну высоту экрана — скроллится только активная панель, страница не скроллится */
-    .sets-tab .page-head { margin-bottom: var(--sp-2) !important; }
-    .sets-tab .page-head p { display: none; }              /* описание прячем — экономим место */
-    .sets-tab .page-head h2 { font-size: var(--fs-18); }
+    /* шапку «Наборов» на мобилке прячем целиком (в ней только описание) — отступ сверху для чипов
+       убран, единый верхний отступ теперь даёт навигация (.study-navbar margin-bottom) для всех вкладок */
+    .sets-tab .page-head { display: none; }
     .sets-tab .chiprow { margin-bottom: var(--sp-2) !important; }
 
     .sets-mob { display: flex; flex-direction: column; overflow: hidden; min-height: 240px;

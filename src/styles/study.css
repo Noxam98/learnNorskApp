@@ -504,6 +504,7 @@
   .study-root .study-navbar {
     display: block; position: sticky; top: 0; z-index: 40;
     width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw);
+    margin-bottom: var(--sp-2);   /* единый отступ под навигацией для ВСЕХ вкладок «Учёбы» (бывший отступ чипов «Наборов») */
     background: var(--canvas); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-xs);
     padding: max(env(safe-area-inset-top), var(--sp-2)) var(--sp-3) var(--sp-2);
     will-change: transform;
