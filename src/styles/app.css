@@ -770,7 +770,7 @@
         background: var(--fjord-600); color: #fff; }
     .sets-divider:active { background: var(--fjord-700, var(--fjord-600)); }
     .sets-divider__side { display: inline-flex; align-items: center; gap: 5px; height: 100%; min-width: 0;
-        font-weight: 700; padding: 0 var(--sp-3); }
+        flex: 1 1 0; font-weight: 700; padding: 0 var(--sp-3); }   /* равные половины → грип ровно по центру */
     .sets-divider__side--r { justify-content: flex-end; }
     .sets-divider__side.is-active { background: rgba(255, 255, 255, .16); }   /* подсветка активной панели */
     /* грип: 12 точек в 2 ряда (6×2) — заодно «ручка» для перетаскивания */
