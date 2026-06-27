@@ -11,7 +11,8 @@ import { Icon } from "../components/ui/Icon.jsx";
 import { Dropdown } from "../components/ui/Dropdown.jsx";
 import GoogleSignInButton from "../components/ui/GoogleSignInButton.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
-import { BtnSpinner } from "../components/ui/Spinner.jsx";
+import NameEditModal from "../components/profile/NameEditModal.jsx";
+import PasswordModal from "../components/profile/PasswordModal.jsx";
 import api from "../components/tools/api.js";
 import { enablePush, disablePush } from "../components/tools/push.js";
 import { wordCount } from "../components/tools/plural.js";
@@ -48,35 +49,9 @@ const MyPage = () => {
         });
     };
 
-    // Отображаемое имя (персонализация).
+    // Имя и пароль — самодостаточные модалки (NameEditModal/PasswordModal), здесь лишь флаги открытия.
     const [nameOpen, setNameOpen] = useState(false);
-    const [nameValue, setNameValue] = useState("");
-    const [nameSaving, setNameSaving] = useState(false);
-    const openName = () => { setNameValue(user?.name || ""); setNameOpen(true); };
-    const closeName = () => { if (!nameSaving) setNameOpen(false); };
-    const saveName = async () => {
-        setNameSaving(true);
-        try { await api.setName(nameValue.trim()); await refreshMe(); setNameOpen(false); }
-        catch { /* тост покажет api.js */ }
-        setNameSaving(false);
-    };
-
-    // Задать/сменить пароль (в т.ч. первый пароль для Google-аккаунта).
     const [pwOpen, setPwOpen] = useState(false);
-    const [pwValue, setPwValue] = useState("");
-    const [pwSaving, setPwSaving] = useState(false);
-    const [pwError, setPwError] = useState("");
-    const closePw = () => { if (!pwSaving) { setPwOpen(false); setPwValue(""); setPwError(""); } };
-    const savePw = async () => {
-        if (pwValue.length < 6) { setPwError(t.passwordLengthError); return; }
-        setPwSaving(true); setPwError("");
-        try {
-            await api.setPassword(pwValue);
-            await refreshMe();
-            setPwOpen(false); setPwValue("");
-        } catch { setPwError(t.unexpectedError); }
-        setPwSaving(false);
-    };
     const theme = useSystemStore((state) => state.theme);
     const showArticles = useSystemStore((state) => state.showArticles);
     const showVerbAa = useSystemStore((state) => state.showVerbAa);
@@ -263,7 +238,7 @@ const MyPage = () => {
                                 <span className="setrow__t">{t.displayName}</span>
                                 <span className="setrow__d">{(user?.name || "").trim() || t.notSet}</span>
                             </span>
-                            <button className="btn btn--ghost" onClick={openName}>{t.edit}</button>
+                            <button className="btn btn--ghost" onClick={() => setNameOpen(true)}>{t.edit}</button>
                         </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="lock" sm /></span>
@@ -351,50 +326,11 @@ const MyPage = () => {
                 </div>
             </div>
 
-            <Modal
-                open={nameOpen}
-                onClose={closeName}
-                title={t.displayName}
-                footer={<>
-                    <button className="btn btn--ghost" disabled={nameSaving} onClick={closeName}>{t.cancel}</button>
-                    <button className="btn btn--accent" disabled={nameSaving} onClick={saveName}>
-                        {nameSaving ? <BtnSpinner /> : t.save}
-                    </button>
-                </>}
-            >
-                <div className="field">
-                    <div className="input-icon">
-                        <Icon n="user" sm />
-                        <input className="input" type="text" autoFocus value={nameValue} maxLength={40}
-                            placeholder={t.displayNamePlaceholder}
-                            onChange={(e) => setNameValue(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === "Enter") saveName(); }} />
-                    </div>
-                </div>
-            </Modal>
+            <NameEditModal open={nameOpen} initial={user?.name} t={t}
+                onClose={() => setNameOpen(false)} onSaved={refreshMe} />
 
-            <Modal
-                open={pwOpen}
-                onClose={closePw}
-                title={user?.hasPassword ? t.changePassword : t.setPassword}
-                footer={<>
-                    <button className="btn btn--ghost" disabled={pwSaving} onClick={closePw}>{t.cancel}</button>
-                    <button className="btn btn--accent" disabled={pwSaving || pwValue.length < 6} onClick={savePw}>
-                        {pwSaving ? <BtnSpinner /> : t.save}
-                    </button>
-                </>}
-            >
-                <div className="field">
-                    <div className="input-icon">
-                        <Icon n="lock" sm />
-                        <input className={`input${pwError ? " is-error" : ""}`} type="password" autoFocus value={pwValue}
-                            placeholder={t.newPasswordPlaceholder}
-                            onChange={(e) => { setPwValue(e.target.value); setPwError(""); }}
-                            onKeyDown={(e) => { if (e.key === "Enter") savePw(); }} />
-                    </div>
-                    {pwError && <span className="alert"><Icon n="x" sm /> {pwError}</span>}
-                </div>
-            </Modal>
+            <PasswordModal open={pwOpen} hasPassword={user?.hasPassword} t={t}
+                onClose={() => setPwOpen(false)} onSaved={refreshMe} />
 
             {/* Выбор охвата для «Заданий на слух»: только это устройство или весь аккаунт (по-простому) */}
             <Modal
