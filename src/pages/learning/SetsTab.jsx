@@ -15,18 +15,38 @@ import { langGuard } from "../../interface/i18nGuard.js";
 import PoolSearchPanel from "../../components/learning/PoolSearchPanel.jsx";
 
 const L = langGuard({
-    ru:  { title: "Наборы", desc: "Свои подборки слов — учи их отдельно или подключай к ежедневной сессии", newSet: "Создать набор", create: "Создать", rename: "Переименовать", del: "Удалить", delConfirm: "Удалить набор? Прогресс по словам сохранится.", studySet: "Учить набор", searchWords: "Поиск слов", studying: "В ежедневной учёбе", studyingShort: "В учёбе", studyingHint: "Слова набора попадают в умную сессию «Сегодня»", move: "Переместить в…", moveTitle: "Переместить в набор", remove: "Убрать из набора", noSets: "Пока нет наборов", noSetsHint: "Создай подборку слов и учи её отдельно", noWords: "В наборе пока нет слов", noWordsHint: "Найди слова в поиске и добавь их сюда", toStart: "ещё {k} до старта", namePh: "Название набора", save: "Сохранить", noOther: "Нет других наборов", words: "слов", openSearch: "Развернуть поиск", openSet: "Развернуть набор", learned: "выучено", generate: "Сгенерировать", genTitle: "Сгенерировать слова", genTopicPh: "Тема (необязательно)", levelAny: "Любой", count: "Количество", generating: "Генерирую…", cancel: "Отмена", needUnlearned: "нужно ≥5 невыученных", allLearned: "всё выучено 🎉", resetRamp: "Учить заново", genTopicTpl: "Тема: «{n}», можно ввести свою", resetConfirm: "Сбросить прогресс {n} слов и учить заново?" },
-    en:  { title: "Sets", desc: "Your own word collections — study them on their own or feed the daily session", newSet: "New set", create: "Create", rename: "Rename", del: "Delete", delConfirm: "Delete this set? Word progress is kept.", studySet: "Study set", searchWords: "Search words", studying: "In daily study", studyingShort: "In study", studyingHint: "Set words join the smart “Today” session", move: "Move to…", moveTitle: "Move to set", remove: "Remove from set", noSets: "No sets yet", noSetsHint: "Create a word collection and study it on its own", noWords: "No words in this set yet", noWordsHint: "Find words in the search and add them here", toStart: "{k} more to start", namePh: "Set name", save: "Save", noOther: "No other sets", words: "words", openSearch: "Expand search", openSet: "Expand set", learned: "learned", generate: "Generate", genTitle: "Generate words", genTopicPh: "Topic (optional)", levelAny: "Any", count: "Count", generating: "Generating…", cancel: "Cancel", needUnlearned: "need ≥5 unlearned", allLearned: "all learned 🎉", resetRamp: "Study again", genTopicTpl: "Topic: “{n}”, or type your own", resetConfirm: "Reset progress of {n} words and study again?" },
-    ukr: { title: "Набори", desc: "Власні добірки слів — вивчай їх окремо або підключай до щоденної сесії", newSet: "Створити набір", create: "Створити", rename: "Перейменувати", del: "Видалити", delConfirm: "Видалити набір? Прогрес за словами збережеться.", studySet: "Вчити набір", searchWords: "Пошук слів", studying: "У щоденному навчанні", studyingShort: "У навчанні", studyingHint: "Слова набору потрапляють у розумну сесію «Сьогодні»", move: "Перемістити в…", moveTitle: "Перемістити в набір", remove: "Прибрати з набору", noSets: "Поки немає наборів", noSetsHint: "Створи добірку слів і вчи її окремо", noWords: "У наборі поки немає слів", noWordsHint: "Знайди слова в пошуку й додай їх сюди", toStart: "ще {k} до старту", namePh: "Назва набору", save: "Зберегти", noOther: "Немає інших наборів", words: "слів", openSearch: "Розгорнути пошук", openSet: "Розгорнути набір", learned: "вивчено", generate: "Згенерувати", genTitle: "Згенерувати слова", genTopicPh: "Тема (необов’язково)", levelAny: "Будь-який", count: "Кількість", generating: "Генерую…", cancel: "Скасувати", needUnlearned: "потрібно ≥5 невивчених", allLearned: "усе вивчено 🎉", resetRamp: "Вчити заново", genTopicTpl: "Тема: «{n}», можна ввести свою", resetConfirm: "Скинути прогрес {n} слів і вчити заново?" },
-    pl:  { title: "Zestawy", desc: "Własne zbiory słów — ucz się ich osobno lub dołącz je do codziennej sesji", newSet: "Nowy zestaw", create: "Utwórz", rename: "Zmień nazwę", del: "Usuń", delConfirm: "Usunąć zestaw? Postępy w słowach zostaną zachowane.", studySet: "Ucz się zestawu", searchWords: "Szukaj słów", studying: "W codziennej nauce", studyingShort: "W nauce", studyingHint: "Słowa z zestawu trafiają do inteligentnej sesji „Dziś”", move: "Przenieś do…", moveTitle: "Przenieś do zestawu", remove: "Usuń z zestawu", noSets: "Brak zestawów", noSetsHint: "Utwórz zbiór słów i ucz się go osobno", noWords: "Brak słów w tym zestawie", noWordsHint: "Znajdź słowa w wyszukiwaniu i dodaj je tutaj", toStart: "jeszcze {k} do startu", namePh: "Nazwa zestawu", save: "Zapisz", noOther: "Brak innych zestawów", words: "słów", openSearch: "Rozwiń wyszukiwanie", openSet: "Rozwiń zestaw", learned: "nauczono", generate: "Wygeneruj", genTitle: "Wygeneruj słowa", genTopicPh: "Temat (opcjonalnie)", levelAny: "Dowolny", count: "Liczba", generating: "Generuję…", cancel: "Anuluj", needUnlearned: "potrzeba ≥5 nienauczonych", allLearned: "wszystko nauczone 🎉", resetRamp: "Ucz się od nowa", genTopicTpl: "Temat: „{n}”, lub wpisz własny", resetConfirm: "Zresetować postęp {n} słów i uczyć się od nowa?" },
-    lt:  { title: "Rinkiniai", desc: "Savi žodžių rinkiniai — mokykis jų atskirai arba įtrauk į kasdienę sesiją", newSet: "Naujas rinkinys", create: "Sukurti", rename: "Pervadinti", del: "Ištrinti", delConfirm: "Ištrinti rinkinį? Žodžių pažanga išliks.", studySet: "Mokytis rinkinio", searchWords: "Ieškoti žodžių", studying: "Kasdienėje mokymosi sesijoje", studyingShort: "Mokyme", studyingHint: "Rinkinio žodžiai patenka į išmaniąją „Šiandien“ sesiją", move: "Perkelti į…", moveTitle: "Perkelti į rinkinį", remove: "Pašalinti iš rinkinio", noSets: "Rinkinių dar nėra", noSetsHint: "Sukurk žodžių rinkinį ir mokykis jo atskirai", noWords: "Rinkinyje dar nėra žodžių", noWordsHint: "Surask žodžius paieškoje ir pridėk juos čia", toStart: "dar {k} iki starto", namePh: "Rinkinio pavadinimas", save: "Išsaugoti", noOther: "Kitų rinkinių nėra", words: "žodžių", openSearch: "Išskleisti paiešką", openSet: "Išskleisti rinkinį", learned: "išmokta", generate: "Generuoti", genTitle: "Generuoti žodžius", genTopicPh: "Tema (nebūtina)", levelAny: "Bet koks", count: "Kiekis", generating: "Generuoju…", cancel: "Atšaukti", needUnlearned: "reikia ≥5 neišmoktų", allLearned: "viskas išmokta 🎉", resetRamp: "Mokytis iš naujo", genTopicTpl: "Tema: „{n}“, arba įveskite savo", resetConfirm: "Atstatyti {n} žodžių pažangą ir mokytis iš naujo?" },
-    lv:  { title: "Kopas", desc: "Savas vārdu kopas — mācies tās atsevišķi vai pievieno ikdienas sesijai", newSet: "Jauna kopa", create: "Izveidot", rename: "Pārdēvēt", del: "Dzēst", delConfirm: "Dzēst kopu? Vārdu progress tiks saglabāts.", studySet: "Mācīties kopu", searchWords: "Meklēt vārdus", studying: "Ikdienas mācībās", studyingShort: "Mācībās", studyingHint: "Kopas vārdi nonāk gudrajā sesijā «Šodien»", move: "Pārvietot uz…", moveTitle: "Pārvietot uz kopu", remove: "Noņemt no kopas", noSets: "Vēl nav nevienas kopas", noSetsHint: "Izveido vārdu kopu un mācies to atsevišķi", noWords: "Kopā vēl nav vārdu", noWordsHint: "Atrodi vārdus meklēšanā un pievieno tos šeit", toStart: "vēl {k} līdz startam", namePh: "Kopas nosaukums", save: "Saglabāt", noOther: "Citu kopu nav", words: "vārdi", openSearch: "Izvērst meklēšanu", openSet: "Izvērst kopu", learned: "apgūts", generate: "Ģenerēt", genTitle: "Ģenerēt vārdus", genTopicPh: "Tēma (neobligāti)", levelAny: "Jebkurš", count: "Skaits", generating: "Ģenerēju…", cancel: "Atcelt", needUnlearned: "vajag ≥5 neapgūtus", allLearned: "viss apgūts 🎉", resetRamp: "Mācīties no jauna", genTopicTpl: "Tēma: «{n}», vai ievadiet savu", resetConfirm: "Atiestatīt {n} vārdu progresu un mācīties no jauna?" },
-    ar:  { title: "المجموعات", desc: "مجموعات كلماتك الخاصة — ادرسها وحدها أو أضِفها إلى جلسة اليوم", newSet: "مجموعة جديدة", create: "إنشاء", rename: "إعادة تسمية", del: "حذف", delConfirm: "حذف المجموعة؟ سيُحفَظ تقدّم الكلمات.", studySet: "ادرس المجموعة", searchWords: "البحث عن كلمات", studying: "في الدراسة اليومية", studyingShort: "في الدراسة", studyingHint: "تدخل كلمات المجموعة جلسة «اليوم» الذكية", move: "نقل إلى…", moveTitle: "نقل إلى مجموعة", remove: "إزالة من المجموعة", noSets: "لا توجد مجموعات بعد", noSetsHint: "أنشئ مجموعة كلمات وادرسها وحدها", noWords: "لا توجد كلمات في هذه المجموعة بعد", noWordsHint: "ابحث عن كلمات وأضِفها هنا", toStart: "بعد {k} للبدء", namePh: "اسم المجموعة", save: "حفظ", noOther: "لا توجد مجموعات أخرى", words: "كلمات", openSearch: "توسيع البحث", openSet: "توسيع المجموعة", learned: "مُتعلَّم", generate: "توليد", genTitle: "توليد كلمات", genTopicPh: "الموضوع (اختياري)", levelAny: "أي", count: "العدد", generating: "جارٍ التوليد…", cancel: "إلغاء", needUnlearned: "يلزم ≥5 غير متعلَّمة", allLearned: "كل شيء متعلَّم 🎉", resetRamp: "ادرس من جديد", genTopicTpl: "الموضوع: «{n}»، أو أدخل موضوعك", resetConfirm: "إعادة ضبط تقدّم {n} كلمة والدراسة من جديد؟" },
+    ru:  { title: "Наборы", desc: "Свои подборки слов — учи их отдельно или подключай к ежедневной сессии", newSet: "Создать набор", create: "Создать", rename: "Переименовать", del: "Удалить", delConfirm: "Удалить набор? Прогресс по словам сохранится.", studySet: "Учить набор", searchWords: "Поиск слов", studying: "В ежедневной учёбе", studyingShort: "В учёбе", studyingHint: "Слова набора попадают в умную сессию «Сегодня»", move: "Переместить в…", moveTitle: "Переместить в набор", remove: "Убрать из набора", noSets: "Пока нет наборов", noSetsHint: "Создай подборку слов и учи её отдельно", noWords: "В наборе пока нет слов", noWordsHint: "Найди слова в поиске и добавь их сюда", toStart: "ещё {k} до старта", namePh: "Название набора", save: "Сохранить", noOther: "Нет других наборов", words: "слов", openSearch: "Развернуть поиск", openSet: "Развернуть набор", learned: "выучено", generate: "Сгенерировать", genTitle: "Сгенерировать слова", genTopicPh: "Тема (необязательно)", levelAny: "Любой", count: "Количество", generating: "Генерирую…", cancel: "Отмена", needUnlearned: "нужно ≥5 невыученных", allLearned: "всё выучено 🎉", resetRamp: "Учить заново", genTopicTpl: "Тема: «{n}», можно ввести свою", resetConfirm: "Сбросить прогресс {n} слов и учить заново?", importPhoto: "Из фото", imgTitle: "Слова с фото", imgHintPh: "Уточнить, какие слова брать (необязательно)", imgRun: "Распознать", imgBusy: "Распознаю…", imgReview: "Проверьте список — слова можно отредактировать или удалить:", imgEmpty: "На фото не нашлось норвежских слов", imgFail: "Не удалось обработать фото", imgAdd: "Добавить {n}", addWord: "Добавить слово" },
+    en:  { title: "Sets", desc: "Your own word collections — study them on their own or feed the daily session", newSet: "New set", create: "Create", rename: "Rename", del: "Delete", delConfirm: "Delete this set? Word progress is kept.", studySet: "Study set", searchWords: "Search words", studying: "In daily study", studyingShort: "In study", studyingHint: "Set words join the smart “Today” session", move: "Move to…", moveTitle: "Move to set", remove: "Remove from set", noSets: "No sets yet", noSetsHint: "Create a word collection and study it on its own", noWords: "No words in this set yet", noWordsHint: "Find words in the search and add them here", toStart: "{k} more to start", namePh: "Set name", save: "Save", noOther: "No other sets", words: "words", openSearch: "Expand search", openSet: "Expand set", learned: "learned", generate: "Generate", genTitle: "Generate words", genTopicPh: "Topic (optional)", levelAny: "Any", count: "Count", generating: "Generating…", cancel: "Cancel", needUnlearned: "need ≥5 unlearned", allLearned: "all learned 🎉", resetRamp: "Study again", genTopicTpl: "Topic: “{n}”, or type your own", resetConfirm: "Reset progress of {n} words and study again?", importPhoto: "From photo", imgTitle: "Words from photo", imgHintPh: "Hint which words to take (optional)", imgRun: "Recognize", imgBusy: "Recognizing…", imgReview: "Check the list — words can be edited or removed:", imgEmpty: "No Norwegian words found on the photo", imgFail: "Couldn't process the photo", imgAdd: "Add {n}", addWord: "Add word" },
+    ukr: { title: "Набори", desc: "Власні добірки слів — вивчай їх окремо або підключай до щоденної сесії", newSet: "Створити набір", create: "Створити", rename: "Перейменувати", del: "Видалити", delConfirm: "Видалити набір? Прогрес за словами збережеться.", studySet: "Вчити набір", searchWords: "Пошук слів", studying: "У щоденному навчанні", studyingShort: "У навчанні", studyingHint: "Слова набору потрапляють у розумну сесію «Сьогодні»", move: "Перемістити в…", moveTitle: "Перемістити в набір", remove: "Прибрати з набору", noSets: "Поки немає наборів", noSetsHint: "Створи добірку слів і вчи її окремо", noWords: "У наборі поки немає слів", noWordsHint: "Знайди слова в пошуку й додай їх сюди", toStart: "ще {k} до старту", namePh: "Назва набору", save: "Зберегти", noOther: "Немає інших наборів", words: "слів", openSearch: "Розгорнути пошук", openSet: "Розгорнути набір", learned: "вивчено", generate: "Згенерувати", genTitle: "Згенерувати слова", genTopicPh: "Тема (необов’язково)", levelAny: "Будь-який", count: "Кількість", generating: "Генерую…", cancel: "Скасувати", needUnlearned: "потрібно ≥5 невивчених", allLearned: "усе вивчено 🎉", resetRamp: "Вчити заново", genTopicTpl: "Тема: «{n}», можна ввести свою", resetConfirm: "Скинути прогрес {n} слів і вчити заново?", importPhoto: "З фото", imgTitle: "Слова з фото", imgHintPh: "Уточнити, які слова брати (необов’язково)", imgRun: "Розпізнати", imgBusy: "Розпізнаю…", imgReview: "Перевірте список — слова можна відредагувати або видалити:", imgEmpty: "На фото не знайдено норвезьких слів", imgFail: "Не вдалося обробити фото", imgAdd: "Додати {n}", addWord: "Додати слово" },
+    pl:  { title: "Zestawy", desc: "Własne zbiory słów — ucz się ich osobno lub dołącz je do codziennej sesji", newSet: "Nowy zestaw", create: "Utwórz", rename: "Zmień nazwę", del: "Usuń", delConfirm: "Usunąć zestaw? Postępy w słowach zostaną zachowane.", studySet: "Ucz się zestawu", searchWords: "Szukaj słów", studying: "W codziennej nauce", studyingShort: "W nauce", studyingHint: "Słowa z zestawu trafiają do inteligentnej sesji „Dziś”", move: "Przenieś do…", moveTitle: "Przenieś do zestawu", remove: "Usuń z zestawu", noSets: "Brak zestawów", noSetsHint: "Utwórz zbiór słów i ucz się go osobno", noWords: "Brak słów w tym zestawie", noWordsHint: "Znajdź słowa w wyszukiwaniu i dodaj je tutaj", toStart: "jeszcze {k} do startu", namePh: "Nazwa zestawu", save: "Zapisz", noOther: "Brak innych zestawów", words: "słów", openSearch: "Rozwiń wyszukiwanie", openSet: "Rozwiń zestaw", learned: "nauczono", generate: "Wygeneruj", genTitle: "Wygeneruj słowa", genTopicPh: "Temat (opcjonalnie)", levelAny: "Dowolny", count: "Liczba", generating: "Generuję…", cancel: "Anuluj", needUnlearned: "potrzeba ≥5 nienauczonych", allLearned: "wszystko nauczone 🎉", resetRamp: "Ucz się od nowa", genTopicTpl: "Temat: „{n}”, lub wpisz własny", resetConfirm: "Zresetować postęp {n} słów i uczyć się od nowa?", importPhoto: "Ze zdjęcia", imgTitle: "Słowa ze zdjęcia", imgHintPh: "Doprecyzuj, które słowa wziąć (opcjonalnie)", imgRun: "Rozpoznaj", imgBusy: "Rozpoznaję…", imgReview: "Sprawdź listę — słowa można edytować lub usunąć:", imgEmpty: "Nie znaleziono norweskich słów na zdjęciu", imgFail: "Nie udało się przetworzyć zdjęcia", imgAdd: "Dodaj {n}", addWord: "Dodaj słowo" },
+    lt:  { title: "Rinkiniai", desc: "Savi žodžių rinkiniai — mokykis jų atskirai arba įtrauk į kasdienę sesiją", newSet: "Naujas rinkinys", create: "Sukurti", rename: "Pervadinti", del: "Ištrinti", delConfirm: "Ištrinti rinkinį? Žodžių pažanga išliks.", studySet: "Mokytis rinkinio", searchWords: "Ieškoti žodžių", studying: "Kasdienėje mokymosi sesijoje", studyingShort: "Mokyme", studyingHint: "Rinkinio žodžiai patenka į išmaniąją „Šiandien“ sesiją", move: "Perkelti į…", moveTitle: "Perkelti į rinkinį", remove: "Pašalinti iš rinkinio", noSets: "Rinkinių dar nėra", noSetsHint: "Sukurk žodžių rinkinį ir mokykis jo atskirai", noWords: "Rinkinyje dar nėra žodžių", noWordsHint: "Surask žodžius paieškoje ir pridėk juos čia", toStart: "dar {k} iki starto", namePh: "Rinkinio pavadinimas", save: "Išsaugoti", noOther: "Kitų rinkinių nėra", words: "žodžių", openSearch: "Išskleisti paiešką", openSet: "Išskleisti rinkinį", learned: "išmokta", generate: "Generuoti", genTitle: "Generuoti žodžius", genTopicPh: "Tema (nebūtina)", levelAny: "Bet koks", count: "Kiekis", generating: "Generuoju…", cancel: "Atšaukti", needUnlearned: "reikia ≥5 neišmoktų", allLearned: "viskas išmokta 🎉", resetRamp: "Mokytis iš naujo", genTopicTpl: "Tema: „{n}“, arba įveskite savo", resetConfirm: "Atstatyti {n} žodžių pažangą ir mokytis iš naujo?", importPhoto: "Iš nuotraukos", imgTitle: "Žodžiai iš nuotraukos", imgHintPh: "Patikslinkite, kuriuos žodžius imti (nebūtina)", imgRun: "Atpažinti", imgBusy: "Atpažįstu…", imgReview: "Patikrinkite sąrašą — žodžius galima redaguoti ar pašalinti:", imgEmpty: "Nuotraukoje nerasta norvegiškų žodžių", imgFail: "Nepavyko apdoroti nuotraukos", imgAdd: "Pridėti {n}", addWord: "Pridėti žodį" },
+    lv:  { title: "Kopas", desc: "Savas vārdu kopas — mācies tās atsevišķi vai pievieno ikdienas sesijai", newSet: "Jauna kopa", create: "Izveidot", rename: "Pārdēvēt", del: "Dzēst", delConfirm: "Dzēst kopu? Vārdu progress tiks saglabāts.", studySet: "Mācīties kopu", searchWords: "Meklēt vārdus", studying: "Ikdienas mācībās", studyingShort: "Mācībās", studyingHint: "Kopas vārdi nonāk gudrajā sesijā «Šodien»", move: "Pārvietot uz…", moveTitle: "Pārvietot uz kopu", remove: "Noņemt no kopas", noSets: "Vēl nav nevienas kopas", noSetsHint: "Izveido vārdu kopu un mācies to atsevišķi", noWords: "Kopā vēl nav vārdu", noWordsHint: "Atrodi vārdus meklēšanā un pievieno tos šeit", toStart: "vēl {k} līdz startam", namePh: "Kopas nosaukums", save: "Saglabāt", noOther: "Citu kopu nav", words: "vārdi", openSearch: "Izvērst meklēšanu", openSet: "Izvērst kopu", learned: "apgūts", generate: "Ģenerēt", genTitle: "Ģenerēt vārdus", genTopicPh: "Tēma (neobligāti)", levelAny: "Jebkurš", count: "Skaits", generating: "Ģenerēju…", cancel: "Atcelt", needUnlearned: "vajag ≥5 neapgūtus", allLearned: "viss apgūts 🎉", resetRamp: "Mācīties no jauna", genTopicTpl: "Tēma: «{n}», vai ievadiet savu", resetConfirm: "Atiestatīt {n} vārdu progresu un mācīties no jauna?", importPhoto: "No foto", imgTitle: "Vārdi no foto", imgHintPh: "Precizē, kurus vārdus ņemt (neobligāti)", imgRun: "Atpazīt", imgBusy: "Atpazīstu…", imgReview: "Pārbaudi sarakstu — vārdus var rediģēt vai dzēst:", imgEmpty: "Fotoattēlā nav atrasti norvēģu vārdi", imgFail: "Neizdevās apstrādāt foto", imgAdd: "Pievienot {n}", addWord: "Pievienot vārdu" },
+    ar:  { title: "المجموعات", desc: "مجموعات كلماتك الخاصة — ادرسها وحدها أو أضِفها إلى جلسة اليوم", newSet: "مجموعة جديدة", create: "إنشاء", rename: "إعادة تسمية", del: "حذف", delConfirm: "حذف المجموعة؟ سيُحفَظ تقدّم الكلمات.", studySet: "ادرس المجموعة", searchWords: "البحث عن كلمات", studying: "في الدراسة اليومية", studyingShort: "في الدراسة", studyingHint: "تدخل كلمات المجموعة جلسة «اليوم» الذكية", move: "نقل إلى…", moveTitle: "نقل إلى مجموعة", remove: "إزالة من المجموعة", noSets: "لا توجد مجموعات بعد", noSetsHint: "أنشئ مجموعة كلمات وادرسها وحدها", noWords: "لا توجد كلمات في هذه المجموعة بعد", noWordsHint: "ابحث عن كلمات وأضِفها هنا", toStart: "بعد {k} للبدء", namePh: "اسم المجموعة", save: "حفظ", noOther: "لا توجد مجموعات أخرى", words: "كلمات", openSearch: "توسيع البحث", openSet: "توسيع المجموعة", learned: "مُتعلَّم", generate: "توليد", genTitle: "توليد كلمات", genTopicPh: "الموضوع (اختياري)", levelAny: "أي", count: "العدد", generating: "جارٍ التوليد…", cancel: "إلغاء", needUnlearned: "يلزم ≥5 غير متعلَّمة", allLearned: "كل شيء متعلَّم 🎉", resetRamp: "ادرس من جديد", genTopicTpl: "الموضوع: «{n}»، أو أدخل موضوعك", resetConfirm: "إعادة ضبط تقدّم {n} كلمة والدراسة من جديد؟", importPhoto: "من صورة", imgTitle: "كلمات من صورة", imgHintPh: "حدّد أي كلمات تؤخذ (اختياري)", imgRun: "تعرّف", imgBusy: "جارٍ التعرّف…", imgReview: "راجع القائمة — يمكن تعديل الكلمات أو حذفها:", imgEmpty: "لم يُعثر على كلمات نرويجية في الصورة", imgFail: "تعذّرت معالجة الصورة", imgAdd: "إضافة {n}", addWord: "إضافة كلمة" },
 }, "SetsTab.L");
 
 const MIN_UNLEARNED = 5;   // «Учить набор» доступно, когда в наборе ≥5 НЕвыученных слов
+const IMG_MAX_DIM = 1280, IMG_QUALITY = 0.72;   // ужимаем фото перед отправкой (размер запроса + токены vision)
 // Мобильная раскладка: высоты свёрнутых полосок и разделителя (для расчёта высот панелей + анимации)
 const DIVIDER_H = 30, SEARCH_COLLAPSED = 58, SET_COLLAPSED = 58;
+
+// Прочитать файл-картинку и ужать до IMG_MAX_DIM (JPEG) → data-URL. Меньше байт по сети и меньше токенов.
+function downscaleImage(file) {
+    return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const im = new Image();
+        im.onload = () => {
+            URL.revokeObjectURL(url);
+            let w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
+            const big = Math.max(w, h);
+            if (big > IMG_MAX_DIM) { const k = IMG_MAX_DIM / big; w = Math.round(w * k); h = Math.round(h * k); }
+            const c = document.createElement("canvas"); c.width = w; c.height = h;
+            c.getContext("2d").drawImage(im, 0, 0, w, h);
+            try { resolve(c.toDataURL("image/jpeg", IMG_QUALITY)); } catch (e) { reject(e); }
+        };
+        im.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
+        im.src = url;
+    });
+}
 
 // ≤760px — мобильная раскладка (одна панель активна, вторая свёрнута в полоску).
 function useIsMobile(maxw = 760) {
@@ -51,6 +71,10 @@ export default function SetsTab({ lang, openSession, openWord }) {
     const [prompt, setPrompt] = useState(null);   // { mode:'create'|'rename', value, id }
     const [gen, setGen] = useState(null);         // null | { topic, levels, count } — открыта модалка генерации
     const [genBusy, setGenBusy] = useState(false);
+    // импорт слов с фото: null | { dataUrl, hint, words:null|string[], busy, error }
+    // words===null → фаза «фото + уточнение + Распознать»; массив → фаза «правка списка + Добавить»
+    const [photo, setPhoto] = useState(null);
+    const fileRef = useRef(null);
     const [confirmDel, setConfirmDel] = useState(null); // набор, ожидающий подтверждения удаления
     const [confirmReset, setConfirmReset] = useState(false); // подтверждение сброса прогресса набора
     const [busy, setBusy] = useState(false);
@@ -171,6 +195,40 @@ export default function SetsTab({ lang, openSession, openWord }) {
         } catch { setGen(null); } finally { setGenBusy(false); }
     };
 
+    // ---- импорт слов с фото/камеры ----
+    const pickPhoto = () => { if (fileRef.current) { fileRef.current.value = ""; fileRef.current.click(); } };
+    const onPickFile = async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+            const dataUrl = await downscaleImage(file);
+            setPhoto({ dataUrl, hint: "", words: null, busy: false, error: "" });
+        } catch { setPhoto({ dataUrl: "", hint: "", words: null, busy: false, error: ll.imgFail }); }
+    };
+    const runOcr = async () => {
+        if (!photo || photo.busy || !activeId) return;
+        setPhoto((p) => ({ ...p, busy: true, error: "" }));
+        try {
+            const r = await api.setOcr(activeId, { image: photo.dataUrl, hint: photo.hint });
+            const words = (r?.words || []).slice(0, 20);
+            setPhoto((p) => ({ ...p, busy: false, words, error: words.length ? "" : ll.imgEmpty }));
+        } catch { setPhoto((p) => ({ ...p, busy: false, error: ll.imgFail })); }
+    };
+    const setWord = (i, v) => setPhoto((p) => ({ ...p, words: p.words.map((w, j) => j === i ? v : w) }));
+    const delWord = (i) => setPhoto((p) => ({ ...p, words: p.words.filter((_, j) => j !== i) }));
+    const addWord = () => setPhoto((p) => (p.words.length >= 20 ? p : { ...p, words: [...p.words, ""] }));
+    const doImport = async () => {
+        if (!photo || photo.busy || !activeId) return;
+        const words = (photo.words || []).map((w) => w.trim()).filter(Boolean);
+        if (!words.length) return;
+        setPhoto((p) => ({ ...p, busy: true, error: "" }));
+        try {
+            await api.setImportWords(activeId, { words, lang });
+            setPhoto(null);
+            await loadWords(activeId); await loadSets(activeId);
+        } catch { setPhoto((p) => ({ ...p, busy: false, error: ll.imgFail })); }
+    };
+
     // ---- готовые куски: используются и в десктоп-двухколонке, и в мобильной раскладке ----
     const studyTitle = allLearned ? ll.allLearned : (canStudy ? ll.studySet : ll.needUnlearned);
 
@@ -197,6 +255,9 @@ export default function SetsTab({ lang, openSession, openWord }) {
                 <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
                     <button className="btn btn--sm btn--gen" onClick={() => setGen({ topic: "", levels: [], count: 10 })} title={ll.generate}>
                         <Icon n="sparkles" /> <span className="hide-narrow">{ll.generate}</span>
+                    </button>
+                    <button className="btn btn--sm btn--gen" onClick={pickPhoto} title={ll.importPhoto}>
+                        <Icon n="camera" /> <span className="hide-narrow">{ll.importPhoto}</span>
                     </button>
                     {allLearned ? (
                         <button className="btn btn--accent btn--sm" onClick={() => setConfirmReset(true)} title={ll.resetRamp}>
@@ -384,6 +445,51 @@ export default function SetsTab({ lang, openSession, openWord }) {
                         <Icon n="repeat" sm /> {ll.resetRamp}
                     </button>
                 </div>
+            </Modal>
+
+            {/* импорт слов с фото: скрытый input (без capture → мобилка даёт выбор камера/галерея) + 2-фазная модалка */}
+            <input ref={fileRef} type="file" accept="image/*"
+                onChange={onPickFile} style={{ display: "none" }} />
+            <Modal open={!!photo} onClose={() => { if (!photo?.busy) setPhoto(null); }} title={ll.imgTitle} maxWidth={460}>
+                {photo && (photo.words === null ? (
+                    /* фаза 1: превью фото + уточнение промта + «Распознать» */
+                    <>
+                        {photo.dataUrl && <img src={photo.dataUrl} alt="" className="ocr-preview" />}
+                        <textarea className="input" rows={2} value={photo.hint} placeholder={ll.imgHintPh}
+                            onChange={(e) => setPhoto((p) => ({ ...p, hint: e.target.value }))}
+                            style={{ width: "100%", marginTop: "var(--sp-3)", resize: "none" }} />
+                        {photo.error && <div className="muted" style={{ color: "var(--danger)", marginTop: "var(--sp-2)" }}>{photo.error}</div>}
+                        <button className="btn btn--accent btn--block" style={{ marginTop: "var(--sp-3)" }}
+                            disabled={photo.busy || !photo.dataUrl} onClick={runOcr}>
+                            {photo.busy ? <BtnSpinner /> : <Icon n="camera" sm />} {photo.busy ? ll.imgBusy : ll.imgRun}
+                        </button>
+                    </>
+                ) : (
+                    /* фаза 2: правка распознанного списка + «Добавить N» */
+                    <>
+                        <div className="muted" style={{ fontSize: "var(--fs-13)", marginBottom: "var(--sp-2)" }}>{ll.imgReview}</div>
+                        <div className="ocr-list">
+                            {photo.words.map((w, i) => (
+                                <div className="ocr-row" key={i}>
+                                    <input className="input" value={w} placeholder={ll.namePh}
+                                        onChange={(e) => setWord(i, e.target.value)} />
+                                    <button className="ocr-del" aria-label="×" onClick={() => delWord(i)}><Icon n="x" sm /></button>
+                                </div>
+                            ))}
+                        </div>
+                        {photo.words.length < 20 && (
+                            <button className="btn btn--ghost btn--sm" style={{ marginTop: "var(--sp-2)" }} onClick={addWord}>
+                                <Icon n="plus" sm /> {ll.addWord}
+                            </button>
+                        )}
+                        {photo.error && <div className="muted" style={{ color: "var(--danger)", marginTop: "var(--sp-2)" }}>{photo.error}</div>}
+                        <button className="btn btn--accent btn--block" style={{ marginTop: "var(--sp-3)" }}
+                            disabled={photo.busy || !photo.words.some((w) => w.trim())} onClick={doImport}>
+                            {photo.busy ? <BtnSpinner /> : <Icon n="check" sm />}{" "}
+                            {photo.busy ? ll.generating : ll.imgAdd.replace("{n}", String(photo.words.filter((w) => w.trim()).length))}
+                        </button>
+                    </>
+                ))}
             </Modal>
         </div>
     );

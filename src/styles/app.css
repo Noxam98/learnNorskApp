@@ -652,6 +652,16 @@
     align-items: flex-end; line-height: 1.2; text-align: end; font-size: var(--fs-11); white-space: nowrap; }
 .sets-pane__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: var(--sp-3) var(--sp-4); }
 
+/* импорт слов с фото: превью + редактируемый список распознанных слов */
+.ocr-preview { display: block; width: 100%; max-height: 200px; object-fit: contain;
+    border-radius: var(--r-md); background: var(--surface-3); }
+.ocr-list { display: flex; flex-direction: column; gap: var(--sp-2); max-height: 46vh; overflow-y: auto; }
+.ocr-row { display: flex; align-items: center; gap: var(--sp-2); }
+.ocr-row .input { flex: 1; min-width: 0; unicode-bidi: plaintext; }
+.ocr-del { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;
+    border: 1px solid var(--surface-3); background: var(--surface); color: var(--ink-3); border-radius: var(--r-md); cursor: pointer; }
+.ocr-del:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-bg); }
+
 /* Левая панель поиска заполняет .sets-pane: строка поиска фиксирована, результаты скроллятся. */
 .searchpane { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
 .searchpane__top {

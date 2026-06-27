@@ -339,6 +339,8 @@ class ApiService {
     setSession(id, size = 20, lang = 'ru') { return this._send('GET', `/sets/${id}/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
     setGenerate(id, { topic = "", level = "", count = 10, lang = 'ru' } = {}) { return this._send('POST', `/sets/${id}/generate`, { topic, level, count, lang }); } // ИИ-генерация слов в набор
     setReset(id) { return this._send('POST', `/sets/${id}/reset`); }   // сброс рампы выученных слов набора
+    setOcr(id, { image, hint = "" } = {}) { return this._send('POST', `/sets/${id}/ocr`, { image, hint }); }   // фото → список слов (vision)
+    setImportWords(id, { words, lang = 'ru' } = {}) { return this._send('POST', `/sets/${id}/import-words`, { words, lang }); } // отредактированный список → в набор
 
     // Веб-пуши (напоминания о бездействии)
     pushVapidKey() { return this._send('GET', '/push/vapid'); }
