@@ -8,7 +8,6 @@
 //   <Skeleton className />           — произвольный skeleton-блок
 //   <CountdownRing duration />       — кольцо обратного отсчёта дебаунса
 // Совместимость: Spinner ≈ BtnSpinner, PageLoader ≈ BrandLoader.
-import { Fragment } from "react";
 
 // --- Брендовый лоадер «орбита флагов» ---
 export const BrandOrbit = ({ size, dark, className = "", ...rest }) => {

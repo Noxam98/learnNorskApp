@@ -13,10 +13,8 @@ import { FilterChipsPopup } from "../components/ui/FilterChipsPopup.jsx";
 import { WordInfoModal } from "../components/ui/WordInfoModal.jsx";
 import { BtnSpinner, SkeletonWordlist, BrandLoader } from "../components/ui/Spinner.jsx";
 import { SearchBox } from "../components/ui/SearchBox.jsx";
-import { posMeta, posLabel, POS_INFO, POS_ORDER, posApiKey, chipPrefix } from "../components/ui/pos.js";
-import { SpeakButton } from "../components/ui/SpeakButton.jsx";
+import { posMeta, posLabel, POS_INFO, POS_ORDER, posApiKey } from "../components/ui/pos.js";
 import { WordCard } from "../components/ui/WordCard.jsx";
-import { ttsLang } from "../components/ui/tts.js";
 
 const SEARCH_DEBOUNCE_MS = 550;
 const PAGE_SIZES = [30, 60, 120];
@@ -36,8 +34,6 @@ const pageWindow = (page, totalPages) => {
 
 export const PoolPage = () => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
-    const showArticles = useSystemStore((s) => s.showArticles);
-    const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const t = interfaceTranslate[currentLanguage];
     const addToLearning = useWordsStore((s) => s.addToLearning);
     const removeFromLearning = useWordsStore((s) => s.removeFromLearning);
@@ -156,7 +152,6 @@ export const PoolPage = () => {
     const pickLevel = (lv) => { setPage(1); setLevel((cur) => (cur === lv ? "" : lv)); };
     const pickMissing = (val) => { setPage(1); setMissing((cur) => (cur === val ? "" : val)); };
     const pickPos = (key) => { setPage(1); setPos((cur) => (cur === key ? "" : key)); };
-    const onSort = (s) => { setPage(1); setSort(s); };
     const onPageSize = (n) => { setPage(1); setPageSize(n); };
     const clearFilters = () => { setPage(1); setTopics([]); setLevel(""); setMissing(""); setPos(""); };
 

@@ -21,7 +21,7 @@ import { langGuard } from "../../interface/i18nGuard.js";
 // Прогон экзамена/аудита поверх ОБЩЕГО игрового цикла (useGameLoop) в нейтральном режиме
 // (reveal=false): без раскрытия правильного, нейтральная подсветка выбора, пауза и переход —
 // всё из цикла. Стратегия: копим выборы и грейдим пачкой на сервере (онлайн-авторитетно).
-function ExamRun({ questions, kind, lang, t, onExit, onGrade }) {
+function ExamRun({ questions, lang, t, onExit, onGrade }) {
     const soundOn = useSystemStore((s) => s.soundOn);
     const vibration = useSystemStore((s) => s.vibration);
     const answersRef = useRef([]);

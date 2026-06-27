@@ -13,14 +13,7 @@ import './styles/study.css'
 import './styles/app.css'
 import './styles/icons.js' // инжектит SVG-спрайт иконок в DOM (side-effect)
 import * as ReactDOM from "react-dom/client";
-import {
-  createHashRouter,
-  RouterProvider,
-  Navigate
-} from "react-router-dom";
-import LoginPage from "./pages/LoginPage.jsx";
-import RegisterPage from "./pages/RegisterPage.jsx";
-import MyPage from "./pages/MyPage.jsx";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 
 // Единый catch-all: всеми маршрутами управляет App (его внутренние <Routes>),
 // иначе новый путь (например /pool) даёт 404 на уровне data-роутера.

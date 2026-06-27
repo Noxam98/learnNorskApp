@@ -121,7 +121,6 @@ function plAr(n) { if (n === 1) return "يوم"; if (n === 2) return "يومان
 const STATUS_CHIPS = ["all", "new", "in_progress", "repeat", "mastered", "weak", "archived"];
 const STATUS_DOT = { new: "new", in_progress: "learn", repeat: "review", mastered: "master", weak: "weak" };
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
-const SORTS = ["strength", "due", "alpha"];
 const TOPIC_KEYS = ["family", "food", "home", "work", "school", "travel", "health", "body", "clothing", "nature", "animals", "weather", "city", "transport", "traffic", "shopping", "time", "sport", "hobby", "technology", "communication", "emotions", "holidays", "society", "other"];
 
 const MS_DAY = 86400000;
@@ -150,7 +149,7 @@ function dueText(at, tt) {
     return tt.inDays(diff);
 }
 
-export default function WordsTab({ lang, go, openSession, openWord, reloadKey, refresh }) {
+export default function WordsTab({ lang, openSession, openWord, reloadKey, refresh }) {
     const tt = L[lang] || L.ru;
     const ig = interfaceTranslate[lang] || interfaceTranslate.ru || {};
     const topicNames = ig.topics || {};

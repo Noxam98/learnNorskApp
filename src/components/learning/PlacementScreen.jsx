@@ -1,7 +1,7 @@
 // Вводный тест (placement) «Учёбы»: intro (3 пути) → play (адаптивный квиз) → result.
 // Калибрует уровень CEFR. Самооценка и «калибровать в фоне» — альтернативы тесту.
 // Обёрнут в .study-root, чтобы работали scoped-стили .plc-*/.ladder/.lvl-chip/.conf.
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { ChoiceQuestion } from "../gameComponents/ChoiceQuestion.jsx";
 import { InputQuestion } from "../gameComponents/InputQuestion.jsx";

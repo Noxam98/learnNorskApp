@@ -27,7 +27,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
         onAdvance: () => setTyped([]),   // новое слово — чистый ввод
         onWrong: () => setTyped([]),     // после ошибки — очистить, собрать заново
     });
-    const { t, currentLanguage, total, current, status, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, restart, backToSelection } = loop;
+    const { t, currentLanguage, total, current, status, missedIds, knownFirstTry, score, qIndex, qTotal, segs, answer, restart, backToSelection } = loop;
 
     const target = current?.translate?.no?.[0] || "";
     // подсказка — родной перевод; фолбэк на ru/en, но НИКОГДА на норвежский ответ (target)

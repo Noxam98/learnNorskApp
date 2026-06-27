@@ -4,7 +4,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import api from "../../components/tools/api.js";
 import { Icon } from "../../components/ui/Icon.jsx";
-import { Modal } from "../../components/ui/Modal.jsx";
 import { BtnSpinner, BrandLoader } from "../../components/ui/Spinner.jsx";
 import { StatusDot, statusLabel, STATUS_ORDER } from "../../components/learning/StatusBits.jsx";
 import { LeaderboardCard, LeaderboardModal } from "../../components/learning/Leaderboard.jsx";
@@ -314,24 +313,11 @@ const T = langGuard({
     },
 }, "TodayTab.T");
 
-const DAILY_GOAL = 20;
-
 function fmt(s, vars) {
     return Object.keys(vars || {}).reduce((acc, k) => acc.replaceAll(`{${k}}`, vars[k]), s);
 }
 
-// Холодная дневная цель — пока нет ни одной сессии («нет данных ≠ 0»).
-const GCOLD = langGuard({
-    ru:  ["Цель появится", "Подстроим дневную цель под тебя после первой сессии"],
-    en:  ["Goal will appear", "We'll tune your daily goal after the first session"],
-    ukr: ["Ціль з'явиться", "Підлаштуємо денну ціль після першої сесії"],
-    pl:  ["Cel się pojawi", "Dopasujemy dzienny cel po pierwszej sesji"],
-    lt:  ["Tikslas atsiras", "Pritaikysime dienos tikslą po pirmos sesijos"],
-    lv:  ["Mērķis parādīsies", "Pielāgosim dienas mērķi pēc pirmās sesijas"],
-    ar:  ["سيظهر الهدف", "سنضبط هدفك اليومي بعد الجلسة الأولى"],
-}, "TodayTab.GCOLD");
-
-export default function TodayTab({ lang, go, openSession, openWord, openPlacement, reloadKey, refresh }) {
+export default function TodayTab({ lang, go, openSession, openPlacement, reloadKey, refresh }) {
     const t = T[lang] || T.ru;
 
     const [stats, setStats] = useState(null);
@@ -340,7 +326,6 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const [error, setError] = useState(false);
     const [lbOpen, setLbOpen] = useState(false);   // открыта модалка полного рейтинга
 
-    const [busy, setBusy] = useState("");      // ключ запускаемого набора/игры → спиннер
     const [focusSaving, setFocusSaving] = useState(false);
     const focusTopicsSel = useAuthStore((s) => s.user?.focusTopics);
     const autoFillTried = useRef(false);       // авто-добор пустой учёбы — один раз за монтирование
@@ -364,9 +349,7 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
     const gateLeft = Math.max(0, gateThreshold - gatePack);
 
     const by = stats?.byStatus || {};
-    const due = stats?.due || 0;
     const total = stats?.total || 0;
-    const level = stats?.currentLevel || "—";
     const placed = stats?.placed;
 
     // ЧЕСТНЫЙ состав: берём из реально собранной (префетч) следующей сессии — ровно то, что увидит
@@ -401,30 +384,10 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
         }
     }, [loading, stats, total, gateOpen, refresh]);
 
-    // Дневная цель: derive — цель 20, «сделано» ≈ повторённые сегодня неизвестны,
-    // показываем review-слова как прокси прогресса (тактично, без выдуманной точности).
-    const goalTarget = stats?.today?.goal || DAILY_GOAL;
-    const goalDone = Math.min(goalTarget, stats?.today?.done ?? 0);
     const streak = stats?.streak || 0;
-    // «нет данных ≠ 0»: пока нет ни одной сессии (нет точности за 30 дней и нет стрика) — цель «—»
-    const coldGoal = stats?.accuracy == null && !streak && goalDone === 0;
-    const goalComplete = !coldGoal && (goalDone >= goalTarget || (learnable === 0 && total > 0));
-
-    // ---- запуск набора/сессии ----
-    async function launch(key, fetcher, mode = "choice") {
-        if (busy) return;
-        setBusy(key);
-        try {
-            const r = await fetcher();
-            const words = r?.words || [];
-            if (words.length) openSession(words, mode);
-        } catch { /* тихо */ }
-        finally { setBusy(""); }
-    }
 
     // Главный CTA — системная сессия: режим/состав выбирает система (openSession без слов).
     const runReview = () => openSession();
-    const runSet = (status, key) => launch(key, () => api.learningList({ status, limit: 60 }), "choice");
 
     if (loading) return <BrandLoader />;
     if (error || !stats) {
@@ -478,7 +441,6 @@ export default function TodayTab({ lang, go, openSession, openWord, openPlacemen
         </div>
     ) : null;
 
-    const gc = (GCOLD[lang] || GCOLD.ru);
     // Прогресс до следующего уровня CEFR: кольцо наполняется по текущему уровню рампы,
     // подпись — следующий уровень (напр. «До уровня B1»). Данные из learning_stats.
     const curLevel = stats?.currentLevel || "A1";

@@ -70,7 +70,7 @@ const _isDesktop = () => { try { return window.matchMedia("(hover: hover) and (p
 export function GameKeyboard({
     lang, remainingOf, needed, extras = /** @type {string[]} */([]),
     canSubmit = false, canBackspace = false,
-    onType, onBackspace, onSubmit, onDunno, dunnoLabel, showDunno = false, leftFiller = false,
+    onType, onBackspace, onSubmit, onDunno, dunnoLabel, showDunno = false,
 }) {
     const vibration = useSystemStore((s) => s.vibration);
     const vibeStrength = useSystemStore((s) => s.vibrationStrength);

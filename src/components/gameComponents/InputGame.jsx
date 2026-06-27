@@ -48,7 +48,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         onAdvance: () => { setInput(""); setTypoOk(false); setTypoAsk(null); setResolving(false); setLetterHint(null); typoRef.current = false; },   // новое слово — чистое поле
         onWrong: () => { resetInput(); setTypoOk(false); setTypoAsk(null); setLetterHint(null); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
-    const { t, currentLanguage, total, current, status, held, missedIds, doneCount, knownFirstTry, score, qIndex, qTotal, segs, answer, advance, restart, backToSelection } = loop;
+    const { t, currentLanguage, total, current, status, held, missedIds, knownFirstTry, score, qIndex, qTotal, segs, answer, advance, restart, backToSelection } = loop;
 
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);

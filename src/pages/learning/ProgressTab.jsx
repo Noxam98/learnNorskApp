@@ -104,7 +104,7 @@ function tr(word, lang) {
     return Array.isArray(arr) ? arr[0] || "" : arr;
 }
 
-export default function ProgressTab({ lang, go, openSession, openWord, openPlacement, placed, reloadKey }) {
+export default function ProgressTab({ lang, openSession, openWord, openPlacement, placed, reloadKey }) {
     const t = T[lang] || T.ru;
     const cold = COLD[lang] || COLD.ru;
     const [loading, setLoading] = useState(true);
@@ -141,9 +141,7 @@ export default function ProgressTab({ lang, go, openSession, openWord, openPlace
     const byStatus = stats?.byStatus || {};
     const byLevel = stats?.byLevel || {};
     const total = stats?.total || 0;
-    const due = stats?.due || 0;
     const currentLevel = stats?.currentLevel || "—";
-    const toNextLevel = stats?.toNextLevel;
     const masteredTotal = (byStatus.mastered || 0) + (byStatus.repeat || 0) + (byStatus.archived || 0);
     const retention = stats?.retention;       // % или null
     const accuracy = stats?.accuracy;         // % или null

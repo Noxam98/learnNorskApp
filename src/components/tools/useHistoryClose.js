@@ -20,5 +20,5 @@ export function useHistoryClose(open, onClose) {
                 window.history.back();
             }
         };
-    }, [open]); // eslint-disable-line
+    }, [open]);  
 }
