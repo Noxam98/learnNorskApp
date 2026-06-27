@@ -1,0 +1,145 @@
+- generic [ref=e96]:
+  - banner [ref=e97]:
+    - generic [ref=e98]:
+      - link "Lære·Norsk" [ref=e99] [cursor=pointer]:
+        - /url: "#/learning"
+        - img [ref=e101]
+        - generic [ref=e123]: Lære·Norsk
+      - navigation [ref=e124]:
+        - link "Учёба" [active] [ref=e353] [cursor=pointer]:
+          - /url: "#/learning"
+          - img [ref=e126]
+          - generic [ref=e128]: Учёба
+        - link "Онлайн" [ref=e129] [cursor=pointer]:
+          - /url: "#/online"
+          - img [ref=e130]
+          - generic [ref=e132]: Онлайн
+        - link "База слов" [ref=e354] [cursor=pointer]:
+          - /url: "#/pool"
+          - img [ref=e134]
+          - generic [ref=e136]: База слов
+      - link "moderation" [ref=e137] [cursor=pointer]:
+        - /url: "#/moderation"
+        - img [ref=e138]
+      - link "stats" [ref=e140] [cursor=pointer]:
+        - /url: "#/stats"
+        - img [ref=e141]
+      - button "theme" [ref=e143] [cursor=pointer]:
+        - img [ref=e144]
+      - button "Язык интерфейса" [ref=e148] [cursor=pointer]:
+        - img [ref=e149]
+        - generic [ref=e151]: Русский
+        - img [ref=e152]
+      - link "Профиль" [ref=e355] [cursor=pointer]:
+        - /url: "#/mypage"
+        - text: M
+  - main [ref=e22971]:
+    - generic [ref=e22972]:
+      - generic [ref=e22973]:
+        - generic [ref=e22974]:
+          - img [ref=e22975]
+          - text: Учёба · A2
+        - heading "Добрый день, Maksym" [level=1] [ref=e22977]
+      - tablist [ref=e22978]:
+        - tab "Сегодня" [selected] [ref=e22979] [cursor=pointer]:
+          - img [ref=e22980]
+          - generic [ref=e22982]: Сегодня
+        - tab "Мой набор слов" [ref=e22983] [cursor=pointer]:
+          - img [ref=e22984]
+          - generic [ref=e22986]: Мой набор слов
+        - tab "Экзамен" [ref=e22987] [cursor=pointer]:
+          - img [ref=e22988]
+          - generic [ref=e22990]: Экзамен
+        - tab "Прогресс" [ref=e22991] [cursor=pointer]:
+          - img [ref=e22992]
+          - generic [ref=e22994]: Прогресс
+    - generic [ref=e23497]:
+      - img [ref=e23499]
+      - generic [ref=e23502]:
+        - generic [ref=e23503]: До экзамена пачки осталось 77
+        - generic [ref=e23504]: 23/100
+    - generic [ref=e23507]:
+      - generic [ref=e23508]:
+        - generic [ref=e23509]:
+          - generic [ref=e23512]:
+            - img [ref=e23513]
+            - text: Smart Review · на сегодня
+          - generic [ref=e23515]:
+            - generic [ref=e23516]: 20 слов
+            - text: на сегодня
+          - paragraph [ref=e23517]: Просроченные интервалы, слабые слова и немного новых — система собрала оптимальную сессию.
+          - generic [ref=e23518]:
+            - generic [ref=e23519]: 16 начатых
+            - generic [ref=e23521]: 4 новых
+          - button "Заниматься" [ref=e23523] [cursor=pointer]:
+            - img [ref=e23524]
+            - text: Заниматься
+        - generic [ref=e23526]:
+          - generic [ref=e23528]: Темы в фокусе
+          - generic [ref=e23529]:
+            - generic [ref=e23530]: Выбери, что интереснее — около трети новых слов будет по этим темам, пока не закончатся
+            - generic [ref=e23531]:
+              - button "Семья" [ref=e23532] [cursor=pointer]
+              - button "Еда" [ref=e23533] [cursor=pointer]
+              - button "Дом" [ref=e23534] [cursor=pointer]
+              - button "Работа" [ref=e23535] [cursor=pointer]
+              - button "Учёба" [ref=e23536] [cursor=pointer]
+              - button "Путешествия" [ref=e23537] [cursor=pointer]
+              - button "Здоровье" [ref=e23538] [cursor=pointer]
+              - button "Тело" [ref=e23539] [cursor=pointer]
+              - button "Одежда" [ref=e23540] [cursor=pointer]
+              - button "Природа" [ref=e23541] [cursor=pointer]
+              - button "Животные" [ref=e23542] [cursor=pointer]
+              - button "Погода" [ref=e23543] [cursor=pointer]
+              - button "Город" [ref=e23544] [cursor=pointer]
+              - button "Транспорт" [ref=e23545] [cursor=pointer]
+              - button "Покупки" [ref=e23546] [cursor=pointer]
+              - button "Время" [ref=e23547] [cursor=pointer]
+              - button "Спорт" [ref=e23548] [cursor=pointer]
+              - button "Хобби" [ref=e23549] [cursor=pointer]
+              - button "Технологии" [ref=e23550] [cursor=pointer]
+              - button "Общение" [ref=e23551] [cursor=pointer]
+              - button "Эмоции" [ref=e23552] [cursor=pointer]
+              - button "Праздники" [ref=e23553] [cursor=pointer]
+              - button "Общество" [ref=e23554] [cursor=pointer]
+              - button "Прочее" [ref=e23555] [cursor=pointer]
+      - generic [ref=e23556]:
+        - generic [ref=e23557]:
+          - generic [ref=e23558]:
+            - generic [ref=e23559]: Прогресс
+            - generic [ref=e23560]:
+              - img [ref=e23561]
+              - text: 4 дней
+          - generic [ref=e23564]:
+            - generic [ref=e23565]:
+              - img [ref=e23566]
+              - generic [ref=e23569]:
+                - generic [ref=e23570]: "553"
+                - generic [ref=e23571]: из 500
+            - generic [ref=e23572]:
+              - generic [ref=e23573]: До уровня B1
+              - generic [ref=e23574]: Осталось выучить 0 слов
+        - generic [ref=e23575]:
+          - generic [ref=e23576]:
+            - generic [ref=e23577]: Мои слова сейчас
+            - button "Прогресс" [ref=e23578] [cursor=pointer]:
+              - text: Прогресс
+              - img [ref=e23579]
+          - generic [ref=e23581]:
+            - button "Новое 4" [ref=e23582] [cursor=pointer]:
+              - generic [ref=e23584]: Новое
+              - generic [ref=e23585]: "4"
+            - button "В процессе 16" [ref=e23586] [cursor=pointer]:
+              - generic [ref=e23588]: В процессе
+              - generic [ref=e23589]: "16"
+            - button "Повторение 0" [ref=e23590] [cursor=pointer]:
+              - generic [ref=e23592]: Повторение
+              - generic [ref=e23593]: "0"
+            - button "Выучено 593" [ref=e23594] [cursor=pointer]:
+              - generic [ref=e23596]: Выучено
+              - generic [ref=e23597]: "593"
+            - button "Слабое 0" [ref=e23598] [cursor=pointer]:
+              - generic [ref=e23600]: Слабое
+              - generic [ref=e23601]: "0"
+  - generic:
+    - img

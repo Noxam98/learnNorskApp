@@ -1,0 +1,177 @@
+- generic [ref=e96]:
+  - banner [ref=e97]:
+    - generic [ref=e98]:
+      - link "Lære·Norsk" [ref=e99] [cursor=pointer]:
+        - /url: "#/learning"
+        - img [ref=e101]
+        - generic [ref=e123]: Lære·Norsk
+      - navigation [ref=e124]:
+        - link "Учёба" [ref=e353] [cursor=pointer]:
+          - /url: "#/learning"
+          - img [ref=e126]
+          - generic [ref=e128]: Учёба
+        - link "Онлайн" [ref=e129] [cursor=pointer]:
+          - /url: "#/online"
+          - img [ref=e130]
+          - generic [ref=e132]: Онлайн
+        - link "База слов" [ref=e354] [cursor=pointer]:
+          - /url: "#/pool"
+          - img [ref=e134]
+          - generic [ref=e136]: База слов
+      - link "moderation" [ref=e137] [cursor=pointer]:
+        - /url: "#/moderation"
+        - img [ref=e138]
+      - link "stats" [ref=e140] [cursor=pointer]:
+        - /url: "#/stats"
+        - img [ref=e141]
+      - button "theme" [ref=e143] [cursor=pointer]:
+        - img [ref=e144]
+      - button "Язык интерфейса" [ref=e148] [cursor=pointer]:
+        - img [ref=e149]
+        - generic [ref=e151]: Русский
+        - img [ref=e152]
+      - link "Профиль" [ref=e355] [cursor=pointer]:
+        - /url: "#/mypage"
+        - text: M
+  - main [ref=e22773]:
+    - generic [ref=e22774]:
+      - generic [ref=e22775]: M
+      - generic [ref=e22776]:
+        - generic [ref=e22777]: Maksym
+        - generic [ref=e22778]: 636 слов · Уровень A2
+      - button "Выйти" [ref=e22779] [cursor=pointer]:
+        - img [ref=e22780]
+        - text: Выйти
+    - generic [ref=e22782]:
+      - generic [ref=e22783]:
+        - img [ref=e22785]
+        - generic [ref=e22787]: "636"
+        - generic [ref=e22788]: Слов всего
+      - generic [ref=e22789]:
+        - img [ref=e22791]
+        - generic [ref=e22793]: "616"
+        - generic [ref=e22794]: Выучено
+      - generic [ref=e22795]:
+        - img [ref=e22797]
+        - generic [ref=e22799]: 94%
+        - generic [ref=e22800]: Точность
+      - generic [ref=e22801]:
+        - img [ref=e22803]
+        - generic [ref=e22805]: A2
+        - generic [ref=e22806]: Уровень
+    - generic [ref=e22807]:
+      - generic [ref=e22809]: Админ
+      - generic [ref=e22810]:
+        - button "Модерация" [ref=e22811] [cursor=pointer]:
+          - img [ref=e22812]
+          - text: Модерация
+        - button "Статистика" [ref=e22814] [cursor=pointer]:
+          - img [ref=e22815]
+          - text: Статистика
+    - generic [ref=e22817]:
+      - generic [ref=e22818]:
+        - generic [ref=e22819]:
+          - generic [ref=e22820]: Учёба
+          - generic [ref=e22821]: 636 слов
+        - generic [ref=e22822]:
+          - generic [ref=e22824]:
+            - generic [ref=e22825]: Новые
+            - generic [ref=e22826]: "4"
+          - generic [ref=e22829]:
+            - generic [ref=e22830]: В процессе
+            - generic [ref=e22831]: "16"
+          - generic [ref=e22834]:
+            - generic [ref=e22835]: Повторение
+            - generic [ref=e22836]: "0"
+          - generic [ref=e22839]:
+            - generic [ref=e22840]: Выучено
+            - generic [ref=e22841]: "593"
+          - button "Открыть Учёбу" [ref=e22843] [cursor=pointer]:
+            - img [ref=e22844]
+            - text: Открыть Учёбу
+      - generic [ref=e22846]:
+        - generic [ref=e22848]: Настройки
+        - generic [ref=e22849]:
+          - generic [ref=e22850]:
+            - img [ref=e22852]
+            - generic [ref=e22854]:
+              - generic [ref=e22855]: Язык интерфейса
+              - generic [ref=e22856]: Язык переводов и меню
+            - button "🇷🇺 Русский" [ref=e22858] [cursor=pointer]:
+              - generic [ref=e22859]:
+                - generic [ref=e22860]: 🇷🇺
+                - generic [ref=e22861]: Русский
+              - img [ref=e22863]
+          - generic [ref=e22865]:
+            - img [ref=e22867]
+            - generic [ref=e22869]:
+              - generic [ref=e22870]: Тёмная тема
+              - generic [ref=e22871]: Оформление всего приложения
+          - generic [ref=e22873]:
+            - img [ref=e22875]
+            - generic [ref=e22877]:
+              - generic [ref=e22878]: Имя
+              - generic [ref=e22879]: Не задано
+            - button "Изменить" [ref=e22880] [cursor=pointer]
+          - generic [ref=e22881]:
+            - img [ref=e22883]
+            - generic [ref=e22885]:
+              - generic [ref=e22886]: Пароль
+              - generic [ref=e22887]: Пароль задан
+            - button "Сменить пароль" [ref=e22888] [cursor=pointer]
+          - generic [ref=e22889]:
+            - img [ref=e22891]
+            - generic [ref=e22893]:
+              - generic [ref=e22894]: Аккаунт Google
+              - generic [ref=e22895]: meliqq98@gmail.com
+            - button "Отвязать" [ref=e22896] [cursor=pointer]
+          - generic [ref=e22897]:
+            - img [ref=e22899]
+            - generic [ref=e22901]:
+              - generic [ref=e22902]: Артикли у существительных
+              - generic [ref=e22903]: en/ei/et перед словом на чипах
+          - generic [ref=e22905]:
+            - img [ref=e22907]
+            - generic [ref=e22909]:
+              - generic [ref=e22910]: «å» перед глаголами
+              - generic [ref=e22911]: Частица инфинитива на чипах
+          - generic [ref=e22913]:
+            - img [ref=e22915]
+            - generic [ref=e22917]:
+              - generic [ref=e22918]: Звуки игры
+              - generic [ref=e22919]: Звуковое сопровождение и музыка в играх
+          - generic [ref=e22921]:
+            - img [ref=e22923]
+            - generic [ref=e22925]:
+              - generic [ref=e22926]: Вибрация
+              - generic [ref=e22927]: Тактильный отклик клавиатуры в играх
+          - generic [ref=e22929]:
+            - img [ref=e22931]
+            - generic [ref=e22933]:
+              - generic [ref=e22934]: Сила вибрации
+              - generic [ref=e22935]: Длительность импульса
+            - button "Средняя" [ref=e22937] [cursor=pointer]:
+              - generic [ref=e22939]: Средняя
+              - img [ref=e22941]
+          - generic [ref=e22943]:
+            - img [ref=e22945]
+            - generic [ref=e22947]:
+              - generic [ref=e22948]: Системная клавиатура
+              - generic [ref=e22949]: Печатать клавиатурой устройства вместо встроенной (где возможно)
+          - generic [ref=e22951]:
+            - img [ref=e22953]
+            - generic [ref=e22955]:
+              - generic [ref=e22956]: Напоминания
+              - generic [ref=e22957]: Пуш, если 13 часов без занятий
+  - contentinfo [ref=e22959]:
+    - generic [ref=e22960]:
+      - generic [ref=e22962]: © 2026 Lære Norsk
+      - generic [ref=e22963]:
+        - generic [ref=e22964]: Нашел баг или есть идеи?
+        - generic [ref=e22965]:
+          - link "Telegram" [ref=e22966] [cursor=pointer]:
+            - /url: https://t.me/progtt
+          - link "e-mail" [ref=e22967] [cursor=pointer]:
+            - /url: mailto:meliqq98@gmail.com
+  - generic:
+    - img

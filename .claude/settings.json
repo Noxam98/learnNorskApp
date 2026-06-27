@@ -43,7 +43,14 @@
       "Bash(mktemp *)",
       "Bash(diff *)",
       "Bash(true)",
-      "Bash(sleep *)"
+      "Bash(sleep *)",
+      "WebFetch(domain:ordhjelp.com)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:kryssordkjempen.no)",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_run_code_unsafe",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_navigate_back"
     ],
     "deny": [
       "Bash(git push --force*)",

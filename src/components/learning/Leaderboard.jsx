@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import api from "../tools/api.js";
-import { useHistoryClose } from "../tools/useHistoryClose.js";
+import { useHistoryClose } from "../../hooks/useHistoryClose.js";
 import { langGuard } from "../../interface/i18nGuard.js";
 
 const T = langGuard({

@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import confetti from "canvas-confetti";
 import { Icon } from "../ui/Icon.jsx";
-import { useHistoryClose } from "../tools/useHistoryClose.js";
+import { useHistoryClose } from "../../hooks/useHistoryClose.js";
 import { langGuard } from "../../interface/i18nGuard.js";
 
 const T = langGuard({

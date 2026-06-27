@@ -1,0 +1,247 @@
+- generic [ref=e96]:
+  - banner [ref=e97]:
+    - generic [ref=e98]:
+      - link "Lære·Norsk" [ref=e99] [cursor=pointer]:
+        - /url: "#/learning"
+        - img [ref=e101]
+        - generic [ref=e123]: Lære·Norsk
+      - navigation [ref=e124]:
+        - link "Учёба" [active] [ref=e353] [cursor=pointer]:
+          - /url: "#/learning"
+          - img [ref=e126]
+          - generic [ref=e128]: Учёба
+        - link "Онлайн" [ref=e129] [cursor=pointer]:
+          - /url: "#/online"
+          - img [ref=e130]
+          - generic [ref=e132]: Онлайн
+        - link "База слов" [ref=e354] [cursor=pointer]:
+          - /url: "#/pool"
+          - img [ref=e134]
+          - generic [ref=e136]: База слов
+      - link "moderation" [ref=e137] [cursor=pointer]:
+        - /url: "#/moderation"
+        - img [ref=e138]
+      - link "stats" [ref=e140] [cursor=pointer]:
+        - /url: "#/stats"
+        - img [ref=e141]
+      - button "theme" [ref=e143] [cursor=pointer]:
+        - img [ref=e144]
+      - button "Язык интерфейса" [ref=e148] [cursor=pointer]:
+        - img [ref=e149]
+        - generic [ref=e151]: Русский
+        - img [ref=e152]
+      - link "Профиль" [ref=e355] [cursor=pointer]:
+        - /url: "#/mypage"
+        - text: M
+  - main [ref=e22971]:
+    - generic [ref=e22972]:
+      - generic [ref=e22973]:
+        - generic [ref=e22974]:
+          - img [ref=e22975]
+          - text: Учёба · A2
+        - heading "Добрый день, Maksym" [level=1] [ref=e22977]
+      - tablist [ref=e22978]:
+        - tab "Сегодня" [ref=e22979] [cursor=pointer]:
+          - img [ref=e22980]
+          - generic [ref=e22982]: Сегодня
+        - tab "Мой набор слов" [ref=e22983] [cursor=pointer]:
+          - img [ref=e22984]
+          - generic [ref=e22986]: Мой набор слов
+        - tab "Экзамен" [ref=e22987] [cursor=pointer]:
+          - img [ref=e22988]
+          - generic [ref=e22990]: Экзамен
+        - tab "Прогресс" [selected] [ref=e22991] [cursor=pointer]:
+          - img [ref=e22992]
+          - generic [ref=e22994]: Прогресс
+    - generic [ref=e23247]:
+      - paragraph [ref=e23261]: Как растёт твой активный словарь
+      - generic [ref=e23262]:
+        - generic [ref=e23264]:
+          - img [ref=e23266]
+          - generic [ref=e23268]: "616"
+          - generic [ref=e23269]: Выучено всего
+          - generic [ref=e23270]: +615 за неделю
+        - generic [ref=e23272]:
+          - img [ref=e23274]
+          - generic [ref=e23276]: 100%
+          - generic [ref=e23277]: Удержание
+        - generic [ref=e23279]:
+          - img [ref=e23281]
+          - generic [ref=e23283]: "4"
+          - generic [ref=e23284]: Серия · дней
+        - generic [ref=e23286]:
+          - img [ref=e23288]
+          - generic [ref=e23290]: 94%
+          - generic [ref=e23291]: Точность
+      - generic [ref=e23292]:
+        - generic [ref=e23294]:
+          - generic [ref=e23295]:
+            - generic [ref=e23296]: Слова по статусам
+            - generic [ref=e23297]: всего 636
+          - generic [ref=e23299]:
+            - generic [ref=e23302]:
+              - generic [ref=e23303]: "636"
+              - generic [ref=e23304]: слова
+            - generic [ref=e23305]:
+              - generic [ref=e23306]:
+                - generic [ref=e23308]: Новое
+                - generic [ref=e23309]: "4"
+              - generic [ref=e23310]:
+                - generic [ref=e23312]: В процессе
+                - generic [ref=e23313]: "16"
+              - generic [ref=e23314]:
+                - generic [ref=e23316]: Выучено
+                - generic [ref=e23317]: "593"
+              - generic [ref=e23318]:
+                - generic [ref=e23320]: Архив
+                - generic [ref=e23321]: "23"
+        - generic [ref=e23322]:
+          - generic [ref=e23323]:
+            - generic [ref=e23325]: Прогресс по уровням CEFR
+            - generic [ref=e23327]:
+              - generic [ref=e23328]:
+                - generic [ref=e23329]: A1
+                - generic [ref=e23332]: 10/250
+              - generic [ref=e23333]:
+                - generic [ref=e23334]: A2
+                - generic [ref=e23337]: 553/500
+              - generic [ref=e23338]:
+                - generic [ref=e23339]: B1
+                - generic [ref=e23342]: 21/1000
+              - generic [ref=e23343]:
+                - generic [ref=e23344]: B2
+                - generic [ref=e23347]: 14/2000
+              - generic [ref=e23348]:
+                - generic [ref=e23349]: C1
+                - generic [ref=e23351]: 4/3500
+              - generic [ref=e23352]:
+                - generic [ref=e23353]: C2
+                - generic [ref=e23355]: 1/5000
+          - generic [ref=e23356]:
+            - generic [ref=e23357]:
+              - generic [ref=e23358]: Активность
+              - generic [ref=e23359]:
+                - img [ref=e23360]
+                - text: 4 дней
+            - generic [ref=e23363]:
+              - 'generic "2026-02-26: 0" [ref=e23364]'
+              - 'generic "2026-02-27: 0" [ref=e23365]'
+              - 'generic "2026-02-28: 0" [ref=e23366]'
+              - 'generic "2026-03-01: 0" [ref=e23367]'
+              - 'generic "2026-03-02: 0" [ref=e23368]'
+              - 'generic "2026-03-03: 0" [ref=e23369]'
+              - 'generic "2026-03-04: 0" [ref=e23370]'
+              - 'generic "2026-03-05: 0" [ref=e23371]'
+              - 'generic "2026-03-06: 0" [ref=e23372]'
+              - 'generic "2026-03-07: 0" [ref=e23373]'
+              - 'generic "2026-03-08: 0" [ref=e23374]'
+              - 'generic "2026-03-09: 0" [ref=e23375]'
+              - 'generic "2026-03-10: 0" [ref=e23376]'
+              - 'generic "2026-03-11: 0" [ref=e23377]'
+              - 'generic "2026-03-12: 0" [ref=e23378]'
+              - 'generic "2026-03-13: 0" [ref=e23379]'
+              - 'generic "2026-03-14: 0" [ref=e23380]'
+              - 'generic "2026-03-15: 0" [ref=e23381]'
+              - 'generic "2026-03-16: 0" [ref=e23382]'
+              - 'generic "2026-03-17: 0" [ref=e23383]'
+              - 'generic "2026-03-18: 0" [ref=e23384]'
+              - 'generic "2026-03-19: 0" [ref=e23385]'
+              - 'generic "2026-03-20: 0" [ref=e23386]'
+              - 'generic "2026-03-21: 0" [ref=e23387]'
+              - 'generic "2026-03-22: 0" [ref=e23388]'
+              - 'generic "2026-03-23: 0" [ref=e23389]'
+              - 'generic "2026-03-24: 0" [ref=e23390]'
+              - 'generic "2026-03-25: 0" [ref=e23391]'
+              - 'generic "2026-03-26: 0" [ref=e23392]'
+              - 'generic "2026-03-27: 0" [ref=e23393]'
+              - 'generic "2026-03-28: 0" [ref=e23394]'
+              - 'generic "2026-03-29: 0" [ref=e23395]'
+              - 'generic "2026-03-30: 0" [ref=e23396]'
+              - 'generic "2026-03-31: 0" [ref=e23397]'
+              - 'generic "2026-04-01: 0" [ref=e23398]'
+              - 'generic "2026-04-02: 0" [ref=e23399]'
+              - 'generic "2026-04-03: 0" [ref=e23400]'
+              - 'generic "2026-04-04: 0" [ref=e23401]'
+              - 'generic "2026-04-05: 0" [ref=e23402]'
+              - 'generic "2026-04-06: 0" [ref=e23403]'
+              - 'generic "2026-04-07: 0" [ref=e23404]'
+              - 'generic "2026-04-08: 0" [ref=e23405]'
+              - 'generic "2026-04-09: 0" [ref=e23406]'
+              - 'generic "2026-04-10: 0" [ref=e23407]'
+              - 'generic "2026-04-11: 0" [ref=e23408]'
+              - 'generic "2026-04-12: 0" [ref=e23409]'
+              - 'generic "2026-04-13: 0" [ref=e23410]'
+              - 'generic "2026-04-14: 0" [ref=e23411]'
+              - 'generic "2026-04-15: 0" [ref=e23412]'
+              - 'generic "2026-04-16: 0" [ref=e23413]'
+              - 'generic "2026-04-17: 0" [ref=e23414]'
+              - 'generic "2026-04-18: 0" [ref=e23415]'
+              - 'generic "2026-04-19: 0" [ref=e23416]'
+              - 'generic "2026-04-20: 0" [ref=e23417]'
+              - 'generic "2026-04-21: 0" [ref=e23418]'
+              - 'generic "2026-04-22: 0" [ref=e23419]'
+              - 'generic "2026-04-23: 0" [ref=e23420]'
+              - 'generic "2026-04-24: 0" [ref=e23421]'
+              - 'generic "2026-04-25: 0" [ref=e23422]'
+              - 'generic "2026-04-26: 0" [ref=e23423]'
+              - 'generic "2026-04-27: 0" [ref=e23424]'
+              - 'generic "2026-04-28: 0" [ref=e23425]'
+              - 'generic "2026-04-29: 0" [ref=e23426]'
+              - 'generic "2026-04-30: 0" [ref=e23427]'
+              - 'generic "2026-05-01: 0" [ref=e23428]'
+              - 'generic "2026-05-02: 0" [ref=e23429]'
+              - 'generic "2026-05-03: 0" [ref=e23430]'
+              - 'generic "2026-05-04: 0" [ref=e23431]'
+              - 'generic "2026-05-05: 0" [ref=e23432]'
+              - 'generic "2026-05-06: 0" [ref=e23433]'
+              - 'generic "2026-05-07: 0" [ref=e23434]'
+              - 'generic "2026-05-08: 0" [ref=e23435]'
+              - 'generic "2026-05-09: 0" [ref=e23436]'
+              - 'generic "2026-05-10: 0" [ref=e23437]'
+              - 'generic "2026-05-11: 0" [ref=e23438]'
+              - 'generic "2026-05-12: 0" [ref=e23439]'
+              - 'generic "2026-05-13: 0" [ref=e23440]'
+              - 'generic "2026-05-14: 0" [ref=e23441]'
+              - 'generic "2026-05-15: 0" [ref=e23442]'
+              - 'generic "2026-05-16: 0" [ref=e23443]'
+              - 'generic "2026-05-17: 0" [ref=e23444]'
+              - 'generic "2026-05-18: 0" [ref=e23445]'
+              - 'generic "2026-05-19: 0" [ref=e23446]'
+              - 'generic "2026-05-20: 0" [ref=e23447]'
+              - 'generic "2026-05-21: 0" [ref=e23448]'
+              - 'generic "2026-05-22: 0" [ref=e23449]'
+              - 'generic "2026-05-23: 0" [ref=e23450]'
+              - 'generic "2026-05-24: 0" [ref=e23451]'
+              - 'generic "2026-05-25: 0" [ref=e23452]'
+              - 'generic "2026-05-26: 0" [ref=e23453]'
+              - 'generic "2026-05-27: 0" [ref=e23454]'
+              - 'generic "2026-05-28: 0" [ref=e23455]'
+              - 'generic "2026-05-29: 0" [ref=e23456]'
+              - 'generic "2026-05-30: 0" [ref=e23457]'
+              - 'generic "2026-05-31: 0" [ref=e23458]'
+              - 'generic "2026-06-01: 0" [ref=e23459]'
+              - 'generic "2026-06-02: 0" [ref=e23460]'
+              - 'generic "2026-06-03: 0" [ref=e23461]'
+              - 'generic "2026-06-04: 0" [ref=e23462]'
+              - 'generic "2026-06-05: 0" [ref=e23463]'
+              - 'generic "2026-06-06: 0" [ref=e23464]'
+              - 'generic "2026-06-07: 0" [ref=e23465]'
+              - 'generic "2026-06-08: 0" [ref=e23466]'
+              - 'generic "2026-06-09: 0" [ref=e23467]'
+              - 'generic "2026-06-10: 0" [ref=e23468]'
+              - 'generic "2026-06-11: 0" [ref=e23469]'
+              - 'generic "2026-06-12: 0" [ref=e23470]'
+              - 'generic "2026-06-13: 0" [ref=e23471]'
+              - 'generic "2026-06-14: 0" [ref=e23472]'
+              - 'generic "2026-06-15: 0" [ref=e23473]'
+              - 'generic "2026-06-16: 0" [ref=e23474]'
+              - 'generic "2026-06-17: 0" [ref=e23475]'
+              - 'generic "2026-06-18: 0" [ref=e23476]'
+              - 'generic "2026-06-19: 0" [ref=e23477]'
+              - 'generic "2026-06-20: 0" [ref=e23478]'
+              - 'generic "2026-06-21: 1018" [ref=e23479]'
+              - 'generic "2026-06-22: 833" [ref=e23480]'
+              - 'generic "2026-06-23: 1400" [ref=e23481]'
+              - 'generic "2026-06-24: 146" [ref=e23482]'
+  - generic:
+    - img

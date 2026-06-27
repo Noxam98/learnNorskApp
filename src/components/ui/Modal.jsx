@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "./Icon.jsx";
-import { useHistoryClose } from "../tools/useHistoryClose.js";
+import { useHistoryClose } from "../../hooks/useHistoryClose.js";
 
 // Лёгкий модал в стиле дизайн-системы.
 // Крестик — единый для всех модалок: круглая кнопка, вынесенная за правый верхний угол

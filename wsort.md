@@ -1,0 +1,8540 @@
+- generic [ref=e23602]:
+  - banner [ref=e23603]:
+    - generic [ref=e23604]:
+      - link "Lære·Norsk" [ref=e23605] [cursor=pointer]:
+        - /url: "#/learning"
+        - img [ref=e23607]
+        - generic [ref=e23629]: Lære·Norsk
+      - navigation [ref=e23630]:
+        - link "Учёба" [ref=e23631] [cursor=pointer]:
+          - /url: "#/learning"
+          - img [ref=e23632]
+          - generic [ref=e23634]: Учёба
+        - link "Онлайн" [ref=e23635] [cursor=pointer]:
+          - /url: "#/online"
+          - img [ref=e23636]
+          - generic [ref=e23638]: Онлайн
+        - link "База слов" [ref=e23639] [cursor=pointer]:
+          - /url: "#/pool"
+          - img [ref=e23640]
+          - generic [ref=e23642]: База слов
+      - link "moderation" [ref=e23643] [cursor=pointer]:
+        - /url: "#/moderation"
+        - img [ref=e23644]
+      - link "stats" [ref=e23646] [cursor=pointer]:
+        - /url: "#/stats"
+        - img [ref=e23647]
+      - button "theme" [ref=e23649] [cursor=pointer]:
+        - img [ref=e23650]
+      - button "Язык интерфейса" [ref=e23654] [cursor=pointer]:
+        - img [ref=e23655]
+        - generic [ref=e23657]: Русский
+        - img [ref=e23658]
+      - link "Профиль" [ref=e23660] [cursor=pointer]:
+        - /url: "#/mypage"
+        - text: M
+  - main [ref=e23661]:
+    - generic [ref=e23662]:
+      - generic [ref=e23663]:
+        - generic [ref=e23664]:
+          - img [ref=e23665]
+          - text: Учёба · A2
+        - heading "Добрый день, Maksym" [level=1] [ref=e23667]
+      - tablist [ref=e23668]:
+        - tab "Сегодня" [ref=e23669] [cursor=pointer]:
+          - img [ref=e23670]
+          - generic [ref=e23672]: Сегодня
+        - tab "Мой набор слов" [selected] [ref=e23673] [cursor=pointer]:
+          - img [ref=e23674]
+          - generic [ref=e23676]: Мой набор слов
+        - tab "Экзамен" [ref=e23677] [cursor=pointer]:
+          - img [ref=e23678]
+          - generic [ref=e23680]: Экзамен
+        - tab "Прогресс" [ref=e23681] [cursor=pointer]:
+          - img [ref=e23682]
+          - generic [ref=e23684]: Прогресс
+    - generic [ref=e35503]:
+      - generic [ref=e35504]:
+        - button "Все 636" [ref=e35505] [cursor=pointer]:
+          - text: Все
+          - generic [ref=e35506]: "636"
+        - button "Новые 4" [ref=e35507] [cursor=pointer]:
+          - text: Новые
+          - generic [ref=e35509]: "4"
+        - button "В процессе 16" [ref=e35510] [cursor=pointer]:
+          - text: В процессе
+          - generic [ref=e35512]: "16"
+        - button "Повторение 0" [ref=e35513] [cursor=pointer]:
+          - text: Повторение
+          - generic [ref=e35515]: "0"
+        - button "Выучено 593" [ref=e35516] [cursor=pointer]:
+          - text: Выучено
+          - generic [ref=e35518]: "593"
+        - button "Слабые 0" [ref=e35519] [cursor=pointer]:
+          - text: Слабые
+          - generic [ref=e35521]: "0"
+        - button "Архив 23" [ref=e35522] [cursor=pointer]:
+          - img [ref=e35523]
+          - text: Архив
+          - generic [ref=e35525]: "23"
+      - generic [ref=e35526]:
+        - generic [ref=e35527]:
+          - img [ref=e35528]
+          - button "Скоро повторять" [ref=e35531] [cursor=pointer]:
+            - generic [ref=e35533]: Скоро повторять
+            - img [ref=e35535]
+          - button "order" [active] [ref=e35537] [cursor=pointer]:
+            - img [ref=e35538]
+        - button "Тема" [ref=e35541] [cursor=pointer]:
+          - img [ref=e35542]
+          - text: Тема
+        - button "Уровень" [ref=e35545] [cursor=pointer]:
+          - img [ref=e35546]
+          - text: Уровень
+        - generic [ref=e35548]:
+          - img [ref=e35550]
+          - textbox "Поиск по всем языкам — norsk, рус, eng…" [ref=e35552]
+    - generic [ref=e35553]:
+      - generic [ref=e35554]:
+        - checkbox [ref=e35555] [cursor=pointer]
+        - generic [ref=e35556]:
+          - generic [ref=e35557]:
+            - generic [ref=e35558]: uhøflig
+            - generic [ref=e35559]: невежливый, грубый
+          - generic [ref=e35560]:
+            - generic [ref=e35561]: прил.
+            - generic [ref=e35562]:
+              - img [ref=e35563]
+              - text: Новое
+            - generic [ref=e35567]: "0"
+        - generic [ref=e35568]:
+          - button "Знаю" [ref=e35569] [cursor=pointer]:
+            - img [ref=e35570]
+            - text: Знаю
+          - button [ref=e35573] [cursor=pointer]:
+            - img [ref=e35574]
+      - generic [ref=e35576]:
+        - checkbox [ref=e35577] [cursor=pointer]
+        - generic [ref=e35578]:
+          - generic [ref=e35579]:
+            - generic [ref=e35580]: spesial
+            - generic [ref=e35581]: специальный
+          - generic [ref=e35582]:
+            - generic [ref=e35583]: прил.
+            - generic [ref=e35584]:
+              - img [ref=e35585]
+              - text: Новое
+            - generic [ref=e35589]: "0"
+        - generic [ref=e35590]:
+          - button "Знаю" [ref=e35591] [cursor=pointer]:
+            - img [ref=e35592]
+            - text: Знаю
+          - button [ref=e35595] [cursor=pointer]:
+            - img [ref=e35596]
+      - generic [ref=e35598]:
+        - checkbox [ref=e35599] [cursor=pointer]
+        - generic [ref=e35600]:
+          - generic [ref=e35601]:
+            - generic [ref=e35602]: hakke
+            - generic [ref=e35603]: рубить, измельчать
+          - generic [ref=e35604]:
+            - generic [ref=e35605]: гл.
+            - generic [ref=e35606]:
+              - img [ref=e35607]
+              - text: Новое
+            - generic [ref=e35611]: "0"
+        - generic [ref=e35612]:
+          - button "Знаю" [ref=e35613] [cursor=pointer]:
+            - img [ref=e35614]
+            - text: Знаю
+          - button [ref=e35617] [cursor=pointer]:
+            - img [ref=e35618]
+      - generic [ref=e35620]:
+        - checkbox [ref=e35621] [cursor=pointer]
+        - generic [ref=e35622]:
+          - generic [ref=e35623]:
+            - generic [ref=e35624]: geit
+            - generic [ref=e35625]: коза
+          - generic [ref=e35626]:
+            - generic [ref=e35627]: сущ.
+            - generic [ref=e35628]:
+              - img [ref=e35629]
+              - text: Новое
+            - generic [ref=e35633]: "0"
+        - generic [ref=e35634]:
+          - button "Знаю" [ref=e35635] [cursor=pointer]:
+            - img [ref=e35636]
+            - text: Знаю
+          - button [ref=e35639] [cursor=pointer]:
+            - img [ref=e35640]
+      - generic [ref=e35642]:
+        - checkbox [ref=e35643] [cursor=pointer]
+        - generic [ref=e35644]:
+          - generic [ref=e35645]:
+            - generic [ref=e35646]: strøm
+            - generic [ref=e35647]: ток, электричество
+          - generic [ref=e35648]:
+            - generic [ref=e35649]: сущ.
+            - generic [ref=e35650]:
+              - img [ref=e35651]
+              - text: Выучено
+            - generic [ref=e35656]: "100"
+            - generic [ref=e35657]:
+              - img [ref=e35658]
+              - text: через 27 дней
+        - button [ref=e35662] [cursor=pointer]:
+          - img [ref=e35663]
+      - generic [ref=e35665]:
+        - checkbox [ref=e35666] [cursor=pointer]
+        - generic [ref=e35667]:
+          - generic [ref=e35668]:
+            - generic [ref=e35669]: uttrykk
+            - generic [ref=e35670]: выражение
+          - generic [ref=e35671]:
+            - generic [ref=e35672]: сущ.
+            - generic [ref=e35673]:
+              - img [ref=e35674]
+              - text: Выучено
+            - generic [ref=e35679]: "100"
+            - generic [ref=e35680]:
+              - img [ref=e35681]
+              - text: через 27 дней
+        - button [ref=e35685] [cursor=pointer]:
+          - img [ref=e35686]
+      - generic [ref=e35688]:
+        - checkbox [ref=e35689] [cursor=pointer]
+        - generic [ref=e35690]:
+          - generic [ref=e35691]:
+            - generic [ref=e35692]: handle
+            - generic [ref=e35693]: покупать, торговать
+          - generic [ref=e35694]:
+            - generic [ref=e35695]: гл.
+            - generic [ref=e35696]:
+              - img [ref=e35697]
+              - text: Выучено
+            - generic [ref=e35702]: "100"
+            - generic [ref=e35703]:
+              - img [ref=e35704]
+              - text: через 27 дней
+        - button [ref=e35708] [cursor=pointer]:
+          - img [ref=e35709]
+      - generic [ref=e35711]:
+        - checkbox [ref=e35712] [cursor=pointer]
+        - generic [ref=e35713]:
+          - generic [ref=e35714]:
+            - generic [ref=e35715]: aktiv
+            - generic [ref=e35716]: активный
+          - generic [ref=e35717]:
+            - generic [ref=e35718]: прил.
+            - generic [ref=e35719]:
+              - img [ref=e35720]
+              - text: Выучено
+            - generic [ref=e35725]: "100"
+            - generic [ref=e35726]:
+              - img [ref=e35727]
+              - text: через 27 дней
+        - button [ref=e35731] [cursor=pointer]:
+          - img [ref=e35732]
+      - generic [ref=e35734]:
+        - checkbox [ref=e35735] [cursor=pointer]
+        - generic [ref=e35736]:
+          - generic [ref=e35737]:
+            - generic [ref=e35738]: rolig
+            - generic [ref=e35739]: спокойный, тихий
+          - generic [ref=e35740]:
+            - generic [ref=e35741]: прил.
+            - generic [ref=e35742]:
+              - img [ref=e35743]
+              - text: Выучено
+            - generic [ref=e35748]: "100"
+            - generic [ref=e35749]:
+              - img [ref=e35750]
+              - text: через 27 дней
+        - button [ref=e35754] [cursor=pointer]:
+          - img [ref=e35755]
+      - generic [ref=e35757]:
+        - checkbox [ref=e35758] [cursor=pointer]
+        - generic [ref=e35759]:
+          - generic [ref=e35760]:
+            - generic [ref=e35761]: brann
+            - generic [ref=e35762]: пожар, огонь
+          - generic [ref=e35763]:
+            - generic [ref=e35764]: сущ.
+            - generic [ref=e35765]:
+              - img [ref=e35766]
+              - text: Выучено
+            - generic [ref=e35771]: "100"
+            - generic [ref=e35772]:
+              - img [ref=e35773]
+              - text: через 27 дней
+        - button [ref=e35777] [cursor=pointer]:
+          - img [ref=e35778]
+      - generic [ref=e35780]:
+        - checkbox [ref=e35781] [cursor=pointer]
+        - generic [ref=e35782]:
+          - generic [ref=e35783]:
+            - generic [ref=e35784]: kirke
+            - generic [ref=e35785]: церковь
+          - generic [ref=e35786]:
+            - generic [ref=e35787]: сущ.
+            - generic [ref=e35788]:
+              - img [ref=e35789]
+              - text: Выучено
+            - generic [ref=e35794]: "100"
+            - generic [ref=e35795]:
+              - img [ref=e35796]
+              - text: через 27 дней
+        - button [ref=e35800] [cursor=pointer]:
+          - img [ref=e35801]
+      - generic [ref=e35803]:
+        - checkbox [ref=e35804] [cursor=pointer]
+        - generic [ref=e35805]:
+          - generic [ref=e35806]:
+            - generic [ref=e35807]: jøde
+            - generic [ref=e35808]: еврей
+          - generic [ref=e35809]:
+            - generic [ref=e35810]: сущ.
+            - generic [ref=e35811]:
+              - img [ref=e35812]
+              - text: Архив
+            - generic [ref=e35817]: "100"
+        - button [ref=e35820] [cursor=pointer]:
+          - img [ref=e35821]
+      - generic [ref=e35823]:
+        - checkbox [ref=e35824] [cursor=pointer]
+        - generic [ref=e35825]:
+          - generic [ref=e35826]:
+            - generic [ref=e35827]: elv
+            - generic [ref=e35828]: река
+          - generic [ref=e35829]:
+            - generic [ref=e35830]: сущ.
+            - generic [ref=e35831]:
+              - img [ref=e35832]
+              - text: Архив
+            - generic [ref=e35837]: "100"
+        - button [ref=e35840] [cursor=pointer]:
+          - img [ref=e35841]
+      - generic [ref=e35843]:
+        - checkbox [ref=e35844] [cursor=pointer]
+        - generic [ref=e35845]:
+          - generic [ref=e35846]:
+            - generic [ref=e35847]: belte
+            - generic [ref=e35848]: ремень, пояс
+          - generic [ref=e35849]:
+            - generic [ref=e35850]: сущ.
+            - generic [ref=e35851]:
+              - img [ref=e35852]
+              - text: Архив
+            - generic [ref=e35857]: "100"
+        - button [ref=e35860] [cursor=pointer]:
+          - img [ref=e35861]
+      - generic [ref=e35863]:
+        - checkbox [ref=e35864] [cursor=pointer]
+        - generic [ref=e35865]:
+          - generic [ref=e35866]:
+            - generic [ref=e35867]: hylle
+            - generic [ref=e35868]: полка
+          - generic [ref=e35869]:
+            - generic [ref=e35870]: сущ.
+            - generic [ref=e35871]:
+              - img [ref=e35872]
+              - text: Архив
+            - generic [ref=e35877]: "100"
+        - button [ref=e35880] [cursor=pointer]:
+          - img [ref=e35881]
+      - generic [ref=e35883]:
+        - checkbox [ref=e35884] [cursor=pointer]
+        - generic [ref=e35885]:
+          - generic [ref=e35886]:
+            - generic [ref=e35887]: hals
+            - generic [ref=e35888]: шея, горло
+          - generic [ref=e35889]:
+            - generic [ref=e35890]: сущ.
+            - generic [ref=e35891]:
+              - img [ref=e35892]
+              - text: Архив
+            - generic [ref=e35897]: "100"
+        - button [ref=e35900] [cursor=pointer]:
+          - img [ref=e35901]
+      - generic [ref=e35903]:
+        - checkbox [ref=e35904] [cursor=pointer]
+        - generic [ref=e35905]:
+          - generic [ref=e35906]:
+            - generic [ref=e35907]: dokument
+            - generic [ref=e35908]: документ
+          - generic [ref=e35909]:
+            - generic [ref=e35910]: сущ.
+            - generic [ref=e35911]:
+              - img [ref=e35912]
+              - text: Архив
+            - generic [ref=e35917]: "100"
+        - button [ref=e35920] [cursor=pointer]:
+          - img [ref=e35921]
+      - generic [ref=e35923]:
+        - checkbox [ref=e35924] [cursor=pointer]
+        - generic [ref=e35925]:
+          - generic [ref=e35926]:
+            - generic [ref=e35927]: bokmål
+            - generic [ref=e35928]: букмол, норвежский книжный язык
+          - generic [ref=e35929]:
+            - generic [ref=e35930]: сущ.
+            - generic [ref=e35931]:
+              - img [ref=e35932]
+              - text: Архив
+            - generic [ref=e35937]: "100"
+        - button [ref=e35940] [cursor=pointer]:
+          - img [ref=e35941]
+      - generic [ref=e35943]:
+        - checkbox [ref=e35944] [cursor=pointer]
+        - generic [ref=e35945]:
+          - generic [ref=e35946]:
+            - generic [ref=e35947]: hente
+            - generic [ref=e35948]: забирать, приносить, заезжать за
+          - generic [ref=e35949]:
+            - generic [ref=e35950]: гл.
+            - generic [ref=e35951]:
+              - img [ref=e35952]
+              - text: Архив
+            - generic [ref=e35957]: "100"
+        - button [ref=e35960] [cursor=pointer]:
+          - img [ref=e35961]
+      - generic [ref=e35963]:
+        - checkbox [ref=e35964] [cursor=pointer]
+        - generic [ref=e35965]:
+          - generic [ref=e35966]:
+            - generic [ref=e35967]: bolig
+            - generic [ref=e35968]: жильё, дом, квартира
+          - generic [ref=e35969]:
+            - generic [ref=e35970]: сущ.
+            - generic [ref=e35971]:
+              - img [ref=e35972]
+              - text: Архив
+            - generic [ref=e35977]: "100"
+        - button [ref=e35980] [cursor=pointer]:
+          - img [ref=e35981]
+      - generic [ref=e35983]:
+        - checkbox [ref=e35984] [cursor=pointer]
+        - generic [ref=e35985]:
+          - generic [ref=e35986]:
+            - generic [ref=e35987]: plan
+            - generic [ref=e35988]: план
+          - generic [ref=e35989]:
+            - generic [ref=e35990]: сущ.
+            - generic [ref=e35991]:
+              - img [ref=e35992]
+              - text: Архив
+            - generic [ref=e35997]: "100"
+        - button [ref=e36000] [cursor=pointer]:
+          - img [ref=e36001]
+      - generic [ref=e36003]:
+        - checkbox [ref=e36004] [cursor=pointer]
+        - generic [ref=e36005]:
+          - generic [ref=e36006]:
+            - generic [ref=e36007]: forbi
+            - generic [ref=e36008]: мимо, прочь, закончено
+          - generic [ref=e36009]:
+            - generic [ref=e36010]: нареч.
+            - generic [ref=e36011]:
+              - img [ref=e36012]
+              - text: Архив
+            - generic [ref=e36017]: "100"
+        - button [ref=e36020] [cursor=pointer]:
+          - img [ref=e36021]
+      - generic [ref=e36023]:
+        - checkbox [ref=e36024] [cursor=pointer]
+        - generic [ref=e36025]:
+          - generic [ref=e36026]:
+            - generic [ref=e36027]: bytte
+            - generic [ref=e36028]: менять, обменивать
+          - generic [ref=e36029]:
+            - generic [ref=e36030]: гл.
+            - generic [ref=e36031]:
+              - img [ref=e36032]
+              - text: Архив
+            - generic [ref=e36037]: "100"
+        - button [ref=e36040] [cursor=pointer]:
+          - img [ref=e36041]
+      - generic [ref=e36043]:
+        - checkbox [ref=e36044] [cursor=pointer]
+        - generic [ref=e36045]:
+          - generic [ref=e36046]:
+            - generic [ref=e36047]: miste
+            - generic [ref=e36048]: терять, упускать
+          - generic [ref=e36049]:
+            - generic [ref=e36050]: гл.
+            - generic [ref=e36051]:
+              - img [ref=e36052]
+              - text: Архив
+            - generic [ref=e36057]: "100"
+        - button [ref=e36060] [cursor=pointer]:
+          - img [ref=e36061]
+      - generic [ref=e36063]:
+        - checkbox [ref=e36064] [cursor=pointer]
+        - generic [ref=e36065]:
+          - generic [ref=e36066]:
+            - generic [ref=e36067]: trening
+            - generic [ref=e36068]: тренировка
+          - generic [ref=e36069]:
+            - generic [ref=e36070]: сущ.
+            - generic [ref=e36071]:
+              - img [ref=e36072]
+              - text: Архив
+            - generic [ref=e36077]: "100"
+        - button [ref=e36080] [cursor=pointer]:
+          - img [ref=e36081]
+      - generic [ref=e36083]:
+        - checkbox [ref=e36084] [cursor=pointer]
+        - generic [ref=e36085]:
+          - generic [ref=e36086]:
+            - generic [ref=e36087]: forklare
+            - generic [ref=e36088]: объяснять
+          - generic [ref=e36089]:
+            - generic [ref=e36090]: гл.
+            - generic [ref=e36091]:
+              - img [ref=e36092]
+              - text: Архив
+            - generic [ref=e36097]: "100"
+        - button [ref=e36100] [cursor=pointer]:
+          - img [ref=e36101]
+      - generic [ref=e36103]:
+        - checkbox [ref=e36104] [cursor=pointer]
+        - generic [ref=e36105]:
+          - generic [ref=e36106]:
+            - generic [ref=e36107]: oppe
+            - generic [ref=e36108]: наверху
+          - generic [ref=e36109]:
+            - generic [ref=e36110]: нареч.
+            - generic [ref=e36111]:
+              - img [ref=e36112]
+              - text: Архив
+            - generic [ref=e36117]: "100"
+        - button [ref=e36120] [cursor=pointer]:
+          - img [ref=e36121]
+      - generic [ref=e36123]:
+        - checkbox [ref=e36124] [cursor=pointer]
+        - generic [ref=e36125]:
+          - generic [ref=e36126]:
+            - generic [ref=e36127]: salg
+            - generic [ref=e36128]: распродажа, продажа
+          - generic [ref=e36129]:
+            - generic [ref=e36130]: сущ.
+            - generic [ref=e36131]:
+              - img [ref=e36132]
+              - text: Архив
+            - generic [ref=e36137]: "100"
+        - button [ref=e36140] [cursor=pointer]:
+          - img [ref=e36141]
+      - generic [ref=e36143]:
+        - checkbox [ref=e36144] [cursor=pointer]
+        - generic [ref=e36145]:
+          - generic [ref=e36146]:
+            - generic [ref=e36147]: retning
+            - generic [ref=e36148]: направление
+          - generic [ref=e36149]:
+            - generic [ref=e36150]: сущ.
+            - generic [ref=e36151]:
+              - img [ref=e36152]
+              - text: Архив
+            - generic [ref=e36157]: "100"
+        - button [ref=e36160] [cursor=pointer]:
+          - img [ref=e36161]
+      - generic [ref=e36163]:
+        - checkbox [ref=e36164] [cursor=pointer]
+        - generic [ref=e36165]:
+          - generic [ref=e36166]:
+            - generic [ref=e36167]: syk
+            - generic [ref=e36168]: больной
+          - generic [ref=e36169]:
+            - generic [ref=e36170]: прил.
+            - generic [ref=e36171]:
+              - img [ref=e36172]
+              - text: Архив
+            - generic [ref=e36177]: "100"
+        - button [ref=e36180] [cursor=pointer]:
+          - img [ref=e36181]
+      - generic [ref=e36183]:
+        - checkbox [ref=e36184] [cursor=pointer]
+        - generic [ref=e36185]:
+          - generic [ref=e36186]:
+            - generic [ref=e36187]: husk
+            - generic [ref=e36188]: помнить
+          - generic [ref=e36189]:
+            - generic [ref=e36190]: гл.
+            - generic [ref=e36191]:
+              - img [ref=e36192]
+              - text: Архив
+            - generic [ref=e36197]: "100"
+        - button [ref=e36200] [cursor=pointer]:
+          - img [ref=e36201]
+      - generic [ref=e36203]:
+        - checkbox [ref=e36204] [cursor=pointer]
+        - generic [ref=e36205]:
+          - generic [ref=e36206]:
+            - generic [ref=e36207]: fremmed
+            - generic [ref=e36208]: чужой, иностранный, незнакомый
+          - generic [ref=e36209]:
+            - generic [ref=e36210]: прил.
+            - generic [ref=e36211]:
+              - img [ref=e36212]
+              - text: Архив
+            - generic [ref=e36217]: "100"
+        - button [ref=e36220] [cursor=pointer]:
+          - img [ref=e36221]
+      - generic [ref=e36223]:
+        - checkbox [ref=e36224] [cursor=pointer]
+        - generic [ref=e36225]:
+          - generic [ref=e36226]:
+            - generic [ref=e36227]: nylig
+            - generic [ref=e36228]: недавно, только что
+          - generic [ref=e36229]:
+            - generic [ref=e36230]: нареч.
+            - generic [ref=e36231]:
+              - img [ref=e36232]
+              - text: Выучено
+            - generic [ref=e36237]: "88"
+            - generic [ref=e36238]:
+              - img [ref=e36239]
+              - text: через 28 дней
+        - button [ref=e36243] [cursor=pointer]:
+          - img [ref=e36244]
+      - generic [ref=e36246]:
+        - checkbox [ref=e36247] [cursor=pointer]
+        - generic [ref=e36248]:
+          - generic [ref=e36249]:
+            - generic [ref=e36250]: linje
+            - generic [ref=e36251]: линия
+          - generic [ref=e36252]:
+            - generic [ref=e36253]: сущ.
+            - generic [ref=e36254]:
+              - img [ref=e36255]
+              - text: Выучено
+            - generic [ref=e36260]: "88"
+            - generic [ref=e36261]:
+              - img [ref=e36262]
+              - text: через 28 дней
+        - button [ref=e36266] [cursor=pointer]:
+          - img [ref=e36267]
+      - generic [ref=e36269]:
+        - checkbox [ref=e36270] [cursor=pointer]
+        - generic [ref=e36271]:
+          - generic [ref=e36272]:
+            - generic [ref=e36273]: diskutere
+            - generic [ref=e36274]: обсуждать
+          - generic [ref=e36275]:
+            - generic [ref=e36276]: гл.
+            - generic [ref=e36277]:
+              - img [ref=e36278]
+              - text: Выучено
+            - generic [ref=e36283]: "86"
+            - generic [ref=e36284]:
+              - img [ref=e36285]
+              - text: через 27 дней
+        - button [ref=e36289] [cursor=pointer]:
+          - img [ref=e36290]
+      - generic [ref=e36292]:
+        - checkbox [ref=e36293] [cursor=pointer]
+        - generic [ref=e36294]:
+          - generic [ref=e36295]:
+            - generic [ref=e36296]: garasje
+            - generic [ref=e36297]: гараж
+          - generic [ref=e36298]:
+            - generic [ref=e36299]: сущ.
+            - generic [ref=e36300]:
+              - img [ref=e36301]
+              - text: Выучено
+            - generic [ref=e36306]: "100"
+            - generic [ref=e36307]:
+              - img [ref=e36308]
+              - text: через 57 дней
+        - button [ref=e36312] [cursor=pointer]:
+          - img [ref=e36313]
+      - generic [ref=e36315]:
+        - checkbox [ref=e36316] [cursor=pointer]
+        - generic [ref=e36317]:
+          - generic [ref=e36318]:
+            - generic [ref=e36319]: honning
+            - generic [ref=e36320]: мёд
+          - generic [ref=e36321]:
+            - generic [ref=e36322]: сущ.
+            - generic [ref=e36323]:
+              - img [ref=e36324]
+              - text: Выучено
+            - generic [ref=e36329]: "100"
+            - generic [ref=e36330]:
+              - img [ref=e36331]
+              - text: через 57 дней
+        - button [ref=e36335] [cursor=pointer]:
+          - img [ref=e36336]
+      - generic [ref=e36338]:
+        - checkbox [ref=e36339] [cursor=pointer]
+        - generic [ref=e36340]:
+          - generic [ref=e36341]:
+            - generic [ref=e36342]: fløte
+            - generic [ref=e36343]: сливки
+          - generic [ref=e36344]:
+            - generic [ref=e36345]: сущ.
+            - generic [ref=e36346]:
+              - img [ref=e36347]
+              - text: Выучено
+            - generic [ref=e36352]: "100"
+            - generic [ref=e36353]:
+              - img [ref=e36354]
+              - text: через 57 дней
+        - button [ref=e36358] [cursor=pointer]:
+          - img [ref=e36359]
+      - generic [ref=e36361]:
+        - checkbox [ref=e36362] [cursor=pointer]
+        - generic [ref=e36363]:
+          - generic [ref=e36364]:
+            - generic [ref=e36365]: bosted
+            - generic [ref=e36366]: место жительства
+          - generic [ref=e36367]:
+            - generic [ref=e36368]: сущ.
+            - generic [ref=e36369]:
+              - img [ref=e36370]
+              - text: Выучено
+            - generic [ref=e36375]: "100"
+            - generic [ref=e36376]:
+              - img [ref=e36377]
+              - text: через 57 дней
+        - button [ref=e36381] [cursor=pointer]:
+          - img [ref=e36382]
+      - generic [ref=e36384]:
+        - checkbox [ref=e36385] [cursor=pointer]
+        - generic [ref=e36386]:
+          - generic [ref=e36387]:
+            - generic [ref=e36388]: kyr
+            - generic [ref=e36389]: коровы
+          - generic [ref=e36390]:
+            - generic [ref=e36391]: сущ.
+            - generic [ref=e36392]:
+              - img [ref=e36393]
+              - text: Выучено
+            - generic [ref=e36398]: "100"
+            - generic [ref=e36399]:
+              - img [ref=e36400]
+              - text: через 57 дней
+        - button [ref=e36404] [cursor=pointer]:
+          - img [ref=e36405]
+      - generic [ref=e36407]:
+        - checkbox [ref=e36408] [cursor=pointer]
+        - generic [ref=e36409]:
+          - generic [ref=e36410]:
+            - generic [ref=e36411]: hvitløk
+            - generic [ref=e36412]: чеснок
+          - generic [ref=e36413]:
+            - generic [ref=e36414]: сущ.
+            - generic [ref=e36415]:
+              - img [ref=e36416]
+              - text: Выучено
+            - generic [ref=e36421]: "100"
+            - generic [ref=e36422]:
+              - img [ref=e36423]
+              - text: через 57 дней
+        - button [ref=e36427] [cursor=pointer]:
+          - img [ref=e36428]
+      - generic [ref=e36430]:
+        - checkbox [ref=e36431] [cursor=pointer]
+        - generic [ref=e36432]:
+          - generic [ref=e36433]:
+            - generic [ref=e36434]: kanin
+            - generic [ref=e36435]: кролик, зайчик
+          - generic [ref=e36436]:
+            - generic [ref=e36437]: сущ.
+            - generic [ref=e36438]:
+              - img [ref=e36439]
+              - text: Выучено
+            - generic [ref=e36444]: "100"
+            - generic [ref=e36445]:
+              - img [ref=e36446]
+              - text: через 57 дней
+        - button [ref=e36450] [cursor=pointer]:
+          - img [ref=e36451]
+      - generic [ref=e36453]:
+        - checkbox [ref=e36454] [cursor=pointer]
+        - generic [ref=e36455]:
+          - generic [ref=e36456]:
+            - generic [ref=e36457]: vaner
+            - generic [ref=e36458]: привычки
+          - generic [ref=e36459]:
+            - generic [ref=e36460]: сущ.
+            - generic [ref=e36461]:
+              - img [ref=e36462]
+              - text: Выучено
+            - generic [ref=e36467]: "100"
+            - generic [ref=e36468]:
+              - img [ref=e36469]
+              - text: через 57 дней
+        - button [ref=e36473] [cursor=pointer]:
+          - img [ref=e36474]
+      - generic [ref=e36476]:
+        - checkbox [ref=e36477] [cursor=pointer]
+        - generic [ref=e36478]:
+          - generic [ref=e36479]:
+            - generic [ref=e36480]: sta
+            - generic [ref=e36481]: упрямый
+          - generic [ref=e36482]:
+            - generic [ref=e36483]: прил.
+            - generic [ref=e36484]:
+              - img [ref=e36485]
+              - text: Выучено
+            - generic [ref=e36490]: "100"
+            - generic [ref=e36491]:
+              - img [ref=e36492]
+              - text: через 57 дней
+        - button [ref=e36496] [cursor=pointer]:
+          - img [ref=e36497]
+      - generic [ref=e36499]:
+        - checkbox [ref=e36500] [cursor=pointer]
+        - generic [ref=e36501]:
+          - generic [ref=e36502]:
+            - generic [ref=e36503]: papp
+            - generic [ref=e36504]: картон
+          - generic [ref=e36505]:
+            - generic [ref=e36506]: сущ.
+            - generic [ref=e36507]:
+              - img [ref=e36508]
+              - text: Выучено
+            - generic [ref=e36513]: "100"
+            - generic [ref=e36514]:
+              - img [ref=e36515]
+              - text: через 57 дней
+        - button [ref=e36519] [cursor=pointer]:
+          - img [ref=e36520]
+      - generic [ref=e36522]:
+        - checkbox [ref=e36523] [cursor=pointer]
+        - generic [ref=e36524]:
+          - generic [ref=e36525]:
+            - generic [ref=e36526]: komedie
+            - generic [ref=e36527]: комедия
+          - generic [ref=e36528]:
+            - generic [ref=e36529]: сущ.
+            - generic [ref=e36530]:
+              - img [ref=e36531]
+              - text: Выучено
+            - generic [ref=e36536]: "100"
+            - generic [ref=e36537]:
+              - img [ref=e36538]
+              - text: через 57 дней
+        - button [ref=e36542] [cursor=pointer]:
+          - img [ref=e36543]
+      - generic [ref=e36545]:
+        - checkbox [ref=e36546] [cursor=pointer]
+        - generic [ref=e36547]:
+          - generic [ref=e36548]:
+            - generic [ref=e36549]: kreditt
+            - generic [ref=e36550]: кредит
+          - generic [ref=e36551]:
+            - generic [ref=e36552]: сущ.
+            - generic [ref=e36553]:
+              - img [ref=e36554]
+              - text: Выучено
+            - generic [ref=e36559]: "100"
+            - generic [ref=e36560]:
+              - img [ref=e36561]
+              - text: через 57 дней
+        - button [ref=e36565] [cursor=pointer]:
+          - img [ref=e36566]
+      - generic [ref=e36568]:
+        - checkbox [ref=e36569] [cursor=pointer]
+        - generic [ref=e36570]:
+          - generic [ref=e36571]:
+            - generic [ref=e36572]: maur
+            - generic [ref=e36573]: муравей
+          - generic [ref=e36574]:
+            - generic [ref=e36575]: сущ.
+            - generic [ref=e36576]:
+              - img [ref=e36577]
+              - text: Выучено
+            - generic [ref=e36582]: "100"
+            - generic [ref=e36583]:
+              - img [ref=e36584]
+              - text: через 57 дней
+        - button [ref=e36588] [cursor=pointer]:
+          - img [ref=e36589]
+      - generic [ref=e36591]:
+        - checkbox [ref=e36592] [cursor=pointer]
+        - generic [ref=e36593]:
+          - generic [ref=e36594]:
+            - generic [ref=e36595]: bestilling
+            - generic [ref=e36596]: заказ, бронирование
+          - generic [ref=e36597]:
+            - generic [ref=e36598]: сущ.
+            - generic [ref=e36599]:
+              - img [ref=e36600]
+              - text: Выучено
+            - generic [ref=e36605]: "100"
+            - generic [ref=e36606]:
+              - img [ref=e36607]
+              - text: через 57 дней
+        - button [ref=e36611] [cursor=pointer]:
+          - img [ref=e36612]
+      - generic [ref=e36614]:
+        - checkbox [ref=e36615] [cursor=pointer]
+        - generic [ref=e36616]:
+          - generic [ref=e36617]:
+            - generic [ref=e36618]: galleri
+            - generic [ref=e36619]: галерея
+          - generic [ref=e36620]:
+            - generic [ref=e36621]: сущ.
+            - generic [ref=e36622]:
+              - img [ref=e36623]
+              - text: Выучено
+            - generic [ref=e36628]: "100"
+            - generic [ref=e36629]:
+              - img [ref=e36630]
+              - text: через 57 дней
+        - button [ref=e36634] [cursor=pointer]:
+          - img [ref=e36635]
+      - generic [ref=e36637]:
+        - checkbox [ref=e36638] [cursor=pointer]
+        - generic [ref=e36639]:
+          - generic [ref=e36640]:
+            - generic [ref=e36641]: høyskole
+            - generic [ref=e36642]: колледж, высшее учебное заведение
+          - generic [ref=e36643]:
+            - generic [ref=e36644]: сущ.
+            - generic [ref=e36645]:
+              - img [ref=e36646]
+              - text: Выучено
+            - generic [ref=e36651]: "100"
+            - generic [ref=e36652]:
+              - img [ref=e36653]
+              - text: через 57 дней
+        - button [ref=e36657] [cursor=pointer]:
+          - img [ref=e36658]
+      - generic [ref=e36660]:
+        - checkbox [ref=e36661] [cursor=pointer]
+        - generic [ref=e36662]:
+          - generic [ref=e36663]:
+            - generic [ref=e36664]: frost
+            - generic [ref=e36665]: мороз
+          - generic [ref=e36666]:
+            - generic [ref=e36667]: сущ.
+            - generic [ref=e36668]:
+              - img [ref=e36669]
+              - text: Выучено
+            - generic [ref=e36674]: "100"
+            - generic [ref=e36675]:
+              - img [ref=e36676]
+              - text: через 57 дней
+        - button [ref=e36680] [cursor=pointer]:
+          - img [ref=e36681]
+      - generic [ref=e36683]:
+        - checkbox [ref=e36684] [cursor=pointer]
+        - generic [ref=e36685]:
+          - generic [ref=e36686]:
+            - generic [ref=e36687]: steke
+            - generic [ref=e36688]: жарить, запекать
+          - generic [ref=e36689]:
+            - generic [ref=e36690]: гл.
+            - generic [ref=e36691]:
+              - img [ref=e36692]
+              - text: Выучено
+            - generic [ref=e36697]: "100"
+            - generic [ref=e36698]:
+              - img [ref=e36699]
+              - text: через 57 дней
+        - button [ref=e36703] [cursor=pointer]:
+          - img [ref=e36704]
+      - generic [ref=e36706]:
+        - checkbox [ref=e36707] [cursor=pointer]
+        - generic [ref=e36708]:
+          - generic [ref=e36709]:
+            - generic [ref=e36710]: melodi
+            - generic [ref=e36711]: мелодия
+          - generic [ref=e36712]:
+            - generic [ref=e36713]: сущ.
+            - generic [ref=e36714]:
+              - img [ref=e36715]
+              - text: Выучено
+            - generic [ref=e36720]: "100"
+            - generic [ref=e36721]:
+              - img [ref=e36722]
+              - text: через 57 дней
+        - button [ref=e36726] [cursor=pointer]:
+          - img [ref=e36727]
+      - generic [ref=e36729]:
+        - checkbox [ref=e36730] [cursor=pointer]
+        - generic [ref=e36731]:
+          - generic [ref=e36732]:
+            - generic [ref=e36733]: grammatikk
+            - generic [ref=e36734]: грамматика
+          - generic [ref=e36735]:
+            - generic [ref=e36736]: сущ.
+            - generic [ref=e36737]:
+              - img [ref=e36738]
+              - text: Выучено
+            - generic [ref=e36743]: "100"
+            - generic [ref=e36744]:
+              - img [ref=e36745]
+              - text: через 29 дней
+        - button [ref=e36749] [cursor=pointer]:
+          - img [ref=e36750]
+      - generic [ref=e36752]:
+        - checkbox [ref=e36753] [cursor=pointer]
+        - generic [ref=e36754]:
+          - generic [ref=e36755]:
+            - generic [ref=e36756]: dåp
+            - generic [ref=e36757]: крещение
+          - generic [ref=e36758]:
+            - generic [ref=e36759]: сущ.
+            - generic [ref=e36760]:
+              - img [ref=e36761]
+              - text: Выучено
+            - generic [ref=e36766]: "100"
+            - generic [ref=e36767]:
+              - img [ref=e36768]
+              - text: через 29 дней
+        - button [ref=e36772] [cursor=pointer]:
+          - img [ref=e36773]
+      - generic [ref=e36775]:
+        - checkbox [ref=e36776] [cursor=pointer]
+        - generic [ref=e36777]:
+          - generic [ref=e36778]:
+            - generic [ref=e36779]: erfaren
+            - generic [ref=e36780]: опытный
+          - generic [ref=e36781]:
+            - generic [ref=e36782]: прил.
+            - generic [ref=e36783]:
+              - img [ref=e36784]
+              - text: Выучено
+            - generic [ref=e36789]: "100"
+            - generic [ref=e36790]:
+              - img [ref=e36791]
+              - text: через 29 дней
+        - button [ref=e36795] [cursor=pointer]:
+          - img [ref=e36796]
+      - generic [ref=e36798]:
+        - checkbox [ref=e36799] [cursor=pointer]
+        - generic [ref=e36800]:
+          - generic [ref=e36801]:
+            - generic [ref=e36802]: avslappet
+            - generic [ref=e36803]: расслабленный
+          - generic [ref=e36804]:
+            - generic [ref=e36805]: прил.
+            - generic [ref=e36806]:
+              - img [ref=e36807]
+              - text: Выучено
+            - generic [ref=e36812]: "100"
+            - generic [ref=e36813]:
+              - img [ref=e36814]
+              - text: через 29 дней
+        - button [ref=e36818] [cursor=pointer]:
+          - img [ref=e36819]
+      - generic [ref=e36821]:
+        - checkbox [ref=e36822] [cursor=pointer]
+        - generic [ref=e36823]:
+          - generic [ref=e36824]:
+            - generic [ref=e36825]: slips
+            - generic [ref=e36826]: галстук
+          - generic [ref=e36827]:
+            - generic [ref=e36828]: сущ.
+            - generic [ref=e36829]:
+              - img [ref=e36830]
+              - text: Выучено
+            - generic [ref=e36835]: "100"
+            - generic [ref=e36836]:
+              - img [ref=e36837]
+              - text: через 29 дней
+        - button [ref=e36841] [cursor=pointer]:
+          - img [ref=e36842]
+      - generic [ref=e36844]:
+        - checkbox [ref=e36845] [cursor=pointer]
+        - generic [ref=e36846]:
+          - generic [ref=e36847]:
+            - generic [ref=e36848]: kjølig
+            - generic [ref=e36849]: прохладный
+          - generic [ref=e36850]:
+            - generic [ref=e36851]: прил.
+            - generic [ref=e36852]:
+              - img [ref=e36853]
+              - text: Выучено
+            - generic [ref=e36858]: "100"
+            - generic [ref=e36859]:
+              - img [ref=e36860]
+              - text: через 29 дней
+        - button [ref=e36864] [cursor=pointer]:
+          - img [ref=e36865]
+      - generic [ref=e36867]:
+        - checkbox [ref=e36868] [cursor=pointer]
+        - generic [ref=e36869]:
+          - generic [ref=e36870]:
+            - generic [ref=e36871]: kebab
+            - generic [ref=e36872]: кебаб, шаурма
+          - generic [ref=e36873]:
+            - generic [ref=e36874]: сущ.
+            - generic [ref=e36875]:
+              - img [ref=e36876]
+              - text: Выучено
+            - generic [ref=e36881]: "100"
+            - generic [ref=e36882]:
+              - img [ref=e36883]
+              - text: через 29 дней
+        - button [ref=e36887] [cursor=pointer]:
+          - img [ref=e36888]
+      - generic [ref=e36890]:
+        - checkbox [ref=e36891] [cursor=pointer]
+        - generic [ref=e36892]:
+          - generic [ref=e36893]:
+            - generic [ref=e36894]: bomull
+            - generic [ref=e36895]: хлопок, вата
+          - generic [ref=e36896]:
+            - generic [ref=e36897]: сущ.
+            - generic [ref=e36898]:
+              - img [ref=e36899]
+              - text: Выучено
+            - generic [ref=e36904]: "100"
+            - generic [ref=e36905]:
+              - img [ref=e36906]
+              - text: через 29 дней
+        - button [ref=e36910] [cursor=pointer]:
+          - img [ref=e36911]
+      - generic [ref=e36913]:
+        - checkbox [ref=e36914] [cursor=pointer]
+        - generic [ref=e36915]:
+          - generic [ref=e36916]:
+            - generic [ref=e36917]: tann
+            - generic [ref=e36918]: зуб
+          - generic [ref=e36919]:
+            - generic [ref=e36920]: сущ.
+            - generic [ref=e36921]:
+              - img [ref=e36922]
+              - text: Выучено
+            - generic [ref=e36927]: "100"
+            - generic [ref=e36928]:
+              - img [ref=e36929]
+              - text: через 29 дней
+        - button [ref=e36933] [cursor=pointer]:
+          - img [ref=e36934]
+      - generic [ref=e36936]:
+        - checkbox [ref=e36937] [cursor=pointer]
+        - generic [ref=e36938]:
+          - generic [ref=e36939]:
+            - generic [ref=e36940]: skulder
+            - generic [ref=e36941]: плечо
+          - generic [ref=e36942]:
+            - generic [ref=e36943]: сущ.
+            - generic [ref=e36944]:
+              - img [ref=e36945]
+              - text: Выучено
+            - generic [ref=e36950]: "100"
+            - generic [ref=e36951]:
+              - img [ref=e36952]
+              - text: через 29 дней
+        - button [ref=e36956] [cursor=pointer]:
+          - img [ref=e36957]
+      - generic [ref=e36959]:
+        - checkbox [ref=e36960] [cursor=pointer]
+        - generic [ref=e36961]:
+          - generic [ref=e36962]:
+            - generic [ref=e36963]: spade
+            - generic [ref=e36964]: лопата
+          - generic [ref=e36965]:
+            - generic [ref=e36966]: сущ.
+            - generic [ref=e36967]:
+              - img [ref=e36968]
+              - text: Выучено
+            - generic [ref=e36973]: "100"
+            - generic [ref=e36974]:
+              - img [ref=e36975]
+              - text: через 29 дней
+        - button [ref=e36979] [cursor=pointer]:
+          - img [ref=e36980]
+      - generic [ref=e36982]:
+        - checkbox [ref=e36983] [cursor=pointer]
+        - generic [ref=e36984]:
+          - generic [ref=e36985]:
+            - generic [ref=e36986]: pensjonist
+            - generic [ref=e36987]: пенсионер
+          - generic [ref=e36988]:
+            - generic [ref=e36989]: сущ.
+            - generic [ref=e36990]:
+              - img [ref=e36991]
+              - text: Выучено
+            - generic [ref=e36996]: "100"
+            - generic [ref=e36997]:
+              - img [ref=e36998]
+              - text: через 29 дней
+        - button [ref=e37002] [cursor=pointer]:
+          - img [ref=e37003]
+      - generic [ref=e37005]:
+        - checkbox [ref=e37006] [cursor=pointer]
+        - generic [ref=e37007]:
+          - generic [ref=e37008]:
+            - generic [ref=e37009]: spa
+            - generic [ref=e37010]: спа
+          - generic [ref=e37011]:
+            - generic [ref=e37012]: сущ.
+            - generic [ref=e37013]:
+              - img [ref=e37014]
+              - text: Выучено
+            - generic [ref=e37019]: "100"
+            - generic [ref=e37020]:
+              - img [ref=e37021]
+              - text: через 29 дней
+        - button [ref=e37025] [cursor=pointer]:
+          - img [ref=e37026]
+      - generic [ref=e37028]:
+        - checkbox [ref=e37029] [cursor=pointer]
+        - generic [ref=e37030]:
+          - generic [ref=e37031]:
+            - generic [ref=e37032]: event
+            - generic [ref=e37033]: событие, мероприятие
+          - generic [ref=e37034]:
+            - generic [ref=e37035]: сущ.
+            - generic [ref=e37036]:
+              - img [ref=e37037]
+              - text: Выучено
+            - generic [ref=e37042]: "100"
+            - generic [ref=e37043]:
+              - img [ref=e37044]
+              - text: через 29 дней
+        - button [ref=e37048] [cursor=pointer]:
+          - img [ref=e37049]
+      - generic [ref=e37051]:
+        - checkbox [ref=e37052] [cursor=pointer]
+        - generic [ref=e37053]:
+          - generic [ref=e37054]:
+            - generic [ref=e37055]: teppe
+            - generic [ref=e37056]: ковёр
+          - generic [ref=e37057]:
+            - generic [ref=e37058]: сущ.
+            - generic [ref=e37059]:
+              - img [ref=e37060]
+              - text: Выучено
+            - generic [ref=e37065]: "100"
+            - generic [ref=e37066]:
+              - img [ref=e37067]
+              - text: через 29 дней
+        - button [ref=e37071] [cursor=pointer]:
+          - img [ref=e37072]
+      - generic [ref=e37074]:
+        - checkbox [ref=e37075] [cursor=pointer]
+        - generic [ref=e37076]:
+          - generic [ref=e37077]:
+            - generic [ref=e37078]: svinge
+            - generic [ref=e37079]: поворачивать, качаться
+          - generic [ref=e37080]:
+            - generic [ref=e37081]: гл.
+            - generic [ref=e37082]:
+              - img [ref=e37083]
+              - text: Выучено
+            - generic [ref=e37088]: "100"
+            - generic [ref=e37089]:
+              - img [ref=e37090]
+              - text: через 29 дней
+        - button [ref=e37094] [cursor=pointer]:
+          - img [ref=e37095]
+      - generic [ref=e37097]:
+        - checkbox [ref=e37098] [cursor=pointer]
+        - generic [ref=e37099]:
+          - generic [ref=e37100]:
+            - generic [ref=e37101]: nabolag
+            - generic [ref=e37102]: район, окрестности
+          - generic [ref=e37103]:
+            - generic [ref=e37104]: сущ.
+            - generic [ref=e37105]:
+              - img [ref=e37106]
+              - text: Выучено
+            - generic [ref=e37111]: "100"
+            - generic [ref=e37112]:
+              - img [ref=e37113]
+              - text: через 29 дней
+        - button [ref=e37117] [cursor=pointer]:
+          - img [ref=e37118]
+      - generic [ref=e37120]:
+        - checkbox [ref=e37121] [cursor=pointer]
+        - generic [ref=e37122]:
+          - generic [ref=e37123]:
+            - generic [ref=e37124]: dybde
+            - generic [ref=e37125]: глубина
+          - generic [ref=e37126]:
+            - generic [ref=e37127]: сущ.
+            - generic [ref=e37128]:
+              - img [ref=e37129]
+              - text: Выучено
+            - generic [ref=e37134]: "100"
+            - generic [ref=e37135]:
+              - img [ref=e37136]
+              - text: через 29 дней
+        - button [ref=e37140] [cursor=pointer]:
+          - img [ref=e37141]
+      - generic [ref=e37143]:
+        - checkbox [ref=e37144] [cursor=pointer]
+        - generic [ref=e37145]:
+          - generic [ref=e37146]:
+            - generic [ref=e37147]: bagasje
+            - generic [ref=e37148]: багаж
+          - generic [ref=e37149]:
+            - generic [ref=e37150]: сущ.
+            - generic [ref=e37151]:
+              - img [ref=e37152]
+              - text: Выучено
+            - generic [ref=e37157]: "100"
+            - generic [ref=e37158]:
+              - img [ref=e37159]
+              - text: через 29 дней
+        - button [ref=e37163] [cursor=pointer]:
+          - img [ref=e37164]
+      - generic [ref=e37166]:
+        - checkbox [ref=e37167] [cursor=pointer]
+        - generic [ref=e37168]:
+          - generic [ref=e37169]:
+            - generic [ref=e37170]: sirkus
+            - generic [ref=e37171]: цирк
+          - generic [ref=e37172]:
+            - generic [ref=e37173]: сущ.
+            - generic [ref=e37174]:
+              - img [ref=e37175]
+              - text: Выучено
+            - generic [ref=e37180]: "100"
+            - generic [ref=e37181]:
+              - img [ref=e37182]
+              - text: через 29 дней
+        - button [ref=e37186] [cursor=pointer]:
+          - img [ref=e37187]
+      - generic [ref=e37189]:
+        - checkbox [ref=e37190] [cursor=pointer]
+        - generic [ref=e37191]:
+          - generic [ref=e37192]:
+            - generic [ref=e37193]: camp
+            - generic [ref=e37194]: лагерь
+          - generic [ref=e37195]:
+            - generic [ref=e37196]: сущ.
+            - generic [ref=e37197]:
+              - img [ref=e37198]
+              - text: Выучено
+            - generic [ref=e37203]: "100"
+            - generic [ref=e37204]:
+              - img [ref=e37205]
+              - text: через 29 дней
+        - button [ref=e37209] [cursor=pointer]:
+          - img [ref=e37210]
+      - generic [ref=e37212]:
+        - checkbox [ref=e37213] [cursor=pointer]
+        - generic [ref=e37214]:
+          - generic [ref=e37215]:
+            - generic [ref=e37216]: kne
+            - generic [ref=e37217]: колено
+          - generic [ref=e37218]:
+            - generic [ref=e37219]: сущ.
+            - generic [ref=e37220]:
+              - img [ref=e37221]
+              - text: Выучено
+            - generic [ref=e37226]: "100"
+            - generic [ref=e37227]:
+              - img [ref=e37228]
+              - text: через 29 дней
+        - button [ref=e37232] [cursor=pointer]:
+          - img [ref=e37233]
+      - generic [ref=e37235]:
+        - checkbox [ref=e37236] [cursor=pointer]
+        - generic [ref=e37237]:
+          - generic [ref=e37238]:
+            - generic [ref=e37239]: arr
+            - generic [ref=e37240]: шрам, рубец
+          - generic [ref=e37241]:
+            - generic [ref=e37242]: сущ.
+            - generic [ref=e37243]:
+              - img [ref=e37244]
+              - text: Выучено
+            - generic [ref=e37249]: "100"
+            - generic [ref=e37250]:
+              - img [ref=e37251]
+              - text: через 29 дней
+        - button [ref=e37255] [cursor=pointer]:
+          - img [ref=e37256]
+      - generic [ref=e37258]:
+        - checkbox [ref=e37259] [cursor=pointer]
+        - generic [ref=e37260]:
+          - generic [ref=e37261]:
+            - generic [ref=e37262]: dass
+            - generic [ref=e37263]: туалет, нужник, сортир
+          - generic [ref=e37264]:
+            - generic [ref=e37265]: сущ.
+            - generic [ref=e37266]:
+              - img [ref=e37267]
+              - text: Выучено
+            - generic [ref=e37272]: "100"
+            - generic [ref=e37273]:
+              - img [ref=e37274]
+              - text: через 29 дней
+        - button [ref=e37278] [cursor=pointer]:
+          - img [ref=e37279]
+      - generic [ref=e37281]:
+        - checkbox [ref=e37282] [cursor=pointer]
+        - generic [ref=e37283]:
+          - generic [ref=e37284]:
+            - generic [ref=e37285]: distanse
+            - generic [ref=e37286]: дистанция, расстояние
+          - generic [ref=e37287]:
+            - generic [ref=e37288]: сущ.
+            - generic [ref=e37289]:
+              - img [ref=e37290]
+              - text: Выучено
+            - generic [ref=e37295]: "100"
+            - generic [ref=e37296]:
+              - img [ref=e37297]
+              - text: через 29 дней
+        - button [ref=e37301] [cursor=pointer]:
+          - img [ref=e37302]
+      - generic [ref=e37304]:
+        - checkbox [ref=e37305] [cursor=pointer]
+        - generic [ref=e37306]:
+          - generic [ref=e37307]:
+            - generic [ref=e37308]: tålmodighet
+            - generic [ref=e37309]: терпение
+          - generic [ref=e37310]:
+            - generic [ref=e37311]: сущ.
+            - generic [ref=e37312]:
+              - img [ref=e37313]
+              - text: Выучено
+            - generic [ref=e37318]: "100"
+            - generic [ref=e37319]:
+              - img [ref=e37320]
+              - text: через 29 дней
+        - button [ref=e37324] [cursor=pointer]:
+          - img [ref=e37325]
+      - generic [ref=e37327]:
+        - checkbox [ref=e37328] [cursor=pointer]
+        - generic [ref=e37329]:
+          - generic [ref=e37330]:
+            - generic [ref=e37331]: kjøleskap
+            - generic [ref=e37332]: холодильник
+          - generic [ref=e37333]:
+            - generic [ref=e37334]: сущ.
+            - generic [ref=e37335]:
+              - img [ref=e37336]
+              - text: Выучено
+            - generic [ref=e37341]: "100"
+            - generic [ref=e37342]:
+              - img [ref=e37343]
+              - text: через 29 дней
+        - button [ref=e37347] [cursor=pointer]:
+          - img [ref=e37348]
+      - generic [ref=e37350]:
+        - checkbox [ref=e37351] [cursor=pointer]
+        - generic [ref=e37352]:
+          - generic [ref=e37353]:
+            - generic [ref=e37354]: kjøpesenter
+            - generic [ref=e37355]: торговый центр
+          - generic [ref=e37356]:
+            - generic [ref=e37357]: сущ.
+            - generic [ref=e37358]:
+              - img [ref=e37359]
+              - text: Выучено
+            - generic [ref=e37364]: "100"
+            - generic [ref=e37365]:
+              - img [ref=e37366]
+              - text: через 29 дней
+        - button [ref=e37370] [cursor=pointer]:
+          - img [ref=e37371]
+      - generic [ref=e37373]:
+        - checkbox [ref=e37374] [cursor=pointer]
+        - generic [ref=e37375]:
+          - generic [ref=e37376]:
+            - generic [ref=e37377]: rygge
+            - generic [ref=e37378]: сдавать назад, двигаться задним ходом
+          - generic [ref=e37379]:
+            - generic [ref=e37380]: гл.
+            - generic [ref=e37381]:
+              - img [ref=e37382]
+              - text: Выучено
+            - generic [ref=e37387]: "100"
+            - generic [ref=e37388]:
+              - img [ref=e37389]
+              - text: через 29 дней
+        - button [ref=e37393] [cursor=pointer]:
+          - img [ref=e37394]
+      - generic [ref=e37396]:
+        - checkbox [ref=e37397] [cursor=pointer]
+        - generic [ref=e37398]:
+          - generic [ref=e37399]:
+            - generic [ref=e37400]: parkere
+            - generic [ref=e37401]: парковаться
+          - generic [ref=e37402]:
+            - generic [ref=e37403]: гл.
+            - generic [ref=e37404]:
+              - img [ref=e37405]
+              - text: Выучено
+            - generic [ref=e37410]: "100"
+            - generic [ref=e37411]:
+              - img [ref=e37412]
+              - text: через 29 дней
+        - button [ref=e37416] [cursor=pointer]:
+          - img [ref=e37417]
+      - generic [ref=e37419]:
+        - checkbox [ref=e37420] [cursor=pointer]
+        - generic [ref=e37421]:
+          - generic [ref=e37422]:
+            - generic [ref=e37423]: hjelm
+            - generic [ref=e37424]: шлем, каска
+          - generic [ref=e37425]:
+            - generic [ref=e37426]: сущ.
+            - generic [ref=e37427]:
+              - img [ref=e37428]
+              - text: Выучено
+            - generic [ref=e37433]: "100"
+            - generic [ref=e37434]:
+              - img [ref=e37435]
+              - text: через 29 дней
+        - button [ref=e37439] [cursor=pointer]:
+          - img [ref=e37440]
+      - generic [ref=e37442]:
+        - checkbox [ref=e37443] [cursor=pointer]
+        - generic [ref=e37444]:
+          - generic [ref=e37445]:
+            - generic [ref=e37446]: kasse
+            - generic [ref=e37447]: ящик
+          - generic [ref=e37448]:
+            - generic [ref=e37449]: сущ.
+            - generic [ref=e37450]:
+              - img [ref=e37451]
+              - text: Выучено
+            - generic [ref=e37456]: "100"
+            - generic [ref=e37457]:
+              - img [ref=e37458]
+              - text: через 29 дней
+        - button [ref=e37462] [cursor=pointer]:
+          - img [ref=e37463]
+      - generic [ref=e37465]:
+        - checkbox [ref=e37466] [cursor=pointer]
+        - generic [ref=e37467]:
+          - generic [ref=e37468]:
+            - generic [ref=e37469]: hjerne
+            - generic [ref=e37470]: мозг
+          - generic [ref=e37471]:
+            - generic [ref=e37472]: сущ.
+            - generic [ref=e37473]:
+              - img [ref=e37474]
+              - text: Выучено
+            - generic [ref=e37479]: "100"
+            - generic [ref=e37480]:
+              - img [ref=e37481]
+              - text: через 29 дней
+        - button [ref=e37485] [cursor=pointer]:
+          - img [ref=e37486]
+      - generic [ref=e37488]:
+        - checkbox [ref=e37489] [cursor=pointer]
+        - generic [ref=e37490]:
+          - generic [ref=e37491]:
+            - generic [ref=e37492]: tåke
+            - generic [ref=e37493]: туман
+          - generic [ref=e37494]:
+            - generic [ref=e37495]: сущ.
+            - generic [ref=e37496]:
+              - img [ref=e37497]
+              - text: Выучено
+            - generic [ref=e37502]: "100"
+            - generic [ref=e37503]:
+              - img [ref=e37504]
+              - text: через 29 дней
+        - button [ref=e37508] [cursor=pointer]:
+          - img [ref=e37509]
+      - generic [ref=e37511]:
+        - checkbox [ref=e37512] [cursor=pointer]
+        - generic [ref=e37513]:
+          - generic [ref=e37514]:
+            - generic [ref=e37515]: skjema
+            - generic [ref=e37516]: форма, бланк
+          - generic [ref=e37517]:
+            - generic [ref=e37518]: сущ.
+            - generic [ref=e37519]:
+              - img [ref=e37520]
+              - text: Выучено
+            - generic [ref=e37525]: "100"
+            - generic [ref=e37526]:
+              - img [ref=e37527]
+              - text: через 29 дней
+        - button [ref=e37531] [cursor=pointer]:
+          - img [ref=e37532]
+      - generic [ref=e37534]:
+        - checkbox [ref=e37535] [cursor=pointer]
+        - generic [ref=e37536]:
+          - generic [ref=e37537]:
+            - generic [ref=e37538]: passasjer
+            - generic [ref=e37539]: пассажир
+          - generic [ref=e37540]:
+            - generic [ref=e37541]: сущ.
+            - generic [ref=e37542]:
+              - img [ref=e37543]
+              - text: Выучено
+            - generic [ref=e37548]: "100"
+            - generic [ref=e37549]:
+              - img [ref=e37550]
+              - text: через 29 дней
+        - button [ref=e37554] [cursor=pointer]:
+          - img [ref=e37555]
+      - generic [ref=e37557]:
+        - checkbox [ref=e37558] [cursor=pointer]
+        - generic [ref=e37559]:
+          - generic [ref=e37560]:
+            - generic [ref=e37561]: bølge
+            - generic [ref=e37562]: волна
+          - generic [ref=e37563]:
+            - generic [ref=e37564]: сущ.
+            - generic [ref=e37565]:
+              - img [ref=e37566]
+              - text: Выучено
+            - generic [ref=e37571]: "100"
+            - generic [ref=e37572]:
+              - img [ref=e37573]
+              - text: через 29 дней
+        - button [ref=e37577] [cursor=pointer]:
+          - img [ref=e37578]
+      - generic [ref=e37580]:
+        - checkbox [ref=e37581] [cursor=pointer]
+        - generic [ref=e37582]:
+          - generic [ref=e37583]:
+            - generic [ref=e37584]: fornærmet
+            - generic [ref=e37585]: обиженный, оскорбленный
+          - generic [ref=e37586]:
+            - generic [ref=e37587]: прил.
+            - generic [ref=e37588]:
+              - img [ref=e37589]
+              - text: Выучено
+            - generic [ref=e37594]: "100"
+            - generic [ref=e37595]:
+              - img [ref=e37596]
+              - text: через 29 дней
+        - button [ref=e37600] [cursor=pointer]:
+          - img [ref=e37601]
+      - generic [ref=e37603]:
+        - checkbox [ref=e37604] [cursor=pointer]
+        - generic [ref=e37605]:
+          - generic [ref=e37606]:
+            - generic [ref=e37607]: pynte
+            - generic [ref=e37608]: украшать
+          - generic [ref=e37609]:
+            - generic [ref=e37610]: гл.
+            - generic [ref=e37611]:
+              - img [ref=e37612]
+              - text: Выучено
+            - generic [ref=e37617]: "100"
+            - generic [ref=e37618]:
+              - img [ref=e37619]
+              - text: через 29 дней
+        - button [ref=e37623] [cursor=pointer]:
+          - img [ref=e37624]
+      - generic [ref=e37626]:
+        - checkbox [ref=e37627] [cursor=pointer]
+        - generic [ref=e37628]:
+          - generic [ref=e37629]:
+            - generic [ref=e37630]: asfalt
+            - generic [ref=e37631]: асфальт
+          - generic [ref=e37632]:
+            - generic [ref=e37633]: сущ.
+            - generic [ref=e37634]:
+              - img [ref=e37635]
+              - text: Выучено
+            - generic [ref=e37640]: "100"
+            - generic [ref=e37641]:
+              - img [ref=e37642]
+              - text: через 29 дней
+        - button [ref=e37646] [cursor=pointer]:
+          - img [ref=e37647]
+      - generic [ref=e37649]:
+        - checkbox [ref=e37650] [cursor=pointer]
+        - generic [ref=e37651]:
+          - generic [ref=e37652]:
+            - generic [ref=e37653]: kokk
+            - generic [ref=e37654]: повар
+          - generic [ref=e37655]:
+            - generic [ref=e37656]: сущ.
+            - generic [ref=e37657]:
+              - img [ref=e37658]
+              - text: Выучено
+            - generic [ref=e37663]: "100"
+            - generic [ref=e37664]:
+              - img [ref=e37665]
+              - text: через 29 дней
+        - button [ref=e37669] [cursor=pointer]:
+          - img [ref=e37670]
+      - generic [ref=e37672]:
+        - checkbox [ref=e37673] [cursor=pointer]
+        - generic [ref=e37674]:
+          - generic [ref=e37675]:
+            - generic [ref=e37676]: høflig
+            - generic [ref=e37677]: вежливый, учтивый
+          - generic [ref=e37678]:
+            - generic [ref=e37679]: прил.
+            - generic [ref=e37680]:
+              - img [ref=e37681]
+              - text: Выучено
+            - generic [ref=e37686]: "100"
+            - generic [ref=e37687]:
+              - img [ref=e37688]
+              - text: через 29 дней
+        - button [ref=e37692] [cursor=pointer]:
+          - img [ref=e37693]
+      - generic [ref=e37695]:
+        - checkbox [ref=e37696] [cursor=pointer]
+        - generic [ref=e37697]:
+          - generic [ref=e37698]:
+            - generic [ref=e37699]: pølse
+            - generic [ref=e37700]: сосиска, колбаса
+          - generic [ref=e37701]:
+            - generic [ref=e37702]: сущ.
+            - generic [ref=e37703]:
+              - img [ref=e37704]
+              - text: Выучено
+            - generic [ref=e37709]: "100"
+            - generic [ref=e37710]:
+              - img [ref=e37711]
+              - text: через 29 дней
+        - button [ref=e37715] [cursor=pointer]:
+          - img [ref=e37716]
+      - generic [ref=e37718]:
+        - checkbox [ref=e37719] [cursor=pointer]
+        - generic [ref=e37720]:
+          - generic [ref=e37721]:
+            - generic [ref=e37722]: hovedstad
+            - generic [ref=e37723]: столица
+          - generic [ref=e37724]:
+            - generic [ref=e37725]: сущ.
+            - generic [ref=e37726]:
+              - img [ref=e37727]
+              - text: Выучено
+            - generic [ref=e37732]: "100"
+            - generic [ref=e37733]:
+              - img [ref=e37734]
+              - text: через 29 дней
+        - button [ref=e37738] [cursor=pointer]:
+          - img [ref=e37739]
+      - generic [ref=e37741]:
+        - checkbox [ref=e37742] [cursor=pointer]
+        - generic [ref=e37743]:
+          - generic [ref=e37744]:
+            - generic [ref=e37745]: smell
+            - generic [ref=e37746]: хлопок, взрыв
+          - generic [ref=e37747]:
+            - generic [ref=e37748]: сущ.
+            - generic [ref=e37749]:
+              - img [ref=e37750]
+              - text: Выучено
+            - generic [ref=e37755]: "100"
+            - generic [ref=e37756]:
+              - img [ref=e37757]
+              - text: через 29 дней
+        - button [ref=e37761] [cursor=pointer]:
+          - img [ref=e37762]
+      - generic [ref=e37764]:
+        - checkbox [ref=e37765] [cursor=pointer]
+        - generic [ref=e37766]:
+          - generic [ref=e37767]:
+            - generic [ref=e37768]: svin
+            - generic [ref=e37769]: свинья, свинина
+          - generic [ref=e37770]:
+            - generic [ref=e37771]: сущ.
+            - generic [ref=e37772]:
+              - img [ref=e37773]
+              - text: Выучено
+            - generic [ref=e37778]: "100"
+            - generic [ref=e37779]:
+              - img [ref=e37780]
+              - text: через 29 дней
+        - button [ref=e37784] [cursor=pointer]:
+          - img [ref=e37785]
+      - generic [ref=e37787]:
+        - checkbox [ref=e37788] [cursor=pointer]
+        - generic [ref=e37789]:
+          - generic [ref=e37790]:
+            - generic [ref=e37791]: cuba
+            - generic [ref=e37792]: куба
+          - generic [ref=e37793]:
+            - generic [ref=e37794]: сущ.
+            - generic [ref=e37795]:
+              - img [ref=e37796]
+              - text: Выучено
+            - generic [ref=e37801]: "100"
+            - generic [ref=e37802]:
+              - img [ref=e37803]
+              - text: через 29 дней
+        - button [ref=e37807] [cursor=pointer]:
+          - img [ref=e37808]
+      - generic [ref=e37810]:
+        - checkbox [ref=e37811] [cursor=pointer]
+        - generic [ref=e37812]:
+          - generic [ref=e37813]:
+            - generic [ref=e37814]: fet
+            - generic [ref=e37815]: жирный, толстый, сальный
+          - generic [ref=e37816]:
+            - generic [ref=e37817]: прил.
+            - generic [ref=e37818]:
+              - img [ref=e37819]
+              - text: Выучено
+            - generic [ref=e37824]: "100"
+            - generic [ref=e37825]:
+              - img [ref=e37826]
+              - text: через 29 дней
+        - button [ref=e37830] [cursor=pointer]:
+          - img [ref=e37831]
+      - generic [ref=e37833]:
+        - checkbox [ref=e37834] [cursor=pointer]
+        - generic [ref=e37835]:
+          - generic [ref=e37836]:
+            - generic [ref=e37837]: grunnskole
+            - generic [ref=e37838]: начальная школа
+          - generic [ref=e37839]:
+            - generic [ref=e37840]: сущ.
+            - generic [ref=e37841]:
+              - img [ref=e37842]
+              - text: Выучено
+            - generic [ref=e37847]: "100"
+            - generic [ref=e37848]:
+              - img [ref=e37849]
+              - text: через 29 дней
+        - button [ref=e37853] [cursor=pointer]:
+          - img [ref=e37854]
+      - generic [ref=e37856]:
+        - checkbox [ref=e37857] [cursor=pointer]
+        - generic [ref=e37858]:
+          - generic [ref=e37859]:
+            - generic [ref=e37860]: skygge
+            - generic [ref=e37861]: тень
+          - generic [ref=e37862]:
+            - generic [ref=e37863]: сущ.
+            - generic [ref=e37864]:
+              - img [ref=e37865]
+              - text: Выучено
+            - generic [ref=e37870]: "100"
+            - generic [ref=e37871]:
+              - img [ref=e37872]
+              - text: через 29 дней
+        - button [ref=e37876] [cursor=pointer]:
+          - img [ref=e37877]
+      - generic [ref=e37879]:
+        - checkbox [ref=e37880] [cursor=pointer]
+        - generic [ref=e37881]:
+          - generic [ref=e37882]:
+            - generic [ref=e37883]: bekjent
+            - generic [ref=e37884]: знакомый
+          - generic [ref=e37885]:
+            - generic [ref=e37886]: сущ.
+            - generic [ref=e37887]:
+              - img [ref=e37888]
+              - text: Выучено
+            - generic [ref=e37893]: "100"
+            - generic [ref=e37894]:
+              - img [ref=e37895]
+              - text: через 29 дней
+        - button [ref=e37899] [cursor=pointer]:
+          - img [ref=e37900]
+      - generic [ref=e37902]:
+        - checkbox [ref=e37903] [cursor=pointer]
+        - generic [ref=e37904]:
+          - generic [ref=e37905]:
+            - generic [ref=e37906]: ørn
+            - generic [ref=e37907]: орёл
+          - generic [ref=e37908]:
+            - generic [ref=e37909]: сущ.
+            - generic [ref=e37910]:
+              - img [ref=e37911]
+              - text: Выучено
+            - generic [ref=e37916]: "100"
+            - generic [ref=e37917]:
+              - img [ref=e37918]
+              - text: через 29 дней
+        - button [ref=e37922] [cursor=pointer]:
+          - img [ref=e37923]
+      - generic [ref=e37925]:
+        - checkbox [ref=e37926] [cursor=pointer]
+        - generic [ref=e37927]:
+          - generic [ref=e37928]:
+            - generic [ref=e37929]: hammer
+            - generic [ref=e37930]: молоток
+          - generic [ref=e37931]:
+            - generic [ref=e37932]: сущ.
+            - generic [ref=e37933]:
+              - img [ref=e37934]
+              - text: Выучено
+            - generic [ref=e37939]: "100"
+            - generic [ref=e37940]:
+              - img [ref=e37941]
+              - text: через 29 дней
+        - button [ref=e37945] [cursor=pointer]:
+          - img [ref=e37946]
+      - generic [ref=e37948]:
+        - checkbox [ref=e37949] [cursor=pointer]
+        - generic [ref=e37950]:
+          - generic [ref=e37951]:
+            - generic [ref=e37952]: premie
+            - generic [ref=e37953]: премия, приз, награда
+          - generic [ref=e37954]:
+            - generic [ref=e37955]: сущ.
+            - generic [ref=e37956]:
+              - img [ref=e37957]
+              - text: Выучено
+            - generic [ref=e37962]: "100"
+            - generic [ref=e37963]:
+              - img [ref=e37964]
+              - text: через 29 дней
+        - button [ref=e37968] [cursor=pointer]:
+          - img [ref=e37969]
+      - generic [ref=e37971]:
+        - checkbox [ref=e37972] [cursor=pointer]
+        - generic [ref=e37973]:
+          - generic [ref=e37974]:
+            - generic [ref=e37975]: geografi
+            - generic [ref=e37976]: география
+          - generic [ref=e37977]:
+            - generic [ref=e37978]: сущ.
+            - generic [ref=e37979]:
+              - img [ref=e37980]
+              - text: Выучено
+            - generic [ref=e37985]: "100"
+            - generic [ref=e37986]:
+              - img [ref=e37987]
+              - text: через 29 дней
+        - button [ref=e37991] [cursor=pointer]:
+          - img [ref=e37992]
+      - generic [ref=e37994]:
+        - checkbox [ref=e37995] [cursor=pointer]
+        - generic [ref=e37996]:
+          - generic [ref=e37997]:
+            - generic [ref=e37998]: kabel
+            - generic [ref=e37999]: кабель
+          - generic [ref=e38000]:
+            - generic [ref=e38001]: сущ.
+            - generic [ref=e38002]:
+              - img [ref=e38003]
+              - text: Выучено
+            - generic [ref=e38008]: "100"
+            - generic [ref=e38009]:
+              - img [ref=e38010]
+              - text: через 29 дней
+        - button [ref=e38014] [cursor=pointer]:
+          - img [ref=e38015]
+      - generic [ref=e38017]:
+        - checkbox [ref=e38018] [cursor=pointer]
+        - generic [ref=e38019]:
+          - generic [ref=e38020]:
+            - generic [ref=e38021]: undertøy
+            - generic [ref=e38022]: нижнее белье
+          - generic [ref=e38023]:
+            - generic [ref=e38024]: сущ.
+            - generic [ref=e38025]:
+              - img [ref=e38026]
+              - text: Выучено
+            - generic [ref=e38031]: "100"
+            - generic [ref=e38032]:
+              - img [ref=e38033]
+              - text: через 29 дней
+        - button [ref=e38037] [cursor=pointer]:
+          - img [ref=e38038]
+      - generic [ref=e38040]:
+        - checkbox [ref=e38041] [cursor=pointer]
+        - generic [ref=e38042]:
+          - generic [ref=e38043]:
+            - generic [ref=e38044]: oppskrift
+            - generic [ref=e38045]: рецепт
+          - generic [ref=e38046]:
+            - generic [ref=e38047]: сущ.
+            - generic [ref=e38048]:
+              - img [ref=e38049]
+              - text: Выучено
+            - generic [ref=e38054]: "100"
+            - generic [ref=e38055]:
+              - img [ref=e38056]
+              - text: через 29 дней
+        - button [ref=e38060] [cursor=pointer]:
+          - img [ref=e38061]
+      - generic [ref=e38063]:
+        - checkbox [ref=e38064] [cursor=pointer]
+        - generic [ref=e38065]:
+          - generic [ref=e38066]:
+            - generic [ref=e38067]: fil
+            - generic [ref=e38068]: файл
+          - generic [ref=e38069]:
+            - generic [ref=e38070]: сущ.
+            - generic [ref=e38071]:
+              - img [ref=e38072]
+              - text: Выучено
+            - generic [ref=e38077]: "100"
+            - generic [ref=e38078]:
+              - img [ref=e38079]
+              - text: через 29 дней
+        - button [ref=e38083] [cursor=pointer]:
+          - img [ref=e38084]
+      - generic [ref=e38086]:
+        - checkbox [ref=e38087] [cursor=pointer]
+        - generic [ref=e38088]:
+          - generic [ref=e38089]:
+            - generic [ref=e38090]: kant
+            - generic [ref=e38091]: край, грань
+          - generic [ref=e38092]:
+            - generic [ref=e38093]: сущ.
+            - generic [ref=e38094]:
+              - img [ref=e38095]
+              - text: Выучено
+            - generic [ref=e38100]: "100"
+            - generic [ref=e38101]:
+              - img [ref=e38102]
+              - text: через 29 дней
+        - button [ref=e38106] [cursor=pointer]:
+          - img [ref=e38107]
+      - generic [ref=e38109]:
+        - checkbox [ref=e38110] [cursor=pointer]
+        - generic [ref=e38111]:
+          - generic [ref=e38112]:
+            - generic [ref=e38113]: elg
+            - generic [ref=e38114]: лось
+          - generic [ref=e38115]:
+            - generic [ref=e38116]: сущ.
+            - generic [ref=e38117]:
+              - img [ref=e38118]
+              - text: Выучено
+            - generic [ref=e38123]: "100"
+            - generic [ref=e38124]:
+              - img [ref=e38125]
+              - text: через 29 дней
+        - button [ref=e38129] [cursor=pointer]:
+          - img [ref=e38130]
+      - generic [ref=e38132]:
+        - checkbox [ref=e38133] [cursor=pointer]
+        - generic [ref=e38134]:
+          - generic [ref=e38135]:
+            - generic [ref=e38136]: dal
+            - generic [ref=e38137]: долина
+          - generic [ref=e38138]:
+            - generic [ref=e38139]: сущ.
+            - generic [ref=e38140]:
+              - img [ref=e38141]
+              - text: Выучено
+            - generic [ref=e38146]: "100"
+            - generic [ref=e38147]:
+              - img [ref=e38148]
+              - text: через 29 дней
+        - button [ref=e38152] [cursor=pointer]:
+          - img [ref=e38153]
+      - generic [ref=e38155]:
+        - checkbox [ref=e38156] [cursor=pointer]
+        - generic [ref=e38157]:
+          - generic [ref=e38158]:
+            - generic [ref=e38159]: overraske
+            - generic [ref=e38160]: удивлять
+          - generic [ref=e38161]:
+            - generic [ref=e38162]: гл.
+            - generic [ref=e38163]:
+              - img [ref=e38164]
+              - text: Выучено
+            - generic [ref=e38169]: "100"
+            - generic [ref=e38170]:
+              - img [ref=e38171]
+              - text: через 29 дней
+        - button [ref=e38175] [cursor=pointer]:
+          - img [ref=e38176]
+      - generic [ref=e38178]:
+        - checkbox [ref=e38179] [cursor=pointer]
+        - generic [ref=e38180]:
+          - generic [ref=e38181]:
+            - generic [ref=e38182]: påske
+            - generic [ref=e38183]: пасха
+          - generic [ref=e38184]:
+            - generic [ref=e38185]: сущ.
+            - generic [ref=e38186]:
+              - img [ref=e38187]
+              - text: Выучено
+            - generic [ref=e38192]: "100"
+            - generic [ref=e38193]:
+              - img [ref=e38194]
+              - text: через 29 дней
+        - button [ref=e38198] [cursor=pointer]:
+          - img [ref=e38199]
+      - generic [ref=e38201]:
+        - checkbox [ref=e38202] [cursor=pointer]
+        - generic [ref=e38203]:
+          - generic [ref=e38204]:
+            - generic [ref=e38205]: mote
+            - generic [ref=e38206]: мода
+          - generic [ref=e38207]:
+            - generic [ref=e38208]: сущ.
+            - generic [ref=e38209]:
+              - img [ref=e38210]
+              - text: Выучено
+            - generic [ref=e38215]: "100"
+            - generic [ref=e38216]:
+              - img [ref=e38217]
+              - text: через 29 дней
+        - button [ref=e38221] [cursor=pointer]:
+          - img [ref=e38222]
+      - generic [ref=e38224]:
+        - checkbox [ref=e38225] [cursor=pointer]
+        - generic [ref=e38226]:
+          - generic [ref=e38227]:
+            - generic [ref=e38228]: måltid
+            - generic [ref=e38229]: прием пищи, еда
+          - generic [ref=e38230]:
+            - generic [ref=e38231]: сущ.
+            - generic [ref=e38232]:
+              - img [ref=e38233]
+              - text: Выучено
+            - generic [ref=e38238]: "100"
+            - generic [ref=e38239]:
+              - img [ref=e38240]
+              - text: через 29 дней
+        - button [ref=e38244] [cursor=pointer]:
+          - img [ref=e38245]
+      - generic [ref=e38247]:
+        - checkbox [ref=e38248] [cursor=pointer]
+        - generic [ref=e38249]:
+          - generic [ref=e38250]:
+            - generic [ref=e38251]: seminar
+            - generic [ref=e38252]: семинар
+          - generic [ref=e38253]:
+            - generic [ref=e38254]: сущ.
+            - generic [ref=e38255]:
+              - img [ref=e38256]
+              - text: Выучено
+            - generic [ref=e38261]: "100"
+            - generic [ref=e38262]:
+              - img [ref=e38263]
+              - text: через 29 дней
+        - button [ref=e38267] [cursor=pointer]:
+          - img [ref=e38268]
+      - generic [ref=e38270]:
+        - checkbox [ref=e38271] [cursor=pointer]
+        - generic [ref=e38272]:
+          - generic [ref=e38273]:
+            - generic [ref=e38274]: sekretær
+            - generic [ref=e38275]: секретарь
+          - generic [ref=e38276]:
+            - generic [ref=e38277]: сущ.
+            - generic [ref=e38278]:
+              - img [ref=e38279]
+              - text: Выучено
+            - generic [ref=e38284]: "100"
+            - generic [ref=e38285]:
+              - img [ref=e38286]
+              - text: через 29 дней
+        - button [ref=e38290] [cursor=pointer]:
+          - img [ref=e38291]
+      - generic [ref=e38293]:
+        - checkbox [ref=e38294] [cursor=pointer]
+        - generic [ref=e38295]:
+          - generic [ref=e38296]:
+            - generic [ref=e38297]: klatre
+            - generic [ref=e38298]: лазить, карабкаться
+          - generic [ref=e38299]:
+            - generic [ref=e38300]: гл.
+            - generic [ref=e38301]:
+              - img [ref=e38302]
+              - text: Выучено
+            - generic [ref=e38307]: "100"
+            - generic [ref=e38308]:
+              - img [ref=e38309]
+              - text: через 29 дней
+        - button [ref=e38313] [cursor=pointer]:
+          - img [ref=e38314]
+      - generic [ref=e38316]:
+        - checkbox [ref=e38317] [cursor=pointer]
+        - generic [ref=e38318]:
+          - generic [ref=e38319]:
+            - generic [ref=e38320]: lade
+            - generic [ref=e38321]: заряжать, грузить
+          - generic [ref=e38322]:
+            - generic [ref=e38323]: гл.
+            - generic [ref=e38324]:
+              - img [ref=e38325]
+              - text: Выучено
+            - generic [ref=e38330]: "100"
+            - generic [ref=e38331]:
+              - img [ref=e38332]
+              - text: через 29 дней
+        - button [ref=e38336] [cursor=pointer]:
+          - img [ref=e38337]
+      - generic [ref=e38339]:
+        - checkbox [ref=e38340] [cursor=pointer]
+        - generic [ref=e38341]:
+          - generic [ref=e38342]:
+            - generic [ref=e38343]: bompenger
+            - generic [ref=e38344]: дорожная пошлина, плата за проезд
+          - generic [ref=e38345]:
+            - generic [ref=e38346]: сущ.
+            - generic [ref=e38347]:
+              - img [ref=e38348]
+              - text: Выучено
+            - generic [ref=e38353]: "100"
+            - generic [ref=e38354]:
+              - img [ref=e38355]
+              - text: через 29 дней
+        - button [ref=e38359] [cursor=pointer]:
+          - img [ref=e38360]
+      - generic [ref=e38362]:
+        - checkbox [ref=e38363] [cursor=pointer]
+        - generic [ref=e38364]:
+          - generic [ref=e38365]:
+            - generic [ref=e38366]: hjørne
+            - generic [ref=e38367]: угол
+          - generic [ref=e38368]:
+            - generic [ref=e38369]: сущ.
+            - generic [ref=e38370]:
+              - img [ref=e38371]
+              - text: Выучено
+            - generic [ref=e38376]: "100"
+            - generic [ref=e38377]:
+              - img [ref=e38378]
+              - text: через 29 дней
+        - button [ref=e38382] [cursor=pointer]:
+          - img [ref=e38383]
+      - generic [ref=e38385]:
+        - checkbox [ref=e38386] [cursor=pointer]
+        - generic [ref=e38387]:
+          - generic [ref=e38388]:
+            - generic [ref=e38389]: statsborger
+            - generic [ref=e38390]: гражданин
+          - generic [ref=e38391]:
+            - generic [ref=e38392]: сущ.
+            - generic [ref=e38393]:
+              - img [ref=e38394]
+              - text: Выучено
+            - generic [ref=e38399]: "100"
+            - generic [ref=e38400]:
+              - img [ref=e38401]
+              - text: через 29 дней
+        - button [ref=e38405] [cursor=pointer]:
+          - img [ref=e38406]
+      - generic [ref=e38408]:
+        - checkbox [ref=e38409] [cursor=pointer]
+        - generic [ref=e38410]:
+          - generic [ref=e38411]:
+            - generic [ref=e38412]: lastebil
+            - generic [ref=e38413]: грузовик
+          - generic [ref=e38414]:
+            - generic [ref=e38415]: сущ.
+            - generic [ref=e38416]:
+              - img [ref=e38417]
+              - text: Выучено
+            - generic [ref=e38422]: "100"
+            - generic [ref=e38423]:
+              - img [ref=e38424]
+              - text: через 29 дней
+        - button [ref=e38428] [cursor=pointer]:
+          - img [ref=e38429]
+      - generic [ref=e38431]:
+        - checkbox [ref=e38432] [cursor=pointer]
+        - generic [ref=e38433]:
+          - generic [ref=e38434]:
+            - generic [ref=e38435]: avfall
+            - generic [ref=e38436]: отходы, мусор
+          - generic [ref=e38437]:
+            - generic [ref=e38438]: сущ.
+            - generic [ref=e38439]:
+              - img [ref=e38440]
+              - text: Выучено
+            - generic [ref=e38445]: "100"
+            - generic [ref=e38446]:
+              - img [ref=e38447]
+              - text: через 29 дней
+        - button [ref=e38451] [cursor=pointer]:
+          - img [ref=e38452]
+      - generic [ref=e38454]:
+        - checkbox [ref=e38455] [cursor=pointer]
+        - generic [ref=e38456]:
+          - generic [ref=e38457]:
+            - generic [ref=e38458]: emne
+            - generic [ref=e38459]: тема, предмет
+          - generic [ref=e38460]:
+            - generic [ref=e38461]: сущ.
+            - generic [ref=e38462]:
+              - img [ref=e38463]
+              - text: Выучено
+            - generic [ref=e38468]: "100"
+            - generic [ref=e38469]:
+              - img [ref=e38470]
+              - text: через 29 дней
+        - button [ref=e38474] [cursor=pointer]:
+          - img [ref=e38475]
+      - generic [ref=e38477]:
+        - checkbox [ref=e38478] [cursor=pointer]
+        - generic [ref=e38479]:
+          - generic [ref=e38480]:
+            - generic [ref=e38481]: peke
+            - generic [ref=e38482]: указывать
+          - generic [ref=e38483]:
+            - generic [ref=e38484]: гл.
+            - generic [ref=e38485]:
+              - img [ref=e38486]
+              - text: Выучено
+            - generic [ref=e38491]: "100"
+            - generic [ref=e38492]:
+              - img [ref=e38493]
+              - text: через 29 дней
+        - button [ref=e38497] [cursor=pointer]:
+          - img [ref=e38498]
+      - generic [ref=e38500]:
+        - checkbox [ref=e38501] [cursor=pointer]
+        - generic [ref=e38502]:
+          - generic [ref=e38503]:
+            - generic [ref=e38504]: sjåfør
+            - generic [ref=e38505]: водитель
+          - generic [ref=e38506]:
+            - generic [ref=e38507]: сущ.
+            - generic [ref=e38508]:
+              - img [ref=e38509]
+              - text: Выучено
+            - generic [ref=e38514]: "100"
+            - generic [ref=e38515]:
+              - img [ref=e38516]
+              - text: через 29 дней
+        - button [ref=e38520] [cursor=pointer]:
+          - img [ref=e38521]
+      - generic [ref=e38523]:
+        - checkbox [ref=e38524] [cursor=pointer]
+        - generic [ref=e38525]:
+          - generic [ref=e38526]:
+            - generic [ref=e38527]: pilot
+            - generic [ref=e38528]: пилот, летчик
+          - generic [ref=e38529]:
+            - generic [ref=e38530]: сущ.
+            - generic [ref=e38531]:
+              - img [ref=e38532]
+              - text: Выучено
+            - generic [ref=e38537]: "100"
+            - generic [ref=e38538]:
+              - img [ref=e38539]
+              - text: через 29 дней
+        - button [ref=e38543] [cursor=pointer]:
+          - img [ref=e38544]
+      - generic [ref=e38546]:
+        - checkbox [ref=e38547] [cursor=pointer]
+        - generic [ref=e38548]:
+          - generic [ref=e38549]:
+            - generic [ref=e38550]: datamaskin
+            - generic [ref=e38551]: компьютер
+          - generic [ref=e38552]:
+            - generic [ref=e38553]: сущ.
+            - generic [ref=e38554]:
+              - img [ref=e38555]
+              - text: Выучено
+            - generic [ref=e38560]: "100"
+            - generic [ref=e38561]:
+              - img [ref=e38562]
+              - text: через 29 дней
+        - button [ref=e38566] [cursor=pointer]:
+          - img [ref=e38567]
+      - generic [ref=e38569]:
+        - checkbox [ref=e38570] [cursor=pointer]
+        - generic [ref=e38571]:
+          - generic [ref=e38572]:
+            - generic [ref=e38573]: passere
+            - generic [ref=e38574]: проходить, проезжать
+          - generic [ref=e38575]:
+            - generic [ref=e38576]: гл.
+            - generic [ref=e38577]:
+              - img [ref=e38578]
+              - text: Выучено
+            - generic [ref=e38583]: "100"
+            - generic [ref=e38584]:
+              - img [ref=e38585]
+              - text: через 29 дней
+        - button [ref=e38589] [cursor=pointer]:
+          - img [ref=e38590]
+      - generic [ref=e38592]:
+        - checkbox [ref=e38593] [cursor=pointer]
+        - generic [ref=e38594]:
+          - generic [ref=e38595]:
+            - generic [ref=e38596]: hobby
+            - generic [ref=e38597]: хобби, увлечение
+          - generic [ref=e38598]:
+            - generic [ref=e38599]: сущ.
+            - generic [ref=e38600]:
+              - img [ref=e38601]
+              - text: Выучено
+            - generic [ref=e38606]: "100"
+            - generic [ref=e38607]:
+              - img [ref=e38608]
+              - text: через 29 дней
+        - button [ref=e38612] [cursor=pointer]:
+          - img [ref=e38613]
+      - generic [ref=e38615]:
+        - checkbox [ref=e38616] [cursor=pointer]
+        - generic [ref=e38617]:
+          - generic [ref=e38618]:
+            - generic [ref=e38619]: leketøy
+            - generic [ref=e38620]: игрушка
+          - generic [ref=e38621]:
+            - generic [ref=e38622]: сущ.
+            - generic [ref=e38623]:
+              - img [ref=e38624]
+              - text: Выучено
+            - generic [ref=e38629]: "100"
+            - generic [ref=e38630]:
+              - img [ref=e38631]
+              - text: через 29 дней
+        - button [ref=e38635] [cursor=pointer]:
+          - img [ref=e38636]
+      - generic [ref=e38638]:
+        - checkbox [ref=e38639] [cursor=pointer]
+        - generic [ref=e38640]:
+          - generic [ref=e38641]:
+            - generic [ref=e38642]: vekke
+            - generic [ref=e38643]: будить
+          - generic [ref=e38644]:
+            - generic [ref=e38645]: гл.
+            - generic [ref=e38646]:
+              - img [ref=e38647]
+              - text: Выучено
+            - generic [ref=e38652]: "100"
+            - generic [ref=e38653]:
+              - img [ref=e38654]
+              - text: через 29 дней
+        - button [ref=e38658] [cursor=pointer]:
+          - img [ref=e38659]
+      - generic [ref=e38661]:
+        - checkbox [ref=e38662] [cursor=pointer]
+        - generic [ref=e38663]:
+          - generic [ref=e38664]:
+            - generic [ref=e38665]: barndom
+            - generic [ref=e38666]: детство
+          - generic [ref=e38667]:
+            - generic [ref=e38668]: сущ.
+            - generic [ref=e38669]:
+              - img [ref=e38670]
+              - text: Выучено
+            - generic [ref=e38675]: "100"
+            - generic [ref=e38676]:
+              - img [ref=e38677]
+              - text: через 29 дней
+        - button [ref=e38681] [cursor=pointer]:
+          - img [ref=e38682]
+      - generic [ref=e38684]:
+        - checkbox [ref=e38685] [cursor=pointer]
+        - generic [ref=e38686]:
+          - generic [ref=e38687]:
+            - generic [ref=e38688]: rulle
+            - generic [ref=e38689]: катить, вращать
+          - generic [ref=e38690]:
+            - generic [ref=e38691]: гл.
+            - generic [ref=e38692]:
+              - img [ref=e38693]
+              - text: Выучено
+            - generic [ref=e38698]: "100"
+            - generic [ref=e38699]:
+              - img [ref=e38700]
+              - text: через 29 дней
+        - button [ref=e38704] [cursor=pointer]:
+          - img [ref=e38705]
+      - generic [ref=e38707]:
+        - checkbox [ref=e38708] [cursor=pointer]
+        - generic [ref=e38709]:
+          - generic [ref=e38710]:
+            - generic [ref=e38711]: skjære
+            - generic [ref=e38712]: резать
+          - generic [ref=e38713]:
+            - generic [ref=e38714]: гл.
+            - generic [ref=e38715]:
+              - img [ref=e38716]
+              - text: Выучено
+            - generic [ref=e38721]: "100"
+            - generic [ref=e38722]:
+              - img [ref=e38723]
+              - text: через 29 дней
+        - button [ref=e38727] [cursor=pointer]:
+          - img [ref=e38728]
+      - generic [ref=e38730]:
+        - checkbox [ref=e38731] [cursor=pointer]
+        - generic [ref=e38732]:
+          - generic [ref=e38733]:
+            - generic [ref=e38734]: modig
+            - generic [ref=e38735]: смелый, храбрый
+          - generic [ref=e38736]:
+            - generic [ref=e38737]: прил.
+            - generic [ref=e38738]:
+              - img [ref=e38739]
+              - text: Выучено
+            - generic [ref=e38744]: "100"
+            - generic [ref=e38745]:
+              - img [ref=e38746]
+              - text: через 29 дней
+        - button [ref=e38750] [cursor=pointer]:
+          - img [ref=e38751]
+      - generic [ref=e38753]:
+        - checkbox [ref=e38754] [cursor=pointer]
+        - generic [ref=e38755]:
+          - generic [ref=e38756]:
+            - generic [ref=e38757]: ankomst
+            - generic [ref=e38758]: прибытие
+          - generic [ref=e38759]:
+            - generic [ref=e38760]: сущ.
+            - generic [ref=e38761]:
+              - img [ref=e38762]
+              - text: Выучено
+            - generic [ref=e38767]: "100"
+            - generic [ref=e38768]:
+              - img [ref=e38769]
+              - text: через 29 дней
+        - button [ref=e38773] [cursor=pointer]:
+          - img [ref=e38774]
+      - generic [ref=e38776]:
+        - checkbox [ref=e38777] [cursor=pointer]
+        - generic [ref=e38778]:
+          - generic [ref=e38779]:
+            - generic [ref=e38780]: telt
+            - generic [ref=e38781]: палатка
+          - generic [ref=e38782]:
+            - generic [ref=e38783]: сущ.
+            - generic [ref=e38784]:
+              - img [ref=e38785]
+              - text: Выучено
+            - generic [ref=e38790]: "100"
+            - generic [ref=e38791]:
+              - img [ref=e38792]
+              - text: через 29 дней
+        - button [ref=e38796] [cursor=pointer]:
+          - img [ref=e38797]
+      - generic [ref=e38799]:
+        - checkbox [ref=e38800] [cursor=pointer]
+        - generic [ref=e38801]:
+          - generic [ref=e38802]:
+            - generic [ref=e38803]: organisere
+            - generic [ref=e38804]: организовывать
+          - generic [ref=e38805]:
+            - generic [ref=e38806]: гл.
+            - generic [ref=e38807]:
+              - img [ref=e38808]
+              - text: Выучено
+            - generic [ref=e38813]: "100"
+            - generic [ref=e38814]:
+              - img [ref=e38815]
+              - text: через 29 дней
+        - button [ref=e38819] [cursor=pointer]:
+          - img [ref=e38820]
+      - generic [ref=e38822]:
+        - checkbox [ref=e38823] [cursor=pointer]
+        - generic [ref=e38824]:
+          - generic [ref=e38825]:
+            - generic [ref=e38826]: foss
+            - generic [ref=e38827]: водопад
+          - generic [ref=e38828]:
+            - generic [ref=e38829]: сущ.
+            - generic [ref=e38830]:
+              - img [ref=e38831]
+              - text: Выучено
+            - generic [ref=e38836]: "100"
+            - generic [ref=e38837]:
+              - img [ref=e38838]
+              - text: через 29 дней
+        - button [ref=e38842] [cursor=pointer]:
+          - img [ref=e38843]
+      - generic [ref=e38845]:
+        - checkbox [ref=e38846] [cursor=pointer]
+        - generic [ref=e38847]:
+          - generic [ref=e38848]:
+            - generic [ref=e38849]: feber
+            - generic [ref=e38850]: лихорадка, температура
+          - generic [ref=e38851]:
+            - generic [ref=e38852]: сущ.
+            - generic [ref=e38853]:
+              - img [ref=e38854]
+              - text: Выучено
+            - generic [ref=e38859]: "100"
+            - generic [ref=e38860]:
+              - img [ref=e38861]
+              - text: через 29 дней
+        - button [ref=e38865] [cursor=pointer]:
+          - img [ref=e38866]
+      - generic [ref=e38868]:
+        - checkbox [ref=e38869] [cursor=pointer]
+        - generic [ref=e38870]:
+          - generic [ref=e38871]:
+            - generic [ref=e38872]: løk
+            - generic [ref=e38873]: лук
+          - generic [ref=e38874]:
+            - generic [ref=e38875]: сущ.
+            - generic [ref=e38876]:
+              - img [ref=e38877]
+              - text: Выучено
+            - generic [ref=e38882]: "100"
+            - generic [ref=e38883]:
+              - img [ref=e38884]
+              - text: через 29 дней
+        - button [ref=e38888] [cursor=pointer]:
+          - img [ref=e38889]
+      - generic [ref=e38891]:
+        - checkbox [ref=e38892] [cursor=pointer]
+        - generic [ref=e38893]:
+          - generic [ref=e38894]:
+            - generic [ref=e38895]: leir
+            - generic [ref=e38896]: лагерь
+          - generic [ref=e38897]:
+            - generic [ref=e38898]: сущ.
+            - generic [ref=e38899]:
+              - img [ref=e38900]
+              - text: Выучено
+            - generic [ref=e38905]: "100"
+            - generic [ref=e38906]:
+              - img [ref=e38907]
+              - text: через 29 дней
+        - button [ref=e38911] [cursor=pointer]:
+          - img [ref=e38912]
+      - generic [ref=e38914]:
+        - checkbox [ref=e38915] [cursor=pointer]
+        - generic [ref=e38916]:
+          - generic [ref=e38917]:
+            - generic [ref=e38918]: sykling
+            - generic [ref=e38919]: езда на велосипеде
+          - generic [ref=e38920]:
+            - generic [ref=e38921]: сущ.
+            - generic [ref=e38922]:
+              - img [ref=e38923]
+              - text: Выучено
+            - generic [ref=e38928]: "100"
+            - generic [ref=e38929]:
+              - img [ref=e38930]
+              - text: через 29 дней
+        - button [ref=e38934] [cursor=pointer]:
+          - img [ref=e38935]
+      - generic [ref=e38937]:
+        - checkbox [ref=e38938] [cursor=pointer]
+        - generic [ref=e38939]:
+          - generic [ref=e38940]:
+            - generic [ref=e38941]: ensom
+            - generic [ref=e38942]: одинокий
+          - generic [ref=e38943]:
+            - generic [ref=e38944]: прил.
+            - generic [ref=e38945]:
+              - img [ref=e38946]
+              - text: Выучено
+            - generic [ref=e38951]: "100"
+            - generic [ref=e38952]:
+              - img [ref=e38953]
+              - text: через 29 дней
+        - button [ref=e38957] [cursor=pointer]:
+          - img [ref=e38958]
+      - generic [ref=e38960]:
+        - checkbox [ref=e38961] [cursor=pointer]
+        - generic [ref=e38962]:
+          - generic [ref=e38963]:
+            - generic [ref=e38964]: sminke
+            - generic [ref=e38965]: макияж, косметика
+          - generic [ref=e38966]:
+            - generic [ref=e38967]: сущ.
+            - generic [ref=e38968]:
+              - img [ref=e38969]
+              - text: Выучено
+            - generic [ref=e38974]: "100"
+            - generic [ref=e38975]:
+              - img [ref=e38976]
+              - text: через 29 дней
+        - button [ref=e38980] [cursor=pointer]:
+          - img [ref=e38981]
+      - generic [ref=e38983]:
+        - checkbox [ref=e38984] [cursor=pointer]
+        - generic [ref=e38985]:
+          - generic [ref=e38986]:
+            - generic [ref=e38987]: plante
+            - generic [ref=e38988]: растение
+          - generic [ref=e38989]:
+            - generic [ref=e38990]: сущ.
+            - generic [ref=e38991]:
+              - img [ref=e38992]
+              - text: Выучено
+            - generic [ref=e38997]: "100"
+            - generic [ref=e38998]:
+              - img [ref=e38999]
+              - text: через 29 дней
+        - button [ref=e39003] [cursor=pointer]:
+          - img [ref=e39004]
+      - generic [ref=e39006]:
+        - checkbox [ref=e39007] [cursor=pointer]
+        - generic [ref=e39008]:
+          - generic [ref=e39009]:
+            - generic [ref=e39010]: kryss
+            - generic [ref=e39011]: перекресток
+          - generic [ref=e39012]:
+            - generic [ref=e39013]: сущ.
+            - generic [ref=e39014]:
+              - img [ref=e39015]
+              - text: Выучено
+            - generic [ref=e39020]: "100"
+            - generic [ref=e39021]:
+              - img [ref=e39022]
+              - text: через 29 дней
+        - button [ref=e39026] [cursor=pointer]:
+          - img [ref=e39027]
+      - generic [ref=e39029]:
+        - checkbox [ref=e39030] [cursor=pointer]
+        - generic [ref=e39031]:
+          - generic [ref=e39032]:
+            - generic [ref=e39033]: servere
+            - generic [ref=e39034]: подавать на стол, сервировать
+          - generic [ref=e39035]:
+            - generic [ref=e39036]: гл.
+            - generic [ref=e39037]:
+              - img [ref=e39038]
+              - text: Выучено
+            - generic [ref=e39043]: "100"
+            - generic [ref=e39044]:
+              - img [ref=e39045]
+              - text: через 29 дней
+        - button [ref=e39049] [cursor=pointer]:
+          - img [ref=e39050]
+      - generic [ref=e39052]:
+        - checkbox [ref=e39053] [cursor=pointer]
+        - generic [ref=e39054]:
+          - generic [ref=e39055]:
+            - generic [ref=e39056]: pålegg
+            - generic [ref=e39057]: начинка для хлеба, паштет, нарезка
+          - generic [ref=e39058]:
+            - generic [ref=e39059]: сущ.
+            - generic [ref=e39060]:
+              - img [ref=e39061]
+              - text: Выучено
+            - generic [ref=e39066]: "100"
+            - generic [ref=e39067]:
+              - img [ref=e39068]
+              - text: через 29 дней
+        - button [ref=e39072] [cursor=pointer]:
+          - img [ref=e39073]
+      - generic [ref=e39075]:
+        - checkbox [ref=e39076] [cursor=pointer]
+        - generic [ref=e39077]:
+          - generic [ref=e39078]:
+            - generic [ref=e39079]: blåse
+            - generic [ref=e39080]: дуть
+          - generic [ref=e39081]:
+            - generic [ref=e39082]: гл.
+            - generic [ref=e39083]:
+              - img [ref=e39084]
+              - text: Выучено
+            - generic [ref=e39089]: "100"
+            - generic [ref=e39090]:
+              - img [ref=e39091]
+              - text: через 29 дней
+        - button [ref=e39095] [cursor=pointer]:
+          - img [ref=e39096]
+      - generic [ref=e39098]:
+        - checkbox [ref=e39099] [cursor=pointer]
+        - generic [ref=e39100]:
+          - generic [ref=e39101]:
+            - generic [ref=e39102]: jernbane
+            - generic [ref=e39103]: железная дорога
+          - generic [ref=e39104]:
+            - generic [ref=e39105]: сущ.
+            - generic [ref=e39106]:
+              - img [ref=e39107]
+              - text: Выучено
+            - generic [ref=e39112]: "100"
+            - generic [ref=e39113]:
+              - img [ref=e39114]
+              - text: через 29 дней
+        - button [ref=e39118] [cursor=pointer]:
+          - img [ref=e39119]
+      - generic [ref=e39121]:
+        - checkbox [ref=e39122] [cursor=pointer]
+        - generic [ref=e39123]:
+          - generic [ref=e39124]:
+            - generic [ref=e39125]: troll
+            - generic [ref=e39126]: тролль
+          - generic [ref=e39127]:
+            - generic [ref=e39128]: сущ.
+            - generic [ref=e39129]:
+              - img [ref=e39130]
+              - text: Выучено
+            - generic [ref=e39135]: "100"
+            - generic [ref=e39136]:
+              - img [ref=e39137]
+              - text: через 29 дней
+        - button [ref=e39141] [cursor=pointer]:
+          - img [ref=e39142]
+      - generic [ref=e39144]:
+        - checkbox [ref=e39145] [cursor=pointer]
+        - generic [ref=e39146]:
+          - generic [ref=e39147]:
+            - generic [ref=e39148]: øy
+            - generic [ref=e39149]: остров
+          - generic [ref=e39150]:
+            - generic [ref=e39151]: сущ.
+            - generic [ref=e39152]:
+              - img [ref=e39153]
+              - text: Выучено
+            - generic [ref=e39158]: "100"
+            - generic [ref=e39159]:
+              - img [ref=e39160]
+              - text: через 29 дней
+        - button [ref=e39164] [cursor=pointer]:
+          - img [ref=e39165]
+      - generic [ref=e39167]:
+        - checkbox [ref=e39168] [cursor=pointer]
+        - generic [ref=e39169]:
+          - generic [ref=e39170]:
+            - generic [ref=e39171]: sau
+            - generic [ref=e39172]: овца
+          - generic [ref=e39173]:
+            - generic [ref=e39174]: сущ.
+            - generic [ref=e39175]:
+              - img [ref=e39176]
+              - text: Выучено
+            - generic [ref=e39181]: "100"
+            - generic [ref=e39182]:
+              - img [ref=e39183]
+              - text: через 29 дней
+        - button [ref=e39187] [cursor=pointer]:
+          - img [ref=e39188]
+      - generic [ref=e39190]:
+        - checkbox [ref=e39191] [cursor=pointer]
+        - generic [ref=e39192]:
+          - generic [ref=e39193]:
+            - generic [ref=e39194]: kjekk
+            - generic [ref=e39195]: красивый, приятный, умный
+          - generic [ref=e39196]:
+            - generic [ref=e39197]: прил.
+            - generic [ref=e39198]:
+              - img [ref=e39199]
+              - text: Выучено
+            - generic [ref=e39204]: "100"
+            - generic [ref=e39205]:
+              - img [ref=e39206]
+              - text: через 29 дней
+        - button [ref=e39210] [cursor=pointer]:
+          - img [ref=e39211]
+      - generic [ref=e39213]:
+        - checkbox [ref=e39214] [cursor=pointer]
+        - generic [ref=e39215]:
+          - generic [ref=e39216]:
+            - generic [ref=e39217]: rev
+            - generic [ref=e39218]: лиса
+          - generic [ref=e39219]:
+            - generic [ref=e39220]: сущ.
+            - generic [ref=e39221]:
+              - img [ref=e39222]
+              - text: Выучено
+            - generic [ref=e39227]: "100"
+            - generic [ref=e39228]:
+              - img [ref=e39229]
+              - text: через 29 дней
+        - button [ref=e39233] [cursor=pointer]:
+          - img [ref=e39234]
+      - generic [ref=e39236]:
+        - checkbox [ref=e39237] [cursor=pointer]
+        - generic [ref=e39238]:
+          - generic [ref=e39239]:
+            - generic [ref=e39240]: glatt
+            - generic [ref=e39241]: гладкий, скользкий
+          - generic [ref=e39242]:
+            - generic [ref=e39243]: прил.
+            - generic [ref=e39244]:
+              - img [ref=e39245]
+              - text: Выучено
+            - generic [ref=e39250]: "100"
+            - generic [ref=e39251]:
+              - img [ref=e39252]
+              - text: через 29 дней
+        - button [ref=e39256] [cursor=pointer]:
+          - img [ref=e39257]
+      - generic [ref=e39259]:
+        - checkbox [ref=e39260] [cursor=pointer]
+        - generic [ref=e39261]:
+          - generic [ref=e39262]:
+            - generic [ref=e39263]: respektere
+            - generic [ref=e39264]: уважать
+          - generic [ref=e39265]:
+            - generic [ref=e39266]: гл.
+            - generic [ref=e39267]:
+              - img [ref=e39268]
+              - text: Выучено
+            - generic [ref=e39273]: "100"
+            - generic [ref=e39274]:
+              - img [ref=e39275]
+              - text: через 29 дней
+        - button [ref=e39279] [cursor=pointer]:
+          - img [ref=e39280]
+      - generic [ref=e39282]:
+        - checkbox [ref=e39283] [cursor=pointer]
+        - generic [ref=e39284]:
+          - generic [ref=e39285]:
+            - generic [ref=e39286]: krysse
+            - generic [ref=e39287]: пересекать, переходить
+          - generic [ref=e39288]:
+            - generic [ref=e39289]: гл.
+            - generic [ref=e39290]:
+              - img [ref=e39291]
+              - text: Выучено
+            - generic [ref=e39296]: "100"
+            - generic [ref=e39297]:
+              - img [ref=e39298]
+              - text: через 29 дней
+        - button [ref=e39302] [cursor=pointer]:
+          - img [ref=e39303]
+      - generic [ref=e39305]:
+        - checkbox [ref=e39306] [cursor=pointer]
+        - generic [ref=e39307]:
+          - generic [ref=e39308]:
+            - generic [ref=e39309]: hjul
+            - generic [ref=e39310]: колесо
+          - generic [ref=e39311]:
+            - generic [ref=e39312]: сущ.
+            - generic [ref=e39313]:
+              - img [ref=e39314]
+              - text: Выучено
+            - generic [ref=e39319]: "100"
+            - generic [ref=e39320]:
+              - img [ref=e39321]
+              - text: через 29 дней
+        - button [ref=e39325] [cursor=pointer]:
+          - img [ref=e39326]
+      - generic [ref=e39328]:
+        - checkbox [ref=e39329] [cursor=pointer]
+        - generic [ref=e39330]:
+          - generic [ref=e39331]:
+            - generic [ref=e39332]: bygning
+            - generic [ref=e39333]: здание, постройка
+          - generic [ref=e39334]:
+            - generic [ref=e39335]: сущ.
+            - generic [ref=e39336]:
+              - img [ref=e39337]
+              - text: Выучено
+            - generic [ref=e39342]: "100"
+            - generic [ref=e39343]:
+              - img [ref=e39344]
+              - text: через 29 дней
+        - button [ref=e39348] [cursor=pointer]:
+          - img [ref=e39349]
+      - generic [ref=e39351]:
+        - checkbox [ref=e39352] [cursor=pointer]
+        - generic [ref=e39353]:
+          - generic [ref=e39354]:
+            - generic [ref=e39355]: skjerm
+            - generic [ref=e39356]: экран
+          - generic [ref=e39357]:
+            - generic [ref=e39358]: сущ.
+            - generic [ref=e39359]:
+              - img [ref=e39360]
+              - text: Выучено
+            - generic [ref=e39365]: "100"
+            - generic [ref=e39366]:
+              - img [ref=e39367]
+              - text: через 29 дней
+        - button [ref=e39371] [cursor=pointer]:
+          - img [ref=e39372]
+      - generic [ref=e39374]:
+        - checkbox [ref=e39375] [cursor=pointer]
+        - generic [ref=e39376]:
+          - generic [ref=e39377]:
+            - generic [ref=e39378]: taper
+            - generic [ref=e39379]: неудачник, лошара, лузер
+          - generic [ref=e39380]:
+            - generic [ref=e39381]: сущ.
+            - generic [ref=e39382]:
+              - img [ref=e39383]
+              - text: Выучено
+            - generic [ref=e39388]: "100"
+            - generic [ref=e39389]:
+              - img [ref=e39390]
+              - text: через 29 дней
+        - button [ref=e39394] [cursor=pointer]:
+          - img [ref=e39395]
+      - generic [ref=e39397]:
+        - checkbox [ref=e39398] [cursor=pointer]
+        - generic [ref=e39399]:
+          - generic [ref=e39400]:
+            - generic [ref=e39401]: flerlags
+            - generic [ref=e39402]: многоуровневый
+          - generic [ref=e39403]:
+            - generic [ref=e39404]: прил.
+            - generic [ref=e39405]:
+              - img [ref=e39406]
+              - text: Выучено
+            - generic [ref=e39411]: "100"
+            - generic [ref=e39412]:
+              - img [ref=e39413]
+              - text: через 29 дней
+        - button [ref=e39417] [cursor=pointer]:
+          - img [ref=e39418]
+      - generic [ref=e39420]:
+        - checkbox [ref=e39421] [cursor=pointer]
+        - generic [ref=e39422]:
+          - generic [ref=e39423]:
+            - generic [ref=e39424]: presisere
+            - generic [ref=e39425]: уточнять, конкретизировать
+          - generic [ref=e39426]:
+            - generic [ref=e39427]: гл.
+            - generic [ref=e39428]:
+              - img [ref=e39429]
+              - text: Выучено
+            - generic [ref=e39434]: "100"
+            - generic [ref=e39435]:
+              - img [ref=e39436]
+              - text: через 29 дней
+        - button [ref=e39440] [cursor=pointer]:
+          - img [ref=e39441]
+      - generic [ref=e39443]:
+        - checkbox [ref=e39444] [cursor=pointer]
+        - generic [ref=e39445]:
+          - generic [ref=e39446]:
+            - generic [ref=e39447]: salatbar
+            - generic [ref=e39448]: салат-бар
+          - generic [ref=e39449]:
+            - generic [ref=e39450]: сущ.
+            - generic [ref=e39451]:
+              - img [ref=e39452]
+              - text: Выучено
+            - generic [ref=e39457]: "100"
+            - generic [ref=e39458]:
+              - img [ref=e39459]
+              - text: через 29 дней
+        - button [ref=e39463] [cursor=pointer]:
+          - img [ref=e39464]
+      - generic [ref=e39466]:
+        - checkbox [ref=e39467] [cursor=pointer]
+        - generic [ref=e39468]:
+          - generic [ref=e39469]:
+            - generic [ref=e39470]: vannkoker
+            - generic [ref=e39471]: электрический чайник
+          - generic [ref=e39472]:
+            - generic [ref=e39473]: сущ.
+            - generic [ref=e39474]:
+              - img [ref=e39475]
+              - text: Выучено
+            - generic [ref=e39480]: "100"
+            - generic [ref=e39481]:
+              - img [ref=e39482]
+              - text: через 29 дней
+        - button [ref=e39486] [cursor=pointer]:
+          - img [ref=e39487]
+      - generic [ref=e39489]:
+        - checkbox [ref=e39490] [cursor=pointer]
+        - generic [ref=e39491]:
+          - generic [ref=e39492]:
+            - generic [ref=e39493]: rest
+            - generic [ref=e39494]: остаток, остальное
+          - generic [ref=e39495]:
+            - generic [ref=e39496]: сущ.
+            - generic [ref=e39497]:
+              - img [ref=e39498]
+              - text: Выучено
+            - generic [ref=e39503]: "100"
+            - generic [ref=e39504]:
+              - img [ref=e39505]
+              - text: через 29 дней
+        - button [ref=e39509] [cursor=pointer]:
+          - img [ref=e39510]
+      - generic [ref=e39512]:
+        - checkbox [ref=e39513] [cursor=pointer]
+        - generic [ref=e39514]:
+          - generic [ref=e39515]:
+            - generic [ref=e39516]: likegyldig
+            - generic [ref=e39517]: безразличный, равнодушный
+          - generic [ref=e39518]:
+            - generic [ref=e39519]: прил.
+            - generic [ref=e39520]:
+              - img [ref=e39521]
+              - text: Выучено
+            - generic [ref=e39526]: "100"
+            - generic [ref=e39527]:
+              - img [ref=e39528]
+              - text: через 29 дней
+        - button [ref=e39532] [cursor=pointer]:
+          - img [ref=e39533]
+      - generic [ref=e39535]:
+        - checkbox [ref=e39536] [cursor=pointer]
+        - generic [ref=e39537]:
+          - generic [ref=e39538]:
+            - generic [ref=e39539]: drikk
+            - generic [ref=e39540]: напиток
+          - generic [ref=e39541]:
+            - generic [ref=e39542]: сущ.
+            - generic [ref=e39543]:
+              - img [ref=e39544]
+              - text: Выучено
+            - generic [ref=e39549]: "100"
+            - generic [ref=e39550]:
+              - img [ref=e39551]
+              - text: через 29 дней
+        - button [ref=e39555] [cursor=pointer]:
+          - img [ref=e39556]
+      - generic [ref=e39558]:
+        - checkbox [ref=e39559] [cursor=pointer]
+        - generic [ref=e39560]:
+          - generic [ref=e39561]:
+            - generic [ref=e39562]: sopp
+            - generic [ref=e39563]: гриб
+          - generic [ref=e39564]:
+            - generic [ref=e39565]: сущ.
+            - generic [ref=e39566]:
+              - img [ref=e39567]
+              - text: Выучено
+            - generic [ref=e39572]: "100"
+            - generic [ref=e39573]:
+              - img [ref=e39574]
+              - text: через 29 дней
+        - button [ref=e39578] [cursor=pointer]:
+          - img [ref=e39579]
+      - generic [ref=e39581]:
+        - checkbox [ref=e39582] [cursor=pointer]
+        - generic [ref=e39583]:
+          - generic [ref=e39584]:
+            - generic [ref=e39585]: årer
+            - generic [ref=e39586]: весла
+          - generic [ref=e39587]:
+            - generic [ref=e39588]: сущ.
+            - generic [ref=e39589]:
+              - img [ref=e39590]
+              - text: Выучено
+            - generic [ref=e39595]: "100"
+            - generic [ref=e39596]:
+              - img [ref=e39597]
+              - text: через 29 дней
+        - button [ref=e39601] [cursor=pointer]:
+          - img [ref=e39602]
+      - generic [ref=e39604]:
+        - checkbox [ref=e39605] [cursor=pointer]
+        - generic [ref=e39606]:
+          - generic [ref=e39607]:
+            - generic [ref=e39608]: telefon
+            - generic [ref=e39609]: телефон
+          - generic [ref=e39610]:
+            - generic [ref=e39611]: сущ.
+            - generic [ref=e39612]:
+              - img [ref=e39613]
+              - text: Выучено
+            - generic [ref=e39618]: "100"
+            - generic [ref=e39619]:
+              - img [ref=e39620]
+              - text: через 29 дней
+        - button [ref=e39624] [cursor=pointer]:
+          - img [ref=e39625]
+      - generic [ref=e39627]:
+        - checkbox [ref=e39628] [cursor=pointer]
+        - generic [ref=e39629]:
+          - generic [ref=e39630]:
+            - generic [ref=e39631]: veikryss
+            - generic [ref=e39632]: перекресток
+          - generic [ref=e39633]:
+            - generic [ref=e39634]: сущ.
+            - generic [ref=e39635]:
+              - img [ref=e39636]
+              - text: Выучено
+            - generic [ref=e39641]: "100"
+            - generic [ref=e39642]:
+              - img [ref=e39643]
+              - text: через 29 дней
+        - button [ref=e39647] [cursor=pointer]:
+          - img [ref=e39648]
+      - generic [ref=e39650]:
+        - checkbox [ref=e39651] [cursor=pointer]
+        - generic [ref=e39652]:
+          - generic [ref=e39653]:
+            - generic [ref=e39654]: skryte
+            - generic [ref=e39655]: хвастаться, хвалиться
+          - generic [ref=e39656]:
+            - generic [ref=e39657]: гл.
+            - generic [ref=e39658]:
+              - img [ref=e39659]
+              - text: Выучено
+            - generic [ref=e39664]: "100"
+            - generic [ref=e39665]:
+              - img [ref=e39666]
+              - text: через 29 дней
+        - button [ref=e39670] [cursor=pointer]:
+          - img [ref=e39671]
+      - generic [ref=e39673]:
+        - checkbox [ref=e39674] [cursor=pointer]
+        - generic [ref=e39675]:
+          - generic [ref=e39676]:
+            - generic [ref=e39677]: tverrgate
+            - generic [ref=e39678]: переулок, поперечная улица
+          - generic [ref=e39679]:
+            - generic [ref=e39680]: сущ.
+            - generic [ref=e39681]:
+              - img [ref=e39682]
+              - text: Выучено
+            - generic [ref=e39687]: "100"
+            - generic [ref=e39688]:
+              - img [ref=e39689]
+              - text: через 29 дней
+        - button [ref=e39693] [cursor=pointer]:
+          - img [ref=e39694]
+      - generic [ref=e39696]:
+        - checkbox [ref=e39697] [cursor=pointer]
+        - generic [ref=e39698]:
+          - generic [ref=e39699]:
+            - generic [ref=e39700]: vel
+            - generic [ref=e39701]: вероятно, пожалуй
+          - generic [ref=e39702]:
+            - generic [ref=e39703]: нареч.
+            - generic [ref=e39704]:
+              - img [ref=e39705]
+              - text: Выучено
+            - generic [ref=e39710]: "100"
+            - generic [ref=e39711]:
+              - img [ref=e39712]
+              - text: через 29 дней
+        - button [ref=e39716] [cursor=pointer]:
+          - img [ref=e39717]
+      - generic [ref=e39719]:
+        - checkbox [ref=e39720] [cursor=pointer]
+        - generic [ref=e39721]:
+          - generic [ref=e39722]:
+            - generic [ref=e39723]: vind
+            - generic [ref=e39724]: ветер
+          - generic [ref=e39725]:
+            - generic [ref=e39726]: сущ.
+            - generic [ref=e39727]:
+              - img [ref=e39728]
+              - text: Выучено
+            - generic [ref=e39733]: "100"
+            - generic [ref=e39734]:
+              - img [ref=e39735]
+              - text: через 29 дней
+        - button [ref=e39739] [cursor=pointer]:
+          - img [ref=e39740]
+      - generic [ref=e39742]:
+        - checkbox [ref=e39743] [cursor=pointer]
+        - generic [ref=e39744]:
+          - generic [ref=e39745]:
+            - generic [ref=e39746]: paraply
+            - generic [ref=e39747]: зонт
+          - generic [ref=e39748]:
+            - generic [ref=e39749]: сущ.
+            - generic [ref=e39750]:
+              - img [ref=e39751]
+              - text: Выучено
+            - generic [ref=e39756]: "100"
+            - generic [ref=e39757]:
+              - img [ref=e39758]
+              - text: через 29 дней
+        - button [ref=e39762] [cursor=pointer]:
+          - img [ref=e39763]
+      - generic [ref=e39765]:
+        - checkbox [ref=e39766] [cursor=pointer]
+        - generic [ref=e39767]:
+          - generic [ref=e39768]:
+            - generic [ref=e39769]: tygge
+            - generic [ref=e39770]: жевать, разжевывать
+          - generic [ref=e39771]:
+            - generic [ref=e39772]: гл.
+            - generic [ref=e39773]:
+              - img [ref=e39774]
+              - text: Выучено
+            - generic [ref=e39779]: "100"
+            - generic [ref=e39780]:
+              - img [ref=e39781]
+              - text: через 29 дней
+        - button [ref=e39785] [cursor=pointer]:
+          - img [ref=e39786]
+      - generic [ref=e39788]:
+        - checkbox [ref=e39789] [cursor=pointer]
+        - generic [ref=e39790]:
+          - generic [ref=e39791]:
+            - generic [ref=e39792]: tilhenger
+            - generic [ref=e39793]: сторонник
+          - generic [ref=e39794]:
+            - generic [ref=e39795]: сущ.
+            - generic [ref=e39796]:
+              - img [ref=e39797]
+              - text: Выучено
+            - generic [ref=e39802]: "100"
+            - generic [ref=e39803]:
+              - img [ref=e39804]
+              - text: через 29 дней
+        - button [ref=e39808] [cursor=pointer]:
+          - img [ref=e39809]
+      - generic [ref=e39811]:
+        - checkbox [ref=e39812] [cursor=pointer]
+        - generic [ref=e39813]:
+          - generic [ref=e39814]:
+            - generic [ref=e39815]: påføre
+            - generic [ref=e39816]: наносить, причинять, накладывать
+          - generic [ref=e39817]:
+            - generic [ref=e39818]: гл.
+            - generic [ref=e39819]:
+              - img [ref=e39820]
+              - text: Выучено
+            - generic [ref=e39825]: "100"
+            - generic [ref=e39826]:
+              - img [ref=e39827]
+              - text: через 29 дней
+        - button [ref=e39831] [cursor=pointer]:
+          - img [ref=e39832]
+      - generic [ref=e39834]:
+        - checkbox [ref=e39835] [cursor=pointer]
+        - generic [ref=e39836]:
+          - generic [ref=e39837]:
+            - generic [ref=e39838]: hetebølge
+            - generic [ref=e39839]: период сильной жары, волна жары
+          - generic [ref=e39840]:
+            - generic [ref=e39841]: сущ.
+            - generic [ref=e39842]:
+              - img [ref=e39843]
+              - text: Выучено
+            - generic [ref=e39848]: "100"
+            - generic [ref=e39849]:
+              - img [ref=e39850]
+              - text: через 29 дней
+        - button [ref=e39854] [cursor=pointer]:
+          - img [ref=e39855]
+      - generic [ref=e39857]:
+        - checkbox [ref=e39858] [cursor=pointer]
+        - generic [ref=e39859]:
+          - generic [ref=e39860]:
+            - generic [ref=e39861]: skudd
+            - generic [ref=e39862]: выстрел, удар
+          - generic [ref=e39863]:
+            - generic [ref=e39864]: сущ.
+            - generic [ref=e39865]:
+              - img [ref=e39866]
+              - text: Выучено
+            - generic [ref=e39871]: "100"
+            - generic [ref=e39872]:
+              - img [ref=e39873]
+              - text: через 29 дней
+        - button [ref=e39877] [cursor=pointer]:
+          - img [ref=e39878]
+      - generic [ref=e39880]:
+        - checkbox [ref=e39881] [cursor=pointer]
+        - generic [ref=e39882]:
+          - generic [ref=e39883]:
+            - generic [ref=e39884]: avvikle
+            - generic [ref=e39885]: ликвидировать, завершить
+          - generic [ref=e39886]:
+            - generic [ref=e39887]: гл.
+            - generic [ref=e39888]:
+              - img [ref=e39889]
+              - text: Выучено
+            - generic [ref=e39894]: "100"
+            - generic [ref=e39895]:
+              - img [ref=e39896]
+              - text: через 29 дней
+        - button [ref=e39900] [cursor=pointer]:
+          - img [ref=e39901]
+      - generic [ref=e39903]:
+        - checkbox [ref=e39904] [cursor=pointer]
+        - generic [ref=e39905]:
+          - generic [ref=e39906]:
+            - generic [ref=e39907]: akseptabel
+            - generic [ref=e39908]: приемлемый
+          - generic [ref=e39909]:
+            - generic [ref=e39910]: прил.
+            - generic [ref=e39911]:
+              - img [ref=e39912]
+              - text: Выучено
+            - generic [ref=e39917]: "100"
+            - generic [ref=e39918]:
+              - img [ref=e39919]
+              - text: через 29 дней
+        - button [ref=e39923] [cursor=pointer]:
+          - img [ref=e39924]
+      - generic [ref=e39926]:
+        - checkbox [ref=e39927] [cursor=pointer]
+        - generic [ref=e39928]:
+          - generic [ref=e39929]:
+            - generic [ref=e39930]: atferd
+            - generic [ref=e39931]: поведение
+          - generic [ref=e39932]:
+            - generic [ref=e39933]: сущ.
+            - generic [ref=e39934]:
+              - img [ref=e39935]
+              - text: Выучено
+            - generic [ref=e39940]: "100"
+            - generic [ref=e39941]:
+              - img [ref=e39942]
+              - text: через 29 дней
+        - button [ref=e39946] [cursor=pointer]:
+          - img [ref=e39947]
+      - generic [ref=e39949]:
+        - checkbox [ref=e39950] [cursor=pointer]
+        - generic [ref=e39951]:
+          - generic [ref=e39952]:
+            - generic [ref=e39953]: kjønn
+            - generic [ref=e39954]: пол
+          - generic [ref=e39955]:
+            - generic [ref=e39956]: сущ.
+            - generic [ref=e39957]:
+              - img [ref=e39958]
+              - text: Выучено
+            - generic [ref=e39963]: "100"
+            - generic [ref=e39964]:
+              - img [ref=e39965]
+              - text: через 29 дней
+        - button [ref=e39969] [cursor=pointer]:
+          - img [ref=e39970]
+      - generic [ref=e39972]:
+        - checkbox [ref=e39973] [cursor=pointer]
+        - generic [ref=e39974]:
+          - generic [ref=e39975]:
+            - generic [ref=e39976]: beregne
+            - generic [ref=e39977]: вычислять, рассчитывать
+          - generic [ref=e39978]:
+            - generic [ref=e39979]: гл.
+            - generic [ref=e39980]:
+              - img [ref=e39981]
+              - text: Выучено
+            - generic [ref=e39986]: "100"
+            - generic [ref=e39987]:
+              - img [ref=e39988]
+              - text: через 29 дней
+        - button [ref=e39992] [cursor=pointer]:
+          - img [ref=e39993]
+      - generic [ref=e39995]:
+        - checkbox [ref=e39996] [cursor=pointer]
+        - generic [ref=e39997]:
+          - generic [ref=e39998]:
+            - generic [ref=e39999]: anheng
+            - generic [ref=e40000]: подвеска, кулон
+          - generic [ref=e40001]:
+            - generic [ref=e40002]: сущ.
+            - generic [ref=e40003]:
+              - img [ref=e40004]
+              - text: Выучено
+            - generic [ref=e40009]: "100"
+            - generic [ref=e40010]:
+              - img [ref=e40011]
+              - text: через 29 дней
+        - button [ref=e40015] [cursor=pointer]:
+          - img [ref=e40016]
+      - generic [ref=e40018]:
+        - checkbox [ref=e40019] [cursor=pointer]
+        - generic [ref=e40020]:
+          - generic [ref=e40021]:
+            - generic [ref=e40022]: styre
+            - generic [ref=e40023]: управлять
+          - generic [ref=e40024]:
+            - generic [ref=e40025]: гл.
+            - generic [ref=e40026]:
+              - img [ref=e40027]
+              - text: Выучено
+            - generic [ref=e40032]: "100"
+            - generic [ref=e40033]:
+              - img [ref=e40034]
+              - text: через 29 дней
+        - button [ref=e40038] [cursor=pointer]:
+          - img [ref=e40039]
+      - generic [ref=e40041]:
+        - checkbox [ref=e40042] [cursor=pointer]
+        - generic [ref=e40043]:
+          - generic [ref=e40044]:
+            - generic [ref=e40045]: bedøve
+            - generic [ref=e40046]: оглушать, анестезировать
+          - generic [ref=e40047]:
+            - generic [ref=e40048]: гл.
+            - generic [ref=e40049]:
+              - img [ref=e40050]
+              - text: Выучено
+            - generic [ref=e40055]: "100"
+            - generic [ref=e40056]:
+              - img [ref=e40057]
+              - text: через 29 дней
+        - button [ref=e40061] [cursor=pointer]:
+          - img [ref=e40062]
+      - generic [ref=e40064]:
+        - checkbox [ref=e40065] [cursor=pointer]
+        - generic [ref=e40066]:
+          - generic [ref=e40067]:
+            - generic [ref=e40068]: utseende
+            - generic [ref=e40069]: внешность, вид
+          - generic [ref=e40070]:
+            - generic [ref=e40071]: сущ.
+            - generic [ref=e40072]:
+              - img [ref=e40073]
+              - text: Выучено
+            - generic [ref=e40078]: "100"
+            - generic [ref=e40079]:
+              - img [ref=e40080]
+              - text: через 29 дней
+        - button [ref=e40084] [cursor=pointer]:
+          - img [ref=e40085]
+      - generic [ref=e40087]:
+        - checkbox [ref=e40088] [cursor=pointer]
+        - generic [ref=e40089]:
+          - generic [ref=e40090]:
+            - generic [ref=e40091]: hastighet
+            - generic [ref=e40092]: скорость
+          - generic [ref=e40093]:
+            - generic [ref=e40094]: сущ.
+            - generic [ref=e40095]:
+              - img [ref=e40096]
+              - text: Выучено
+            - generic [ref=e40101]: "100"
+            - generic [ref=e40102]:
+              - img [ref=e40103]
+              - text: через 29 дней
+        - button [ref=e40107] [cursor=pointer]:
+          - img [ref=e40108]
+      - generic [ref=e40110]:
+        - checkbox [ref=e40111] [cursor=pointer]
+        - generic [ref=e40112]:
+          - generic [ref=e40113]:
+            - generic [ref=e40114]: uke
+            - generic [ref=e40115]: неделя
+          - generic [ref=e40116]:
+            - generic [ref=e40117]: сущ.
+            - generic [ref=e40118]:
+              - img [ref=e40119]
+              - text: Выучено
+            - generic [ref=e40124]: "100"
+            - generic [ref=e40125]:
+              - img [ref=e40126]
+              - text: через 29 дней
+        - button [ref=e40130] [cursor=pointer]:
+          - img [ref=e40131]
+      - generic [ref=e40133]:
+        - checkbox [ref=e40134] [cursor=pointer]
+        - generic [ref=e40135]:
+          - generic [ref=e40136]:
+            - generic [ref=e40137]: oppnå
+            - generic [ref=e40138]: достигать, добиваться
+          - generic [ref=e40139]:
+            - generic [ref=e40140]: гл.
+            - generic [ref=e40141]:
+              - img [ref=e40142]
+              - text: Выучено
+            - generic [ref=e40147]: "100"
+            - generic [ref=e40148]:
+              - img [ref=e40149]
+              - text: через 29 дней
+        - button [ref=e40153] [cursor=pointer]:
+          - img [ref=e40154]
+      - generic [ref=e40156]:
+        - checkbox [ref=e40157] [cursor=pointer]
+        - generic [ref=e40158]:
+          - generic [ref=e40159]:
+            - generic [ref=e40160]: omstendighet
+            - generic [ref=e40161]: обстоятельство
+          - generic [ref=e40162]:
+            - generic [ref=e40163]: сущ.
+            - generic [ref=e40164]:
+              - img [ref=e40165]
+              - text: Выучено
+            - generic [ref=e40170]: "100"
+            - generic [ref=e40171]:
+              - img [ref=e40172]
+              - text: через 29 дней
+        - button [ref=e40176] [cursor=pointer]:
+          - img [ref=e40177]
+      - generic [ref=e40179]:
+        - checkbox [ref=e40180] [cursor=pointer]
+        - generic [ref=e40181]:
+          - generic [ref=e40182]:
+            - generic [ref=e40183]: omtrent
+            - generic [ref=e40184]: примерно, около
+          - generic [ref=e40185]:
+            - generic [ref=e40186]: нареч.
+            - generic [ref=e40187]:
+              - img [ref=e40188]
+              - text: Выучено
+            - generic [ref=e40193]: "100"
+            - generic [ref=e40194]:
+              - img [ref=e40195]
+              - text: через 29 дней
+        - button [ref=e40199] [cursor=pointer]:
+          - img [ref=e40200]
+      - generic [ref=e40202]:
+        - checkbox [ref=e40203] [cursor=pointer]
+        - generic [ref=e40204]:
+          - generic [ref=e40205]:
+            - generic [ref=e40206]: skjorte
+            - generic [ref=e40207]: рубашка
+          - generic [ref=e40208]:
+            - generic [ref=e40209]: сущ.
+            - generic [ref=e40210]:
+              - img [ref=e40211]
+              - text: Выучено
+            - generic [ref=e40216]: "100"
+            - generic [ref=e40217]:
+              - img [ref=e40218]
+              - text: через 29 дней
+        - button [ref=e40222] [cursor=pointer]:
+          - img [ref=e40223]
+      - generic [ref=e40225]:
+        - checkbox [ref=e40226] [cursor=pointer]
+        - generic [ref=e40227]:
+          - generic [ref=e40228]:
+            - generic [ref=e40229]: mye
+            - generic [ref=e40230]: много
+          - generic [ref=e40231]:
+            - generic [ref=e40232]: нареч.
+            - generic [ref=e40233]:
+              - img [ref=e40234]
+              - text: Выучено
+            - generic [ref=e40239]: "100"
+            - generic [ref=e40240]:
+              - img [ref=e40241]
+              - text: через 29 дней
+        - button [ref=e40245] [cursor=pointer]:
+          - img [ref=e40246]
+      - generic [ref=e40248]:
+        - checkbox [ref=e40249] [cursor=pointer]
+        - generic [ref=e40250]:
+          - generic [ref=e40251]:
+            - generic [ref=e40252]: arv
+            - generic [ref=e40253]: наследство
+          - generic [ref=e40254]:
+            - generic [ref=e40255]: сущ.
+            - generic [ref=e40256]:
+              - img [ref=e40257]
+              - text: Выучено
+            - generic [ref=e40262]: "100"
+            - generic [ref=e40263]:
+              - img [ref=e40264]
+              - text: через 29 дней
+        - button [ref=e40268] [cursor=pointer]:
+          - img [ref=e40269]
+      - generic [ref=e40271]:
+        - checkbox [ref=e40272] [cursor=pointer]
+        - generic [ref=e40273]:
+          - generic [ref=e40274]:
+            - generic [ref=e40275]: ris
+            - generic [ref=e40276]: рис
+          - generic [ref=e40277]:
+            - generic [ref=e40278]: сущ.
+            - generic [ref=e40279]:
+              - img [ref=e40280]
+              - text: Выучено
+            - generic [ref=e40285]: "100"
+            - generic [ref=e40286]:
+              - img [ref=e40287]
+              - text: через 29 дней
+        - button [ref=e40291] [cursor=pointer]:
+          - img [ref=e40292]
+      - generic [ref=e40294]:
+        - checkbox [ref=e40295] [cursor=pointer]
+        - generic [ref=e40296]:
+          - generic [ref=e40297]:
+            - generic [ref=e40298]: gulv
+            - generic [ref=e40299]: пол
+          - generic [ref=e40300]:
+            - generic [ref=e40301]: сущ.
+            - generic [ref=e40302]:
+              - img [ref=e40303]
+              - text: Выучено
+            - generic [ref=e40308]: "100"
+            - generic [ref=e40309]:
+              - img [ref=e40310]
+              - text: через 29 дней
+        - button [ref=e40314] [cursor=pointer]:
+          - img [ref=e40315]
+      - generic [ref=e40317]:
+        - checkbox [ref=e40318] [cursor=pointer]
+        - generic [ref=e40319]:
+          - generic [ref=e40320]:
+            - generic [ref=e40321]: bekymring
+            - generic [ref=e40322]: беспокойство, забота
+          - generic [ref=e40323]:
+            - generic [ref=e40324]: сущ.
+            - generic [ref=e40325]:
+              - img [ref=e40326]
+              - text: Выучено
+            - generic [ref=e40331]: "100"
+            - generic [ref=e40332]:
+              - img [ref=e40333]
+              - text: через 29 дней
+        - button [ref=e40337] [cursor=pointer]:
+          - img [ref=e40338]
+      - generic [ref=e40340]:
+        - checkbox [ref=e40341] [cursor=pointer]
+        - generic [ref=e40342]:
+          - generic [ref=e40343]:
+            - generic [ref=e40344]: ild
+            - generic [ref=e40345]: огонь, пламя
+          - generic [ref=e40346]:
+            - generic [ref=e40347]: сущ.
+            - generic [ref=e40348]:
+              - img [ref=e40349]
+              - text: Выучено
+            - generic [ref=e40354]: "100"
+            - generic [ref=e40355]:
+              - img [ref=e40356]
+              - text: через 29 дней
+        - button [ref=e40360] [cursor=pointer]:
+          - img [ref=e40361]
+      - generic [ref=e40363]:
+        - checkbox [ref=e40364] [cursor=pointer]
+        - generic [ref=e40365]:
+          - generic [ref=e40366]:
+            - generic [ref=e40367]: mønster
+            - generic [ref=e40368]: узор, шаблон, модель
+          - generic [ref=e40369]:
+            - generic [ref=e40370]: сущ.
+            - generic [ref=e40371]:
+              - img [ref=e40372]
+              - text: Выучено
+            - generic [ref=e40377]: "100"
+            - generic [ref=e40378]:
+              - img [ref=e40379]
+              - text: через 29 дней
+        - button [ref=e40383] [cursor=pointer]:
+          - img [ref=e40384]
+      - generic [ref=e40386]:
+        - checkbox [ref=e40387] [cursor=pointer]
+        - generic [ref=e40388]:
+          - generic [ref=e40389]:
+            - generic [ref=e40390]: yrke
+            - generic [ref=e40391]: профессия, занятие
+          - generic [ref=e40392]:
+            - generic [ref=e40393]: сущ.
+            - generic [ref=e40394]:
+              - img [ref=e40395]
+              - text: Выучено
+            - generic [ref=e40400]: "100"
+            - generic [ref=e40401]:
+              - img [ref=e40402]
+              - text: через 29 дней
+        - button [ref=e40406] [cursor=pointer]:
+          - img [ref=e40407]
+      - generic [ref=e40409]:
+        - checkbox [ref=e40410] [cursor=pointer]
+        - generic [ref=e40411]:
+          - generic [ref=e40412]:
+            - generic [ref=e40413]: forberede
+            - generic [ref=e40414]: подготавливать
+          - generic [ref=e40415]:
+            - generic [ref=e40416]: гл.
+            - generic [ref=e40417]:
+              - img [ref=e40418]
+              - text: Выучено
+            - generic [ref=e40423]: "100"
+            - generic [ref=e40424]:
+              - img [ref=e40425]
+              - text: через 29 дней
+        - button [ref=e40429] [cursor=pointer]:
+          - img [ref=e40430]
+      - generic [ref=e40432]:
+        - checkbox [ref=e40433] [cursor=pointer]
+        - generic [ref=e40434]:
+          - generic [ref=e40435]:
+            - generic [ref=e40436]: beløp
+            - generic [ref=e40437]: сумма, количество
+          - generic [ref=e40438]:
+            - generic [ref=e40439]: сущ.
+            - generic [ref=e40440]:
+              - img [ref=e40441]
+              - text: Выучено
+            - generic [ref=e40446]: "100"
+            - generic [ref=e40447]:
+              - img [ref=e40448]
+              - text: через 29 дней
+        - button [ref=e40452] [cursor=pointer]:
+          - img [ref=e40453]
+      - generic [ref=e40455]:
+        - checkbox [ref=e40456] [cursor=pointer]
+        - generic [ref=e40457]:
+          - generic [ref=e40458]:
+            - generic [ref=e40459]: skap
+            - generic [ref=e40460]: шкаф
+          - generic [ref=e40461]:
+            - generic [ref=e40462]: сущ.
+            - generic [ref=e40463]:
+              - img [ref=e40464]
+              - text: Выучено
+            - generic [ref=e40469]: "100"
+            - generic [ref=e40470]:
+              - img [ref=e40471]
+              - text: через 29 дней
+        - button [ref=e40475] [cursor=pointer]:
+          - img [ref=e40476]
+      - generic [ref=e40478]:
+        - checkbox [ref=e40479] [cursor=pointer]
+        - generic [ref=e40480]:
+          - generic [ref=e40481]:
+            - generic [ref=e40482]: planet
+            - generic [ref=e40483]: планета
+          - generic [ref=e40484]:
+            - generic [ref=e40485]: сущ.
+            - generic [ref=e40486]:
+              - img [ref=e40487]
+              - text: Выучено
+            - generic [ref=e40492]: "100"
+            - generic [ref=e40493]:
+              - img [ref=e40494]
+              - text: через 29 дней
+        - button [ref=e40498] [cursor=pointer]:
+          - img [ref=e40499]
+      - generic [ref=e40501]:
+        - checkbox [ref=e40502] [cursor=pointer]
+        - generic [ref=e40503]:
+          - generic [ref=e40504]:
+            - generic [ref=e40505]: blad
+            - generic [ref=e40506]: лист
+          - generic [ref=e40507]:
+            - generic [ref=e40508]: сущ.
+            - generic [ref=e40509]:
+              - img [ref=e40510]
+              - text: Выучено
+            - generic [ref=e40515]: "100"
+            - generic [ref=e40516]:
+              - img [ref=e40517]
+              - text: через 29 дней
+        - button [ref=e40521] [cursor=pointer]:
+          - img [ref=e40522]
+      - generic [ref=e40524]:
+        - checkbox [ref=e40525] [cursor=pointer]
+        - generic [ref=e40526]:
+          - generic [ref=e40527]:
+            - generic [ref=e40528]: lenke
+            - generic [ref=e40529]: цепь
+          - generic [ref=e40530]:
+            - generic [ref=e40531]: сущ.
+            - generic [ref=e40532]:
+              - img [ref=e40533]
+              - text: Выучено
+            - generic [ref=e40538]: "100"
+            - generic [ref=e40539]:
+              - img [ref=e40540]
+              - text: через 29 дней
+        - button [ref=e40544] [cursor=pointer]:
+          - img [ref=e40545]
+      - generic [ref=e40547]:
+        - checkbox [ref=e40548] [cursor=pointer]
+        - generic [ref=e40549]:
+          - generic [ref=e40550]:
+            - generic [ref=e40551]: havn
+            - generic [ref=e40552]: гавань, порт
+          - generic [ref=e40553]:
+            - generic [ref=e40554]: сущ.
+            - generic [ref=e40555]:
+              - img [ref=e40556]
+              - text: Выучено
+            - generic [ref=e40561]: "100"
+            - generic [ref=e40562]:
+              - img [ref=e40563]
+              - text: через 29 дней
+        - button [ref=e40567] [cursor=pointer]:
+          - img [ref=e40568]
+      - generic [ref=e40570]:
+        - checkbox [ref=e40571] [cursor=pointer]
+        - generic [ref=e40572]:
+          - generic [ref=e40573]:
+            - generic [ref=e40574]: sand
+            - generic [ref=e40575]: песок
+          - generic [ref=e40576]:
+            - generic [ref=e40577]: сущ.
+            - generic [ref=e40578]:
+              - img [ref=e40579]
+              - text: Выучено
+            - generic [ref=e40584]: "100"
+            - generic [ref=e40585]:
+              - img [ref=e40586]
+              - text: через 29 дней
+        - button [ref=e40590] [cursor=pointer]:
+          - img [ref=e40591]
+      - generic [ref=e40593]:
+        - checkbox [ref=e40594] [cursor=pointer]
+        - generic [ref=e40595]:
+          - generic [ref=e40596]:
+            - generic [ref=e40597]: savne
+            - generic [ref=e40598]: скучать, не хватать
+          - generic [ref=e40599]:
+            - generic [ref=e40600]: гл.
+            - generic [ref=e40601]:
+              - img [ref=e40602]
+              - text: Выучено
+            - generic [ref=e40607]: "100"
+            - generic [ref=e40608]:
+              - img [ref=e40609]
+              - text: через 29 дней
+        - button [ref=e40613] [cursor=pointer]:
+          - img [ref=e40614]
+      - generic [ref=e40616]:
+        - checkbox [ref=e40617] [cursor=pointer]
+        - generic [ref=e40618]:
+          - generic [ref=e40619]:
+            - generic [ref=e40620]: blande
+            - generic [ref=e40621]: смешивать
+          - generic [ref=e40622]:
+            - generic [ref=e40623]: гл.
+            - generic [ref=e40624]:
+              - img [ref=e40625]
+              - text: Выучено
+            - generic [ref=e40630]: "100"
+            - generic [ref=e40631]:
+              - img [ref=e40632]
+              - text: через 29 дней
+        - button [ref=e40636] [cursor=pointer]:
+          - img [ref=e40637]
+      - generic [ref=e40639]:
+        - checkbox [ref=e40640] [cursor=pointer]
+        - generic [ref=e40641]:
+          - generic [ref=e40642]:
+            - generic [ref=e40643]: øverst
+            - generic [ref=e40644]: верхний
+          - generic [ref=e40645]:
+            - generic [ref=e40646]: прил.
+            - generic [ref=e40647]:
+              - img [ref=e40648]
+              - text: Выучено
+            - generic [ref=e40653]: "100"
+            - generic [ref=e40654]:
+              - img [ref=e40655]
+              - text: через 29 дней
+        - button [ref=e40659] [cursor=pointer]:
+          - img [ref=e40660]
+      - generic [ref=e40662]:
+        - checkbox [ref=e40663] [cursor=pointer]
+        - generic [ref=e40664]:
+          - generic [ref=e40665]:
+            - generic [ref=e40666]: vennskap
+            - generic [ref=e40667]: дружба
+          - generic [ref=e40668]:
+            - generic [ref=e40669]: сущ.
+            - generic [ref=e40670]:
+              - img [ref=e40671]
+              - text: Выучено
+            - generic [ref=e40676]: "100"
+            - generic [ref=e40677]:
+              - img [ref=e40678]
+              - text: через 29 дней
+        - button [ref=e40682] [cursor=pointer]:
+          - img [ref=e40683]
+      - generic [ref=e40685]:
+        - checkbox [ref=e40686] [cursor=pointer]
+        - generic [ref=e40687]:
+          - generic [ref=e40688]:
+            - generic [ref=e40689]: humør
+            - generic [ref=e40690]: настроение
+          - generic [ref=e40691]:
+            - generic [ref=e40692]: сущ.
+            - generic [ref=e40693]:
+              - img [ref=e40694]
+              - text: Выучено
+            - generic [ref=e40699]: "100"
+            - generic [ref=e40700]:
+              - img [ref=e40701]
+              - text: через 29 дней
+        - button [ref=e40705] [cursor=pointer]:
+          - img [ref=e40706]
+      - generic [ref=e40708]:
+        - checkbox [ref=e40709] [cursor=pointer]
+        - generic [ref=e40710]:
+          - generic [ref=e40711]:
+            - generic [ref=e40712]: kollega
+            - generic [ref=e40713]: коллега
+          - generic [ref=e40714]:
+            - generic [ref=e40715]: сущ.
+            - generic [ref=e40716]:
+              - img [ref=e40717]
+              - text: Выучено
+            - generic [ref=e40722]: "100"
+            - generic [ref=e40723]:
+              - img [ref=e40724]
+              - text: через 29 дней
+        - button [ref=e40728] [cursor=pointer]:
+          - img [ref=e40729]
+      - generic [ref=e40731]:
+        - checkbox [ref=e40732] [cursor=pointer]
+        - generic [ref=e40733]:
+          - generic [ref=e40734]:
+            - generic [ref=e40735]: miljøvennlig
+            - generic [ref=e40736]: экологичный, безвредный для окружающей среды
+          - generic [ref=e40737]:
+            - generic [ref=e40738]: прил.
+            - generic [ref=e40739]:
+              - img [ref=e40740]
+              - text: Выучено
+            - generic [ref=e40745]: "100"
+            - generic [ref=e40746]:
+              - img [ref=e40747]
+              - text: через 29 дней
+        - button [ref=e40751] [cursor=pointer]:
+          - img [ref=e40752]
+      - generic [ref=e40754]:
+        - checkbox [ref=e40755] [cursor=pointer]
+        - generic [ref=e40756]:
+          - generic [ref=e40757]:
+            - generic [ref=e40758]: dobbel
+            - generic [ref=e40759]: двойной, удвоенный
+          - generic [ref=e40760]:
+            - generic [ref=e40761]: прил.
+            - generic [ref=e40762]:
+              - img [ref=e40763]
+              - text: Выучено
+            - generic [ref=e40768]: "100"
+            - generic [ref=e40769]:
+              - img [ref=e40770]
+              - text: через 29 дней
+        - button [ref=e40774] [cursor=pointer]:
+          - img [ref=e40775]
+      - generic [ref=e40777]:
+        - checkbox [ref=e40778] [cursor=pointer]
+        - generic [ref=e40779]:
+          - generic [ref=e40780]:
+            - generic [ref=e40781]: baker
+            - generic [ref=e40782]: пекарь
+          - generic [ref=e40783]:
+            - generic [ref=e40784]: сущ.
+            - generic [ref=e40785]:
+              - img [ref=e40786]
+              - text: Выучено
+            - generic [ref=e40791]: "100"
+            - generic [ref=e40792]:
+              - img [ref=e40793]
+              - text: через 29 дней
+        - button [ref=e40797] [cursor=pointer]:
+          - img [ref=e40798]
+      - generic [ref=e40800]:
+        - checkbox [ref=e40801] [cursor=pointer]
+        - generic [ref=e40802]:
+          - generic [ref=e40803]:
+            - generic [ref=e40804]: tynn
+            - generic [ref=e40805]: тонкий
+          - generic [ref=e40806]:
+            - generic [ref=e40807]: прил.
+            - generic [ref=e40808]:
+              - img [ref=e40809]
+              - text: Выучено
+            - generic [ref=e40814]: "100"
+            - generic [ref=e40815]:
+              - img [ref=e40816]
+              - text: через 29 дней
+        - button [ref=e40820] [cursor=pointer]:
+          - img [ref=e40821]
+      - generic [ref=e40823]:
+        - checkbox [ref=e40824] [cursor=pointer]
+        - generic [ref=e40825]:
+          - generic [ref=e40826]:
+            - generic [ref=e40827]: tapet
+            - generic [ref=e40828]: обои
+          - generic [ref=e40829]:
+            - generic [ref=e40830]: сущ.
+            - generic [ref=e40831]:
+              - img [ref=e40832]
+              - text: Выучено
+            - generic [ref=e40837]: "100"
+            - generic [ref=e40838]:
+              - img [ref=e40839]
+              - text: через 29 дней
+        - button [ref=e40843] [cursor=pointer]:
+          - img [ref=e40844]
+      - generic [ref=e40846]:
+        - checkbox [ref=e40847] [cursor=pointer]
+        - generic [ref=e40848]:
+          - generic [ref=e40849]:
+            - generic [ref=e40850]: trygghet
+            - generic [ref=e40851]: безопасность, доверие
+          - generic [ref=e40852]:
+            - generic [ref=e40853]: сущ.
+            - generic [ref=e40854]:
+              - img [ref=e40855]
+              - text: Выучено
+            - generic [ref=e40860]: "100"
+            - generic [ref=e40861]:
+              - img [ref=e40862]
+              - text: через 29 дней
+        - button [ref=e40866] [cursor=pointer]:
+          - img [ref=e40867]
+      - generic [ref=e40869]:
+        - checkbox [ref=e40870] [cursor=pointer]
+        - generic [ref=e40871]:
+          - generic [ref=e40872]:
+            - generic [ref=e40873]: bibliotek
+            - generic [ref=e40874]: библиотека
+          - generic [ref=e40875]:
+            - generic [ref=e40876]: сущ.
+            - generic [ref=e40877]:
+              - img [ref=e40878]
+              - text: Выучено
+            - generic [ref=e40883]: "100"
+            - generic [ref=e40884]:
+              - img [ref=e40885]
+              - text: через 29 дней
+        - button [ref=e40889] [cursor=pointer]:
+          - img [ref=e40890]
+      - generic [ref=e40892]:
+        - checkbox [ref=e40893] [cursor=pointer]
+        - generic [ref=e40894]:
+          - generic [ref=e40895]:
+            - generic [ref=e40896]: utstilling
+            - generic [ref=e40897]: выставка
+          - generic [ref=e40898]:
+            - generic [ref=e40899]: сущ.
+            - generic [ref=e40900]:
+              - img [ref=e40901]
+              - text: Выучено
+            - generic [ref=e40906]: "100"
+            - generic [ref=e40907]:
+              - img [ref=e40908]
+              - text: через 29 дней
+        - button [ref=e40912] [cursor=pointer]:
+          - img [ref=e40913]
+      - generic [ref=e40915]:
+        - checkbox [ref=e40916] [cursor=pointer]
+        - generic [ref=e40917]:
+          - generic [ref=e40918]:
+            - generic [ref=e40919]: berømte
+            - generic [ref=e40920]: знаменитый, известный
+          - generic [ref=e40921]:
+            - generic [ref=e40922]: прил.
+            - generic [ref=e40923]:
+              - img [ref=e40924]
+              - text: Выучено
+            - generic [ref=e40929]: "100"
+            - generic [ref=e40930]:
+              - img [ref=e40931]
+              - text: через 29 дней
+        - button [ref=e40935] [cursor=pointer]:
+          - img [ref=e40936]
+      - generic [ref=e40938]:
+        - checkbox [ref=e40939] [cursor=pointer]
+        - generic [ref=e40940]:
+          - generic [ref=e40941]:
+            - generic [ref=e40942]: teater
+            - generic [ref=e40943]: театр
+          - generic [ref=e40944]:
+            - generic [ref=e40945]: сущ.
+            - generic [ref=e40946]:
+              - img [ref=e40947]
+              - text: Выучено
+            - generic [ref=e40952]: "100"
+            - generic [ref=e40953]:
+              - img [ref=e40954]
+              - text: через 29 дней
+        - button [ref=e40958] [cursor=pointer]:
+          - img [ref=e40959]
+      - generic [ref=e40961]:
+        - checkbox [ref=e40962] [cursor=pointer]
+        - generic [ref=e40963]:
+          - generic [ref=e40964]:
+            - generic [ref=e40965]: advarsel
+            - generic [ref=e40966]: предупреждение
+          - generic [ref=e40967]:
+            - generic [ref=e40968]: сущ.
+            - generic [ref=e40969]:
+              - img [ref=e40970]
+              - text: Выучено
+            - generic [ref=e40975]: "100"
+            - generic [ref=e40976]:
+              - img [ref=e40977]
+              - text: через 29 дней
+        - button [ref=e40981] [cursor=pointer]:
+          - img [ref=e40982]
+      - generic [ref=e40984]:
+        - checkbox [ref=e40985] [cursor=pointer]
+        - generic [ref=e40986]:
+          - generic [ref=e40987]:
+            - generic [ref=e40988]: pasient
+            - generic [ref=e40989]: пациент
+          - generic [ref=e40990]:
+            - generic [ref=e40991]: сущ.
+            - generic [ref=e40992]:
+              - img [ref=e40993]
+              - text: Выучено
+            - generic [ref=e40998]: "100"
+            - generic [ref=e40999]:
+              - img [ref=e41000]
+              - text: через 29 дней
+        - button [ref=e41004] [cursor=pointer]:
+          - img [ref=e41005]
+      - generic [ref=e41007]:
+        - checkbox [ref=e41008] [cursor=pointer]
+        - generic [ref=e41009]:
+          - generic [ref=e41010]:
+            - generic [ref=e41011]: lyse
+            - generic [ref=e41012]: светить, сиять
+          - generic [ref=e41013]:
+            - generic [ref=e41014]: гл.
+            - generic [ref=e41015]:
+              - img [ref=e41016]
+              - text: Выучено
+            - generic [ref=e41021]: "100"
+            - generic [ref=e41022]:
+              - img [ref=e41023]
+              - text: через 29 дней
+        - button [ref=e41027] [cursor=pointer]:
+          - img [ref=e41028]
+      - generic [ref=e41030]:
+        - checkbox [ref=e41031] [cursor=pointer]
+        - generic [ref=e41032]:
+          - generic [ref=e41033]:
+            - generic [ref=e41034]: roman
+            - generic [ref=e41035]: роман
+          - generic [ref=e41036]:
+            - generic [ref=e41037]: сущ.
+            - generic [ref=e41038]:
+              - img [ref=e41039]
+              - text: Выучено
+            - generic [ref=e41044]: "100"
+            - generic [ref=e41045]:
+              - img [ref=e41046]
+              - text: через 29 дней
+        - button [ref=e41050] [cursor=pointer]:
+          - img [ref=e41051]
+      - generic [ref=e41053]:
+        - checkbox [ref=e41054] [cursor=pointer]
+        - generic [ref=e41055]:
+          - generic [ref=e41056]:
+            - generic [ref=e41057]: panikk
+            - generic [ref=e41058]: паника
+          - generic [ref=e41059]:
+            - generic [ref=e41060]: сущ.
+            - generic [ref=e41061]:
+              - img [ref=e41062]
+              - text: Выучено
+            - generic [ref=e41067]: "100"
+            - generic [ref=e41068]:
+              - img [ref=e41069]
+              - text: через 29 дней
+        - button [ref=e41073] [cursor=pointer]:
+          - img [ref=e41074]
+      - generic [ref=e41076]:
+        - checkbox [ref=e41077] [cursor=pointer]
+        - generic [ref=e41078]:
+          - generic [ref=e41079]:
+            - generic [ref=e41080]: dyrere
+            - generic [ref=e41081]: дороже
+          - generic [ref=e41082]:
+            - generic [ref=e41083]: прил.
+            - generic [ref=e41084]:
+              - img [ref=e41085]
+              - text: Выучено
+            - generic [ref=e41090]: "100"
+            - generic [ref=e41091]:
+              - img [ref=e41092]
+              - text: через 29 дней
+        - button [ref=e41096] [cursor=pointer]:
+          - img [ref=e41097]
+      - generic [ref=e41099]:
+        - checkbox [ref=e41100] [cursor=pointer]
+        - generic [ref=e41101]:
+          - generic [ref=e41102]:
+            - generic [ref=e41103]: sjokk
+            - generic [ref=e41104]: шок
+          - generic [ref=e41105]:
+            - generic [ref=e41106]: сущ.
+            - generic [ref=e41107]:
+              - img [ref=e41108]
+              - text: Выучено
+            - generic [ref=e41113]: "100"
+            - generic [ref=e41114]:
+              - img [ref=e41115]
+              - text: через 29 дней
+        - button [ref=e41119] [cursor=pointer]:
+          - img [ref=e41120]
+      - generic [ref=e41122]:
+        - checkbox [ref=e41123] [cursor=pointer]
+        - generic [ref=e41124]:
+          - generic [ref=e41125]:
+            - generic [ref=e41126]: låst
+            - generic [ref=e41127]: запертый
+          - generic [ref=e41128]:
+            - generic [ref=e41129]: прил.
+            - generic [ref=e41130]:
+              - img [ref=e41131]
+              - text: Выучено
+            - generic [ref=e41136]: "100"
+            - generic [ref=e41137]:
+              - img [ref=e41138]
+              - text: через 29 дней
+        - button [ref=e41142] [cursor=pointer]:
+          - img [ref=e41143]
+      - generic [ref=e41145]:
+        - checkbox [ref=e41146] [cursor=pointer]
+        - generic [ref=e41147]:
+          - generic [ref=e41148]:
+            - generic [ref=e41149]: øve
+            - generic [ref=e41150]: тренироваться, упражняться
+          - generic [ref=e41151]:
+            - generic [ref=e41152]: гл.
+            - generic [ref=e41153]:
+              - img [ref=e41154]
+              - text: Выучено
+            - generic [ref=e41159]: "100"
+            - generic [ref=e41160]:
+              - img [ref=e41161]
+              - text: через 29 дней
+        - button [ref=e41165] [cursor=pointer]:
+          - img [ref=e41166]
+      - generic [ref=e41168]:
+        - checkbox [ref=e41169] [cursor=pointer]
+        - generic [ref=e41170]:
+          - generic [ref=e41171]:
+            - generic [ref=e41172]: vennligst
+            - generic [ref=e41173]: пожалуйста
+          - generic [ref=e41174]:
+            - generic [ref=e41175]: нареч.
+            - generic [ref=e41176]:
+              - img [ref=e41177]
+              - text: Выучено
+            - generic [ref=e41182]: "100"
+            - generic [ref=e41183]:
+              - img [ref=e41184]
+              - text: через 29 дней
+        - button [ref=e41188] [cursor=pointer]:
+          - img [ref=e41189]
+      - generic [ref=e41191]:
+        - checkbox [ref=e41192] [cursor=pointer]
+        - generic [ref=e41193]:
+          - generic [ref=e41194]:
+            - generic [ref=e41195]: invitere
+            - generic [ref=e41196]: приглашать
+          - generic [ref=e41197]:
+            - generic [ref=e41198]: гл.
+            - generic [ref=e41199]:
+              - img [ref=e41200]
+              - text: Выучено
+            - generic [ref=e41205]: "100"
+            - generic [ref=e41206]:
+              - img [ref=e41207]
+              - text: через 29 дней
+        - button [ref=e41211] [cursor=pointer]:
+          - img [ref=e41212]
+      - generic [ref=e41214]:
+        - checkbox [ref=e41215] [cursor=pointer]
+        - generic [ref=e41216]:
+          - generic [ref=e41217]:
+            - generic [ref=e41218]: omtale
+            - generic [ref=e41219]: отзыв, обзор, упоминание
+          - generic [ref=e41220]:
+            - generic [ref=e41221]: сущ.
+            - generic [ref=e41222]:
+              - img [ref=e41223]
+              - text: Выучено
+            - generic [ref=e41228]: "100"
+            - generic [ref=e41229]:
+              - img [ref=e41230]
+              - text: через 29 дней
+        - button [ref=e41234] [cursor=pointer]:
+          - img [ref=e41235]
+      - generic [ref=e41237]:
+        - checkbox [ref=e41238] [cursor=pointer]
+        - generic [ref=e41239]:
+          - generic [ref=e41240]:
+            - generic [ref=e41241]: beliggenhet
+            - generic [ref=e41242]: расположение
+          - generic [ref=e41243]:
+            - generic [ref=e41244]: сущ.
+            - generic [ref=e41245]:
+              - img [ref=e41246]
+              - text: Выучено
+            - generic [ref=e41251]: "100"
+            - generic [ref=e41252]:
+              - img [ref=e41253]
+              - text: через 29 дней
+        - button [ref=e41257] [cursor=pointer]:
+          - img [ref=e41258]
+      - generic [ref=e41260]:
+        - checkbox [ref=e41261] [cursor=pointer]
+        - generic [ref=e41262]:
+          - generic [ref=e41263]:
+            - generic [ref=e41264]: sky
+            - generic [ref=e41265]: облако
+          - generic [ref=e41266]:
+            - generic [ref=e41267]: сущ.
+            - generic [ref=e41268]:
+              - img [ref=e41269]
+              - text: Выучено
+            - generic [ref=e41274]: "100"
+            - generic [ref=e41275]:
+              - img [ref=e41276]
+              - text: через 29 дней
+        - button [ref=e41280] [cursor=pointer]:
+          - img [ref=e41281]
+      - generic [ref=e41283]:
+        - checkbox [ref=e41284] [cursor=pointer]
+        - generic [ref=e41285]:
+          - generic [ref=e41286]:
+            - generic [ref=e41287]: oppdatere
+            - generic [ref=e41288]: обновлять
+          - generic [ref=e41289]:
+            - generic [ref=e41290]: гл.
+            - generic [ref=e41291]:
+              - img [ref=e41292]
+              - text: Выучено
+            - generic [ref=e41297]: "100"
+            - generic [ref=e41298]:
+              - img [ref=e41299]
+              - text: через 29 дней
+        - button [ref=e41303] [cursor=pointer]:
+          - img [ref=e41304]
+      - generic [ref=e41306]:
+        - checkbox [ref=e41307] [cursor=pointer]
+        - generic [ref=e41308]:
+          - generic [ref=e41309]:
+            - generic [ref=e41310]: eie
+            - generic [ref=e41311]: владеть, иметь
+          - generic [ref=e41312]:
+            - generic [ref=e41313]: гл.
+            - generic [ref=e41314]:
+              - img [ref=e41315]
+              - text: Выучено
+            - generic [ref=e41320]: "100"
+            - generic [ref=e41321]:
+              - img [ref=e41322]
+              - text: через 29 дней
+        - button [ref=e41326] [cursor=pointer]:
+          - img [ref=e41327]
+      - generic [ref=e41329]:
+        - checkbox [ref=e41330] [cursor=pointer]
+        - generic [ref=e41331]:
+          - generic [ref=e41332]:
+            - generic [ref=e41333]: maskin
+            - generic [ref=e41334]: машина, механизм
+          - generic [ref=e41335]:
+            - generic [ref=e41336]: сущ.
+            - generic [ref=e41337]:
+              - img [ref=e41338]
+              - text: Выучено
+            - generic [ref=e41343]: "100"
+            - generic [ref=e41344]:
+              - img [ref=e41345]
+              - text: через 29 дней
+        - button [ref=e41349] [cursor=pointer]:
+          - img [ref=e41350]
+      - generic [ref=e41352]:
+        - checkbox [ref=e41353] [cursor=pointer]
+        - generic [ref=e41354]:
+          - generic [ref=e41355]:
+            - generic [ref=e41356]: kanal
+            - generic [ref=e41357]: канал
+          - generic [ref=e41358]:
+            - generic [ref=e41359]: сущ.
+            - generic [ref=e41360]:
+              - img [ref=e41361]
+              - text: Выучено
+            - generic [ref=e41366]: "100"
+            - generic [ref=e41367]:
+              - img [ref=e41368]
+              - text: через 29 дней
+        - button [ref=e41372] [cursor=pointer]:
+          - img [ref=e41373]
+      - generic [ref=e41375]:
+        - checkbox [ref=e41376] [cursor=pointer]
+        - generic [ref=e41377]:
+          - generic [ref=e41378]:
+            - generic [ref=e41379]: ledig
+            - generic [ref=e41380]: свободный, вакантный
+          - generic [ref=e41381]:
+            - generic [ref=e41382]: прил.
+            - generic [ref=e41383]:
+              - img [ref=e41384]
+              - text: Выучено
+            - generic [ref=e41389]: "100"
+            - generic [ref=e41390]:
+              - img [ref=e41391]
+              - text: через 29 дней
+        - button [ref=e41395] [cursor=pointer]:
+          - img [ref=e41396]
+      - generic [ref=e41398]:
+        - checkbox [ref=e41399] [cursor=pointer]
+        - generic [ref=e41400]:
+          - generic [ref=e41401]:
+            - generic [ref=e41402]: øre
+            - generic [ref=e41403]: ухо
+          - generic [ref=e41404]:
+            - generic [ref=e41405]: сущ.
+            - generic [ref=e41406]:
+              - img [ref=e41407]
+              - text: Выучено
+            - generic [ref=e41412]: "100"
+            - generic [ref=e41413]:
+              - img [ref=e41414]
+              - text: через 29 дней
+        - button [ref=e41418] [cursor=pointer]:
+          - img [ref=e41419]
+      - generic [ref=e41421]:
+        - checkbox [ref=e41422] [cursor=pointer]
+        - generic [ref=e41423]:
+          - generic [ref=e41424]:
+            - generic [ref=e41425]: gjest
+            - generic [ref=e41426]: гость
+          - generic [ref=e41427]:
+            - generic [ref=e41428]: сущ.
+            - generic [ref=e41429]:
+              - img [ref=e41430]
+              - text: Выучено
+            - generic [ref=e41435]: "100"
+            - generic [ref=e41436]:
+              - img [ref=e41437]
+              - text: через 29 дней
+        - button [ref=e41441] [cursor=pointer]:
+          - img [ref=e41442]
+      - generic [ref=e41444]:
+        - checkbox [ref=e41445] [cursor=pointer]
+        - generic [ref=e41446]:
+          - generic [ref=e41447]:
+            - generic [ref=e41448]: dekk
+            - generic [ref=e41449]: шина, покрышка
+          - generic [ref=e41450]:
+            - generic [ref=e41451]: сущ.
+            - generic [ref=e41452]:
+              - img [ref=e41453]
+              - text: Выучено
+            - generic [ref=e41458]: "100"
+            - generic [ref=e41459]:
+              - img [ref=e41460]
+              - text: через 29 дней
+        - button [ref=e41464] [cursor=pointer]:
+          - img [ref=e41465]
+      - generic [ref=e41467]:
+        - checkbox [ref=e41468] [cursor=pointer]
+        - generic [ref=e41469]:
+          - generic [ref=e41470]:
+            - generic [ref=e41471]: ordne
+            - generic [ref=e41472]: организовывать, улаживать
+          - generic [ref=e41473]:
+            - generic [ref=e41474]: гл.
+            - generic [ref=e41475]:
+              - img [ref=e41476]
+              - text: Выучено
+            - generic [ref=e41481]: "100"
+            - generic [ref=e41482]:
+              - img [ref=e41483]
+              - text: через 29 дней
+        - button [ref=e41487] [cursor=pointer]:
+          - img [ref=e41488]
+      - generic [ref=e41490]:
+        - checkbox [ref=e41491] [cursor=pointer]
+        - generic [ref=e41492]:
+          - generic [ref=e41493]:
+            - generic [ref=e41494]: pensjon
+            - generic [ref=e41495]: пенсия
+          - generic [ref=e41496]:
+            - generic [ref=e41497]: сущ.
+            - generic [ref=e41498]:
+              - img [ref=e41499]
+              - text: Выучено
+            - generic [ref=e41504]: "100"
+            - generic [ref=e41505]:
+              - img [ref=e41506]
+              - text: через 29 дней
+        - button [ref=e41510] [cursor=pointer]:
+          - img [ref=e41511]
+      - generic [ref=e41513]:
+        - checkbox [ref=e41514] [cursor=pointer]
+        - generic [ref=e41515]:
+          - generic [ref=e41516]:
+            - generic [ref=e41517]: lek
+            - generic [ref=e41518]: игра
+          - generic [ref=e41519]:
+            - generic [ref=e41520]: сущ.
+            - generic [ref=e41521]:
+              - img [ref=e41522]
+              - text: Выучено
+            - generic [ref=e41527]: "100"
+            - generic [ref=e41528]:
+              - img [ref=e41529]
+              - text: через 29 дней
+        - button [ref=e41533] [cursor=pointer]:
+          - img [ref=e41534]
+      - generic [ref=e41536]:
+        - checkbox [ref=e41537] [cursor=pointer]
+        - generic [ref=e41538]:
+          - generic [ref=e41539]:
+            - generic [ref=e41540]: bakover
+            - generic [ref=e41541]: назад
+          - generic [ref=e41542]:
+            - generic [ref=e41543]: нареч.
+            - generic [ref=e41544]:
+              - img [ref=e41545]
+              - text: Выучено
+            - generic [ref=e41550]: "100"
+            - generic [ref=e41551]:
+              - img [ref=e41552]
+              - text: через 29 дней
+        - button [ref=e41556] [cursor=pointer]:
+          - img [ref=e41557]
+      - generic [ref=e41559]:
+        - checkbox [ref=e41560] [cursor=pointer]
+        - generic [ref=e41561]:
+          - generic [ref=e41562]:
+            - generic [ref=e41563]: gråte
+            - generic [ref=e41564]: плакать
+          - generic [ref=e41565]:
+            - generic [ref=e41566]: гл.
+            - generic [ref=e41567]:
+              - img [ref=e41568]
+              - text: Выучено
+            - generic [ref=e41573]: "100"
+            - generic [ref=e41574]:
+              - img [ref=e41575]
+              - text: через 29 дней
+        - button [ref=e41579] [cursor=pointer]:
+          - img [ref=e41580]
+      - generic [ref=e41582]:
+        - checkbox [ref=e41583] [cursor=pointer]
+        - generic [ref=e41584]:
+          - generic [ref=e41585]:
+            - generic [ref=e41586]: plukke
+            - generic [ref=e41587]: собирать
+          - generic [ref=e41588]:
+            - generic [ref=e41589]: гл.
+            - generic [ref=e41590]:
+              - img [ref=e41591]
+              - text: Выучено
+            - generic [ref=e41596]: "100"
+            - generic [ref=e41597]:
+              - img [ref=e41598]
+              - text: через 29 дней
+        - button [ref=e41602] [cursor=pointer]:
+          - img [ref=e41603]
+      - generic [ref=e41605]:
+        - checkbox [ref=e41606] [cursor=pointer]
+        - generic [ref=e41607]:
+          - generic [ref=e41608]:
+            - generic [ref=e41609]: bekrefte
+            - generic [ref=e41610]: подтверждать
+          - generic [ref=e41611]:
+            - generic [ref=e41612]: гл.
+            - generic [ref=e41613]:
+              - img [ref=e41614]
+              - text: Выучено
+            - generic [ref=e41619]: "100"
+            - generic [ref=e41620]:
+              - img [ref=e41621]
+              - text: через 29 дней
+        - button [ref=e41625] [cursor=pointer]:
+          - img [ref=e41626]
+      - generic [ref=e41628]:
+        - checkbox [ref=e41629] [cursor=pointer]
+        - generic [ref=e41630]:
+          - generic [ref=e41631]:
+            - generic [ref=e41632]: trinn
+            - generic [ref=e41633]: ступень, шаг, уровень
+          - generic [ref=e41634]:
+            - generic [ref=e41635]: сущ.
+            - generic [ref=e41636]:
+              - img [ref=e41637]
+              - text: Выучено
+            - generic [ref=e41642]: "100"
+            - generic [ref=e41643]:
+              - img [ref=e41644]
+              - text: через 29 дней
+        - button [ref=e41648] [cursor=pointer]:
+          - img [ref=e41649]
+      - generic [ref=e41651]:
+        - checkbox [ref=e41652] [cursor=pointer]
+        - generic [ref=e41653]:
+          - generic [ref=e41654]:
+            - generic [ref=e41655]: hende
+            - generic [ref=e41656]: случаться, происходить
+          - generic [ref=e41657]:
+            - generic [ref=e41658]: гл.
+            - generic [ref=e41659]:
+              - img [ref=e41660]
+              - text: Выучено
+            - generic [ref=e41665]: "100"
+            - generic [ref=e41666]:
+              - img [ref=e41667]
+              - text: через 29 дней
+        - button [ref=e41671] [cursor=pointer]:
+          - img [ref=e41672]
+      - generic [ref=e41674]:
+        - checkbox [ref=e41675] [cursor=pointer]
+        - generic [ref=e41676]:
+          - generic [ref=e41677]:
+            - generic [ref=e41678]: temperatur
+            - generic [ref=e41679]: температура
+          - generic [ref=e41680]:
+            - generic [ref=e41681]: сущ.
+            - generic [ref=e41682]:
+              - img [ref=e41683]
+              - text: Выучено
+            - generic [ref=e41688]: "100"
+            - generic [ref=e41689]:
+              - img [ref=e41690]
+              - text: через 29 дней
+        - button [ref=e41694] [cursor=pointer]:
+          - img [ref=e41695]
+      - generic [ref=e41697]:
+        - checkbox [ref=e41698] [cursor=pointer]
+        - generic [ref=e41699]:
+          - generic [ref=e41700]:
+            - generic [ref=e41701]: oppvarming
+            - generic [ref=e41702]: отопление
+          - generic [ref=e41703]:
+            - generic [ref=e41704]: сущ.
+            - generic [ref=e41705]:
+              - img [ref=e41706]
+              - text: Выучено
+            - generic [ref=e41711]: "100"
+            - generic [ref=e41712]:
+              - img [ref=e41713]
+              - text: через 29 дней
+        - button [ref=e41717] [cursor=pointer]:
+          - img [ref=e41718]
+      - generic [ref=e41720]:
+        - checkbox [ref=e41721] [cursor=pointer]
+        - generic [ref=e41722]:
+          - generic [ref=e41723]:
+            - generic [ref=e41724]: slette
+            - generic [ref=e41725]: удалять, стирать
+          - generic [ref=e41726]:
+            - generic [ref=e41727]: гл.
+            - generic [ref=e41728]:
+              - img [ref=e41729]
+              - text: Выучено
+            - generic [ref=e41734]: "100"
+            - generic [ref=e41735]:
+              - img [ref=e41736]
+              - text: через 29 дней
+        - button [ref=e41740] [cursor=pointer]:
+          - img [ref=e41741]
+      - generic [ref=e41743]:
+        - checkbox [ref=e41744] [cursor=pointer]
+        - generic [ref=e41745]:
+          - generic [ref=e41746]:
+            - generic [ref=e41747]: lengde
+            - generic [ref=e41748]: длина
+          - generic [ref=e41749]:
+            - generic [ref=e41750]: сущ.
+            - generic [ref=e41751]:
+              - img [ref=e41752]
+              - text: Выучено
+            - generic [ref=e41757]: "100"
+            - generic [ref=e41758]:
+              - img [ref=e41759]
+              - text: через 29 дней
+        - button [ref=e41763] [cursor=pointer]:
+          - img [ref=e41764]
+      - generic [ref=e41766]:
+        - checkbox [ref=e41767] [cursor=pointer]
+        - generic [ref=e41768]:
+          - generic [ref=e41769]:
+            - generic [ref=e41770]: etasje
+            - generic [ref=e41771]: этаж
+          - generic [ref=e41772]:
+            - generic [ref=e41773]: сущ.
+            - generic [ref=e41774]:
+              - img [ref=e41775]
+              - text: Выучено
+            - generic [ref=e41780]: "100"
+            - generic [ref=e41781]:
+              - img [ref=e41782]
+              - text: через 29 дней
+        - button [ref=e41786] [cursor=pointer]:
+          - img [ref=e41787]
+      - generic [ref=e41789]:
+        - checkbox [ref=e41790] [cursor=pointer]
+        - generic [ref=e41791]:
+          - generic [ref=e41792]:
+            - generic [ref=e41793]: våken
+            - generic [ref=e41794]: бодрствующий, проснувшийся
+          - generic [ref=e41795]:
+            - generic [ref=e41796]: прил.
+            - generic [ref=e41797]:
+              - img [ref=e41798]
+              - text: Выучено
+            - generic [ref=e41803]: "100"
+            - generic [ref=e41804]:
+              - img [ref=e41805]
+              - text: через 29 дней
+        - button [ref=e41809] [cursor=pointer]:
+          - img [ref=e41810]
+      - generic [ref=e41812]:
+        - checkbox [ref=e41813] [cursor=pointer]
+        - generic [ref=e41814]:
+          - generic [ref=e41815]:
+            - generic [ref=e41816]: sektor
+            - generic [ref=e41817]: сектор, отрасль
+          - generic [ref=e41818]:
+            - generic [ref=e41819]: сущ.
+            - generic [ref=e41820]:
+              - img [ref=e41821]
+              - text: Выучено
+            - generic [ref=e41826]: "100"
+            - generic [ref=e41827]:
+              - img [ref=e41828]
+              - text: через 29 дней
+        - button [ref=e41832] [cursor=pointer]:
+          - img [ref=e41833]
+      - generic [ref=e41835]:
+        - checkbox [ref=e41836] [cursor=pointer]
+        - generic [ref=e41837]:
+          - generic [ref=e41838]:
+            - generic [ref=e41839]: oppdatering
+            - generic [ref=e41840]: обновление
+          - generic [ref=e41841]:
+            - generic [ref=e41842]: сущ.
+            - generic [ref=e41843]:
+              - img [ref=e41844]
+              - text: Выучено
+            - generic [ref=e41849]: "100"
+            - generic [ref=e41850]:
+              - img [ref=e41851]
+              - text: через 29 дней
+        - button [ref=e41855] [cursor=pointer]:
+          - img [ref=e41856]
+      - generic [ref=e41858]:
+        - checkbox [ref=e41859] [cursor=pointer]
+        - generic [ref=e41860]:
+          - generic [ref=e41861]:
+            - generic [ref=e41862]: cirka
+            - generic [ref=e41863]: около, приблизительно, примерно
+          - generic [ref=e41864]:
+            - generic [ref=e41865]: нареч.
+            - generic [ref=e41866]:
+              - img [ref=e41867]
+              - text: Выучено
+            - generic [ref=e41872]: "100"
+            - generic [ref=e41873]:
+              - img [ref=e41874]
+              - text: через 29 дней
+        - button [ref=e41878] [cursor=pointer]:
+          - img [ref=e41879]
+      - generic [ref=e41881]:
+        - checkbox [ref=e41882] [cursor=pointer]
+        - generic [ref=e41883]:
+          - generic [ref=e41884]:
+            - generic [ref=e41885]: sannhet
+            - generic [ref=e41886]: правда, истина
+          - generic [ref=e41887]:
+            - generic [ref=e41888]: сущ.
+            - generic [ref=e41889]:
+              - img [ref=e41890]
+              - text: Выучено
+            - generic [ref=e41895]: "100"
+            - generic [ref=e41896]:
+              - img [ref=e41897]
+              - text: через 29 дней
+        - button [ref=e41901] [cursor=pointer]:
+          - img [ref=e41902]
+      - generic [ref=e41904]:
+        - checkbox [ref=e41905] [cursor=pointer]
+        - generic [ref=e41906]:
+          - generic [ref=e41907]:
+            - generic [ref=e41908]: grense
+            - generic [ref=e41909]: граница
+          - generic [ref=e41910]:
+            - generic [ref=e41911]: сущ.
+            - generic [ref=e41912]:
+              - img [ref=e41913]
+              - text: Выучено
+            - generic [ref=e41918]: "100"
+            - generic [ref=e41919]:
+              - img [ref=e41920]
+              - text: через 29 дней
+        - button [ref=e41924] [cursor=pointer]:
+          - img [ref=e41925]
+      - generic [ref=e41927]:
+        - checkbox [ref=e41928] [cursor=pointer]
+        - generic [ref=e41929]:
+          - generic [ref=e41930]:
+            - generic [ref=e41931]: overraskelse
+            - generic [ref=e41932]: сюрприз, неожиданность
+          - generic [ref=e41933]:
+            - generic [ref=e41934]: сущ.
+            - generic [ref=e41935]:
+              - img [ref=e41936]
+              - text: Выучено
+            - generic [ref=e41941]: "100"
+            - generic [ref=e41942]:
+              - img [ref=e41943]
+              - text: через 29 дней
+        - button [ref=e41947] [cursor=pointer]:
+          - img [ref=e41948]
+      - generic [ref=e41950]:
+        - checkbox [ref=e41951] [cursor=pointer]
+        - generic [ref=e41952]:
+          - generic [ref=e41953]:
+            - generic [ref=e41954]: søppel
+            - generic [ref=e41955]: мусор
+          - generic [ref=e41956]:
+            - generic [ref=e41957]: сущ.
+            - generic [ref=e41958]:
+              - img [ref=e41959]
+              - text: Выучено
+            - generic [ref=e41964]: "100"
+            - generic [ref=e41965]:
+              - img [ref=e41966]
+              - text: через 29 дней
+        - button [ref=e41970] [cursor=pointer]:
+          - img [ref=e41971]
+      - generic [ref=e41973]:
+        - checkbox [ref=e41974] [cursor=pointer]
+        - generic [ref=e41975]:
+          - generic [ref=e41976]:
+            - generic [ref=e41977]: utsikt
+            - generic [ref=e41978]: вид, перспектива
+          - generic [ref=e41979]:
+            - generic [ref=e41980]: сущ.
+            - generic [ref=e41981]:
+              - img [ref=e41982]
+              - text: Выучено
+            - generic [ref=e41987]: "100"
+            - generic [ref=e41988]:
+              - img [ref=e41989]
+              - text: через 29 дней
+        - button [ref=e41993] [cursor=pointer]:
+          - img [ref=e41994]
+      - generic [ref=e41996]:
+        - checkbox [ref=e41997] [cursor=pointer]
+        - generic [ref=e41998]:
+          - generic [ref=e41999]:
+            - generic [ref=e42000]: flagg
+            - generic [ref=e42001]: флаг
+          - generic [ref=e42002]:
+            - generic [ref=e42003]: сущ.
+            - generic [ref=e42004]:
+              - img [ref=e42005]
+              - text: Выучено
+            - generic [ref=e42010]: "100"
+            - generic [ref=e42011]:
+              - img [ref=e42012]
+              - text: через 29 дней
+        - button [ref=e42016] [cursor=pointer]:
+          - img [ref=e42017]
+      - generic [ref=e42019]:
+        - checkbox [ref=e42020] [cursor=pointer]
+        - generic [ref=e42021]:
+          - generic [ref=e42022]:
+            - generic [ref=e42023]: uheldig
+            - generic [ref=e42024]: неудачливый, несчастный
+          - generic [ref=e42025]:
+            - generic [ref=e42026]: прил.
+            - generic [ref=e42027]:
+              - img [ref=e42028]
+              - text: Выучено
+            - generic [ref=e42033]: "100"
+            - generic [ref=e42034]:
+              - img [ref=e42035]
+              - text: через 29 дней
+        - button [ref=e42039] [cursor=pointer]:
+          - img [ref=e42040]
+      - generic [ref=e42042]:
+        - checkbox [ref=e42043] [cursor=pointer]
+        - generic [ref=e42044]:
+          - generic [ref=e42045]:
+            - generic [ref=e42046]: ball
+            - generic [ref=e42047]: мяч
+          - generic [ref=e42048]:
+            - generic [ref=e42049]: сущ.
+            - generic [ref=e42050]:
+              - img [ref=e42051]
+              - text: Выучено
+            - generic [ref=e42056]: "100"
+            - generic [ref=e42057]:
+              - img [ref=e42058]
+              - text: через 29 дней
+        - button [ref=e42062] [cursor=pointer]:
+          - img [ref=e42063]
+      - generic [ref=e42065]:
+        - checkbox [ref=e42066] [cursor=pointer]
+        - generic [ref=e42067]:
+          - generic [ref=e42068]:
+            - generic [ref=e42069]: gjenta
+            - generic [ref=e42070]: повторять
+          - generic [ref=e42071]:
+            - generic [ref=e42072]: гл.
+            - generic [ref=e42073]:
+              - img [ref=e42074]
+              - text: Выучено
+            - generic [ref=e42079]: "100"
+            - generic [ref=e42080]:
+              - img [ref=e42081]
+              - text: через 29 дней
+        - button [ref=e42085] [cursor=pointer]:
+          - img [ref=e42086]
+      - generic [ref=e42088]:
+        - checkbox [ref=e42089] [cursor=pointer]
+        - generic [ref=e42090]:
+          - generic [ref=e42091]:
+            - generic [ref=e42092]: ulv
+            - generic [ref=e42093]: волк
+          - generic [ref=e42094]:
+            - generic [ref=e42095]: сущ.
+            - generic [ref=e42096]:
+              - img [ref=e42097]
+              - text: Выучено
+            - generic [ref=e42102]: "100"
+            - generic [ref=e42103]:
+              - img [ref=e42104]
+              - text: через 29 дней
+        - button [ref=e42108] [cursor=pointer]:
+          - img [ref=e42109]
+      - generic [ref=e42111]:
+        - checkbox [ref=e42112] [cursor=pointer]
+        - generic [ref=e42113]:
+          - generic [ref=e42114]:
+            - generic [ref=e42115]: negativ
+            - generic [ref=e42116]: отрицательный, негативный
+          - generic [ref=e42117]:
+            - generic [ref=e42118]: прил.
+            - generic [ref=e42119]:
+              - img [ref=e42120]
+              - text: Выучено
+            - generic [ref=e42125]: "100"
+            - generic [ref=e42126]:
+              - img [ref=e42127]
+              - text: через 29 дней
+        - button [ref=e42131] [cursor=pointer]:
+          - img [ref=e42132]
+      - generic [ref=e42134]:
+        - checkbox [ref=e42135] [cursor=pointer]
+        - generic [ref=e42136]:
+          - generic [ref=e42137]:
+            - generic [ref=e42138]: bringe
+            - generic [ref=e42139]: приносить
+          - generic [ref=e42140]:
+            - generic [ref=e42141]: гл.
+            - generic [ref=e42142]:
+              - img [ref=e42143]
+              - text: Выучено
+            - generic [ref=e42148]: "100"
+            - generic [ref=e42149]:
+              - img [ref=e42150]
+              - text: через 29 дней
+        - button [ref=e42154] [cursor=pointer]:
+          - img [ref=e42155]
+      - generic [ref=e42157]:
+        - checkbox [ref=e42158] [cursor=pointer]
+        - generic [ref=e42159]:
+          - generic [ref=e42160]:
+            - generic [ref=e42161]: låne
+            - generic [ref=e42162]: одалживать, брать взаймы
+          - generic [ref=e42163]:
+            - generic [ref=e42164]: гл.
+            - generic [ref=e42165]:
+              - img [ref=e42166]
+              - text: Выучено
+            - generic [ref=e42171]: "100"
+            - generic [ref=e42172]:
+              - img [ref=e42173]
+              - text: через 29 дней
+        - button [ref=e42177] [cursor=pointer]:
+          - img [ref=e42178]
+      - generic [ref=e42180]:
+        - checkbox [ref=e42181] [cursor=pointer]
+        - generic [ref=e42182]:
+          - generic [ref=e42183]:
+            - generic [ref=e42184]: marked
+            - generic [ref=e42185]: рынок
+          - generic [ref=e42186]:
+            - generic [ref=e42187]: сущ.
+            - generic [ref=e42188]:
+              - img [ref=e42189]
+              - text: Выучено
+            - generic [ref=e42194]: "100"
+            - generic [ref=e42195]:
+              - img [ref=e42196]
+              - text: через 29 дней
+        - button [ref=e42200] [cursor=pointer]:
+          - img [ref=e42201]
+      - generic [ref=e42203]:
+        - checkbox [ref=e42204] [cursor=pointer]
+        - generic [ref=e42205]:
+          - generic [ref=e42206]:
+            - generic [ref=e42207]: nyere
+            - generic [ref=e42208]: более новый, недавний
+          - generic [ref=e42209]:
+            - generic [ref=e42210]: прил.
+            - generic [ref=e42211]:
+              - img [ref=e42212]
+              - text: Выучено
+            - generic [ref=e42217]: "100"
+            - generic [ref=e42218]:
+              - img [ref=e42219]
+              - text: через 28 дней
+        - button [ref=e42223] [cursor=pointer]:
+          - img [ref=e42224]
+      - generic [ref=e42226]:
+        - checkbox [ref=e42227] [cursor=pointer]
+        - generic [ref=e42228]:
+          - generic [ref=e42229]:
+            - generic [ref=e42230]: sølv
+            - generic [ref=e42231]: серебро
+          - generic [ref=e42232]:
+            - generic [ref=e42233]: сущ.
+            - generic [ref=e42234]:
+              - img [ref=e42235]
+              - text: Выучено
+            - generic [ref=e42240]: "100"
+            - generic [ref=e42241]:
+              - img [ref=e42242]
+              - text: через 28 дней
+        - button [ref=e42246] [cursor=pointer]:
+          - img [ref=e42247]
+      - generic [ref=e42249]:
+        - checkbox [ref=e42250] [cursor=pointer]
+        - generic [ref=e42251]:
+          - generic [ref=e42252]:
+            - generic [ref=e42253]: lytte
+            - generic [ref=e42254]: слушать
+          - generic [ref=e42255]:
+            - generic [ref=e42256]: гл.
+            - generic [ref=e42257]:
+              - img [ref=e42258]
+              - text: Выучено
+            - generic [ref=e42263]: "100"
+            - generic [ref=e42264]:
+              - img [ref=e42265]
+              - text: через 28 дней
+        - button [ref=e42269] [cursor=pointer]:
+          - img [ref=e42270]
+      - generic [ref=e42272]:
+        - checkbox [ref=e42273] [cursor=pointer]
+        - generic [ref=e42274]:
+          - generic [ref=e42275]:
+            - generic [ref=e42276]: sulten
+            - generic [ref=e42277]: голодный
+          - generic [ref=e42278]:
+            - generic [ref=e42279]: прил.
+            - generic [ref=e42280]:
+              - img [ref=e42281]
+              - text: Выучено
+            - generic [ref=e42286]: "100"
+            - generic [ref=e42287]:
+              - img [ref=e42288]
+              - text: через 28 дней
+        - button [ref=e42292] [cursor=pointer]:
+          - img [ref=e42293]
+      - generic [ref=e42295]:
+        - checkbox [ref=e42296] [cursor=pointer]
+        - generic [ref=e42297]:
+          - generic [ref=e42298]:
+            - generic [ref=e42299]: blod
+            - generic [ref=e42300]: кровь
+          - generic [ref=e42301]:
+            - generic [ref=e42302]: сущ.
+            - generic [ref=e42303]:
+              - img [ref=e42304]
+              - text: Выучено
+            - generic [ref=e42309]: "100"
+            - generic [ref=e42310]:
+              - img [ref=e42311]
+              - text: через 28 дней
+        - button [ref=e42315] [cursor=pointer]:
+          - img [ref=e42316]
+      - generic [ref=e42318]:
+        - checkbox [ref=e42319] [cursor=pointer]
+        - generic [ref=e42320]:
+          - generic [ref=e42321]:
+            - generic [ref=e42322]: link
+            - generic [ref=e42323]: ссылка, связь
+          - generic [ref=e42324]:
+            - generic [ref=e42325]: сущ.
+            - generic [ref=e42326]:
+              - img [ref=e42327]
+              - text: Выучено
+            - generic [ref=e42332]: "100"
+            - generic [ref=e42333]:
+              - img [ref=e42334]
+              - text: через 28 дней
+        - button [ref=e42338] [cursor=pointer]:
+          - img [ref=e42339]
+      - generic [ref=e42341]:
+        - checkbox [ref=e42342] [cursor=pointer]
+        - generic [ref=e42343]:
+          - generic [ref=e42344]:
+            - generic [ref=e42345]: beskrive
+            - generic [ref=e42346]: описывать
+          - generic [ref=e42347]:
+            - generic [ref=e42348]: гл.
+            - generic [ref=e42349]:
+              - img [ref=e42350]
+              - text: Выучено
+            - generic [ref=e42355]: "100"
+            - generic [ref=e42356]:
+              - img [ref=e42357]
+              - text: через 28 дней
+        - button [ref=e42361] [cursor=pointer]:
+          - img [ref=e42362]
+      - generic [ref=e42364]:
+        - checkbox [ref=e42365] [cursor=pointer]
+        - generic [ref=e42366]:
+          - generic [ref=e42367]:
+            - generic [ref=e42368]: kunde
+            - generic [ref=e42369]: клиент, покупатель
+          - generic [ref=e42370]:
+            - generic [ref=e42371]: сущ.
+            - generic [ref=e42372]:
+              - img [ref=e42373]
+              - text: Выучено
+            - generic [ref=e42378]: "100"
+            - generic [ref=e42379]:
+              - img [ref=e42380]
+              - text: через 28 дней
+        - button [ref=e42384] [cursor=pointer]:
+          - img [ref=e42385]
+      - generic [ref=e42387]:
+        - checkbox [ref=e42388] [cursor=pointer]
+        - generic [ref=e42389]:
+          - generic [ref=e42390]:
+            - generic [ref=e42391]: røyk
+            - generic [ref=e42392]: дым
+          - generic [ref=e42393]:
+            - generic [ref=e42394]: сущ.
+            - generic [ref=e42395]:
+              - img [ref=e42396]
+              - text: Выучено
+            - generic [ref=e42401]: "100"
+            - generic [ref=e42402]:
+              - img [ref=e42403]
+              - text: через 28 дней
+        - button [ref=e42407] [cursor=pointer]:
+          - img [ref=e42408]
+      - generic [ref=e42410]:
+        - checkbox [ref=e42411] [cursor=pointer]
+        - generic [ref=e42412]:
+          - generic [ref=e42413]:
+            - generic [ref=e42414]: fan
+            - generic [ref=e42415]: поклонник, фанат
+          - generic [ref=e42416]:
+            - generic [ref=e42417]: сущ.
+            - generic [ref=e42418]:
+              - img [ref=e42419]
+              - text: Выучено
+            - generic [ref=e42424]: "100"
+            - generic [ref=e42425]:
+              - img [ref=e42426]
+              - text: через 28 дней
+        - button [ref=e42430] [cursor=pointer]:
+          - img [ref=e42431]
+      - generic [ref=e42433]:
+        - checkbox [ref=e42434] [cursor=pointer]
+        - generic [ref=e42435]:
+          - generic [ref=e42436]:
+            - generic [ref=e42437]: enorm
+            - generic [ref=e42438]: огромный, колоссальный
+          - generic [ref=e42439]:
+            - generic [ref=e42440]: прил.
+            - generic [ref=e42441]:
+              - img [ref=e42442]
+              - text: Выучено
+            - generic [ref=e42447]: "100"
+            - generic [ref=e42448]:
+              - img [ref=e42449]
+              - text: через 28 дней
+        - button [ref=e42453] [cursor=pointer]:
+          - img [ref=e42454]
+      - generic [ref=e42456]:
+        - checkbox [ref=e42457] [cursor=pointer]
+        - generic [ref=e42458]:
+          - generic [ref=e42459]:
+            - generic [ref=e42460]: øye
+            - generic [ref=e42461]: глаз
+          - generic [ref=e42462]:
+            - generic [ref=e42463]: сущ.
+            - generic [ref=e42464]:
+              - img [ref=e42465]
+              - text: Выучено
+            - generic [ref=e42470]: "100"
+            - generic [ref=e42471]:
+              - img [ref=e42472]
+              - text: через 28 дней
+        - button [ref=e42476] [cursor=pointer]:
+          - img [ref=e42477]
+      - generic [ref=e42479]:
+        - checkbox [ref=e42480] [cursor=pointer]
+        - generic [ref=e42481]:
+          - generic [ref=e42482]:
+            - generic [ref=e42483]: bred
+            - generic [ref=e42484]: широкий
+          - generic [ref=e42485]:
+            - generic [ref=e42486]: прил.
+            - generic [ref=e42487]:
+              - img [ref=e42488]
+              - text: Выучено
+            - generic [ref=e42493]: "100"
+            - generic [ref=e42494]:
+              - img [ref=e42495]
+              - text: через 28 дней
+        - button [ref=e42499] [cursor=pointer]:
+          - img [ref=e42500]
+      - generic [ref=e42502]:
+        - checkbox [ref=e42503] [cursor=pointer]
+        - generic [ref=e42504]:
+          - generic [ref=e42505]:
+            - generic [ref=e42506]: feire
+            - generic [ref=e42507]: праздновать
+          - generic [ref=e42508]:
+            - generic [ref=e42509]: гл.
+            - generic [ref=e42510]:
+              - img [ref=e42511]
+              - text: Выучено
+            - generic [ref=e42516]: "100"
+            - generic [ref=e42517]:
+              - img [ref=e42518]
+              - text: через 28 дней
+        - button [ref=e42522] [cursor=pointer]:
+          - img [ref=e42523]
+      - generic [ref=e42525]:
+        - checkbox [ref=e42526] [cursor=pointer]
+        - generic [ref=e42527]:
+          - generic [ref=e42528]:
+            - generic [ref=e42529]: stykke
+            - generic [ref=e42530]: кусок, часть
+          - generic [ref=e42531]:
+            - generic [ref=e42532]: сущ.
+            - generic [ref=e42533]:
+              - img [ref=e42534]
+              - text: Выучено
+            - generic [ref=e42539]: "100"
+            - generic [ref=e42540]:
+              - img [ref=e42541]
+              - text: через 28 дней
+        - button [ref=e42545] [cursor=pointer]:
+          - img [ref=e42546]
+      - generic [ref=e42548]:
+        - checkbox [ref=e42549] [cursor=pointer]
+        - generic [ref=e42550]:
+          - generic [ref=e42551]:
+            - generic [ref=e42552]: dansk
+            - generic [ref=e42553]: датский
+          - generic [ref=e42554]:
+            - generic [ref=e42555]: прил.
+            - generic [ref=e42556]:
+              - img [ref=e42557]
+              - text: Выучено
+            - generic [ref=e42562]: "100"
+            - generic [ref=e42563]:
+              - img [ref=e42564]
+              - text: через 28 дней
+        - button [ref=e42568] [cursor=pointer]:
+          - img [ref=e42569]
+      - generic [ref=e42571]:
+        - checkbox [ref=e42572] [cursor=pointer]
+        - generic [ref=e42573]:
+          - generic [ref=e42574]:
+            - generic [ref=e42575]: læring
+            - generic [ref=e42576]: обучение, усвоение
+          - generic [ref=e42577]:
+            - generic [ref=e42578]: сущ.
+            - generic [ref=e42579]:
+              - img [ref=e42580]
+              - text: Выучено
+            - generic [ref=e42585]: "100"
+            - generic [ref=e42586]:
+              - img [ref=e42587]
+              - text: через 28 дней
+        - button [ref=e42591] [cursor=pointer]:
+          - img [ref=e42592]
+      - generic [ref=e42594]:
+        - checkbox [ref=e42595] [cursor=pointer]
+        - generic [ref=e42596]:
+          - generic [ref=e42597]:
+            - generic [ref=e42598]: kle
+            - generic [ref=e42599]: одеваться
+          - generic [ref=e42600]:
+            - generic [ref=e42601]: гл.
+            - generic [ref=e42602]:
+              - img [ref=e42603]
+              - text: Выучено
+            - generic [ref=e42608]: "100"
+            - generic [ref=e42609]:
+              - img [ref=e42610]
+              - text: через 28 дней
+        - button [ref=e42614] [cursor=pointer]:
+          - img [ref=e42615]
+      - generic [ref=e42617]:
+        - checkbox [ref=e42618] [cursor=pointer]
+        - generic [ref=e42619]:
+          - generic [ref=e42620]:
+            - generic [ref=e42621]: faktum
+            - generic [ref=e42622]: факт
+          - generic [ref=e42623]:
+            - generic [ref=e42624]: сущ.
+            - generic [ref=e42625]:
+              - img [ref=e42626]
+              - text: Выучено
+            - generic [ref=e42631]: "100"
+            - generic [ref=e42632]:
+              - img [ref=e42633]
+              - text: через 28 дней
+        - button [ref=e42637] [cursor=pointer]:
+          - img [ref=e42638]
+      - generic [ref=e42640]:
+        - checkbox [ref=e42641] [cursor=pointer]
+        - generic [ref=e42642]:
+          - generic [ref=e42643]:
+            - generic [ref=e42644]: mengde
+            - generic [ref=e42645]: количество, множество
+          - generic [ref=e42646]:
+            - generic [ref=e42647]: сущ.
+            - generic [ref=e42648]:
+              - img [ref=e42649]
+              - text: Выучено
+            - generic [ref=e42654]: "100"
+            - generic [ref=e42655]:
+              - img [ref=e42656]
+              - text: через 28 дней
+        - button [ref=e42660] [cursor=pointer]:
+          - img [ref=e42661]
+      - generic [ref=e42663]:
+        - checkbox [ref=e42664] [cursor=pointer]
+        - generic [ref=e42665]:
+          - generic [ref=e42666]:
+            - generic [ref=e42667]: nettverk
+            - generic [ref=e42668]: сеть
+          - generic [ref=e42669]:
+            - generic [ref=e42670]: сущ.
+            - generic [ref=e42671]:
+              - img [ref=e42672]
+              - text: Выучено
+            - generic [ref=e42677]: "100"
+            - generic [ref=e42678]:
+              - img [ref=e42679]
+              - text: через 28 дней
+        - button [ref=e42683] [cursor=pointer]:
+          - img [ref=e42684]
+      - generic [ref=e42686]:
+        - checkbox [ref=e42687] [cursor=pointer]
+        - generic [ref=e42688]:
+          - generic [ref=e42689]:
+            - generic [ref=e42690]: motor
+            - generic [ref=e42691]: двигатель, мотор
+          - generic [ref=e42692]:
+            - generic [ref=e42693]: сущ.
+            - generic [ref=e42694]:
+              - img [ref=e42695]
+              - text: Выучено
+            - generic [ref=e42700]: "100"
+            - generic [ref=e42701]:
+              - img [ref=e42702]
+              - text: через 28 дней
+        - button [ref=e42706] [cursor=pointer]:
+          - img [ref=e42707]
+      - generic [ref=e42709]:
+        - checkbox [ref=e42710] [cursor=pointer]
+        - generic [ref=e42711]:
+          - generic [ref=e42712]:
+            - generic [ref=e42713]: gravid
+            - generic [ref=e42714]: беременная
+          - generic [ref=e42715]:
+            - generic [ref=e42716]: прил.
+            - generic [ref=e42717]:
+              - img [ref=e42718]
+              - text: Выучено
+            - generic [ref=e42723]: "100"
+            - generic [ref=e42724]:
+              - img [ref=e42725]
+              - text: через 28 дней
+        - button [ref=e42729] [cursor=pointer]:
+          - img [ref=e42730]
+      - generic [ref=e42732]:
+        - checkbox [ref=e42733] [cursor=pointer]
+        - generic [ref=e42734]:
+          - generic [ref=e42735]:
+            - generic [ref=e42736]: skjule
+            - generic [ref=e42737]: прятать, скрывать
+          - generic [ref=e42738]:
+            - generic [ref=e42739]: гл.
+            - generic [ref=e42740]:
+              - img [ref=e42741]
+              - text: Выучено
+            - generic [ref=e42746]: "100"
+            - generic [ref=e42747]:
+              - img [ref=e42748]
+              - text: через 28 дней
+        - button [ref=e42752] [cursor=pointer]:
+          - img [ref=e42753]
+      - generic [ref=e42755]:
+        - checkbox [ref=e42756] [cursor=pointer]
+        - generic [ref=e42757]:
+          - generic [ref=e42758]:
+            - generic [ref=e42759]: forfatter
+            - generic [ref=e42760]: писатель
+          - generic [ref=e42761]:
+            - generic [ref=e42762]: сущ.
+            - generic [ref=e42763]:
+              - img [ref=e42764]
+              - text: Выучено
+            - generic [ref=e42769]: "100"
+            - generic [ref=e42770]:
+              - img [ref=e42771]
+              - text: через 28 дней
+        - button [ref=e42775] [cursor=pointer]:
+          - img [ref=e42776]
+      - generic [ref=e42778]:
+        - checkbox [ref=e42779] [cursor=pointer]
+        - generic [ref=e42780]:
+          - generic [ref=e42781]:
+            - generic [ref=e42782]: tusenvis
+            - generic [ref=e42783]: тысячи
+          - generic [ref=e42784]:
+            - generic [ref=e42785]: сущ.
+            - generic [ref=e42786]:
+              - img [ref=e42787]
+              - text: Выучено
+            - generic [ref=e42792]: "100"
+            - generic [ref=e42793]:
+              - img [ref=e42794]
+              - text: через 28 дней
+        - button [ref=e42798] [cursor=pointer]:
+          - img [ref=e42799]
+      - generic [ref=e42801]:
+        - checkbox [ref=e42802] [cursor=pointer]
+        - generic [ref=e42803]:
+          - generic [ref=e42804]:
+            - generic [ref=e42805]: kontor
+            - generic [ref=e42806]: офис, кабинет
+          - generic [ref=e42807]:
+            - generic [ref=e42808]: сущ.
+            - generic [ref=e42809]:
+              - img [ref=e42810]
+              - text: Выучено
+            - generic [ref=e42815]: "100"
+            - generic [ref=e42816]:
+              - img [ref=e42817]
+              - text: через 28 дней
+        - button [ref=e42821] [cursor=pointer]:
+          - img [ref=e42822]
+      - generic [ref=e42824]:
+        - checkbox [ref=e42825] [cursor=pointer]
+        - generic [ref=e42826]:
+          - generic [ref=e42827]:
+            - generic [ref=e42828]: date
+            - generic [ref=e42829]: свидание
+          - generic [ref=e42830]:
+            - generic [ref=e42831]: сущ.
+            - generic [ref=e42832]:
+              - img [ref=e42833]
+              - text: Выучено
+            - generic [ref=e42838]: "100"
+            - generic [ref=e42839]:
+              - img [ref=e42840]
+              - text: через 28 дней
+        - button [ref=e42844] [cursor=pointer]:
+          - img [ref=e42845]
+      - generic [ref=e42847]:
+        - checkbox [ref=e42848] [cursor=pointer]
+        - generic [ref=e42849]:
+          - generic [ref=e42850]:
+            - generic [ref=e42851]: brenne
+            - generic [ref=e42852]: гореть, жечь
+          - generic [ref=e42853]:
+            - generic [ref=e42854]: гл.
+            - generic [ref=e42855]:
+              - img [ref=e42856]
+              - text: Выучено
+            - generic [ref=e42861]: "100"
+            - generic [ref=e42862]:
+              - img [ref=e42863]
+              - text: через 28 дней
+        - button [ref=e42867] [cursor=pointer]:
+          - img [ref=e42868]
+      - generic [ref=e42870]:
+        - checkbox [ref=e42871] [cursor=pointer]
+        - generic [ref=e42872]:
+          - generic [ref=e42873]:
+            - generic [ref=e42874]: behandle
+            - generic [ref=e42875]: обрабатывать, лечить, рассматривать
+          - generic [ref=e42876]:
+            - generic [ref=e42877]: гл.
+            - generic [ref=e42878]:
+              - img [ref=e42879]
+              - text: Выучено
+            - generic [ref=e42884]: "100"
+            - generic [ref=e42885]:
+              - img [ref=e42886]
+              - text: через 28 дней
+        - button [ref=e42890] [cursor=pointer]:
+          - img [ref=e42891]
+      - generic [ref=e42893]:
+        - checkbox [ref=e42894] [cursor=pointer]
+        - generic [ref=e42895]:
+          - generic [ref=e42896]:
+            - generic [ref=e42897]: vokse
+            - generic [ref=e42898]: расти, вырастать
+          - generic [ref=e42899]:
+            - generic [ref=e42900]: гл.
+            - generic [ref=e42901]:
+              - img [ref=e42902]
+              - text: Выучено
+            - generic [ref=e42907]: "100"
+            - generic [ref=e42908]:
+              - img [ref=e42909]
+              - text: через 28 дней
+        - button [ref=e42913] [cursor=pointer]:
+          - img [ref=e42914]
+      - generic [ref=e42916]:
+        - checkbox [ref=e42917] [cursor=pointer]
+        - generic [ref=e42918]:
+          - generic [ref=e42919]:
+            - generic [ref=e42920]: tøff
+            - generic [ref=e42921]: крутой, жесткий, выносливый
+          - generic [ref=e42922]:
+            - generic [ref=e42923]: прил.
+            - generic [ref=e42924]:
+              - img [ref=e42925]
+              - text: Выучено
+            - generic [ref=e42930]: "100"
+            - generic [ref=e42931]:
+              - img [ref=e42932]
+              - text: через 28 дней
+        - button [ref=e42936] [cursor=pointer]:
+          - img [ref=e42937]
+      - generic [ref=e42939]:
+        - checkbox [ref=e42940] [cursor=pointer]
+        - generic [ref=e42941]:
+          - generic [ref=e42942]:
+            - generic [ref=e42943]: hjerte
+            - generic [ref=e42944]: сердце
+          - generic [ref=e42945]:
+            - generic [ref=e42946]: сущ.
+            - generic [ref=e42947]:
+              - img [ref=e42948]
+              - text: Выучено
+            - generic [ref=e42953]: "100"
+            - generic [ref=e42954]:
+              - img [ref=e42955]
+              - text: через 28 дней
+        - button [ref=e42959] [cursor=pointer]:
+          - img [ref=e42960]
+      - generic [ref=e42962]:
+        - checkbox [ref=e42963] [cursor=pointer]
+        - generic [ref=e42964]:
+          - generic [ref=e42965]:
+            - generic [ref=e42966]: vinne
+            - generic [ref=e42967]: побеждать, выигрывать
+          - generic [ref=e42968]:
+            - generic [ref=e42969]: гл.
+            - generic [ref=e42970]:
+              - img [ref=e42971]
+              - text: Выучено
+            - generic [ref=e42976]: "100"
+            - generic [ref=e42977]:
+              - img [ref=e42978]
+              - text: через 28 дней
+        - button [ref=e42982] [cursor=pointer]:
+          - img [ref=e42983]
+      - generic [ref=e42985]:
+        - checkbox [ref=e42986] [cursor=pointer]
+        - generic [ref=e42987]:
+          - generic [ref=e42988]:
+            - generic [ref=e42989]: neste
+            - generic [ref=e42990]: следующий
+          - generic [ref=e42991]:
+            - generic [ref=e42992]: прил.
+            - generic [ref=e42993]:
+              - img [ref=e42994]
+              - text: Выучено
+            - generic [ref=e42999]: "100"
+            - generic [ref=e43000]:
+              - img [ref=e43001]
+              - text: через 28 дней
+        - button [ref=e43005] [cursor=pointer]:
+          - img [ref=e43006]
+      - generic [ref=e43008]:
+        - checkbox [ref=e43009] [cursor=pointer]
+        - generic [ref=e43010]:
+          - generic [ref=e43011]:
+            - generic [ref=e43012]: vanskelig
+            - generic [ref=e43013]: трудный, сложный
+          - generic [ref=e43014]:
+            - generic [ref=e43015]: прил.
+            - generic [ref=e43016]:
+              - img [ref=e43017]
+              - text: Выучено
+            - generic [ref=e43022]: "100"
+            - generic [ref=e43023]:
+              - img [ref=e43024]
+              - text: через 28 дней
+        - button [ref=e43028] [cursor=pointer]:
+          - img [ref=e43029]
+      - generic [ref=e43031]:
+        - checkbox [ref=e43032] [cursor=pointer]
+        - generic [ref=e43033]:
+          - generic [ref=e43034]:
+            - generic [ref=e43035]: løst
+            - generic [ref=e43036]: свободный, незакрепленный, слабый
+          - generic [ref=e43037]:
+            - generic [ref=e43038]: прил.
+            - generic [ref=e43039]:
+              - img [ref=e43040]
+              - text: Выучено
+            - generic [ref=e43045]: "100"
+            - generic [ref=e43046]:
+              - img [ref=e43047]
+              - text: через 28 дней
+        - button [ref=e43051] [cursor=pointer]:
+          - img [ref=e43052]
+      - generic [ref=e43054]:
+        - checkbox [ref=e43055] [cursor=pointer]
+        - generic [ref=e43056]:
+          - generic [ref=e43057]:
+            - generic [ref=e43058]: drøm
+            - generic [ref=e43059]: мечта, сон
+          - generic [ref=e43060]:
+            - generic [ref=e43061]: сущ.
+            - generic [ref=e43062]:
+              - img [ref=e43063]
+              - text: Выучено
+            - generic [ref=e43068]: "100"
+            - generic [ref=e43069]:
+              - img [ref=e43070]
+              - text: через 28 дней
+        - button [ref=e43074] [cursor=pointer]:
+          - img [ref=e43075]
+      - generic [ref=e43077]:
+        - checkbox [ref=e43078] [cursor=pointer]
+        - generic [ref=e43079]:
+          - generic [ref=e43080]:
+            - generic [ref=e43081]: skifte
+            - generic [ref=e43082]: менять, сменять
+          - generic [ref=e43083]:
+            - generic [ref=e43084]: гл.
+            - generic [ref=e43085]:
+              - img [ref=e43086]
+              - text: Выучено
+            - generic [ref=e43091]: "100"
+            - generic [ref=e43092]:
+              - img [ref=e43093]
+              - text: через 28 дней
+        - button [ref=e43097] [cursor=pointer]:
+          - img [ref=e43098]
+      - generic [ref=e43100]:
+        - checkbox [ref=e43101] [cursor=pointer]
+        - generic [ref=e43102]:
+          - generic [ref=e43103]:
+            - generic [ref=e43104]: leie
+            - generic [ref=e43105]: арендовать, снимать
+          - generic [ref=e43106]:
+            - generic [ref=e43107]: гл.
+            - generic [ref=e43108]:
+              - img [ref=e43109]
+              - text: Выучено
+            - generic [ref=e43114]: "100"
+            - generic [ref=e43115]:
+              - img [ref=e43116]
+              - text: через 28 дней
+        - button [ref=e43120] [cursor=pointer]:
+          - img [ref=e43121]
+      - generic [ref=e43123]:
+        - checkbox [ref=e43124] [cursor=pointer]
+        - generic [ref=e43125]:
+          - generic [ref=e43126]:
+            - generic [ref=e43127]: lykkelig
+            - generic [ref=e43128]: счастливый
+          - generic [ref=e43129]:
+            - generic [ref=e43130]: прил.
+            - generic [ref=e43131]:
+              - img [ref=e43132]
+              - text: Выучено
+            - generic [ref=e43137]: "100"
+            - generic [ref=e43138]:
+              - img [ref=e43139]
+              - text: через 28 дней
+        - button [ref=e43143] [cursor=pointer]:
+          - img [ref=e43144]
+      - generic [ref=e43146]:
+        - checkbox [ref=e43147] [cursor=pointer]
+        - generic [ref=e43148]:
+          - generic [ref=e43149]:
+            - generic [ref=e43150]: klubb
+            - generic [ref=e43151]: клуб
+          - generic [ref=e43152]:
+            - generic [ref=e43153]: сущ.
+            - generic [ref=e43154]:
+              - img [ref=e43155]
+              - text: Выучено
+            - generic [ref=e43160]: "100"
+            - generic [ref=e43161]:
+              - img [ref=e43162]
+              - text: через 28 дней
+        - button [ref=e43166] [cursor=pointer]:
+          - img [ref=e43167]
+      - generic [ref=e43169]:
+        - checkbox [ref=e43170] [cursor=pointer]
+        - generic [ref=e43171]:
+          - generic [ref=e43172]:
+            - generic [ref=e43173]: hode
+            - generic [ref=e43174]: голова
+          - generic [ref=e43175]:
+            - generic [ref=e43176]: сущ.
+            - generic [ref=e43177]:
+              - img [ref=e43178]
+              - text: Выучено
+            - generic [ref=e43183]: "100"
+            - generic [ref=e43184]:
+              - img [ref=e43185]
+              - text: через 28 дней
+        - button [ref=e43189] [cursor=pointer]:
+          - img [ref=e43190]
+      - generic [ref=e43192]:
+        - checkbox [ref=e43193] [cursor=pointer]
+        - generic [ref=e43194]:
+          - generic [ref=e43195]:
+            - generic [ref=e43196]: gass
+            - generic [ref=e43197]: газ
+          - generic [ref=e43198]:
+            - generic [ref=e43199]: сущ.
+            - generic [ref=e43200]:
+              - img [ref=e43201]
+              - text: Выучено
+            - generic [ref=e43206]: "100"
+            - generic [ref=e43207]:
+              - img [ref=e43208]
+              - text: через 28 дней
+        - button [ref=e43212] [cursor=pointer]:
+          - img [ref=e43213]
+      - generic [ref=e43215]:
+        - checkbox [ref=e43216] [cursor=pointer]
+        - generic [ref=e43217]:
+          - generic [ref=e43218]:
+            - generic [ref=e43219]: avis
+            - generic [ref=e43220]: газета
+          - generic [ref=e43221]:
+            - generic [ref=e43222]: сущ.
+            - generic [ref=e43223]:
+              - img [ref=e43224]
+              - text: Выучено
+            - generic [ref=e43229]: "100"
+            - generic [ref=e43230]:
+              - img [ref=e43231]
+              - text: через 28 дней
+        - button [ref=e43235] [cursor=pointer]:
+          - img [ref=e43236]
+      - generic [ref=e43238]:
+        - checkbox [ref=e43239] [cursor=pointer]
+        - generic [ref=e43240]:
+          - generic [ref=e43241]:
+            - generic [ref=e43242]: anbefale
+            - generic [ref=e43243]: рекомендовать
+          - generic [ref=e43244]:
+            - generic [ref=e43245]: гл.
+            - generic [ref=e43246]:
+              - img [ref=e43247]
+              - text: Выучено
+            - generic [ref=e43252]: "100"
+            - generic [ref=e43253]:
+              - img [ref=e43254]
+              - text: через 28 дней
+        - button [ref=e43258] [cursor=pointer]:
+          - img [ref=e43259]
+      - generic [ref=e43261]:
+        - checkbox [ref=e43262] [cursor=pointer]
+        - generic [ref=e43263]:
+          - generic [ref=e43264]:
+            - generic [ref=e43265]: sakte
+            - generic [ref=e43266]: медленно, тихо
+          - generic [ref=e43267]:
+            - generic [ref=e43268]: нареч.
+            - generic [ref=e43269]:
+              - img [ref=e43270]
+              - text: Выучено
+            - generic [ref=e43275]: "100"
+            - generic [ref=e43276]:
+              - img [ref=e43277]
+              - text: через 28 дней
+        - button [ref=e43281] [cursor=pointer]:
+          - img [ref=e43282]
+      - generic [ref=e43284]:
+        - checkbox [ref=e43285] [cursor=pointer]
+        - generic [ref=e43286]:
+          - generic [ref=e43287]:
+            - generic [ref=e43288]: fylle
+            - generic [ref=e43289]: наполнять
+          - generic [ref=e43290]:
+            - generic [ref=e43291]: гл.
+            - generic [ref=e43292]:
+              - img [ref=e43293]
+              - text: Выучено
+            - generic [ref=e43298]: "100"
+            - generic [ref=e43299]:
+              - img [ref=e43300]
+              - text: через 28 дней
+        - button [ref=e43304] [cursor=pointer]:
+          - img [ref=e43305]
+      - generic [ref=e43307]:
+        - checkbox [ref=e43308] [cursor=pointer]
+        - generic [ref=e43309]:
+          - generic [ref=e43310]:
+            - generic [ref=e43311]: luft
+            - generic [ref=e43312]: воздух
+          - generic [ref=e43313]:
+            - generic [ref=e43314]: сущ.
+            - generic [ref=e43315]:
+              - img [ref=e43316]
+              - text: Выучено
+            - generic [ref=e43321]: "100"
+            - generic [ref=e43322]:
+              - img [ref=e43323]
+              - text: через 28 дней
+        - button [ref=e43327] [cursor=pointer]:
+          - img [ref=e43328]
+      - generic [ref=e43330]:
+        - checkbox [ref=e43331] [cursor=pointer]
+        - generic [ref=e43332]:
+          - generic [ref=e43333]:
+            - generic [ref=e43334]: forelsket
+            - generic [ref=e43335]: влюбленный
+          - generic [ref=e43336]:
+            - generic [ref=e43337]: прил.
+            - generic [ref=e43338]:
+              - img [ref=e43339]
+              - text: Выучено
+            - generic [ref=e43344]: "100"
+            - generic [ref=e43345]:
+              - img [ref=e43346]
+              - text: через 28 дней
+        - button [ref=e43350] [cursor=pointer]:
+          - img [ref=e43351]
+      - generic [ref=e43353]:
+        - checkbox [ref=e43354] [cursor=pointer]
+        - generic [ref=e43355]:
+          - generic [ref=e43356]:
+            - generic [ref=e43357]: bære
+            - generic [ref=e43358]: нести
+          - generic [ref=e43359]:
+            - generic [ref=e43360]: гл.
+            - generic [ref=e43361]:
+              - img [ref=e43362]
+              - text: Выучено
+            - generic [ref=e43367]: "100"
+            - generic [ref=e43368]:
+              - img [ref=e43369]
+              - text: через 28 дней
+        - button [ref=e43373] [cursor=pointer]:
+          - img [ref=e43374]
+      - generic [ref=e43376]:
+        - checkbox [ref=e43377] [cursor=pointer]
+        - generic [ref=e43378]:
+          - generic [ref=e43379]:
+            - generic [ref=e43380]: eksamen
+            - generic [ref=e43381]: экзамен
+          - generic [ref=e43382]:
+            - generic [ref=e43383]: сущ.
+            - generic [ref=e43384]:
+              - img [ref=e43385]
+              - text: Выучено
+            - generic [ref=e43390]: "100"
+            - generic [ref=e43391]:
+              - img [ref=e43392]
+              - text: через 28 дней
+        - button [ref=e43396] [cursor=pointer]:
+          - img [ref=e43397]
+      - generic [ref=e43399]:
+        - checkbox [ref=e43400] [cursor=pointer]
+        - generic [ref=e43401]:
+          - generic [ref=e43402]:
+            - generic [ref=e43403]: mørke
+            - generic [ref=e43404]: темнота
+          - generic [ref=e43405]:
+            - generic [ref=e43406]: сущ.
+            - generic [ref=e43407]:
+              - img [ref=e43408]
+              - text: Выучено
+            - generic [ref=e43413]: "100"
+            - generic [ref=e43414]:
+              - img [ref=e43415]
+              - text: через 28 дней
+        - button [ref=e43419] [cursor=pointer]:
+          - img [ref=e43420]
+      - generic [ref=e43422]:
+        - checkbox [ref=e43423] [cursor=pointer]
+        - generic [ref=e43424]:
+          - generic [ref=e43425]:
+            - generic [ref=e43426]: normal
+            - generic [ref=e43427]: нормальный, обычный
+          - generic [ref=e43428]:
+            - generic [ref=e43429]: прил.
+            - generic [ref=e43430]:
+              - img [ref=e43431]
+              - text: Выучено
+            - generic [ref=e43436]: "100"
+            - generic [ref=e43437]:
+              - img [ref=e43438]
+              - text: через 28 дней
+        - button [ref=e43442] [cursor=pointer]:
+          - img [ref=e43443]
+      - generic [ref=e43445]:
+        - checkbox [ref=e43446] [cursor=pointer]
+        - generic [ref=e43447]:
+          - generic [ref=e43448]:
+            - generic [ref=e43449]: fange
+            - generic [ref=e43450]: ловить, хватать
+          - generic [ref=e43451]:
+            - generic [ref=e43452]: гл.
+            - generic [ref=e43453]:
+              - img [ref=e43454]
+              - text: Выучено
+            - generic [ref=e43459]: "100"
+            - generic [ref=e43460]:
+              - img [ref=e43461]
+              - text: через 28 дней
+        - button [ref=e43465] [cursor=pointer]:
+          - img [ref=e43466]
+      - generic [ref=e43468]:
+        - checkbox [ref=e43469] [cursor=pointer]
+        - generic [ref=e43470]:
+          - generic [ref=e43471]:
+            - generic [ref=e43472]: følelse
+            - generic [ref=e43473]: чувство, ощущение
+          - generic [ref=e43474]:
+            - generic [ref=e43475]: сущ.
+            - generic [ref=e43476]:
+              - img [ref=e43477]
+              - text: Выучено
+            - generic [ref=e43482]: "100"
+            - generic [ref=e43483]:
+              - img [ref=e43484]
+              - text: через 28 дней
+        - button [ref=e43488] [cursor=pointer]:
+          - img [ref=e43489]
+      - generic [ref=e43491]:
+        - checkbox [ref=e43492] [cursor=pointer]
+        - generic [ref=e43493]:
+          - generic [ref=e43494]:
+            - generic [ref=e43495]: størrelse
+            - generic [ref=e43496]: размер, величина
+          - generic [ref=e43497]:
+            - generic [ref=e43498]: сущ.
+            - generic [ref=e43499]:
+              - img [ref=e43500]
+              - text: Выучено
+            - generic [ref=e43505]: "100"
+            - generic [ref=e43506]:
+              - img [ref=e43507]
+              - text: через 28 дней
+        - button [ref=e43511] [cursor=pointer]:
+          - img [ref=e43512]
+      - generic [ref=e43514]:
+        - checkbox [ref=e43515] [cursor=pointer]
+        - generic [ref=e43516]:
+          - generic [ref=e43517]:
+            - generic [ref=e43518]: stasjon
+            - generic [ref=e43519]: станция, вокзал
+          - generic [ref=e43520]:
+            - generic [ref=e43521]: сущ.
+            - generic [ref=e43522]:
+              - img [ref=e43523]
+              - text: Выучено
+            - generic [ref=e43528]: "100"
+            - generic [ref=e43529]:
+              - img [ref=e43530]
+              - text: через 28 дней
+        - button [ref=e43534] [cursor=pointer]:
+          - img [ref=e43535]
+      - generic [ref=e43537]:
+        - checkbox [ref=e43538] [cursor=pointer]
+        - generic [ref=e43539]:
+          - generic [ref=e43540]:
+            - generic [ref=e43541]: bygd
+            - generic [ref=e43542]: сельская местность, деревня
+          - generic [ref=e43543]:
+            - generic [ref=e43544]: сущ.
+            - generic [ref=e43545]:
+              - img [ref=e43546]
+              - text: Выучено
+            - generic [ref=e43551]: "100"
+            - generic [ref=e43552]:
+              - img [ref=e43553]
+              - text: через 28 дней
+        - button [ref=e43557] [cursor=pointer]:
+          - img [ref=e43558]
+      - generic [ref=e43560]:
+        - checkbox [ref=e43561] [cursor=pointer]
+        - generic [ref=e43562]:
+          - generic [ref=e43563]:
+            - generic [ref=e43564]: lyd
+            - generic [ref=e43565]: звук
+          - generic [ref=e43566]:
+            - generic [ref=e43567]: сущ.
+            - generic [ref=e43568]:
+              - img [ref=e43569]
+              - text: Выучено
+            - generic [ref=e43574]: "100"
+            - generic [ref=e43575]:
+              - img [ref=e43576]
+              - text: через 28 дней
+        - button [ref=e43580] [cursor=pointer]:
+          - img [ref=e43581]
+      - generic [ref=e43583]:
+        - checkbox [ref=e43584] [cursor=pointer]
+        - generic [ref=e43585]:
+          - generic [ref=e43586]:
+            - generic [ref=e43587]: pause
+            - generic [ref=e43588]: пауза, перерыв
+          - generic [ref=e43589]:
+            - generic [ref=e43590]: сущ.
+            - generic [ref=e43591]:
+              - img [ref=e43592]
+              - text: Выучено
+            - generic [ref=e43597]: "100"
+            - generic [ref=e43598]:
+              - img [ref=e43599]
+              - text: через 28 дней
+        - button [ref=e43603] [cursor=pointer]:
+          - img [ref=e43604]
+      - generic [ref=e43606]:
+        - checkbox [ref=e43607] [cursor=pointer]
+        - generic [ref=e43608]:
+          - generic [ref=e43609]:
+            - generic [ref=e43610]: minne
+            - generic [ref=e43611]: память, воспоминание
+          - generic [ref=e43612]:
+            - generic [ref=e43613]: сущ.
+            - generic [ref=e43614]:
+              - img [ref=e43615]
+              - text: Выучено
+            - generic [ref=e43620]: "100"
+            - generic [ref=e43621]:
+              - img [ref=e43622]
+              - text: через 28 дней
+        - button [ref=e43626] [cursor=pointer]:
+          - img [ref=e43627]
+      - generic [ref=e43629]:
+        - checkbox [ref=e43630] [cursor=pointer]
+        - generic [ref=e43631]:
+          - generic [ref=e43632]:
+            - generic [ref=e43633]: prate
+            - generic [ref=e43634]: болтать, разговаривать
+          - generic [ref=e43635]:
+            - generic [ref=e43636]: гл.
+            - generic [ref=e43637]:
+              - img [ref=e43638]
+              - text: Выучено
+            - generic [ref=e43643]: "100"
+            - generic [ref=e43644]:
+              - img [ref=e43645]
+              - text: через 28 дней
+        - button [ref=e43649] [cursor=pointer]:
+          - img [ref=e43650]
+      - generic [ref=e43652]:
+        - checkbox [ref=e43653] [cursor=pointer]
+        - generic [ref=e43654]:
+          - generic [ref=e43655]:
+            - generic [ref=e43656]: befolkning
+            - generic [ref=e43657]: население
+          - generic [ref=e43658]:
+            - generic [ref=e43659]: сущ.
+            - generic [ref=e43660]:
+              - img [ref=e43661]
+              - text: Выучено
+            - generic [ref=e43666]: "100"
+            - generic [ref=e43667]:
+              - img [ref=e43668]
+              - text: через 28 дней
+        - button [ref=e43672] [cursor=pointer]:
+          - img [ref=e43673]
+      - generic [ref=e43675]:
+        - checkbox [ref=e43676] [cursor=pointer]
+        - generic [ref=e43677]:
+          - generic [ref=e43678]:
+            - generic [ref=e43679]: bjørn
+            - generic [ref=e43680]: медведь
+          - generic [ref=e43681]:
+            - generic [ref=e43682]: сущ.
+            - generic [ref=e43683]:
+              - img [ref=e43684]
+              - text: Выучено
+            - generic [ref=e43689]: "100"
+            - generic [ref=e43690]:
+              - img [ref=e43691]
+              - text: через 28 дней
+        - button [ref=e43695] [cursor=pointer]:
+          - img [ref=e43696]
+      - generic [ref=e43698]:
+        - checkbox [ref=e43699] [cursor=pointer]
+        - generic [ref=e43700]:
+          - generic [ref=e43701]:
+            - generic [ref=e43702]: klima
+            - generic [ref=e43703]: климат
+          - generic [ref=e43704]:
+            - generic [ref=e43705]: сущ.
+            - generic [ref=e43706]:
+              - img [ref=e43707]
+              - text: Выучено
+            - generic [ref=e43712]: "100"
+            - generic [ref=e43713]:
+              - img [ref=e43714]
+              - text: через 28 дней
+        - button [ref=e43718] [cursor=pointer]:
+          - img [ref=e43719]
+      - generic [ref=e43721]:
+        - checkbox [ref=e43722] [cursor=pointer]
+        - generic [ref=e43723]:
+          - generic [ref=e43724]:
+            - generic [ref=e43725]: snu
+            - generic [ref=e43726]: поворачивать, разворачивать
+          - generic [ref=e43727]:
+            - generic [ref=e43728]: гл.
+            - generic [ref=e43729]:
+              - img [ref=e43730]
+              - text: Выучено
+            - generic [ref=e43735]: "100"
+            - generic [ref=e43736]:
+              - img [ref=e43737]
+              - text: через 28 дней
+        - button [ref=e43741] [cursor=pointer]:
+          - img [ref=e43742]
+      - generic [ref=e43744]:
+        - checkbox [ref=e43745] [cursor=pointer]
+        - generic [ref=e43746]:
+          - generic [ref=e43747]:
+            - generic [ref=e43748]: fag
+            - generic [ref=e43749]: предмет, дисциплина, специальность
+          - generic [ref=e43750]:
+            - generic [ref=e43751]: сущ.
+            - generic [ref=e43752]:
+              - img [ref=e43753]
+              - text: Выучено
+            - generic [ref=e43758]: "100"
+            - generic [ref=e43759]:
+              - img [ref=e43760]
+              - text: через 28 дней
+        - button [ref=e43764] [cursor=pointer]:
+          - img [ref=e43765]
+      - generic [ref=e43767]:
+        - checkbox [ref=e43768] [cursor=pointer]
+        - generic [ref=e43769]:
+          - generic [ref=e43770]:
+            - generic [ref=e43771]: punkt
+            - generic [ref=e43772]: пункт, точка
+          - generic [ref=e43773]:
+            - generic [ref=e43774]: сущ.
+            - generic [ref=e43775]:
+              - img [ref=e43776]
+              - text: Выучено
+            - generic [ref=e43781]: "100"
+            - generic [ref=e43782]:
+              - img [ref=e43783]
+              - text: через 28 дней
+        - button [ref=e43787] [cursor=pointer]:
+          - img [ref=e43788]
+      - generic [ref=e43790]:
+        - checkbox [ref=e43791] [cursor=pointer]
+        - generic [ref=e43792]:
+          - generic [ref=e43793]:
+            - generic [ref=e43794]: pass
+            - generic [ref=e43795]: паспорт
+          - generic [ref=e43796]:
+            - generic [ref=e43797]: сущ.
+            - generic [ref=e43798]:
+              - img [ref=e43799]
+              - text: Выучено
+            - generic [ref=e43804]: "100"
+            - generic [ref=e43805]:
+              - img [ref=e43806]
+              - text: через 28 дней
+        - button [ref=e43810] [cursor=pointer]:
+          - img [ref=e43811]
+      - generic [ref=e43813]:
+        - checkbox [ref=e43814] [cursor=pointer]
+        - generic [ref=e43815]:
+          - generic [ref=e43816]:
+            - generic [ref=e43817]: årlig
+            - generic [ref=e43818]: ежегодный
+          - generic [ref=e43819]:
+            - generic [ref=e43820]: прил.
+            - generic [ref=e43821]:
+              - img [ref=e43822]
+              - text: Выучено
+            - generic [ref=e43827]: "100"
+            - generic [ref=e43828]:
+              - img [ref=e43829]
+              - text: через 28 дней
+        - button [ref=e43833] [cursor=pointer]:
+          - img [ref=e43834]
+      - generic [ref=e43836]:
+        - checkbox [ref=e43837] [cursor=pointer]
+        - generic [ref=e43838]:
+          - generic [ref=e43839]:
+            - generic [ref=e43840]: fart
+            - generic [ref=e43841]: скорость
+          - generic [ref=e43842]:
+            - generic [ref=e43843]: сущ.
+            - generic [ref=e43844]:
+              - img [ref=e43845]
+              - text: Выучено
+            - generic [ref=e43850]: "100"
+            - generic [ref=e43851]:
+              - img [ref=e43852]
+              - text: через 28 дней
+        - button [ref=e43856] [cursor=pointer]:
+          - img [ref=e43857]
+      - generic [ref=e43859]:
+        - checkbox [ref=e43860] [cursor=pointer]
+        - generic [ref=e43861]:
+          - generic [ref=e43862]:
+            - generic [ref=e43863]: gave
+            - generic [ref=e43864]: подарок
+          - generic [ref=e43865]:
+            - generic [ref=e43866]: сущ.
+            - generic [ref=e43867]:
+              - img [ref=e43868]
+              - text: Выучено
+            - generic [ref=e43873]: "100"
+            - generic [ref=e43874]:
+              - img [ref=e43875]
+              - text: через 28 дней
+        - button [ref=e43879] [cursor=pointer]:
+          - img [ref=e43880]
+      - generic [ref=e43882]:
+        - checkbox [ref=e43883] [cursor=pointer]
+        - generic [ref=e43884]:
+          - generic [ref=e43885]:
+            - generic [ref=e43886]: skatt
+            - generic [ref=e43887]: налог
+          - generic [ref=e43888]:
+            - generic [ref=e43889]: сущ.
+            - generic [ref=e43890]:
+              - img [ref=e43891]
+              - text: Выучено
+            - generic [ref=e43896]: "100"
+            - generic [ref=e43897]:
+              - img [ref=e43898]
+              - text: через 27 дней
+        - button [ref=e43902] [cursor=pointer]:
+          - img [ref=e43903]
+      - generic [ref=e43905]:
+        - checkbox [ref=e43906] [cursor=pointer]
+        - generic [ref=e43907]:
+          - generic [ref=e43908]:
+            - generic [ref=e43909]: privat
+            - generic [ref=e43910]: личный, частный
+          - generic [ref=e43911]:
+            - generic [ref=e43912]: прил.
+            - generic [ref=e43913]:
+              - img [ref=e43914]
+              - text: Выучено
+            - generic [ref=e43919]: "100"
+            - generic [ref=e43920]:
+              - img [ref=e43921]
+              - text: через 27 дней
+        - button [ref=e43925] [cursor=pointer]:
+          - img [ref=e43926]
+      - generic [ref=e43928]:
+        - checkbox [ref=e43929] [cursor=pointer]
+        - generic [ref=e43930]:
+          - generic [ref=e43931]:
+            - generic [ref=e43932]: tema
+            - generic [ref=e43933]: тема
+          - generic [ref=e43934]:
+            - generic [ref=e43935]: сущ.
+            - generic [ref=e43936]:
+              - img [ref=e43937]
+              - text: Выучено
+            - generic [ref=e43942]: "100"
+            - generic [ref=e43943]:
+              - img [ref=e43944]
+              - text: через 27 дней
+        - button [ref=e43948] [cursor=pointer]:
+          - img [ref=e43949]
+      - generic [ref=e43951]:
+        - checkbox [ref=e43952] [cursor=pointer]
+        - generic [ref=e43953]:
+          - generic [ref=e43954]:
+            - generic [ref=e43955]: kunst
+            - generic [ref=e43956]: искусство
+          - generic [ref=e43957]:
+            - generic [ref=e43958]: сущ.
+            - generic [ref=e43959]:
+              - img [ref=e43960]
+              - text: Выучено
+            - generic [ref=e43965]: "100"
+            - generic [ref=e43966]:
+              - img [ref=e43967]
+              - text: через 27 дней
+        - button [ref=e43971] [cursor=pointer]:
+          - img [ref=e43972]
+      - generic [ref=e43974]:
+        - checkbox [ref=e43975] [cursor=pointer]
+        - generic [ref=e43976]:
+          - generic [ref=e43977]:
+            - generic [ref=e43978]: sykehus
+            - generic [ref=e43979]: больница
+          - generic [ref=e43980]:
+            - generic [ref=e43981]: сущ.
+            - generic [ref=e43982]:
+              - img [ref=e43983]
+              - text: Выучено
+            - generic [ref=e43988]: "100"
+            - generic [ref=e43989]:
+              - img [ref=e43990]
+              - text: через 27 дней
+        - button [ref=e43994] [cursor=pointer]:
+          - img [ref=e43995]
+      - generic [ref=e43997]:
+        - checkbox [ref=e43998] [cursor=pointer]
+        - generic [ref=e43999]:
+          - generic [ref=e44000]:
+            - generic [ref=e44001]: tydelig
+            - generic [ref=e44002]: четкий, ясный
+          - generic [ref=e44003]:
+            - generic [ref=e44004]: прил.
+            - generic [ref=e44005]:
+              - img [ref=e44006]
+              - text: Выучено
+            - generic [ref=e44011]: "100"
+            - generic [ref=e44012]:
+              - img [ref=e44013]
+              - text: через 27 дней
+        - button [ref=e44017] [cursor=pointer]:
+          - img [ref=e44018]
+      - generic [ref=e44020]:
+        - checkbox [ref=e44021] [cursor=pointer]
+        - generic [ref=e44022]:
+          - generic [ref=e44023]:
+            - generic [ref=e44024]: kalle
+            - generic [ref=e44025]: звать, называть
+          - generic [ref=e44026]:
+            - generic [ref=e44027]: гл.
+            - generic [ref=e44028]:
+              - img [ref=e44029]
+              - text: Выучено
+            - generic [ref=e44034]: "100"
+            - generic [ref=e44035]:
+              - img [ref=e44036]
+              - text: через 27 дней
+        - button [ref=e44040] [cursor=pointer]:
+          - img [ref=e44041]
+      - generic [ref=e44043]:
+        - checkbox [ref=e44044] [cursor=pointer]
+        - generic [ref=e44045]:
+          - generic [ref=e44046]:
+            - generic [ref=e44047]: tanke
+            - generic [ref=e44048]: мысль
+          - generic [ref=e44049]:
+            - generic [ref=e44050]: сущ.
+            - generic [ref=e44051]:
+              - img [ref=e44052]
+              - text: Выучено
+            - generic [ref=e44057]: "100"
+            - generic [ref=e44058]:
+              - img [ref=e44059]
+              - text: через 27 дней
+        - button [ref=e44063] [cursor=pointer]:
+          - img [ref=e44064]
+      - generic [ref=e44066]:
+        - checkbox [ref=e44067] [cursor=pointer]
+        - generic [ref=e44068]:
+          - generic [ref=e44069]:
+            - generic [ref=e44070]: håp
+            - generic [ref=e44071]: надежда
+          - generic [ref=e44072]:
+            - generic [ref=e44073]: сущ.
+            - generic [ref=e44074]:
+              - img [ref=e44075]
+              - text: Выучено
+            - generic [ref=e44080]: "100"
+            - generic [ref=e44081]:
+              - img [ref=e44082]
+              - text: через 27 дней
+        - button [ref=e44086] [cursor=pointer]:
+          - img [ref=e44087]
+      - generic [ref=e44089]:
+        - checkbox [ref=e44090] [cursor=pointer]
+        - generic [ref=e44091]:
+          - generic [ref=e44092]:
+            - generic [ref=e44093]: kaste
+            - generic [ref=e44094]: бросать
+          - generic [ref=e44095]:
+            - generic [ref=e44096]: гл.
+            - generic [ref=e44097]:
+              - img [ref=e44098]
+              - text: Выучено
+            - generic [ref=e44103]: "100"
+            - generic [ref=e44104]:
+              - img [ref=e44105]
+              - text: через 27 дней
+        - button [ref=e44109] [cursor=pointer]:
+          - img [ref=e44110]
+      - generic [ref=e44112]:
+        - checkbox [ref=e44113] [cursor=pointer]
+        - generic [ref=e44114]:
+          - generic [ref=e44115]:
+            - generic [ref=e44116]: hånd
+            - generic [ref=e44117]: рука, кисть
+          - generic [ref=e44118]:
+            - generic [ref=e44119]: сущ.
+            - generic [ref=e44120]:
+              - img [ref=e44121]
+              - text: Выучено
+            - generic [ref=e44126]: "100"
+            - generic [ref=e44127]:
+              - img [ref=e44128]
+              - text: через 27 дней
+        - button [ref=e44132] [cursor=pointer]:
+          - img [ref=e44133]
+      - generic [ref=e44135]:
+        - checkbox [ref=e44136] [cursor=pointer]
+        - generic [ref=e44137]:
+          - generic [ref=e44138]:
+            - generic [ref=e44139]: le
+            - generic [ref=e44140]: смеяться
+          - generic [ref=e44141]:
+            - generic [ref=e44142]: гл.
+            - generic [ref=e44143]:
+              - img [ref=e44144]
+              - text: Выучено
+            - generic [ref=e44149]: "100"
+            - generic [ref=e44150]:
+              - img [ref=e44151]
+              - text: через 27 дней
+        - button [ref=e44155] [cursor=pointer]:
+          - img [ref=e44156]
+      - generic [ref=e44158]:
+        - checkbox [ref=e44159] [cursor=pointer]
+        - generic [ref=e44160]:
+          - generic [ref=e44161]:
+            - generic [ref=e44162]: løse
+            - generic [ref=e44163]: решать, развязывать
+          - generic [ref=e44164]:
+            - generic [ref=e44165]: гл.
+            - generic [ref=e44166]:
+              - img [ref=e44167]
+              - text: Выучено
+            - generic [ref=e44172]: "100"
+            - generic [ref=e44173]:
+              - img [ref=e44174]
+              - text: через 27 дней
+        - button [ref=e44178] [cursor=pointer]:
+          - img [ref=e44179]
+      - generic [ref=e44181]:
+        - checkbox [ref=e44182] [cursor=pointer]
+        - generic [ref=e44183]:
+          - generic [ref=e44184]:
+            - generic [ref=e44185]: regel
+            - generic [ref=e44186]: правило
+          - generic [ref=e44187]:
+            - generic [ref=e44188]: сущ.
+            - generic [ref=e44189]:
+              - img [ref=e44190]
+              - text: Выучено
+            - generic [ref=e44195]: "100"
+            - generic [ref=e44196]:
+              - img [ref=e44197]
+              - text: через 27 дней
+        - button [ref=e44201] [cursor=pointer]:
+          - img [ref=e44202]
+      - generic [ref=e44204]:
+        - checkbox [ref=e44205] [cursor=pointer]
+        - generic [ref=e44206]:
+          - generic [ref=e44207]:
+            - generic [ref=e44208]: langs
+            - generic [ref=e44209]: вдоль
+          - generic [ref=e44210]:
+            - generic [ref=e44211]: предл.
+            - generic [ref=e44212]:
+              - img [ref=e44213]
+              - text: Выучено
+            - generic [ref=e44218]: "100"
+            - generic [ref=e44219]:
+              - img [ref=e44220]
+              - text: через 27 дней
+        - button [ref=e44224] [cursor=pointer]:
+          - img [ref=e44225]
+      - generic [ref=e44227]:
+        - checkbox [ref=e44228] [cursor=pointer]
+        - generic [ref=e44229]:
+          - generic [ref=e44230]:
+            - generic [ref=e44231]: øl
+            - generic [ref=e44232]: пиво
+          - generic [ref=e44233]:
+            - generic [ref=e44234]: сущ.
+            - generic [ref=e44235]:
+              - img [ref=e44236]
+              - text: Выучено
+            - generic [ref=e44241]: "100"
+            - generic [ref=e44242]:
+              - img [ref=e44243]
+              - text: через 27 дней
+        - button [ref=e44247] [cursor=pointer]:
+          - img [ref=e44248]
+      - generic [ref=e44250]:
+        - checkbox [ref=e44251] [cursor=pointer]
+        - generic [ref=e44252]:
+          - generic [ref=e44253]:
+            - generic [ref=e44254]: skrelle
+            - generic [ref=e44255]: чистить, очищать от кожуры
+          - generic [ref=e44256]:
+            - generic [ref=e44257]: гл.
+            - generic [ref=e44258]:
+              - img [ref=e44259]
+              - text: Выучено
+            - generic [ref=e44264]: "100"
+            - generic [ref=e44265]:
+              - img [ref=e44266]
+              - text: через 27 дней
+        - button [ref=e44270] [cursor=pointer]:
+          - img [ref=e44271]
+      - generic [ref=e44273]:
+        - checkbox [ref=e44274] [cursor=pointer]
+        - generic [ref=e44275]:
+          - generic [ref=e44276]:
+            - generic [ref=e44277]: utroskap
+            - generic [ref=e44278]: измена
+          - generic [ref=e44279]:
+            - generic [ref=e44280]: сущ.
+            - generic [ref=e44281]:
+              - img [ref=e44282]
+              - text: Выучено
+            - generic [ref=e44287]: "100"
+            - generic [ref=e44288]:
+              - img [ref=e44289]
+              - text: через 27 дней
+        - button [ref=e44293] [cursor=pointer]:
+          - img [ref=e44294]
+      - generic [ref=e44296]:
+        - checkbox [ref=e44297] [cursor=pointer]
+        - generic [ref=e44298]:
+          - generic [ref=e44299]:
+            - generic [ref=e44300]: orden
+            - generic [ref=e44301]: порядок
+          - generic [ref=e44302]:
+            - generic [ref=e44303]: сущ.
+            - generic [ref=e44304]:
+              - img [ref=e44305]
+              - text: Выучено
+            - generic [ref=e44310]: "100"
+            - generic [ref=e44311]:
+              - img [ref=e44312]
+              - text: через 27 дней
+        - button [ref=e44316] [cursor=pointer]:
+          - img [ref=e44317]
+      - generic [ref=e44319]:
+        - checkbox [ref=e44320] [cursor=pointer]
+        - generic [ref=e44321]:
+          - generic [ref=e44322]:
+            - generic [ref=e44323]: fengsel
+            - generic [ref=e44324]: тюрьма
+          - generic [ref=e44325]:
+            - generic [ref=e44326]: сущ.
+            - generic [ref=e44327]:
+              - img [ref=e44328]
+              - text: Выучено
+            - generic [ref=e44333]: "100"
+            - generic [ref=e44334]:
+              - img [ref=e44335]
+              - text: через 27 дней
+        - button [ref=e44339] [cursor=pointer]:
+          - img [ref=e44340]
+      - generic [ref=e44342]:
+        - checkbox [ref=e44343] [cursor=pointer]
+        - generic [ref=e44344]:
+          - generic [ref=e44345]:
+            - generic [ref=e44346]: kjærlighet
+            - generic [ref=e44347]: любовь
+          - generic [ref=e44348]:
+            - generic [ref=e44349]: сущ.
+            - generic [ref=e44350]:
+              - img [ref=e44351]
+              - text: Выучено
+            - generic [ref=e44356]: "100"
+            - generic [ref=e44357]:
+              - img [ref=e44358]
+              - text: через 27 дней
+        - button [ref=e44362] [cursor=pointer]:
+          - img [ref=e44363]
+      - generic [ref=e44365]:
+        - checkbox [ref=e44366] [cursor=pointer]
+        - generic [ref=e44367]:
+          - generic [ref=e44368]:
+            - generic [ref=e44369]: søke
+            - generic [ref=e44370]: искать
+          - generic [ref=e44371]:
+            - generic [ref=e44372]: гл.
+            - generic [ref=e44373]:
+              - img [ref=e44374]
+              - text: Выучено
+            - generic [ref=e44379]: "100"
+            - generic [ref=e44380]:
+              - img [ref=e44381]
+              - text: через 27 дней
+        - button [ref=e44385] [cursor=pointer]:
+          - img [ref=e44386]
+      - generic [ref=e44388]:
+        - checkbox [ref=e44389] [cursor=pointer]
+        - generic [ref=e44390]:
+          - generic [ref=e44391]:
+            - generic [ref=e44392]: ærlig
+            - generic [ref=e44393]: честный, искренний
+          - generic [ref=e44394]:
+            - generic [ref=e44395]: прил.
+            - generic [ref=e44396]:
+              - img [ref=e44397]
+              - text: Выучено
+            - generic [ref=e44402]: "100"
+            - generic [ref=e44403]:
+              - img [ref=e44404]
+              - text: через 27 дней
+        - button [ref=e44408] [cursor=pointer]:
+          - img [ref=e44409]
+      - generic [ref=e44411]:
+        - checkbox [ref=e44412] [cursor=pointer]
+        - generic [ref=e44413]:
+          - generic [ref=e44414]:
+            - generic [ref=e44415]: medlem
+            - generic [ref=e44416]: член, участник
+          - generic [ref=e44417]:
+            - generic [ref=e44418]: сущ.
+            - generic [ref=e44419]:
+              - img [ref=e44420]
+              - text: Выучено
+            - generic [ref=e44425]: "100"
+            - generic [ref=e44426]:
+              - img [ref=e44427]
+              - text: через 27 дней
+        - button [ref=e44431] [cursor=pointer]:
+          - img [ref=e44432]
+      - generic [ref=e44434]:
+        - checkbox [ref=e44435] [cursor=pointer]
+        - generic [ref=e44436]:
+          - generic [ref=e44437]:
+            - generic [ref=e44438]: spørre
+            - generic [ref=e44439]: спрашивать
+          - generic [ref=e44440]:
+            - generic [ref=e44441]: гл.
+            - generic [ref=e44442]:
+              - img [ref=e44443]
+              - text: Выучено
+            - generic [ref=e44448]: "100"
+            - generic [ref=e44449]:
+              - img [ref=e44450]
+              - text: через 27 дней
+        - button [ref=e44454] [cursor=pointer]:
+          - img [ref=e44455]
+      - generic [ref=e44457]:
+        - checkbox [ref=e44458] [cursor=pointer]
+        - generic [ref=e44459]:
+          - generic [ref=e44460]:
+            - generic [ref=e44461]: felles
+            - generic [ref=e44462]: общий, совместный
+          - generic [ref=e44463]:
+            - generic [ref=e44464]: прил.
+            - generic [ref=e44465]:
+              - img [ref=e44466]
+              - text: Выучено
+            - generic [ref=e44471]: "100"
+            - generic [ref=e44472]:
+              - img [ref=e44473]
+              - text: через 27 дней
+        - button [ref=e44477] [cursor=pointer]:
+          - img [ref=e44478]
+      - generic [ref=e44480]:
+        - checkbox [ref=e44481] [cursor=pointer]
+        - generic [ref=e44482]:
+          - generic [ref=e44483]:
+            - generic [ref=e44484]: merke
+            - generic [ref=e44485]: замечать, ощущать, заметить
+          - generic [ref=e44486]:
+            - generic [ref=e44487]: гл.
+            - generic [ref=e44488]:
+              - img [ref=e44489]
+              - text: Выучено
+            - generic [ref=e44494]: "100"
+            - generic [ref=e44495]:
+              - img [ref=e44496]
+              - text: через 27 дней
+        - button [ref=e44500] [cursor=pointer]:
+          - img [ref=e44501]
+      - generic [ref=e44503]:
+        - checkbox [ref=e44504] [cursor=pointer]
+        - generic [ref=e44505]:
+          - generic [ref=e44506]:
+            - generic [ref=e44507]: energi
+            - generic [ref=e44508]: энергия
+          - generic [ref=e44509]:
+            - generic [ref=e44510]: сущ.
+            - generic [ref=e44511]:
+              - img [ref=e44512]
+              - text: Выучено
+            - generic [ref=e44517]: "100"
+            - generic [ref=e44518]:
+              - img [ref=e44519]
+              - text: через 27 дней
+        - button [ref=e44523] [cursor=pointer]:
+          - img [ref=e44524]
+      - generic [ref=e44526]:
+        - checkbox [ref=e44527] [cursor=pointer]
+        - generic [ref=e44528]:
+          - generic [ref=e44529]:
+            - generic [ref=e44530]: stund
+            - generic [ref=e44531]: минута, время
+          - generic [ref=e44532]:
+            - generic [ref=e44533]: сущ.
+            - generic [ref=e44534]:
+              - img [ref=e44535]
+              - text: Выучено
+            - generic [ref=e44540]: "100"
+            - generic [ref=e44541]:
+              - img [ref=e44542]
+              - text: через 27 дней
+        - button [ref=e44546] [cursor=pointer]:
+          - img [ref=e44547]
+      - generic [ref=e44549]:
+        - checkbox [ref=e44550] [cursor=pointer]
+        - generic [ref=e44551]:
+          - generic [ref=e44552]:
+            - generic [ref=e44553]: endre
+            - generic [ref=e44554]: изменять, менять
+          - generic [ref=e44555]:
+            - generic [ref=e44556]: гл.
+            - generic [ref=e44557]:
+              - img [ref=e44558]
+              - text: Выучено
+            - generic [ref=e44563]: "100"
+            - generic [ref=e44564]:
+              - img [ref=e44565]
+              - text: через 27 дней
+        - button [ref=e44569] [cursor=pointer]:
+          - img [ref=e44570]
+      - generic [ref=e44572]:
+        - checkbox [ref=e44573] [cursor=pointer]
+        - generic [ref=e44574]:
+          - generic [ref=e44575]:
+            - generic [ref=e44576]: ungdom
+            - generic [ref=e44577]: молодежь, подросток
+          - generic [ref=e44578]:
+            - generic [ref=e44579]: сущ.
+            - generic [ref=e44580]:
+              - img [ref=e44581]
+              - text: Выучено
+            - generic [ref=e44586]: "100"
+            - generic [ref=e44587]:
+              - img [ref=e44588]
+              - text: через 27 дней
+        - button [ref=e44592] [cursor=pointer]:
+          - img [ref=e44593]
+      - generic [ref=e44595]:
+        - checkbox [ref=e44596] [cursor=pointer]
+        - generic [ref=e44597]:
+          - generic [ref=e44598]:
+            - generic [ref=e44599]: huske
+            - generic [ref=e44600]: помнить, вспоминать
+          - generic [ref=e44601]:
+            - generic [ref=e44602]: гл.
+            - generic [ref=e44603]:
+              - img [ref=e44604]
+              - text: Выучено
+            - generic [ref=e44609]: "100"
+            - generic [ref=e44610]:
+              - img [ref=e44611]
+              - text: через 27 дней
+        - button [ref=e44615] [cursor=pointer]:
+          - img [ref=e44616]
+      - generic [ref=e44618]:
+        - checkbox [ref=e44619] [cursor=pointer]
+        - generic [ref=e44620]:
+          - generic [ref=e44621]:
+            - generic [ref=e44622]: artikkel
+            - generic [ref=e44623]: статья, артикул
+          - generic [ref=e44624]:
+            - generic [ref=e44625]: сущ.
+            - generic [ref=e44626]:
+              - img [ref=e44627]
+              - text: Выучено
+            - generic [ref=e44632]: "100"
+            - generic [ref=e44633]:
+              - img [ref=e44634]
+              - text: через 27 дней
+        - button [ref=e44638] [cursor=pointer]:
+          - img [ref=e44639]
+      - generic [ref=e44641]:
+        - checkbox [ref=e44642] [cursor=pointer]
+        - generic [ref=e44643]:
+          - generic [ref=e44644]:
+            - generic [ref=e44645]: vare
+            - generic [ref=e44646]: длиться, продолжаться
+          - generic [ref=e44647]:
+            - generic [ref=e44648]: гл.
+            - generic [ref=e44649]:
+              - img [ref=e44650]
+              - text: Выучено
+            - generic [ref=e44655]: "100"
+            - generic [ref=e44656]:
+              - img [ref=e44657]
+              - text: через 27 дней
+        - button [ref=e44661] [cursor=pointer]:
+          - img [ref=e44662]
+      - generic [ref=e44664]:
+        - checkbox [ref=e44665] [cursor=pointer]
+        - generic [ref=e44666]:
+          - generic [ref=e44667]:
+            - generic [ref=e44668]: lavere
+            - generic [ref=e44669]: ниже
+          - generic [ref=e44670]:
+            - generic [ref=e44671]: прил.
+            - generic [ref=e44672]:
+              - img [ref=e44673]
+              - text: Выучено
+            - generic [ref=e44678]: "100"
+            - generic [ref=e44679]:
+              - img [ref=e44680]
+              - text: через 27 дней
+        - button [ref=e44684] [cursor=pointer]:
+          - img [ref=e44685]
+      - generic [ref=e44687]:
+        - checkbox [ref=e44688] [cursor=pointer]
+        - generic [ref=e44689]:
+          - generic [ref=e44690]:
+            - generic [ref=e44691]: bøker
+            - generic [ref=e44692]: книги
+          - generic [ref=e44693]:
+            - generic [ref=e44694]: сущ.
+            - generic [ref=e44695]:
+              - img [ref=e44696]
+              - text: Выучено
+            - generic [ref=e44701]: "100"
+            - generic [ref=e44702]:
+              - img [ref=e44703]
+              - text: через 27 дней
+        - button [ref=e44707] [cursor=pointer]:
+          - img [ref=e44708]
+      - generic [ref=e44710]:
+        - checkbox [ref=e44711] [cursor=pointer]
+        - generic [ref=e44712]:
+          - generic [ref=e44713]:
+            - generic [ref=e44714]: osv
+            - generic [ref=e44715]: и так далее, и т.д.
+          - generic [ref=e44716]:
+            - generic [ref=e44717]: нареч.
+            - generic [ref=e44718]:
+              - img [ref=e44719]
+              - text: Выучено
+            - generic [ref=e44724]: "100"
+            - generic [ref=e44725]:
+              - img [ref=e44726]
+              - text: через 27 дней
+        - button [ref=e44730] [cursor=pointer]:
+          - img [ref=e44731]
+      - generic [ref=e44733]:
+        - checkbox [ref=e44734] [cursor=pointer]
+        - generic [ref=e44735]:
+          - generic [ref=e44736]:
+            - generic [ref=e44737]: synd
+            - generic [ref=e44738]: грех
+          - generic [ref=e44739]:
+            - generic [ref=e44740]: сущ.
+            - generic [ref=e44741]:
+              - img [ref=e44742]
+              - text: Выучено
+            - generic [ref=e44747]: "100"
+            - generic [ref=e44748]:
+              - img [ref=e44749]
+              - text: через 27 дней
+        - button [ref=e44753] [cursor=pointer]:
+          - img [ref=e44754]
+      - generic [ref=e44756]:
+        - checkbox [ref=e44757] [cursor=pointer]
+        - generic [ref=e44758]:
+          - generic [ref=e44759]:
+            - generic [ref=e44760]: fører
+            - generic [ref=e44761]: водитель, лидер, вождь
+          - generic [ref=e44762]:
+            - generic [ref=e44763]: сущ.
+            - generic [ref=e44764]:
+              - img [ref=e44765]
+              - text: Выучено
+            - generic [ref=e44770]: "100"
+            - generic [ref=e44771]:
+              - img [ref=e44772]
+              - text: через 27 дней
+        - button [ref=e44776] [cursor=pointer]:
+          - img [ref=e44777]
+      - generic [ref=e44779]:
+        - checkbox [ref=e44780] [cursor=pointer]
+        - generic [ref=e44781]:
+          - generic [ref=e44782]:
+            - generic [ref=e44783]: personlig
+            - generic [ref=e44784]: личный, персональный
+          - generic [ref=e44785]:
+            - generic [ref=e44786]: прил.
+            - generic [ref=e44787]:
+              - img [ref=e44788]
+              - text: Выучено
+            - generic [ref=e44793]: "100"
+            - generic [ref=e44794]:
+              - img [ref=e44795]
+              - text: через 27 дней
+        - button [ref=e44799] [cursor=pointer]:
+          - img [ref=e44800]
+      - generic [ref=e44802]:
+        - checkbox [ref=e44803] [cursor=pointer]
+        - generic [ref=e44804]:
+          - generic [ref=e44805]:
+            - generic [ref=e44806]: vondt
+            - generic [ref=e44807]: больно
+          - generic [ref=e44808]:
+            - generic [ref=e44809]: прил.
+            - generic [ref=e44810]:
+              - img [ref=e44811]
+              - text: Выучено
+            - generic [ref=e44816]: "100"
+            - generic [ref=e44817]:
+              - img [ref=e44818]
+              - text: через 27 дней
+        - button [ref=e44822] [cursor=pointer]:
+          - img [ref=e44823]
+      - generic [ref=e44825]:
+        - checkbox [ref=e44826] [cursor=pointer]
+        - generic [ref=e44827]:
+          - generic [ref=e44828]:
+            - generic [ref=e44829]: moderne
+            - generic [ref=e44830]: современный
+          - generic [ref=e44831]:
+            - generic [ref=e44832]: прил.
+            - generic [ref=e44833]:
+              - img [ref=e44834]
+              - text: Выучено
+            - generic [ref=e44839]: "100"
+            - generic [ref=e44840]:
+              - img [ref=e44841]
+              - text: через 27 дней
+        - button [ref=e44845] [cursor=pointer]:
+          - img [ref=e44846]
+      - generic [ref=e44848]:
+        - checkbox [ref=e44849] [cursor=pointer]
+        - generic [ref=e44850]:
+          - generic [ref=e44851]:
+            - generic [ref=e44852]: dele
+            - generic [ref=e44853]: делить, раздавать
+          - generic [ref=e44854]:
+            - generic [ref=e44855]: гл.
+            - generic [ref=e44856]:
+              - img [ref=e44857]
+              - text: Выучено
+            - generic [ref=e44862]: "100"
+            - generic [ref=e44863]:
+              - img [ref=e44864]
+              - text: через 27 дней
+        - button [ref=e44868] [cursor=pointer]:
+          - img [ref=e44869]
+      - generic [ref=e44871]:
+        - checkbox [ref=e44872] [cursor=pointer]
+        - generic [ref=e44873]:
+          - generic [ref=e44874]:
+            - generic [ref=e44875]: midt
+            - generic [ref=e44876]: середина
+          - generic [ref=e44877]:
+            - generic [ref=e44878]: нареч.
+            - generic [ref=e44879]:
+              - img [ref=e44880]
+              - text: Выучено
+            - generic [ref=e44885]: "100"
+            - generic [ref=e44886]:
+              - img [ref=e44887]
+              - text: через 27 дней
+        - button [ref=e44891] [cursor=pointer]:
+          - img [ref=e44892]
+      - generic [ref=e44894]:
+        - checkbox [ref=e44895] [cursor=pointer]
+        - generic [ref=e44896]:
+          - generic [ref=e44897]:
+            - generic [ref=e44898]: lærer
+            - generic [ref=e44899]: учитель, преподаватель
+          - generic [ref=e44900]:
+            - generic [ref=e44901]: сущ.
+            - generic [ref=e44902]:
+              - img [ref=e44903]
+              - text: Выучено
+            - generic [ref=e44908]: "100"
+            - generic [ref=e44909]:
+              - img [ref=e44910]
+              - text: через 27 дней
+        - button [ref=e44914] [cursor=pointer]:
+          - img [ref=e44915]
+      - generic [ref=e44917]:
+        - checkbox [ref=e44918] [cursor=pointer]
+        - generic [ref=e44919]:
+          - generic [ref=e44920]:
+            - generic [ref=e44921]: perfekt
+            - generic [ref=e44922]: идеальный, отличный
+          - generic [ref=e44923]:
+            - generic [ref=e44924]: прил.
+            - generic [ref=e44925]:
+              - img [ref=e44926]
+              - text: Выучено
+            - generic [ref=e44931]: "100"
+            - generic [ref=e44932]:
+              - img [ref=e44933]
+              - text: через 27 дней
+        - button [ref=e44937] [cursor=pointer]:
+          - img [ref=e44938]
+      - generic [ref=e44940]:
+        - checkbox [ref=e44941] [cursor=pointer]
+        - generic [ref=e44942]:
+          - generic [ref=e44943]:
+            - generic [ref=e44944]: umulig
+            - generic [ref=e44945]: невозможный
+          - generic [ref=e44946]:
+            - generic [ref=e44947]: прил.
+            - generic [ref=e44948]:
+              - img [ref=e44949]
+              - text: Выучено
+            - generic [ref=e44954]: "100"
+            - generic [ref=e44955]:
+              - img [ref=e44956]
+              - text: через 27 дней
+        - button [ref=e44960] [cursor=pointer]:
+          - img [ref=e44961]
+      - generic [ref=e44963]:
+        - checkbox [ref=e44964] [cursor=pointer]
+        - generic [ref=e44965]:
+          - generic [ref=e44966]:
+            - generic [ref=e44967]: lykke
+            - generic [ref=e44968]: счастье
+          - generic [ref=e44969]:
+            - generic [ref=e44970]: сущ.
+            - generic [ref=e44971]:
+              - img [ref=e44972]
+              - text: Выучено
+            - generic [ref=e44977]: "100"
+            - generic [ref=e44978]:
+              - img [ref=e44979]
+              - text: через 27 дней
+        - button [ref=e44983] [cursor=pointer]:
+          - img [ref=e44984]
+      - generic [ref=e44986]:
+        - checkbox [ref=e44987] [cursor=pointer]
+        - generic [ref=e44988]:
+          - generic [ref=e44989]:
+            - generic [ref=e44990]: redd
+            - generic [ref=e44991]: испуганный
+          - generic [ref=e44992]:
+            - generic [ref=e44993]: прил.
+            - generic [ref=e44994]:
+              - img [ref=e44995]
+              - text: Выучено
+            - generic [ref=e45000]: "100"
+            - generic [ref=e45001]:
+              - img [ref=e45002]
+              - text: через 27 дней
+        - button [ref=e45006] [cursor=pointer]:
+          - img [ref=e45007]
+      - generic [ref=e45009]:
+        - checkbox [ref=e45010] [cursor=pointer]
+        - generic [ref=e45011]:
+          - generic [ref=e45012]:
+            - generic [ref=e45013]: offentlig
+            - generic [ref=e45014]: публичный, общественный
+          - generic [ref=e45015]:
+            - generic [ref=e45016]: прил.
+            - generic [ref=e45017]:
+              - img [ref=e45018]
+              - text: Выучено
+            - generic [ref=e45023]: "100"
+            - generic [ref=e45024]:
+              - img [ref=e45025]
+              - text: через 27 дней
+        - button [ref=e45029] [cursor=pointer]:
+          - img [ref=e45030]
+      - generic [ref=e45032]:
+        - checkbox [ref=e45033] [cursor=pointer]
+        - generic [ref=e45034]:
+          - generic [ref=e45035]:
+            - generic [ref=e45036]: sjekke
+            - generic [ref=e45037]: проверять
+          - generic [ref=e45038]:
+            - generic [ref=e45039]: гл.
+            - generic [ref=e45040]:
+              - img [ref=e45041]
+              - text: Выучено
+            - generic [ref=e45046]: "100"
+            - generic [ref=e45047]:
+              - img [ref=e45048]
+              - text: через 27 дней
+        - button [ref=e45052] [cursor=pointer]:
+          - img [ref=e45053]
+      - generic [ref=e45055]:
+        - checkbox [ref=e45056] [cursor=pointer]
+        - generic [ref=e45057]:
+          - generic [ref=e45058]:
+            - generic [ref=e45059]: plutselig
+            - generic [ref=e45060]: внезапно, неожиданно
+          - generic [ref=e45061]:
+            - generic [ref=e45062]: нареч.
+            - generic [ref=e45063]:
+              - img [ref=e45064]
+              - text: Выучено
+            - generic [ref=e45069]: "100"
+            - generic [ref=e45070]:
+              - img [ref=e45071]
+              - text: через 27 дней
+        - button [ref=e45075] [cursor=pointer]:
+          - img [ref=e45076]
+      - generic [ref=e45078]:
+        - checkbox [ref=e45079] [cursor=pointer]
+        - generic [ref=e45080]:
+          - generic [ref=e45081]:
+            - generic [ref=e45082]: it
+            - generic [ref=e45083]: информационные технологии, ИТ
+          - generic [ref=e45084]:
+            - generic [ref=e45085]: сущ.
+            - generic [ref=e45086]:
+              - img [ref=e45087]
+              - text: Выучено
+            - generic [ref=e45092]: "100"
+            - generic [ref=e45093]:
+              - img [ref=e45094]
+              - text: через 27 дней
+        - button [ref=e45098] [cursor=pointer]:
+          - img [ref=e45099]
+      - generic [ref=e45101]:
+        - checkbox [ref=e45102] [cursor=pointer]
+        - generic [ref=e45103]:
+          - generic [ref=e45104]:
+            - generic [ref=e45105]: bygge
+            - generic [ref=e45106]: строить
+          - generic [ref=e45107]:
+            - generic [ref=e45108]: гл.
+            - generic [ref=e45109]:
+              - img [ref=e45110]
+              - text: Выучено
+            - generic [ref=e45115]: "100"
+            - generic [ref=e45116]:
+              - img [ref=e45117]
+              - text: через 27 дней
+        - button [ref=e45121] [cursor=pointer]:
+          - img [ref=e45122]
+      - generic [ref=e45124]:
+        - checkbox [ref=e45125] [cursor=pointer]
+        - generic [ref=e45126]:
+          - generic [ref=e45127]:
+            - generic [ref=e45128]: ansatte
+            - generic [ref=e45129]: сотрудники, персонал
+          - generic [ref=e45130]:
+            - generic [ref=e45131]: сущ.
+            - generic [ref=e45132]:
+              - img [ref=e45133]
+              - text: Выучено
+            - generic [ref=e45138]: "100"
+            - generic [ref=e45139]:
+              - img [ref=e45140]
+              - text: через 27 дней
+        - button [ref=e45144] [cursor=pointer]:
+          - img [ref=e45145]
+      - generic [ref=e45147]:
+        - checkbox [ref=e45148] [cursor=pointer]
+        - generic [ref=e45149]:
+          - generic [ref=e45150]:
+            - generic [ref=e45151]: endelig
+            - generic [ref=e45152]: наконец, в конце концов
+          - generic [ref=e45153]:
+            - generic [ref=e45154]: нареч.
+            - generic [ref=e45155]:
+              - img [ref=e45156]
+              - text: Выучено
+            - generic [ref=e45161]: "100"
+            - generic [ref=e45162]:
+              - img [ref=e45163]
+              - text: через 27 дней
+        - button [ref=e45167] [cursor=pointer]:
+          - img [ref=e45168]
+      - generic [ref=e45170]:
+        - checkbox [ref=e45171] [cursor=pointer]
+        - generic [ref=e45172]:
+          - generic [ref=e45173]:
+            - generic [ref=e45174]: gud
+            - generic [ref=e45175]: бог
+          - generic [ref=e45176]:
+            - generic [ref=e45177]: сущ.
+            - generic [ref=e45178]:
+              - img [ref=e45179]
+              - text: Выучено
+            - generic [ref=e45184]: "100"
+            - generic [ref=e45185]:
+              - img [ref=e45186]
+              - text: через 27 дней
+        - button [ref=e45190] [cursor=pointer]:
+          - img [ref=e45191]
+      - generic [ref=e45193]:
+        - checkbox [ref=e45194] [cursor=pointer]
+        - generic [ref=e45195]:
+          - generic [ref=e45196]:
+            - generic [ref=e45197]: interessant
+            - generic [ref=e45198]: интересный
+          - generic [ref=e45199]:
+            - generic [ref=e45200]: прил.
+            - generic [ref=e45201]:
+              - img [ref=e45202]
+              - text: Выучено
+            - generic [ref=e45207]: "100"
+            - generic [ref=e45208]:
+              - img [ref=e45209]
+              - text: через 27 дней
+        - button [ref=e45213] [cursor=pointer]:
+          - img [ref=e45214]
+      - generic [ref=e45216]:
+        - checkbox [ref=e45217] [cursor=pointer]
+        - generic [ref=e45218]:
+          - generic [ref=e45219]:
+            - generic [ref=e45220]: eldre
+            - generic [ref=e45221]: старший, пожилой
+          - generic [ref=e45222]:
+            - generic [ref=e45223]: прил.
+            - generic [ref=e45224]:
+              - img [ref=e45225]
+              - text: Выучено
+            - generic [ref=e45230]: "100"
+            - generic [ref=e45231]:
+              - img [ref=e45232]
+              - text: через 27 дней
+        - button [ref=e45236] [cursor=pointer]:
+          - img [ref=e45237]
+      - generic [ref=e45239]:
+        - checkbox [ref=e45240] [cursor=pointer]
+        - generic [ref=e45241]:
+          - generic [ref=e45242]:
+            - generic [ref=e45243]: film
+            - generic [ref=e45244]: фильм, пленка
+          - generic [ref=e45245]:
+            - generic [ref=e45246]: сущ.
+            - generic [ref=e45247]:
+              - img [ref=e45248]
+              - text: Выучено
+            - generic [ref=e45253]: "100"
+            - generic [ref=e45254]:
+              - img [ref=e45255]
+              - text: через 27 дней
+        - button [ref=e45259] [cursor=pointer]:
+          - img [ref=e45260]
+      - generic [ref=e45262]:
+        - checkbox [ref=e45263] [cursor=pointer]
+        - generic [ref=e45264]:
+          - generic [ref=e45265]:
+            - generic [ref=e45266]: prosent
+            - generic [ref=e45267]: процент
+          - generic [ref=e45268]:
+            - generic [ref=e45269]: сущ.
+            - generic [ref=e45270]:
+              - img [ref=e45271]
+              - text: Выучено
+            - generic [ref=e45276]: "100"
+            - generic [ref=e45277]:
+              - img [ref=e45278]
+              - text: через 27 дней
+        - button [ref=e45282] [cursor=pointer]:
+          - img [ref=e45283]
+      - generic [ref=e45285]:
+        - checkbox [ref=e45286] [cursor=pointer]
+        - generic [ref=e45287]:
+          - generic [ref=e45288]:
+            - generic [ref=e45289]: historie
+            - generic [ref=e45290]: история
+          - generic [ref=e45291]:
+            - generic [ref=e45292]: сущ.
+            - generic [ref=e45293]:
+              - img [ref=e45294]
+              - text: Выучено
+            - generic [ref=e45299]: "100"
+            - generic [ref=e45300]:
+              - img [ref=e45301]
+              - text: через 27 дней
+        - button [ref=e45305] [cursor=pointer]:
+          - img [ref=e45306]
+      - generic [ref=e45308]:
+        - checkbox [ref=e45309] [cursor=pointer]
+        - generic [ref=e45310]:
+          - generic [ref=e45311]:
+            - generic [ref=e45312]: kontakt
+            - generic [ref=e45313]: контакт, связь
+          - generic [ref=e45314]:
+            - generic [ref=e45315]: сущ.
+            - generic [ref=e45316]:
+              - img [ref=e45317]
+              - text: Выучено
+            - generic [ref=e45322]: "100"
+            - generic [ref=e45323]:
+              - img [ref=e45324]
+              - text: через 27 дней
+        - button [ref=e45328] [cursor=pointer]:
+          - img [ref=e45329]
+      - generic [ref=e45331]:
+        - checkbox [ref=e45332] [cursor=pointer]
+        - generic [ref=e45333]:
+          - generic [ref=e45334]:
+            - generic [ref=e45335]: råd
+            - generic [ref=e45336]: совет
+          - generic [ref=e45337]:
+            - generic [ref=e45338]: сущ.
+            - generic [ref=e45339]:
+              - img [ref=e45340]
+              - text: Выучено
+            - generic [ref=e45345]: "100"
+            - generic [ref=e45346]:
+              - img [ref=e45347]
+              - text: через 27 дней
+        - button [ref=e45351] [cursor=pointer]:
+          - img [ref=e45352]
+      - generic [ref=e45354]:
+        - checkbox [ref=e45355] [cursor=pointer]
+        - generic [ref=e45356]:
+          - generic [ref=e45357]:
+            - generic [ref=e45358]: velge
+            - generic [ref=e45359]: выбирать
+          - generic [ref=e45360]:
+            - generic [ref=e45361]: гл.
+            - generic [ref=e45362]:
+              - img [ref=e45363]
+              - text: Выучено
+            - generic [ref=e45368]: "100"
+            - generic [ref=e45369]:
+              - img [ref=e45370]
+              - text: через 27 дней
+        - button [ref=e45374] [cursor=pointer]:
+          - img [ref=e45375]
+      - generic [ref=e45377]:
+        - checkbox [ref=e45378] [cursor=pointer]
+        - generic [ref=e45379]:
+          - generic [ref=e45380]:
+            - generic [ref=e45381]: and
+            - generic [ref=e45382]: утка
+          - generic [ref=e45383]:
+            - generic [ref=e45384]: сущ.
+            - generic [ref=e45385]:
+              - img [ref=e45386]
+              - text: Выучено
+            - generic [ref=e45391]: "100"
+            - generic [ref=e45392]:
+              - img [ref=e45393]
+              - text: через 27 дней
+        - button [ref=e45397] [cursor=pointer]:
+          - img [ref=e45398]
+      - generic [ref=e45400]:
+        - checkbox [ref=e45401] [cursor=pointer]
+        - generic [ref=e45402]:
+          - generic [ref=e45403]:
+            - generic [ref=e45404]: mulighet
+            - generic [ref=e45405]: возможность, шанс
+          - generic [ref=e45406]:
+            - generic [ref=e45407]: сущ.
+            - generic [ref=e45408]:
+              - img [ref=e45409]
+              - text: Выучено
+            - generic [ref=e45414]: "100"
+            - generic [ref=e45415]:
+              - img [ref=e45416]
+              - text: через 27 дней
+        - button [ref=e45420] [cursor=pointer]:
+          - img [ref=e45421]
+      - generic [ref=e45423]:
+        - checkbox [ref=e45424] [cursor=pointer]
+        - generic [ref=e45425]:
+          - generic [ref=e45426]:
+            - generic [ref=e45427]: svar
+            - generic [ref=e45428]: ответ
+          - generic [ref=e45429]:
+            - generic [ref=e45430]: сущ.
+            - generic [ref=e45431]:
+              - img [ref=e45432]
+              - text: Выучено
+            - generic [ref=e45437]: "100"
+            - generic [ref=e45438]:
+              - img [ref=e45439]
+              - text: через 27 дней
+        - button [ref=e45443] [cursor=pointer]:
+          - img [ref=e45444]
+      - generic [ref=e45446]:
+        - checkbox [ref=e45447] [cursor=pointer]
+        - generic [ref=e45448]:
+          - generic [ref=e45449]:
+            - generic [ref=e45450]: skrive
+            - generic [ref=e45451]: писать
+          - generic [ref=e45452]:
+            - generic [ref=e45453]: гл.
+            - generic [ref=e45454]:
+              - img [ref=e45455]
+              - text: Выучено
+            - generic [ref=e45460]: "100"
+            - generic [ref=e45461]:
+              - img [ref=e45462]
+              - text: через 27 дней
+        - button [ref=e45466] [cursor=pointer]:
+          - img [ref=e45467]
+      - generic [ref=e45469]:
+        - checkbox [ref=e45470] [cursor=pointer]
+        - generic [ref=e45471]:
+          - generic [ref=e45472]:
+            - generic [ref=e45473]: grad
+            - generic [ref=e45474]: градус, степень
+          - generic [ref=e45475]:
+            - generic [ref=e45476]: сущ.
+            - generic [ref=e45477]:
+              - img [ref=e45478]
+              - text: Выучено
+            - generic [ref=e45483]: "100"
+            - generic [ref=e45484]:
+              - img [ref=e45485]
+              - text: через 27 дней
+        - button [ref=e45489] [cursor=pointer]:
+          - img [ref=e45490]
+      - generic [ref=e45492]:
+        - checkbox [ref=e45493] [cursor=pointer]
+        - generic [ref=e45494]:
+          - generic [ref=e45495]:
+            - generic [ref=e45496]: masse
+            - generic [ref=e45497]: масса, множество, куча
+          - generic [ref=e45498]:
+            - generic [ref=e45499]: сущ.
+            - generic [ref=e45500]:
+              - img [ref=e45501]
+              - text: Выучено
+            - generic [ref=e45506]: "100"
+            - generic [ref=e45507]:
+              - img [ref=e45508]
+              - text: через 27 дней
+        - button [ref=e45512] [cursor=pointer]:
+          - img [ref=e45513]
+      - generic [ref=e45515]:
+        - checkbox [ref=e45516] [cursor=pointer]
+        - generic [ref=e45517]:
+          - generic [ref=e45518]:
+            - generic [ref=e45519]: ønske
+            - generic [ref=e45520]: хотеть, желать, стремиться
+          - generic [ref=e45521]:
+            - generic [ref=e45522]: гл.
+            - generic [ref=e45523]:
+              - img [ref=e45524]
+              - text: Выучено
+            - generic [ref=e45529]: "100"
+            - generic [ref=e45530]:
+              - img [ref=e45531]
+              - text: через 27 дней
+        - button [ref=e45535] [cursor=pointer]:
+          - img [ref=e45536]
+      - generic [ref=e45538]:
+        - checkbox [ref=e45539] [cursor=pointer]
+        - generic [ref=e45540]:
+          - generic [ref=e45541]:
+            - generic [ref=e45542]: ellers
+            - generic [ref=e45543]: иначе, в остальном
+          - generic [ref=e45544]:
+            - generic [ref=e45545]: нареч.
+            - generic [ref=e45546]:
+              - img [ref=e45547]
+              - text: Выучено
+            - generic [ref=e45552]: "100"
+            - generic [ref=e45553]:
+              - img [ref=e45554]
+              - text: через 27 дней
+        - button [ref=e45558] [cursor=pointer]:
+          - img [ref=e45559]
+      - generic [ref=e45561]:
+        - checkbox [ref=e45562] [cursor=pointer]
+        - generic [ref=e45563]:
+          - generic [ref=e45564]:
+            - generic [ref=e45565]: støtte
+            - generic [ref=e45566]: поддерживать, поддержка
+          - generic [ref=e45567]:
+            - generic [ref=e45568]: гл.
+            - generic [ref=e45569]:
+              - img [ref=e45570]
+              - text: Выучено
+            - generic [ref=e45575]: "100"
+            - generic [ref=e45576]:
+              - img [ref=e45577]
+              - text: через 27 дней
+        - button [ref=e45581] [cursor=pointer]:
+          - img [ref=e45582]
+      - generic [ref=e45584]:
+        - checkbox [ref=e45585] [cursor=pointer]
+        - generic [ref=e45586]:
+          - generic [ref=e45587]:
+            - generic [ref=e45588]: politikk
+            - generic [ref=e45589]: политика
+          - generic [ref=e45590]:
+            - generic [ref=e45591]: сущ.
+            - generic [ref=e45592]:
+              - img [ref=e45593]
+              - text: Выучено
+            - generic [ref=e45598]: "100"
+            - generic [ref=e45599]:
+              - img [ref=e45600]
+              - text: через 27 дней
+        - button [ref=e45604] [cursor=pointer]:
+          - img [ref=e45605]
+      - generic [ref=e45607]:
+        - checkbox [ref=e45608] [cursor=pointer]
+        - generic [ref=e45609]:
+          - generic [ref=e45610]:
+            - generic [ref=e45611]: valg
+            - generic [ref=e45612]: выбор
+          - generic [ref=e45613]:
+            - generic [ref=e45614]: сущ.
+            - generic [ref=e45615]:
+              - img [ref=e45616]
+              - text: Выучено
+            - generic [ref=e45621]: "100"
+            - generic [ref=e45622]:
+              - img [ref=e45623]
+              - text: через 27 дней
+        - button [ref=e45627] [cursor=pointer]:
+          - img [ref=e45628]
+      - generic [ref=e45630]:
+        - checkbox [ref=e45631] [cursor=pointer]
+        - generic [ref=e45632]:
+          - generic [ref=e45633]:
+            - generic [ref=e45634]: utrolig
+            - generic [ref=e45635]: невероятный
+          - generic [ref=e45636]:
+            - generic [ref=e45637]: прил.
+            - generic [ref=e45638]:
+              - img [ref=e45639]
+              - text: Выучено
+            - generic [ref=e45644]: "100"
+            - generic [ref=e45645]:
+              - img [ref=e45646]
+              - text: через 27 дней
+        - button [ref=e45650] [cursor=pointer]:
+          - img [ref=e45651]
+      - generic [ref=e45653]:
+        - checkbox [ref=e45654] [cursor=pointer]
+        - generic [ref=e45655]:
+          - generic [ref=e45656]:
+            - generic [ref=e45657]: enig
+            - generic [ref=e45658]: согласный, единогласный
+          - generic [ref=e45659]:
+            - generic [ref=e45660]: прил.
+            - generic [ref=e45661]:
+              - img [ref=e45662]
+              - text: Выучено
+            - generic [ref=e45667]: "100"
+            - generic [ref=e45668]:
+              - img [ref=e45669]
+              - text: через 27 дней
+        - button [ref=e45673] [cursor=pointer]:
+          - img [ref=e45674]
+      - generic [ref=e45676]:
+        - checkbox [ref=e45677] [cursor=pointer]
+        - generic [ref=e45678]:
+          - generic [ref=e45679]:
+            - generic [ref=e45680]: lag
+            - generic [ref=e45681]: команда
+          - generic [ref=e45682]:
+            - generic [ref=e45683]: сущ.
+            - generic [ref=e45684]:
+              - img [ref=e45685]
+              - text: Выучено
+            - generic [ref=e45690]: "100"
+            - generic [ref=e45691]:
+              - img [ref=e45692]
+              - text: через 27 дней
+        - button [ref=e45696] [cursor=pointer]:
+          - img [ref=e45697]
+      - generic [ref=e45699]:
+        - checkbox [ref=e45700] [cursor=pointer]
+        - generic [ref=e45701]:
+          - generic [ref=e45702]:
+            - generic [ref=e45703]: lov
+            - generic [ref=e45704]: закон
+          - generic [ref=e45705]:
+            - generic [ref=e45706]: сущ.
+            - generic [ref=e45707]:
+              - img [ref=e45708]
+              - text: Выучено
+            - generic [ref=e45713]: "100"
+            - generic [ref=e45714]:
+              - img [ref=e45715]
+              - text: через 27 дней
+        - button [ref=e45719] [cursor=pointer]:
+          - img [ref=e45720]
+      - generic [ref=e45722]:
+        - checkbox [ref=e45723] [cursor=pointer]
+        - generic [ref=e45724]:
+          - generic [ref=e45725]:
+            - generic [ref=e45726]: død
+            - generic [ref=e45727]: смерть, кончина
+          - generic [ref=e45728]:
+            - generic [ref=e45729]: сущ.
+            - generic [ref=e45730]:
+              - img [ref=e45731]
+              - text: Выучено
+            - generic [ref=e45736]: "100"
+            - generic [ref=e45737]:
+              - img [ref=e45738]
+              - text: через 27 дней
+        - button [ref=e45742] [cursor=pointer]:
+          - img [ref=e45743]
+      - generic [ref=e45745]:
+        - checkbox [ref=e45746] [cursor=pointer]
+        - generic [ref=e45747]:
+          - generic [ref=e45748]:
+            - generic [ref=e45749]: måte
+            - generic [ref=e45750]: способ, образ, манера
+          - generic [ref=e45751]:
+            - generic [ref=e45752]: сущ.
+            - generic [ref=e45753]:
+              - img [ref=e45754]
+              - text: Выучено
+            - generic [ref=e45759]: "100"
+            - generic [ref=e45760]:
+              - img [ref=e45761]
+              - text: через 27 дней
+        - button [ref=e45765] [cursor=pointer]:
+          - img [ref=e45766]
+      - generic [ref=e45768]:
+        - checkbox [ref=e45769] [cursor=pointer]
+        - generic [ref=e45770]:
+          - generic [ref=e45771]:
+            - generic [ref=e45772]: mål
+            - generic [ref=e45773]: цель
+          - generic [ref=e45774]:
+            - generic [ref=e45775]: сущ.
+            - generic [ref=e45776]:
+              - img [ref=e45777]
+              - text: Выучено
+            - generic [ref=e45782]: "100"
+            - generic [ref=e45783]:
+              - img [ref=e45784]
+              - text: через 27 дней
+        - button [ref=e45788] [cursor=pointer]:
+          - img [ref=e45789]
+      - generic [ref=e45791]:
+        - checkbox [ref=e45792] [cursor=pointer]
+        - generic [ref=e45793]:
+          - generic [ref=e45794]:
+            - generic [ref=e45795]: utenfor
+            - generic [ref=e45796]: снаружи, вне, за пределами
+          - generic [ref=e45797]:
+            - generic [ref=e45798]: предл.
+            - generic [ref=e45799]:
+              - img [ref=e45800]
+              - text: Выучено
+            - generic [ref=e45805]: "100"
+            - generic [ref=e45806]:
+              - img [ref=e45807]
+              - text: через 27 дней
+        - button [ref=e45811] [cursor=pointer]:
+          - img [ref=e45812]
+      - generic [ref=e45814]:
+        - checkbox [ref=e45815] [cursor=pointer]
+        - generic [ref=e45816]:
+          - generic [ref=e45817]:
+            - generic [ref=e45818]: lese
+            - generic [ref=e45819]: читать
+          - generic [ref=e45820]:
+            - generic [ref=e45821]: гл.
+            - generic [ref=e45822]:
+              - img [ref=e45823]
+              - text: Выучено
+            - generic [ref=e45828]: "100"
+            - generic [ref=e45829]:
+              - img [ref=e45830]
+              - text: через 27 дней
+        - button [ref=e45834] [cursor=pointer]:
+          - img [ref=e45835]
+      - generic [ref=e45837]:
+        - checkbox [ref=e45838] [cursor=pointer]
+        - generic [ref=e45839]:
+          - generic [ref=e45840]:
+            - generic [ref=e45841]: prøve
+            - generic [ref=e45842]: пробовать, пытаться
+          - generic [ref=e45843]:
+            - generic [ref=e45844]: гл.
+            - generic [ref=e45845]:
+              - img [ref=e45846]
+              - text: Выучено
+            - generic [ref=e45851]: "100"
+            - generic [ref=e45852]:
+              - img [ref=e45853]
+              - text: через 27 дней
+        - button [ref=e45857] [cursor=pointer]:
+          - img [ref=e45858]
+      - generic [ref=e45860]:
+        - checkbox [ref=e45861] [cursor=pointer]
+        - generic [ref=e45862]:
+          - generic [ref=e45863]:
+            - generic [ref=e45864]: holde
+            - generic [ref=e45865]: держать, удерживать
+          - generic [ref=e45866]:
+            - generic [ref=e45867]: гл.
+            - generic [ref=e45868]:
+              - img [ref=e45869]
+              - text: Выучено
+            - generic [ref=e45874]: "100"
+            - generic [ref=e45875]:
+              - img [ref=e45876]
+              - text: через 27 дней
+        - button [ref=e45880] [cursor=pointer]:
+          - img [ref=e45881]
+      - generic [ref=e45883]:
+        - checkbox [ref=e45884] [cursor=pointer]
+        - generic [ref=e45885]:
+          - generic [ref=e45886]:
+            - generic [ref=e45887]: liv
+            - generic [ref=e45888]: жизнь
+          - generic [ref=e45889]:
+            - generic [ref=e45890]: сущ.
+            - generic [ref=e45891]:
+              - img [ref=e45892]
+              - text: Выучено
+            - generic [ref=e45897]: "100"
+            - generic [ref=e45898]:
+              - img [ref=e45899]
+              - text: через 27 дней
+        - button [ref=e45903] [cursor=pointer]:
+          - img [ref=e45904]
+      - generic [ref=e45906]:
+        - checkbox [ref=e45907] [cursor=pointer]
+        - generic [ref=e45908]:
+          - generic [ref=e45909]:
+            - generic [ref=e45910]: uansett
+            - generic [ref=e45911]: независимо от, в любом случае, все равно
+          - generic [ref=e45912]:
+            - generic [ref=e45913]: нареч.
+            - generic [ref=e45914]:
+              - img [ref=e45915]
+              - text: Выучено
+            - generic [ref=e45920]: "100"
+            - generic [ref=e45921]:
+              - img [ref=e45922]
+              - text: через 27 дней
+        - button [ref=e45926] [cursor=pointer]:
+          - img [ref=e45927]
+      - generic [ref=e45929]:
+        - checkbox [ref=e45930] [cursor=pointer]
+        - generic [ref=e45931]:
+          - generic [ref=e45932]:
+            - generic [ref=e45933]: ganske
+            - generic [ref=e45934]: довольно, весьма
+          - generic [ref=e45935]:
+            - generic [ref=e45936]: нареч.
+            - generic [ref=e45937]:
+              - img [ref=e45938]
+              - text: Выучено
+            - generic [ref=e45943]: "100"
+            - generic [ref=e45944]:
+              - img [ref=e45945]
+              - text: через 27 дней
+        - button [ref=e45949] [cursor=pointer]:
+          - img [ref=e45950]
+      - generic [ref=e45952]:
+        - checkbox [ref=e45953] [cursor=pointer]
+        - generic [ref=e45954]:
+          - generic [ref=e45955]:
+            - generic [ref=e45956]: sikkert
+            - generic [ref=e45957]: наверное, безопасно, точно
+          - generic [ref=e45958]:
+            - generic [ref=e45959]: нареч.
+            - generic [ref=e45960]:
+              - img [ref=e45961]
+              - text: Выучено
+            - generic [ref=e45966]: "100"
+            - generic [ref=e45967]:
+              - img [ref=e45968]
+              - text: через 27 дней
+        - button [ref=e45972] [cursor=pointer]:
+          - img [ref=e45973]
+      - generic [ref=e45975]:
+        - checkbox [ref=e45976] [cursor=pointer]
+        - generic [ref=e45977]:
+          - generic [ref=e45978]:
+            - generic [ref=e45979]: strekke
+            - generic [ref=e45980]: растягивать, вытягивать
+          - generic [ref=e45981]:
+            - generic [ref=e45982]: гл.
+            - generic [ref=e45983]:
+              - img [ref=e45984]
+              - text: Выучено
+            - generic [ref=e45989]: "100"
+            - generic [ref=e45990]:
+              - img [ref=e45991]
+              - text: через 27 дней
+        - button [ref=e45995] [cursor=pointer]:
+          - img [ref=e45996]
+      - generic [ref=e45998]:
+        - checkbox [ref=e45999] [cursor=pointer]
+        - generic [ref=e46000]:
+          - generic [ref=e46001]:
+            - generic [ref=e46002]: mulig
+            - generic [ref=e46003]: возможный
+          - generic [ref=e46004]:
+            - generic [ref=e46005]: прил.
+            - generic [ref=e46006]:
+              - img [ref=e46007]
+              - text: Выучено
+            - generic [ref=e46012]: "100"
+            - generic [ref=e46013]:
+              - img [ref=e46014]
+              - text: через 27 дней
+        - button [ref=e46018] [cursor=pointer]:
+          - img [ref=e46019]
+      - generic [ref=e46021]:
+        - checkbox [ref=e46022] [cursor=pointer]
+        - generic [ref=e46023]:
+          - generic [ref=e46024]:
+            - generic [ref=e46025]: eneste
+            - generic [ref=e46026]: единственный
+          - generic [ref=e46027]:
+            - generic [ref=e46028]: прил.
+            - generic [ref=e46029]:
+              - img [ref=e46030]
+              - text: Выучено
+            - generic [ref=e46035]: "100"
+            - generic [ref=e46036]:
+              - img [ref=e46037]
+              - text: через 27 дней
+        - button [ref=e46041] [cursor=pointer]:
+          - img [ref=e46042]
+      - generic [ref=e46044]:
+        - checkbox [ref=e46045] [cursor=pointer]
+        - generic [ref=e46046]:
+          - generic [ref=e46047]:
+            - generic [ref=e46048]: kjent
+            - generic [ref=e46049]: известный, знакомый
+          - generic [ref=e46050]:
+            - generic [ref=e46051]: прил.
+            - generic [ref=e46052]:
+              - img [ref=e46053]
+              - text: Выучено
+            - generic [ref=e46058]: "100"
+            - generic [ref=e46059]:
+              - img [ref=e46060]
+              - text: через 27 дней
+        - button [ref=e46064] [cursor=pointer]:
+          - img [ref=e46065]
+      - generic [ref=e46067]:
+        - checkbox [ref=e46068] [cursor=pointer]
+        - generic [ref=e46069]:
+          - generic [ref=e46070]:
+            - generic [ref=e46071]: mens
+            - generic [ref=e46072]: в то время как, пока
+          - generic [ref=e46073]:
+            - generic [ref=e46074]: союз
+            - generic [ref=e46075]:
+              - img [ref=e46076]
+              - text: Выучено
+            - generic [ref=e46081]: "100"
+            - generic [ref=e46082]:
+              - img [ref=e46083]
+              - text: через 27 дней
+        - button [ref=e46087] [cursor=pointer]:
+          - img [ref=e46088]
+      - generic [ref=e46090]:
+        - checkbox [ref=e46091] [cursor=pointer]
+        - generic [ref=e46092]:
+          - generic [ref=e46093]:
+            - generic [ref=e46094]: tatt
+            - generic [ref=e46095]: взятый
+          - generic [ref=e46096]:
+            - generic [ref=e46097]: прил.
+            - generic [ref=e46098]:
+              - img [ref=e46099]
+              - text: Выучено
+            - generic [ref=e46104]: "100"
+            - generic [ref=e46105]:
+              - img [ref=e46106]
+              - text: через 27 дней
+        - button [ref=e46110] [cursor=pointer]:
+          - img [ref=e46111]
+      - generic [ref=e46113]:
+        - checkbox [ref=e46114] [cursor=pointer]
+        - generic [ref=e46115]:
+          - generic [ref=e46116]:
+            - generic [ref=e46117]: frem
+            - generic [ref=e46118]: вперед
+          - generic [ref=e46119]:
+            - generic [ref=e46120]: нареч.
+            - generic [ref=e46121]:
+              - img [ref=e46122]
+              - text: Выучено
+            - generic [ref=e46127]: "100"
+            - generic [ref=e46128]:
+              - img [ref=e46129]
+              - text: через 27 дней
+        - button [ref=e46133] [cursor=pointer]:
+          - img [ref=e46134]
+      - generic [ref=e46136]:
+        - checkbox [ref=e46137] [cursor=pointer]
+        - generic [ref=e46138]:
+          - generic [ref=e46139]:
+            - generic [ref=e46140]: derfor
+            - generic [ref=e46141]: поэтому
+          - generic [ref=e46142]:
+            - generic [ref=e46143]: нареч.
+            - generic [ref=e46144]:
+              - img [ref=e46145]
+              - text: Выучено
+            - generic [ref=e46150]: "100"
+            - generic [ref=e46151]:
+              - img [ref=e46152]
+              - text: через 27 дней
+        - button [ref=e46156] [cursor=pointer]:
+          - img [ref=e46157]
+      - generic [ref=e46159]:
+        - checkbox [ref=e46160] [cursor=pointer]
+        - generic [ref=e46161]:
+          - generic [ref=e46162]:
+            - generic [ref=e46163]: feil
+            - generic [ref=e46164]: ошибка, неправильный
+          - generic [ref=e46165]:
+            - generic [ref=e46166]: сущ.
+            - generic [ref=e46167]:
+              - img [ref=e46168]
+              - text: Выучено
+            - generic [ref=e46173]: "100"
+            - generic [ref=e46174]:
+              - img [ref=e46175]
+              - text: через 27 дней
+        - button [ref=e46179] [cursor=pointer]:
+          - img [ref=e46180]
+      - generic [ref=e46182]:
+        - checkbox [ref=e46183] [cursor=pointer]
+        - generic [ref=e46184]:
+          - generic [ref=e46185]:
+            - generic [ref=e46186]: gjennom
+            - generic [ref=e46187]: через, сквозь
+          - generic [ref=e46188]:
+            - generic [ref=e46189]: предл.
+            - generic [ref=e46190]:
+              - img [ref=e46191]
+              - text: Выучено
+            - generic [ref=e46196]: "100"
+            - generic [ref=e46197]:
+              - img [ref=e46198]
+              - text: через 27 дней
+        - button [ref=e46202] [cursor=pointer]:
+          - img [ref=e46203]
+      - generic [ref=e46205]:
+        - checkbox [ref=e46206] [cursor=pointer]
+        - generic [ref=e46207]:
+          - generic [ref=e46208]:
+            - generic [ref=e46209]: siste
+            - generic [ref=e46210]: последний
+          - generic [ref=e46211]:
+            - generic [ref=e46212]: прил.
+            - generic [ref=e46213]:
+              - img [ref=e46214]
+              - text: Выучено
+            - generic [ref=e46219]: "100"
+            - generic [ref=e46220]:
+              - img [ref=e46221]
+              - text: через 27 дней
+        - button [ref=e46225] [cursor=pointer]:
+          - img [ref=e46226]
+      - generic [ref=e46228]:
+        - checkbox [ref=e46229] [cursor=pointer]
+        - generic [ref=e46230]:
+          - generic [ref=e46231]:
+            - generic [ref=e46232]: oslo
+            - generic [ref=e46233]: Осло
+          - generic [ref=e46234]:
+            - generic [ref=e46235]: сущ.
+            - generic [ref=e46236]:
+              - img [ref=e46237]
+              - text: Выучено
+            - generic [ref=e46242]: "100"
+            - generic [ref=e46243]:
+              - img [ref=e46244]
+              - text: через 27 дней
+        - button [ref=e46248] [cursor=pointer]:
+          - img [ref=e46249]
+      - generic [ref=e46251]:
+        - checkbox [ref=e46252] [cursor=pointer]
+        - generic [ref=e46253]:
+          - generic [ref=e46254]:
+            - generic [ref=e46255]: rett
+            - generic [ref=e46256]: прямой, правильный
+          - generic [ref=e46257]:
+            - generic [ref=e46258]: прил.
+            - generic [ref=e46259]:
+              - img [ref=e46260]
+              - text: Выучено
+            - generic [ref=e46265]: "100"
+            - generic [ref=e46266]:
+              - img [ref=e46267]
+              - text: через 27 дней
+        - button [ref=e46271] [cursor=pointer]:
+          - img [ref=e46272]
+      - generic [ref=e46274]:
+        - checkbox [ref=e46275] [cursor=pointer]
+        - generic [ref=e46276]:
+          - generic [ref=e46277]:
+            - generic [ref=e46278]: noen
+            - generic [ref=e46279]: кто-то, некоторые
+          - generic [ref=e46280]:
+            - generic [ref=e46281]: мест.
+            - generic [ref=e46282]:
+              - img [ref=e46283]
+              - text: Выучено
+            - generic [ref=e46288]: "100"
+            - generic [ref=e46289]:
+              - img [ref=e46290]
+              - text: через 27 дней
+        - button [ref=e46294] [cursor=pointer]:
+          - img [ref=e46295]
+      - generic [ref=e46297]:
+        - checkbox [ref=e46298] [cursor=pointer]
+        - generic [ref=e46299]:
+          - generic [ref=e46300]:
+            - generic [ref=e46301]: noe
+            - generic [ref=e46302]: что-то, нечто
+          - generic [ref=e46303]:
+            - generic [ref=e46304]: мест.
+            - generic [ref=e46305]:
+              - img [ref=e46306]
+              - text: Выучено
+            - generic [ref=e46311]: "100"
+            - generic [ref=e46312]:
+              - img [ref=e46313]
+              - text: через 27 дней
+        - button [ref=e46317] [cursor=pointer]:
+          - img [ref=e46318]
+      - generic [ref=e46320]:
+        - checkbox [ref=e46321] [cursor=pointer]
+        - generic [ref=e46322]:
+          - generic [ref=e46323]:
+            - generic [ref=e46324]: selv
+            - generic [ref=e46325]: сам
+          - generic [ref=e46326]:
+            - generic [ref=e46327]: мест.
+            - generic [ref=e46328]:
+              - img [ref=e46329]
+              - text: Выучено
+            - generic [ref=e46334]: "100"
+            - generic [ref=e46335]:
+              - img [ref=e46336]
+              - text: через 27 дней
+        - button [ref=e46340] [cursor=pointer]:
+          - img [ref=e46341]
+      - generic [ref=e46343]:
+        - checkbox [ref=e46344] [cursor=pointer]
+        - generic [ref=e46345]:
+          - generic [ref=e46346]:
+            - generic [ref=e46347]: finne
+            - generic [ref=e46348]: находить
+          - generic [ref=e46349]:
+            - generic [ref=e46350]: гл.
+            - generic [ref=e46351]:
+              - img [ref=e46352]
+              - text: Выучено
+            - generic [ref=e46357]: "100"
+            - generic [ref=e46358]:
+              - img [ref=e46359]
+              - text: через 27 дней
+        - button [ref=e46363] [cursor=pointer]:
+          - img [ref=e46364]
+      - generic [ref=e46366]:
+        - checkbox [ref=e46367] [cursor=pointer]
+        - generic [ref=e46368]:
+          - generic [ref=e46369]:
+            - generic [ref=e46370]: tverrlinje
+            - generic [ref=e46371]: поперечная линия
+          - generic [ref=e46372]:
+            - generic [ref=e46373]: сущ.
+            - generic [ref=e46374]:
+              - img [ref=e46375]
+              - text: Выучено
+            - generic [ref=e46380]: "100"
+            - generic [ref=e46381]:
+              - img [ref=e46382]
+              - text: через 27 дней
+        - button [ref=e46386] [cursor=pointer]:
+          - img [ref=e46387]
+      - generic [ref=e46389]:
+        - checkbox [ref=e46390] [cursor=pointer]
+        - generic [ref=e46391]:
+          - generic [ref=e46392]:
+            - generic [ref=e46393]: trafikk
+            - generic [ref=e46394]: дорожное движение, трафик
+          - generic [ref=e46395]:
+            - generic [ref=e46396]: сущ.
+            - generic [ref=e46397]:
+              - img [ref=e46398]
+              - text: Выучено
+            - generic [ref=e46403]: "100"
+            - generic [ref=e46404]:
+              - img [ref=e46405]
+              - text: через 27 дней
+        - button [ref=e46409] [cursor=pointer]:
+          - img [ref=e46410]
+      - generic [ref=e46412]:
+        - checkbox [ref=e46413] [cursor=pointer]
+        - generic [ref=e46414]:
+          - generic [ref=e46415]:
+            - generic [ref=e46416]: nervøs
+            - generic [ref=e46417]: нервный, взволнованный
+          - generic [ref=e46418]:
+            - generic [ref=e46419]: прил.
+            - generic [ref=e46420]:
+              - img [ref=e46421]
+              - text: Выучено
+            - generic [ref=e46426]: "100"
+            - generic [ref=e46427]:
+              - img [ref=e46428]
+              - text: через 27 дней
+        - button [ref=e46432] [cursor=pointer]:
+          - img [ref=e46433]
+      - generic [ref=e46435]:
+        - checkbox [ref=e46436] [cursor=pointer]
+        - generic [ref=e46437]:
+          - generic [ref=e46438]:
+            - generic [ref=e46439]: arbeidsplass
+            - generic [ref=e46440]: рабочее место
+          - generic [ref=e46441]:
+            - generic [ref=e46442]: сущ.
+            - generic [ref=e46443]:
+              - img [ref=e46444]
+              - text: Выучено
+            - generic [ref=e46449]: "100"
+            - generic [ref=e46450]:
+              - img [ref=e46451]
+              - text: через 27 дней
+        - button [ref=e46455] [cursor=pointer]:
+          - img [ref=e46456]
+      - generic [ref=e46458]:
+        - checkbox [ref=e46459] [cursor=pointer]
+        - generic [ref=e46460]:
+          - generic [ref=e46461]:
+            - generic [ref=e46462]: ved
+            - generic [ref=e46463]: дрова
+          - generic [ref=e46464]:
+            - generic [ref=e46465]: сущ.
+            - generic [ref=e46466]:
+              - img [ref=e46467]
+              - text: Выучено
+            - generic [ref=e46472]: "100"
+            - generic [ref=e46473]:
+              - img [ref=e46474]
+              - text: через 27 дней
+        - button [ref=e46478] [cursor=pointer]:
+          - img [ref=e46479]
+      - generic [ref=e46481]:
+        - checkbox [ref=e46482] [cursor=pointer]
+        - generic [ref=e46483]:
+          - generic [ref=e46484]:
+            - generic [ref=e46485]: igjen
+            - generic [ref=e46486]: снова, опять, еще
+          - generic [ref=e46487]:
+            - generic [ref=e46488]: нареч.
+            - generic [ref=e46489]:
+              - img [ref=e46490]
+              - text: Выучено
+            - generic [ref=e46495]: "100"
+            - generic [ref=e46496]:
+              - img [ref=e46497]
+              - text: через 27 дней
+        - button [ref=e46501] [cursor=pointer]:
+          - img [ref=e46502]
+      - generic [ref=e46504]:
+        - checkbox [ref=e46505] [cursor=pointer]
+        - generic [ref=e46506]:
+          - generic [ref=e46507]:
+            - generic [ref=e46508]: nok
+            - generic [ref=e46509]: достаточно
+          - generic [ref=e46510]:
+            - generic [ref=e46511]: нареч.
+            - generic [ref=e46512]:
+              - img [ref=e46513]
+              - text: Выучено
+            - generic [ref=e46518]: "100"
+            - generic [ref=e46519]:
+              - img [ref=e46520]
+              - text: через 27 дней
+        - button [ref=e46524] [cursor=pointer]:
+          - img [ref=e46525]
+      - generic [ref=e46527]:
+        - checkbox [ref=e46528] [cursor=pointer]
+        - generic [ref=e46529]:
+          - generic [ref=e46530]:
+            - generic [ref=e46531]: bedre
+            - generic [ref=e46532]: лучше
+          - generic [ref=e46533]:
+            - generic [ref=e46534]: прил.
+            - generic [ref=e46535]:
+              - img [ref=e46536]
+              - text: Выучено
+            - generic [ref=e46541]: "100"
+            - generic [ref=e46542]:
+              - img [ref=e46543]
+              - text: через 27 дней
+        - button [ref=e46547] [cursor=pointer]:
+          - img [ref=e46548]
+      - generic [ref=e46550]:
+        - checkbox [ref=e46551] [cursor=pointer]
+        - generic [ref=e46552]:
+          - generic [ref=e46553]:
+            - generic [ref=e46554]: jo
+            - generic [ref=e46555]: да (в ответе на отрицание)
+          - generic [ref=e46556]:
+            - generic [ref=e46557]: нареч.
+            - generic [ref=e46558]:
+              - img [ref=e46559]
+              - text: Выучено
+            - generic [ref=e46564]: "100"
+            - generic [ref=e46565]:
+              - img [ref=e46566]
+              - text: через 27 дней
+        - button [ref=e46570] [cursor=pointer]:
+          - img [ref=e46571]
+      - generic [ref=e46573]:
+        - checkbox [ref=e46574] [cursor=pointer]
+        - generic [ref=e46575]:
+          - generic [ref=e46576]:
+            - generic [ref=e46577]: idrett
+            - generic [ref=e46578]: спорт
+          - generic [ref=e46579]:
+            - generic [ref=e46580]: сущ.
+            - generic [ref=e46581]:
+              - img [ref=e46582]
+              - text: Выучено
+            - generic [ref=e46587]: "100"
+            - generic [ref=e46588]:
+              - img [ref=e46589]
+              - text: через 27 дней
+        - button [ref=e46593] [cursor=pointer]:
+          - img [ref=e46594]
+      - generic [ref=e46596]:
+        - checkbox [ref=e46597] [cursor=pointer]
+        - generic [ref=e46598]:
+          - generic [ref=e46599]:
+            - generic [ref=e46600]: krone
+            - generic [ref=e46601]: корона
+          - generic [ref=e46602]:
+            - generic [ref=e46603]: сущ.
+            - generic [ref=e46604]:
+              - img [ref=e46605]
+              - text: Выучено
+            - generic [ref=e46610]: "100"
+            - generic [ref=e46611]:
+              - img [ref=e46612]
+              - text: через 27 дней
+        - button [ref=e46616] [cursor=pointer]:
+          - img [ref=e46617]
+      - generic [ref=e46619]:
+        - checkbox [ref=e46620] [cursor=pointer]
+        - generic [ref=e46621]:
+          - generic [ref=e46622]:
+            - generic [ref=e46623]: overrasket
+            - generic [ref=e46624]: удивленный
+          - generic [ref=e46625]:
+            - generic [ref=e46626]: прил.
+            - generic [ref=e46627]:
+              - img [ref=e46628]
+              - text: Выучено
+            - generic [ref=e46633]: "88"
+            - generic [ref=e46634]:
+              - img [ref=e46635]
+              - text: через 28 дней
+        - button [ref=e46639] [cursor=pointer]:
+          - img [ref=e46640]
+      - generic [ref=e46642]:
+        - checkbox [ref=e46643] [cursor=pointer]
+        - generic [ref=e46644]:
+          - generic [ref=e46645]:
+            - generic [ref=e46646]: enkel
+            - generic [ref=e46647]: простой, лёгкий
+          - generic [ref=e46648]:
+            - generic [ref=e46649]: прил.
+            - generic [ref=e46650]:
+              - img [ref=e46651]
+              - text: Выучено
+            - generic [ref=e46656]: "88"
+            - generic [ref=e46657]:
+              - img [ref=e46658]
+              - text: через 28 дней
+        - button [ref=e46662] [cursor=pointer]:
+          - img [ref=e46663]
+      - generic [ref=e46665]:
+        - checkbox [ref=e46666] [cursor=pointer]
+        - generic [ref=e46667]:
+          - generic [ref=e46668]:
+            - generic [ref=e46669]: tannlege
+            - generic [ref=e46670]: стоматолог, зубной врач
+          - generic [ref=e46671]:
+            - generic [ref=e46672]: сущ.
+            - generic [ref=e46673]:
+              - img [ref=e46674]
+              - text: Выучено
+            - generic [ref=e46679]: "83"
+            - generic [ref=e46680]:
+              - img [ref=e46681]
+              - text: через 30 дней
+        - button [ref=e46685] [cursor=pointer]:
+          - img [ref=e46686]
+      - generic [ref=e46688]:
+        - checkbox [ref=e46689] [cursor=pointer]
+        - generic [ref=e46690]:
+          - generic [ref=e46691]:
+            - generic [ref=e46692]: parkeringsplass
+            - generic [ref=e46693]: парковка
+          - generic [ref=e46694]:
+            - generic [ref=e46695]: сущ.
+            - generic [ref=e46696]:
+              - img [ref=e46697]
+              - text: Выучено
+            - generic [ref=e46702]: "86"
+            - generic [ref=e46703]:
+              - img [ref=e46704]
+              - text: через 29 дней
+        - button [ref=e46708] [cursor=pointer]:
+          - img [ref=e46709]
+      - generic [ref=e46711]:
+        - checkbox [ref=e46712] [cursor=pointer]
+        - generic [ref=e46713]:
+          - generic [ref=e46714]:
+            - generic [ref=e46715]: magasin
+            - generic [ref=e46716]: журнал, магазин
+          - generic [ref=e46717]:
+            - generic [ref=e46718]: сущ.
+            - generic [ref=e46719]:
+              - img [ref=e46720]
+              - text: Выучено
+            - generic [ref=e46725]: "83"
+            - generic [ref=e46726]:
+              - img [ref=e46727]
+              - text: через 29 дней
+        - button [ref=e46731] [cursor=pointer]:
+          - img [ref=e46732]
+      - generic [ref=e46734]:
+        - checkbox [ref=e46735] [cursor=pointer]
+        - generic [ref=e46736]:
+          - generic [ref=e46737]:
+            - generic [ref=e46738]: maling
+            - generic [ref=e46739]: краска, покраска
+          - generic [ref=e46740]:
+            - generic [ref=e46741]: сущ.
+            - generic [ref=e46742]:
+              - img [ref=e46743]
+              - text: Выучено
+            - generic [ref=e46748]: "83"
+            - generic [ref=e46749]:
+              - img [ref=e46750]
+              - text: через 29 дней
+        - button [ref=e46754] [cursor=pointer]:
+          - img [ref=e46755]
+      - generic [ref=e46757]:
+        - checkbox [ref=e46758] [cursor=pointer]
+        - generic [ref=e46759]:
+          - generic [ref=e46760]:
+            - generic [ref=e46761]: parkering
+            - generic [ref=e46762]: парковка
+          - generic [ref=e46763]:
+            - generic [ref=e46764]: сущ.
+            - generic [ref=e46765]:
+              - img [ref=e46766]
+              - text: Выучено
+            - generic [ref=e46771]: "83"
+            - generic [ref=e46772]:
+              - img [ref=e46773]
+              - text: через 29 дней
+        - button [ref=e46777] [cursor=pointer]:
+          - img [ref=e46778]
+      - generic [ref=e46780]:
+        - checkbox [ref=e46781] [cursor=pointer]
+        - generic [ref=e46782]:
+          - generic [ref=e46783]:
+            - generic [ref=e46784]: dytte
+            - generic [ref=e46785]: толкать, засовывать
+          - generic [ref=e46786]:
+            - generic [ref=e46787]: гл.
+            - generic [ref=e46788]:
+              - img [ref=e46789]
+              - text: Выучено
+            - generic [ref=e46794]: "83"
+            - generic [ref=e46795]:
+              - img [ref=e46796]
+              - text: через 29 дней
+        - button [ref=e46800] [cursor=pointer]:
+          - img [ref=e46801]
+      - generic [ref=e46803]:
+        - checkbox [ref=e46804] [cursor=pointer]
+        - generic [ref=e46805]:
+          - generic [ref=e46806]:
+            - generic [ref=e46807]: rund
+            - generic [ref=e46808]: круглый
+          - generic [ref=e46809]:
+            - generic [ref=e46810]: прил.
+            - generic [ref=e46811]:
+              - img [ref=e46812]
+              - text: Выучено
+            - generic [ref=e46817]: "83"
+            - generic [ref=e46818]:
+              - img [ref=e46819]
+              - text: через 29 дней
+        - button [ref=e46823] [cursor=pointer]:
+          - img [ref=e46824]
+      - generic [ref=e46826]:
+        - checkbox [ref=e46827] [cursor=pointer]
+        - generic [ref=e46828]:
+          - generic [ref=e46829]:
+            - generic [ref=e46830]: føde
+            - generic [ref=e46831]: рожать
+          - generic [ref=e46832]:
+            - generic [ref=e46833]: гл.
+            - generic [ref=e46834]:
+              - img [ref=e46835]
+              - text: Выучено
+            - generic [ref=e46840]: "83"
+            - generic [ref=e46841]:
+              - img [ref=e46842]
+              - text: через 29 дней
+        - button [ref=e46846] [cursor=pointer]:
+          - img [ref=e46847]
+      - generic [ref=e46849]:
+        - checkbox [ref=e46850] [cursor=pointer]
+        - generic [ref=e46851]:
+          - generic [ref=e46852]:
+            - generic [ref=e46853]: avgang
+            - generic [ref=e46854]: отправление, вылет
+          - generic [ref=e46855]:
+            - generic [ref=e46856]: сущ.
+            - generic [ref=e46857]:
+              - img [ref=e46858]
+              - text: Выучено
+            - generic [ref=e46863]: "86"
+            - generic [ref=e46864]:
+              - img [ref=e46865]
+              - text: через 29 дней
+        - button [ref=e46869] [cursor=pointer]:
+          - img [ref=e46870]
+      - generic [ref=e46872]:
+        - checkbox [ref=e46873] [cursor=pointer]
+        - generic [ref=e46874]:
+          - generic [ref=e46875]:
+            - generic [ref=e46876]: føde
+            - generic [ref=e46877]: пища, корм, питание
+          - generic [ref=e46878]:
+            - generic [ref=e46879]: сущ.
+            - generic [ref=e46880]:
+              - img [ref=e46881]
+              - text: Выучено
+            - generic [ref=e46886]: "83"
+            - generic [ref=e46887]:
+              - img [ref=e46888]
+              - text: через 29 дней
+        - button [ref=e46892] [cursor=pointer]:
+          - img [ref=e46893]
+      - generic [ref=e46895]:
+        - checkbox [ref=e46896] [cursor=pointer]
+        - generic [ref=e46897]:
+          - generic [ref=e46898]:
+            - generic [ref=e46899]: søsken
+            - generic [ref=e46900]: родные братья и сестры
+          - generic [ref=e46901]:
+            - generic [ref=e46902]: сущ.
+            - generic [ref=e46903]:
+              - img [ref=e46904]
+              - text: Выучено
+            - generic [ref=e46909]: "83"
+            - generic [ref=e46910]:
+              - img [ref=e46911]
+              - text: через 29 дней
+        - button [ref=e46915] [cursor=pointer]:
+          - img [ref=e46916]
+      - generic [ref=e46918]:
+        - checkbox [ref=e46919] [cursor=pointer]
+        - generic [ref=e46920]:
+          - generic [ref=e46921]:
+            - generic [ref=e46922]: anbefaling
+            - generic [ref=e46923]: рекомендация
+          - generic [ref=e46924]:
+            - generic [ref=e46925]: сущ.
+            - generic [ref=e46926]:
+              - img [ref=e46927]
+              - text: Выучено
+            - generic [ref=e46932]: "86"
+            - generic [ref=e46933]:
+              - img [ref=e46934]
+              - text: через 29 дней
+        - button [ref=e46938] [cursor=pointer]:
+          - img [ref=e46939]
+      - generic [ref=e46941]:
+        - checkbox [ref=e46942] [cursor=pointer]
+        - generic [ref=e46943]:
+          - generic [ref=e46944]:
+            - generic [ref=e46945]: bredde
+            - generic [ref=e46946]: ширина
+          - generic [ref=e46947]:
+            - generic [ref=e46948]: сущ.
+            - generic [ref=e46949]:
+              - img [ref=e46950]
+              - text: Выучено
+            - generic [ref=e46955]: "83"
+            - generic [ref=e46956]:
+              - img [ref=e46957]
+              - text: через 29 дней
+        - button [ref=e46961] [cursor=pointer]:
+          - img [ref=e46962]
+      - generic [ref=e46964]:
+        - checkbox [ref=e46965] [cursor=pointer]
+        - generic [ref=e46966]:
+          - generic [ref=e46967]:
+            - generic [ref=e46968]: vinn
+            - generic [ref=e46969]: победа, выигрыш
+          - generic [ref=e46970]:
+            - generic [ref=e46971]: сущ.
+            - generic [ref=e46972]:
+              - img [ref=e46973]
+              - text: Выучено
+            - generic [ref=e46978]: "83"
+            - generic [ref=e46979]:
+              - img [ref=e46980]
+              - text: через 29 дней
+        - button [ref=e46984] [cursor=pointer]:
+          - img [ref=e46985]
+  - generic:
+    - img

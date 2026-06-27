@@ -2,7 +2,7 @@
 // (Field/Seg/ModeSeg/RSlider/RToggle/Reveal). Без сокетов — вынесено из OnlinePage.jsx.
 import { useState, useEffect } from "react";
 import { Dropdown } from "../ui/Dropdown.jsx";
-import { useHistoryClose } from "../tools/useHistoryClose.js";
+import { useHistoryClose } from "../../hooks/useHistoryClose.js";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const DEFAULT_SETTINGS = { game: "quiz", answer: "type", dir: "no2int", source: "pool", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };

@@ -1,6 +1,6 @@
 // Баннер «доступна новая версия» — появляется, когда на сервере вышла новая сборка фронта.
 import { useState } from "react";
-import { useVersionCheck } from "../tools/useVersionCheck.js";
+import { useVersionCheck } from "../../hooks/useVersionCheck.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { Icon } from "./Icon.jsx";
 import { langGuard } from "../../interface/i18nGuard.js";
