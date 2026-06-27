@@ -89,24 +89,37 @@ export default function SetsTab({ lang, openSession, openWord }) {
     // чисел). document-offset (rect.top+scrollY), чтобы не зависеть от текущего скролла.
     useLayoutEffect(() => {
         if (!isMobile) { setMobH(0); return undefined; }
+        // visualViewport точнее innerHeight в установленном приложении (standalone): не считает
+        // площадь под системными панелями, которых на момент первого кадра ещё может «не быть».
+        const vh = () => (window.visualViewport && window.visualViewport.height) || window.innerHeight;
         const estimate = () => {
             const el = mobRef.current; if (!el) return;
             const top = el.getBoundingClientRect().top + window.scrollY;     // позиция панели в документе
             const bar = document.querySelector(".tabbar");                   // нижний таб-бар (рендерится в App)
             const barH = (bar && getComputedStyle(bar).display !== "none") ? bar.getBoundingClientRect().height : 0;
-            setMobH(Math.max(240, Math.floor(window.innerHeight - top - barH - 4)));
+            setMobH(Math.max(240, Math.floor(vh() - top - barH - 4)));
         };
         estimate();
-        // самокоррекция: что бы ни вызвало переполнение страницы — ужать панель ровно на него (несколько кадров)
-        let tries = 0, raf = 0;
+        // Самокоррекция переполнения. КРИТИЧНО: вычитаем overflow ТОЛЬКО когда прошлая правка УЖЕ
+        // применилась к DOM (scrollHeight изменился). Иначе один и тот же overflow вычитается каждый
+        // кадр (setMobH асинхронный) и панель схлопывается в разы — в standalone, где вьюпорт «доезжает»
+        // медленнее, это и давало обрезку до половины экрана.
+        let tries = 0, raf = 0, lastSH = -1;
         const tick = () => {
-            const over = Math.ceil(document.documentElement.scrollHeight - window.innerHeight);
-            if (over > 0) setMobH((h0) => Math.max(200, h0 - over));
-            if (++tries < 5) raf = requestAnimationFrame(tick);
+            const sh = document.documentElement.scrollHeight;
+            const over = Math.ceil(sh - vh());
+            if (over > 0 && sh !== lastSH) { lastSH = sh; setMobH((h0) => Math.max(200, h0 - over)); }
+            if (++tries < 8) raf = requestAnimationFrame(tick);
         };
         raf = requestAnimationFrame(tick);
+        // standalone-PWA: системные панели стабилизируются уже ПОСЛЕ первого кадра → пересчитать ещё раз
+        const t1 = setTimeout(estimate, 120);
+        const t2 = setTimeout(estimate, 400);
         window.addEventListener("resize", estimate);
-        return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", estimate); };
+        return () => {
+            cancelAnimationFrame(raf); clearTimeout(t1); clearTimeout(t2);
+            window.removeEventListener("resize", estimate);
+        };
     }, [isMobile, activeId, sets.length]);
 
     // высоты панелей мобильной раскладки: активная тянется, свёрнутая = фикс-полоска (для анимации height)
