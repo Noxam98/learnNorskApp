@@ -27,6 +27,8 @@ const MODULES = {
     useOnlineGame: () => import("../useOnlineGame.js"),
     NameEditModal: () => import("../../components/profile/NameEditModal.jsx"),
     PasswordModal: () => import("../../components/profile/PasswordModal.jsx"),
+    ExamRun: () => import("./ExamRun.jsx"),
+    useExam: () => import("./useExam.js"),
 };
 
 describe("рефакторенные модули грузятся без ошибок", () => {
