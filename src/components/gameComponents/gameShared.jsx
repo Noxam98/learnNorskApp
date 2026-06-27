@@ -223,7 +223,7 @@ export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = n
 
 // Ранг ступени рампы слова для цвета сегмента: 0 — карточка (серый), 1..4 — зелёный по нарастанию,
 // 4 = ввод с клавиатуры (самый насыщенный). cell — клетка рампы (card/choice_*/build_*/input_* | cloze_1..3).
-const RAMP_RANK = { card: 0, study: 0, choice_no2int: 1, choice_int2no: 2, build_int2no: 3, input_int2no: 4, cloze_1: 1, cloze_2: 2, cloze_3: 3 };
+const RAMP_RANK = { card: 0, study: 0, choice_int2no: 1, choice_no2int: 2, build_int2no: 3, input_int2no: 4, cloze_1: 1, cloze_2: 2, cloze_3: 3 };
 export const stageRank = (cell) => RAMP_RANK[cell || "card"] ?? 0;
 
 // Транспонировка звуков «вход в задание»/«верно» по стадии рампы (rank 0..4): чем дальше слово

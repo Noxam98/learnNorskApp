@@ -674,6 +674,8 @@
    так бордер поиска совпадает с бордером его контейнера (нет «коробки в коробке») */
 .searchpane .composer { border: none; border-radius: 0; box-shadow: none; background: transparent; }
 .searchpane .poolsearch.has-gen .composer { border-radius: 0; }
+/* разделительная полоска под строкой поиска — чтобы было видно, что это инпут */
+.searchpane .poolsearch { border-bottom: 1px solid var(--surface-3); }
 .seg--wrap { flex-wrap: wrap; }
 .empty--mini { padding: var(--sp-8) var(--sp-4); }
 .empty--mini .empty__ic .ic { width: 32px; height: 32px; }

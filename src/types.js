@@ -39,7 +39,7 @@
  */
 
 /**
- * Клетка рампы SRS (имя ступени). Обычные слова: card → choice_no2int → choice_int2no →
+ * Клетка рампы SRS (имя ступени). Обычные слова: card → choice_int2no → choice_no2int (на слух) →
  * build_int2no → input_int2no. Служебные: card → cloze_1 → cloze_2 → cloze_3.
  * @typedef {'card' | 'choice_no2int' | 'choice_int2no' | 'build_int2no' | 'input_int2no'
  *          | 'cloze_1' | 'cloze_2' | 'cloze_3'} RampCell

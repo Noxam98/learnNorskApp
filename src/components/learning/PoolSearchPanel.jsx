@@ -9,8 +9,6 @@ import { Icon } from "../ui/Icon.jsx";
 import { BtnSpinner, SkeletonWordlist } from "../ui/Spinner.jsx";
 import { WordCard } from "../ui/WordCard.jsx";
 import { FilterChipsPopup } from "../ui/FilterChipsPopup.jsx";
-import { SortControl } from "../ui/SortControl.jsx";
-import { sortOptions } from "../ui/sortOptions.js";
 import { posLabel, POS_ORDER, posApiKey } from "../ui/pos.js";
 import { langGuard } from "../../interface/i18nGuard.js";
 
@@ -246,9 +244,6 @@ export default function PoolSearchPanel({ lang, setId, inSet, onPick, onRemove, 
                                 key: "level", multi: false, selected: level, onPick: pickLevel,
                                 options: LEVELS.map((lv) => ({ value: lv, label: lv })),
                             }]} />
-                        <SortControl value={sort} order={order}
-                            options={sortOptions(t, [...(appliedQ.trim() ? ["relevance"] : []), "alpha", "level", "freq"])}
-                            onChange={(s, o) => { setPage(1); setSort(s); setOrder(o); }} />
                         {hasFilters && (
                             <button className="fchip fchip--clear" onClick={clearFilters}>
                                 <Icon n="x" sm /> {t.clearFilters || "Сброс"}
