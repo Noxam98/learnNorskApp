@@ -664,11 +664,16 @@
 
 /* Левая панель поиска заполняет .sets-pane: строка поиска фиксирована, результаты скроллятся. */
 .searchpane { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+/* поиск без собственных паддингов (всегда, не только в свёрнутом) — содержимое впритык к панели */
 .searchpane__top {
     flex: none; display: flex; flex-direction: column; gap: var(--sp-2);
-    padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--surface-3);
+    padding: 0; border-bottom: 1px solid var(--surface-3);
 }
-.searchpane__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: var(--sp-3) var(--sp-4); }
+.searchpane__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0; }
+/* строка поиска: убираем собственный бордер/скругление/тень — рамку даёт сам контейнер-панель,
+   так бордер поиска совпадает с бордером его контейнера (нет «коробки в коробке») */
+.searchpane .composer { border: none; border-radius: 0; box-shadow: none; background: transparent; }
+.searchpane .poolsearch.has-gen .composer { border-radius: 0; }
 .seg--wrap { flex-wrap: wrap; }
 .empty--mini { padding: var(--sp-8) var(--sp-4); }
 .empty--mini .empty__ic .ic { width: 32px; height: 32px; }
