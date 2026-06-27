@@ -84,7 +84,9 @@ export default function SetsTab({ lang, openSession, openWord }) {
     const isMobile = useIsMobile();
     const [mob, setMob] = useState("set"); // мобилка: какая панель активна — "set" | "search"
     const [mobH, setMobH] = useState(0);   // высота мобильной раскладки (под экран, без скролла страницы)
+    const [dragH, setDragH] = useState(null); // высота панели поиска во время перетаскивания разделителя (null = не тянем)
     const mobRef = useRef(null);
+    const dragRef = useRef(null);          // { startY, moved, lastH } — состояние текущего перетаскивания
 
     const active = sets.find((s) => s.id === activeId) || null;
     const inSet = useMemo(() => new Set(words.map((w) => w.pool_id)), [words]);
@@ -148,10 +150,43 @@ export default function SetsTab({ lang, openSession, openWord }) {
         };
     }, [isMobile, activeId, sets.length]);
 
-    // высоты панелей мобильной раскладки: активная тянется, свёрнутая = фикс-полоска (для анимации height)
+    // высоты панелей мобильной раскладки: активная тянется, свёрнутая = фикс-полоска (для анимации height).
+    // dragH != null → идёт перетаскивание разделителя: высота поиска = dragH (живо, без анимации).
     const innerH = Math.max(0, mobH - DIVIDER_H);
-    const searchH = mob === "search" ? Math.max(120, innerH - SET_COLLAPSED) : SEARCH_COLLAPSED;
-    const setH = mob === "set" ? Math.max(120, innerH - SEARCH_COLLAPSED) : SET_COLLAPSED;
+    let searchH, setH;
+    if (dragH != null) {
+        searchH = dragH;
+        setH = Math.max(0, innerH - dragH);
+    } else {
+        searchH = mob === "search" ? Math.max(120, innerH - SET_COLLAPSED) : SEARCH_COLLAPSED;
+        setH = mob === "set" ? Math.max(120, innerH - SEARCH_COLLAPSED) : SET_COLLAPSED;
+    }
+
+    // Разделитель: тап = тоггл активной панели; перетаскивание = живой ресайз, но «прилипает» только
+    // к 2 позициям (поиск-активен / набор-активен) — отпустили за серединой → туда и снапнулось.
+    const dragDown = (e) => {
+        dragRef.current = { startY: e.clientY, moved: false, lastH: null };
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* нет pointer capture — ок */ }
+    };
+    const dragMove = (e) => {
+        const d = dragRef.current; if (!d) return;
+        if (!d.moved && Math.abs(e.clientY - d.startY) < 5) return;   // порог: отличаем тап от тяги
+        d.moved = true;
+        const cont = mobRef.current; if (!cont) return;
+        const top = cont.getBoundingClientRect().top;
+        const inner = Math.max(0, mobH - DIVIDER_H);
+        let h = e.clientY - top - DIVIDER_H / 2;                       // высота верхней (поиск) панели под указателем
+        h = Math.max(SEARCH_COLLAPSED, Math.min(inner - SET_COLLAPSED, h));   // обе панели не меньше свёрнутой полоски
+        d.lastH = h; setDragH(h);
+    };
+    const dragUp = () => {
+        const d = dragRef.current; dragRef.current = null;
+        if (!d) return;
+        if (!d.moved) { setMob((m) => (m === "set" ? "search" : "set")); return; }   // тап → тоггл
+        const inner = Math.max(0, mobH - DIVIDER_H);
+        setMob((d.lastH ?? 0) >= inner / 2 ? "search" : "set");        // ближайшая из 2 липких позиций
+        setDragH(null);
+    };
 
     const submitPrompt = async () => {
         const name = (prompt?.value || "").trim();
@@ -355,23 +390,26 @@ export default function SetsTab({ lang, openSession, openWord }) {
             ) : active && (
                 isMobile ? (
                     /* Мобилка: активна одна панель, вторая свёрнута в полоску; всё в одну высоту экрана */
-                    <div className="sets-mob" ref={mobRef} style={mobH ? { height: mobH } : undefined}>
+                    <div className={"sets-mob" + (dragH != null ? " is-dragging" : "")} ref={mobRef} style={mobH ? { height: mobH } : undefined}>
                         {/* ВЕРХ: поиск — компактный (активен набор) или полный (активен поиск) */}
                         <section className={"sets-mpane" + (mob === "search" ? " is-active" : "")} style={{ height: searchH }}>
                             {mob === "search" ? searchFull : searchCompact}
                         </section>
-                        {/* разделитель: слева «Поиск слов» ↑, по центру грип, справа «Ваша коллекция» ↓ */}
-                        <div className="sets-divider">
-                            <button className={"sets-divider__side" + (mob === "search" ? " is-active" : "")}
-                                onClick={() => setMob("search")} aria-label={ll.searchWords}>
+                        {/* разделитель: тап по строке = тоггл; тяга за грип = живой ресайз со снапом
+                            к 2 позициям. Слева «Поиск слов» ↑, по центру грип (12 точек), справа «коллекция» ↓ */}
+                        <button className="sets-divider" onPointerDown={dragDown} onPointerMove={dragMove}
+                            onPointerUp={dragUp} onPointerCancel={dragUp}
+                            aria-label={mob === "set" ? ll.openSearch : ll.openSet}>
+                            <span className={"sets-divider__side" + (mob === "search" ? " is-active" : "")}>
                                 <Icon n="chevron-up" sm /> <span className="sets-divider__txt">{ll.searchWords}</span>
-                            </button>
-                            <span className="sets-divider__grip" aria-hidden="true"><Icon n="grip" /></span>
-                            <button className={"sets-divider__side sets-divider__side--r" + (mob === "set" ? " is-active" : "")}
-                                onClick={() => setMob("set")} aria-label={ll.collection}>
+                            </span>
+                            <span className="sets-divider__grip" aria-hidden="true">
+                                {Array.from({ length: 12 }).map((_, i) => <i key={i} />)}
+                            </span>
+                            <span className={"sets-divider__side sets-divider__side--r" + (mob === "set" ? " is-active" : "")}>
                                 <span className="sets-divider__txt">{ll.collection}</span> <Icon n="chevron-down" sm />
-                            </button>
-                        </div>
+                            </span>
+                        </button>
                         {/* НИЗ: набор — полный (активен) или полоска чипов (свёрнут) */}
                         <section className={"sets-mpane" + (mob === "set" ? " is-active" : "")} style={{ height: setH }}>
                             {mob === "set" ? <>{setHead}{setBody}</> : setStrip}

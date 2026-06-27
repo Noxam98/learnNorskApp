@@ -740,16 +740,21 @@
         transition: height .28s var(--ease); }
     .sets-mpane > .searchpane { flex: 1 1 auto; min-height: 0; }   /* поиск заполняет свою панель */
 
-    /* разделитель: слева «Поиск слов» ↑, по центру грип, справа «Ваша коллекция» ↓ */
+    /* разделитель: тап тоглит активную панель, тяга за грип — живой ресайз; слева «Поиск» ↑, справа «коллекция» ↓ */
     .sets-divider { flex: none; height: 30px; box-sizing: border-box; display: flex; align-items: stretch;
-        justify-content: space-between; width: 100%; background: var(--fjord-600); color: #fff; }
+        justify-content: space-between; width: 100%; border: none; cursor: ns-resize; touch-action: none;
+        background: var(--fjord-600); color: #fff; }
+    .sets-divider:active { background: var(--fjord-700, var(--fjord-600)); }
     .sets-divider__side { display: inline-flex; align-items: center; gap: 5px; height: 100%; min-width: 0;
-        border: none; background: transparent; color: inherit; font-weight: 700; cursor: pointer; padding: 0 var(--sp-3); }
+        font-weight: 700; padding: 0 var(--sp-3); }
     .sets-divider__side--r { justify-content: flex-end; }
-    .sets-divider__side:active, .sets-divider__side.is-active { background: var(--fjord-700, var(--fjord-600)); }
-    .sets-divider__grip { display: inline-flex; align-items: center; flex: none; opacity: .85; padding: 0 4px; }
+    .sets-divider__side.is-active { background: rgba(255, 255, 255, .16); }   /* подсветка активной панели */
+    /* грип: 12 точек в 2 ряда (6×2) — заодно «ручка» для перетаскивания */
+    .sets-divider__grip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px;
+        align-content: center; flex: none; padding: 0 var(--sp-2); }
+    .sets-divider__grip i { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .8; }
     .sets-divider__txt { font-size: var(--fs-12); font-weight: 700; letter-spacing: .01em;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sets-divider .ic { width: 13px; height: 13px; }
-    .sets-divider__grip .ic { width: 17px; height: 17px; }
+    .sets-mob.is-dragging .sets-mpane { transition: none; }   /* во время тяги — мгновенно, без анимации */
 }
