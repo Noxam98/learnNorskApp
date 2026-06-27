@@ -8,7 +8,7 @@ import { useSystemStore } from "../store/systemStore.jsx";
 //   ping() — продлить показ (сбросить таймер) — дёргаем при действии С ПАНЕЛЬЮ.
 // flag — необязательный атрибут на <html> (для глобального CSS «ужать отступы»); при смене состояния
 // шлём 'resize', чтобы JS-раскладки (напр. «Наборы») пересчитали высоту под освободившееся место.
-export function useAutoHideNav({ delay = 4000, flag = null } = {}) {
+export function useAutoHideNav({ delay = 4000, flag = null, active = true } = {}) {
     const setting = useSystemStore((s) => s.autoHideNav);   // тоггл из настроек (вкл/выкл фичу)
     const [mobile, setMobile] = useState(() => {
         try { return window.matchMedia("(max-width:760px)").matches; } catch { return false; }
@@ -19,7 +19,7 @@ export function useAutoHideNav({ delay = 4000, flag = null } = {}) {
         mq.addEventListener ? mq.addEventListener("change", on) : mq.addListener(on);
         return () => { mq.removeEventListener ? mq.removeEventListener("change", on) : mq.removeListener(on); };
     }, []);
-    const enabled = mobile && setting !== false;   // активно только на смартфоне и если фича не выключена
+    const enabled = mobile && setting !== false && active;   // смартфон + фича вкл + контекст активен (напр. «Учёба»)
 
     const [hidden, setHidden] = useState(false);
     const timer = useRef(0);

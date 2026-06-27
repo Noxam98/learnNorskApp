@@ -8,10 +8,11 @@ import { Icon } from "./ui/Icon.jsx";
 import { useAutoHideNav } from "../hooks/useAutoHideNav.js";
 
 export const NavigationBar = () => {
-    const tabbar = useAutoHideNav({ flag: "data-tabbar-off" });   // авто-скрытие нижнего таб-бара (смартфон)
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
     const { pathname } = useLocation();
+    // авто-скрытие нижнего таб-бара — только в режиме «Учёба» (на остальных страницах панель не прячем)
+    const tabbar = useAutoHideNav({ flag: "data-tabbar-off", active: pathname === "/learning" });
     const { user, setTheme } = useAuth();
     const theme = useSystemStore((s) => s.theme);
     const initial = (user?.username?.[0] || "").toUpperCase();
