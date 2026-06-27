@@ -18,4 +18,9 @@ export default defineConfig({
     },
   ],
   define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
+  test: {
+    // Дефолт-окружение — node (быстрые юнит/i18n-тесты). Render-тесты помечают себя
+    // `// @vitest-environment jsdom` в шапке файла. setup подключает jest-dom матчеры.
+    setupFiles: ['./src/test/setup.js'],
+  },
 })
