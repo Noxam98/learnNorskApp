@@ -18,13 +18,13 @@ const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const topicLabel = (t, key) => t.topics?.[key] || key;
 
 const L = langGuard({
-    ru:  { placeholder: "Слово на любом языке…", empty: "Ничего не найдено", inSet: "В наборе", add: "В набор", notInBase: "Нет в базе — добавить новое:", create: "Создать", all: "Все", start: "Найди слова и добавь их в набор", modNote: "Новое слово попадёт в личную базу и на модерацию админу." },
-    en:  { placeholder: "A word in any language…", empty: "Nothing found", inSet: "In set", add: "To set", notInBase: "Not in base — add new:", create: "Create", all: "All", start: "Search words and add them to the set", modNote: "A new word goes to your personal base for admin review." },
-    ukr: { placeholder: "Слово будь-якою мовою…", empty: "Нічого не знайдено", inSet: "У наборі", add: "У набір", notInBase: "Немає в базі — додати нове:", create: "Створити", all: "Усі", start: "Знайди слова й додай їх у набір", modNote: "Нове слово потрапить у власну базу й на модерацію адміну." },
-    pl:  { placeholder: "Słowo w dowolnym języku…", empty: "Nic nie znaleziono", inSet: "W zestawie", add: "Do zestawu", notInBase: "Brak w bazie — dodaj nowe:", create: "Utwórz", all: "Wszystkie", start: "Znajdź słowa i dodaj je do zestawu", modNote: "Nowe słowo trafi do bazy osobistej i do moderacji admina." },
-    lt:  { placeholder: "Žodis bet kuria kalba…", empty: "Nieko nerasta", inSet: "Rinkinyje", add: "Į rinkinį", notInBase: "Nėra bazėje — pridėk naują:", create: "Sukurti", all: "Visi", start: "Surask žodžių ir įtrauk juos į rinkinį", modNote: "Naujas žodis pateks į asmeninę bazę ir administratoriaus moderacijai." },
-    lv:  { placeholder: "Vārds jebkurā valodā…", empty: "Nekas nav atrasts", inSet: "Kopā", add: "Pievienot", notInBase: "Nav bāzē — pievieno jaunu:", create: "Izveidot", all: "Visi", start: "Atrodi vārdus un pievieno tos kopai", modNote: "Jauns vārds nonāks personīgajā bāzē un administratora moderācijai." },
-    ar:  { placeholder: "كلمة بأي لغة…", empty: "لا توجد نتائج", inSet: "في المجموعة", add: "إلى المجموعة", notInBase: "غير موجودة — أضِف جديدة:", create: "إنشاء", all: "الكل", start: "ابحث عن كلمات وأضِفها إلى المجموعة", modNote: "تذهب الكلمة الجديدة إلى قاعدتك الشخصية لمراجعة المشرف." },
+    ru:  { placeholder: "Слово на любом языке…", empty: "Ничего не найдено", inSet: "В наборе", add: "В набор", notInBase: "Нет в базе — добавить новое:", create: "Создать", all: "Все", start: "Найди слова и добавь их в набор", modNote: "Новое слово попадёт в личную базу и на модерацию админу.", found: "Найдено: {n}" },
+    en:  { placeholder: "A word in any language…", empty: "Nothing found", inSet: "In set", add: "To set", notInBase: "Not in base — add new:", create: "Create", all: "All", start: "Search words and add them to the set", modNote: "A new word goes to your personal base for admin review.", found: "Found: {n}" },
+    ukr: { placeholder: "Слово будь-якою мовою…", empty: "Нічого не знайдено", inSet: "У наборі", add: "У набір", notInBase: "Немає в базі — додати нове:", create: "Створити", all: "Усі", start: "Знайди слова й додай їх у набір", modNote: "Нове слово потрапить у власну базу й на модерацію адміну.", found: "Знайдено: {n}" },
+    pl:  { placeholder: "Słowo w dowolnym języku…", empty: "Nic nie znaleziono", inSet: "W zestawie", add: "Do zestawu", notInBase: "Brak w bazie — dodaj nowe:", create: "Utwórz", all: "Wszystkie", start: "Znajdź słowa i dodaj je do zestawu", modNote: "Nowe słowo trafi do bazy osobistej i do moderacji admina.", found: "Znaleziono: {n}" },
+    lt:  { placeholder: "Žodis bet kuria kalba…", empty: "Nieko nerasta", inSet: "Rinkinyje", add: "Į rinkinį", notInBase: "Nėra bazėje — pridėk naują:", create: "Sukurti", all: "Visi", start: "Surask žodžių ir įtrauk juos į rinkinį", modNote: "Naujas žodis pateks į asmeninę bazę ir administratoriaus moderacijai.", found: "Rasta: {n}" },
+    lv:  { placeholder: "Vārds jebkurā valodā…", empty: "Nekas nav atrasts", inSet: "Kopā", add: "Pievienot", notInBase: "Nav bāzē — pievieno jaunu:", create: "Izveidot", all: "Visi", start: "Atrodi vārdus un pievieno tos kopai", modNote: "Jauns vārds nonāks personīgajā bāzē un administratora moderācijai.", found: "Atrasts: {n}" },
+    ar:  { placeholder: "كلمة بأي لغة…", empty: "لا توجد نتائج", inSet: "في المجموعة", add: "إلى المجموعة", notInBase: "غير موجودة — أضِف جديدة:", create: "إنشاء", all: "الكل", start: "ابحث عن كلمات وأضِفها إلى المجموعة", modNote: "تذهب الكلمة الجديدة إلى قاعدتك الشخصية لمراجعة المشرف.", found: "وُجِد: {n}" },
 }, "PoolSearchPanel.L");
 
 /**
@@ -54,6 +54,16 @@ export default function PoolSearchPanel({ lang, setId, inSet, onPick, onRemove, 
     const prevHadQ = useRef(false);
     const compactRef = useRef(null);         // строка компактного поиска — якорь для попапа-оверлея
     const [popRect, setPopRect] = useState(null); // позиция фикс-попапа (под полем ввода)
+    const [popOpen, setPopOpen] = useState(true);  // компактный попап открыт? (клик вне — скрыть, фокус/ввод — показать)
+
+    // компактный попап: новый запрос → открываем; клик вне строки/попапа → скрываем
+    useEffect(() => { if (appliedQ.trim()) setPopOpen(true); }, [appliedQ]);
+    useEffect(() => {
+        if (!compact || !popOpen) return undefined;
+        const onDown = (e) => { const el = compactRef.current; if (el && !el.contains(e.target)) setPopOpen(false); };
+        document.addEventListener("pointerdown", onDown);
+        return () => document.removeEventListener("pointerdown", onDown);
+    }, [compact, popOpen]);
 
     // список тем с количеством — один раз (как в Базе)
     useEffect(() => { api.getPoolTopics().then((r) => setFacets({ topics: r.topics || [], levels: r.levels || [] })).catch(() => {}); }, []);
@@ -193,7 +203,8 @@ export default function PoolSearchPanel({ lang, setId, inSet, onPick, onRemove, 
     const searchRow = (
         <div className={"poolsearch" + (showGen ? " has-gen" : "")} style={{ margin: 0 }}>
             <SearchBox value={q} onChange={setQ} placeholder={ll.placeholder} phase={phase}
-                debounceMs={SEARCH_DEBOUNCE_MS} count={total} style={{ margin: 0, flex: 1, minWidth: 0 }} />
+                debounceMs={SEARCH_DEBOUNCE_MS} count={total} onFocus={() => setPopOpen(true)}
+                style={{ margin: 0, flex: 1, minWidth: 0 }} />
             <button className={"poolsearch__gen" + (showGen ? " is-shown" : "")}
                 disabled={!showGen || genBusy} aria-hidden={!showGen} tabIndex={showGen ? 0 : -1}
                 title={ll.modNote} onClick={() => createAndPick(appliedQ.trim())}>
@@ -208,8 +219,9 @@ export default function PoolSearchPanel({ lang, setId, inSet, onPick, onRemove, 
         return (
             <div className="searchpane searchpane--compact" ref={compactRef}>
                 {searchRow}
-                {appliedQ && popRect && (
+                {appliedQ && popRect && popOpen && (
                     <div className="searchpop" style={{ top: popRect.top, left: popRect.left, width: popRect.width }}>
+                        {total > 0 && <div className="searchpop__head">{ll.found.replace("{n}", String(total))}</div>}
                         {items.length ? items.slice(0, 4).map(card)
                             : (loading || phase !== "idle" ? <SkeletonWordlist count={3} />
                                 : <p className="muted" style={{ textAlign: "center", padding: "var(--sp-3) 0", margin: 0 }}>{ll.empty}</p>)}

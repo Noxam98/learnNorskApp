@@ -41,8 +41,14 @@ export function useAutoHideNav({ delay = 4000, flag = null } = {}) {
     useEffect(() => {
         const el = document.documentElement;
         if (flag) { if (off) el.setAttribute(flag, ""); else el.removeAttribute(flag); }
-        try { window.dispatchEvent(new Event("resize")); } catch { /* */ }
-        return () => { if (flag) el.removeAttribute(flag); };
+        // Шлём resize, чтобы JS-раскладки (напр. «Наборы») пересчитали высоту под освободившееся место.
+        // Верхняя панель схлопывается АНИМИРОВАННО (~.28с margin), поэтому помимо мгновенного пересчёта
+        // повторяем после завершения перехода — иначе высота меряется до реального освобождения места.
+        const fire = () => { try { window.dispatchEvent(new Event("resize")); } catch { /* */ } };
+        fire();
+        const t1 = setTimeout(fire, 180);
+        const t2 = setTimeout(fire, 340);
+        return () => { clearTimeout(t1); clearTimeout(t2); if (flag) el.removeAttribute(flag); };
     }, [off, flag]);
 
     return { hidden: off, show, ping };
