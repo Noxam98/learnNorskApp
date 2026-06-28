@@ -502,10 +502,9 @@
   body.study-active .nav { display:none; }                 /* лого/профиль — в нижнем таб-баре */
   .study-root .study-main { padding-top: 0; transition: padding-top .28s var(--ease); }
   /* Панель скрыта → её flow-место отбираем (marginBottom:-navH в JS), контент уезжает вверх и
-     ИСПОЛЬЗУЕТ освобождённое место. Верхний отступ от safe-area-края делаем РАВНЫМ зазору, который
-     контент имел от панели, когда она показана (= margin-bottom навигации, var(--sp-2)) — чтобы
-     отступ от края был такой же, как был от панели. */
-  html[data-studynav-off] .study-root .study-main { padding-top: calc(env(safe-area-inset-top) + var(--sp-2)); }
+     ИСПОЛЬЗУЕТ освобождённое место. Верхний отступ = клиренс под статус-бар/чёлку (env, работает
+     благодаря viewport-fit=cover) + комфортный зазор контента до края (как от панели, когда показана). */
+  html[data-studynav-off] .study-root .study-main { padding-top: calc(env(safe-area-inset-top) + var(--sp-3)); }
   /* На мобилке приветствие («Добрый день…») и строка «Учёба · A1» съедают место — прячем весь
      заголовок раздела; навигация по вкладкам и так в липком хедере .study-navbar. */
   .study-root .study-head { display: none; }
