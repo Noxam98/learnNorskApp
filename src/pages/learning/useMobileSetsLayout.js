@@ -26,12 +26,12 @@ export function useMobileSetsLayout(isMobile, activeId, setsLength) {
             const el = mobRef.current; if (!el) return;
             const top = el.getBoundingClientRect().top + window.scrollY;     // позиция панели в документе
             const bar = document.querySelector(".tabbar");                   // нижний таб-бар (рендерится в App)
-            // авто-скрытый таб-бар (is-hidden) уехал за край → его место свободно, не вычитаем
-            const barH = (bar && !bar.classList.contains("is-hidden") && getComputedStyle(bar).display !== "none")
-                ? bar.getBoundingClientRect().height : 0;
-            // когда таб-бар виден — он сам даёт нижний отступ; когда скрыт — оставляем комфортный
-            // зазор (16px, как sp-4), чтобы панели не прижимались к нижнему краю экрана
-            const bottomGap = barH > 0 ? 0 : 16;
+            // Таб-бар — position:fixed (overlay). Его высоту резервируем ВСЕГДА, даже когда панель
+            // авто-скрыта: is-hidden лишь слайдит её за край (transform), getBoundingClientRect().height
+            // сохраняется. Так высота раскладки ПОСТОЯННА и не зависит от показа/скрытия таб-бара —
+            // нижний паддинг контента не «прыгает».
+            const barH = (bar && getComputedStyle(bar).display !== "none") ? bar.getBoundingClientRect().height : 0;
+            const bottomGap = 8;                                             // постоянный зазор над таб-баром
             setMobH(Math.max(240, Math.floor(vh() - top - barH - bottomGap - 4)));
         };
         estimate();
