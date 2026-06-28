@@ -151,6 +151,10 @@
 .study-root .chiprow { display: flex; gap: var(--sp-2); flex-wrap: wrap; align-items: center; }
 .study-root .chiprow--scroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
 .study-root .chiprow--scroll::-webkit-scrollbar { display: none; }
+/* строка наборов = флекс из 2 элементов: список наборов (скроллится сам) + кнопка «+» (всегда видна) */
+.study-root .sets-chiprow { display: flex; gap: var(--sp-2); align-items: center; margin-bottom: var(--sp-4); }
+.study-root .sets-chiprow__list { flex: 1; min-width: 0; display: flex; gap: var(--sp-2); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.study-root .sets-chiprow__list::-webkit-scrollbar { display: none; }
 .study-root .fchip {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 7px 13px; border-radius: var(--r-full);

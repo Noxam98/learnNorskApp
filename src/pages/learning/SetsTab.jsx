@@ -209,14 +209,16 @@ export default function SetsTab({ lang, openSession, openWord }) {
                 </div>
             </div>
 
-            {/* строка чипов-наборов + кнопка «+» нового набора в том же ряду */}
+            {/* строка наборов: чипы скроллятся в своём контейнере, кнопка «+» всегда видна справа */}
             {sets.length > 0 && (
-                <div className="chiprow chiprow--scroll" style={{ marginBottom: "var(--sp-4)" }}>
-                    {sets.map((s) => (
-                        <button key={s.id} className={"fchip" + (s.id === activeId ? " is-on" : "")} onClick={() => setActiveId(s.id)}>
-                            {s.studying && <Icon n="zap" sm />} {s.name} <span className="fchip__count">{s.count}</span>
-                        </button>
-                    ))}
+                <div className="sets-chiprow">
+                    <div className="sets-chiprow__list">
+                        {sets.map((s) => (
+                            <button key={s.id} className={"fchip" + (s.id === activeId ? " is-on" : "")} onClick={() => setActiveId(s.id)}>
+                                {s.studying && <Icon n="zap" sm />} {s.name} <span className="fchip__count">{s.count}</span>
+                            </button>
+                        ))}
+                    </div>
                     <button className="fchip fchip--add" aria-label={ll.newSet} title={ll.newSet}
                         onClick={() => setPrompt({ mode: "create", value: "" })}>
                         <Icon n="plus" sm />

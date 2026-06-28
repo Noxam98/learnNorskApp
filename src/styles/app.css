@@ -746,7 +746,7 @@
     /* шапку «Наборов» на мобилке прячем целиком (в ней только описание) — отступ сверху для чипов
        убран, единый верхний отступ теперь даёт навигация (.study-navbar margin-bottom) для всех вкладок */
     .sets-tab .page-head { display: none; }
-    .sets-tab .chiprow { margin-bottom: var(--sp-2) !important; }
+    .sets-tab .chiprow, .sets-tab .sets-chiprow { margin-bottom: var(--sp-2) !important; }
 
     .sets-mob { display: flex; flex-direction: column; overflow: hidden; min-height: 240px;
         border: 1px solid var(--surface-3); border-bottom: none;
