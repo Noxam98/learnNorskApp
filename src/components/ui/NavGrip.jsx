@@ -36,9 +36,11 @@ export function NavGrip({ side, onShow }) {   // side: "top" | "bottom"
         if (left != null) localStorage.setItem(KEY, String(Math.round(left)));
     };
 
-    // окно сузилось/повернули — вернуть грип в пределы экрана
+    // вернуть грип в пределы экрана: при монтировании (вдруг сохранённая позиция шире нового экрана)
+    // и при ресайзе/повороте
     useEffect(() => {
         const onResize = () => setX((px) => (px == null ? px : clamp(px)));
+        onResize();
         window.addEventListener("resize", onResize);
         return () => window.removeEventListener("resize", onResize);
     }, []);
