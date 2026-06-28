@@ -12,21 +12,22 @@ const META = {
     repeat:      { fill: "review", badge: "review", icon: "repeat" },
     mastered:    { fill: "master", badge: "master", icon: "check" },
     weak:        { fill: "weak",   badge: "weak",   icon: "alert" },
+    known:       { fill: "known",  badge: "known",  icon: "check-circle" },   // «Знакомые»: знал до приложения
     archived:    { fill: "master", badge: "master", icon: "archive" },
     learning:    { fill: "learn",  badge: "learn",  icon: null },   // алиас → in_progress
     review:      { fill: "learn",  badge: "learn",  icon: null },   // алиас → in_progress
 };
 
-export const STATUS_ORDER = ["new", "in_progress", "repeat", "mastered", "weak", "archived"];
+export const STATUS_ORDER = ["new", "in_progress", "repeat", "mastered", "known", "weak", "archived"];
 
 export const STATUS_LABELS = langGuard({
-    ru:  { new: "Новое", in_progress: "В процессе", repeat: "Повторение", mastered: "Выучено", weak: "Слабое", archived: "Архив", learning: "В процессе", review: "В процессе" },
-    en:  { new: "New", in_progress: "In progress", repeat: "Review", mastered: "Mastered", weak: "Weak", archived: "Archived", learning: "In progress", review: "In progress" },
-    ukr: { new: "Нове", in_progress: "У процесі", repeat: "Повторення", mastered: "Вивчено", weak: "Слабке", archived: "Архів", learning: "У процесі", review: "У процесі" },
-    pl:  { new: "Nowe", in_progress: "W trakcie", repeat: "Powtórka", mastered: "Opanowane", weak: "Słabe", archived: "Archiwum", learning: "W trakcie", review: "W trakcie" },
-    lt:  { new: "Nauja", in_progress: "Eigoje", repeat: "Kartojimas", mastered: "Išmokta", weak: "Silpna", archived: "Archyvas", learning: "Eigoje", review: "Eigoje" },
-    lv:  { new: "Jauns", in_progress: "Procesā", repeat: "Atkārtojums", mastered: "Apgūts", weak: "Vājš", archived: "Arhīvs", learning: "Procesā", review: "Procesā" },
-    ar:  { new: "جديد", in_progress: "قيد التقدّم", repeat: "مراجعة", mastered: "متقَن", weak: "ضعيف", archived: "مؤرشف", learning: "قيد التقدّم", review: "قيد التقدّم" },
+    ru:  { new: "Новое", in_progress: "В процессе", repeat: "Повторение", mastered: "Выучено", known: "Знакомые", weak: "Слабое", archived: "Архив", learning: "В процессе", review: "В процессе" },
+    en:  { new: "New", in_progress: "In progress", repeat: "Review", mastered: "Mastered", known: "Familiar", weak: "Weak", archived: "Archived", learning: "In progress", review: "In progress" },
+    ukr: { new: "Нове", in_progress: "У процесі", repeat: "Повторення", mastered: "Вивчено", known: "Знайомі", weak: "Слабке", archived: "Архів", learning: "У процесі", review: "У процесі" },
+    pl:  { new: "Nowe", in_progress: "W trakcie", repeat: "Powtórka", mastered: "Opanowane", known: "Znajome", weak: "Słabe", archived: "Archiwum", learning: "W trakcie", review: "W trakcie" },
+    lt:  { new: "Nauja", in_progress: "Eigoje", repeat: "Kartojimas", mastered: "Išmokta", known: "Pažįstami", weak: "Silpna", archived: "Archyvas", learning: "Eigoje", review: "Eigoje" },
+    lv:  { new: "Jauns", in_progress: "Procesā", repeat: "Atkārtojums", mastered: "Apgūts", known: "Pazīstami", weak: "Vājš", archived: "Arhīvs", learning: "Procesā", review: "Procesā" },
+    ar:  { new: "جديد", in_progress: "قيد التقدّم", repeat: "مراجعة", mastered: "متقَن", known: "مألوفة", weak: "ضعيف", archived: "مؤرشف", learning: "قيد التقدّم", review: "قيد التقدّم" },
 }, "StatusBits.STATUS_LABELS");
 
 export function statusMeta(status) { return META[status] || META.new; }

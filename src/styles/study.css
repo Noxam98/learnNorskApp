@@ -3,8 +3,9 @@
   --st-new:     #5E7A86;   
   --st-learn:   #B07A14;   
   --st-review:  #2A6A74;   
-  --st-master:  #3C7A4E;   
-  --st-weak:    #B23A2E;   
+  --st-master:  #3C7A4E;
+  --st-weak:    #B23A2E;
+  --st-known:   #6E6A9E;   /* «Знакомые» — знал до приложения; не «Выучено» */
 }
 .study-root .nav__link .navic { width: 18px; height: 18px; }
 .study-root .seg {
@@ -40,6 +41,7 @@
 .study-root .sbadge--review { --c: var(--st-review); }
 .study-root .sbadge--master { --c: var(--st-master); }
 .study-root .sbadge--weak { --c: var(--st-weak); }
+.study-root .sbadge--known { --c: var(--st-known); }
 .study-root .sbadge--lg { font-size: var(--fs-13); padding: 5px 12px 5px 10px; }
 .study-root .sbadge--lg .ic { width: 15px; height: 15px; }
 .study-root .sdot { width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--st-new); }
@@ -48,6 +50,7 @@
 .study-root .sdot--review {background:var(--st-review)}
 .study-root .sdot--master {background:var(--st-master)}
 .study-root .sdot--weak {background:var(--st-weak)}
+.study-root .sdot--known {background:var(--st-known)}
 .study-root .strength { display: inline-flex; align-items: center; gap: 7px; }
 .study-root .strength__track {
   width: 56px; height: 6px; border-radius: var(--r-full);
@@ -59,6 +62,7 @@
 .study-root .strength__fill--review {background:var(--st-review)}
 .study-root .strength__fill--master {background:var(--st-master)}
 .study-root .strength__fill--weak {background:var(--st-weak)}
+.study-root .strength__fill--known {background:var(--st-known)}
 .study-root .strength__val { font-size: var(--fs-11); font-weight: 700; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .study-root .strength--sm .strength__track { width: 40px; height: 5px; }
 .study-root .study-main { padding: var(--sp-7, 28px) 0 var(--sp-16); }

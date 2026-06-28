@@ -17,8 +17,8 @@ import { L } from "./WordsTab.i18n.js";
 
 
 
-const STATUS_CHIPS = ["all", "new", "in_progress", "repeat", "mastered", "weak", "archived"];
-const STATUS_DOT = { new: "new", in_progress: "learn", repeat: "review", mastered: "master", weak: "weak" };
+const STATUS_CHIPS = ["all", "new", "in_progress", "repeat", "mastered", "known", "weak", "archived"];
+const STATUS_DOT = { new: "new", in_progress: "learn", repeat: "review", mastered: "master", known: "known", weak: "weak" };
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const TOPIC_KEYS = ["family", "food", "home", "work", "school", "travel", "health", "body", "clothing", "nature", "animals", "weather", "city", "transport", "traffic", "shopping", "time", "sport", "hobby", "technology", "communication", "emotions", "holidays", "society", "other"];
 
@@ -225,7 +225,7 @@ export default function WordsTab({ lang, openSession, openWord, reloadKey, refre
 
 function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onReset, onReport, primaryTr }) {
     const ds = w.dstatus || w.status;   // отображаемый статус (in_progress/repeat/...)
-    const showKnow = w.status !== "mastered" && w.status !== "archived";   // по ВНУТРЕННЕМУ статусу
+    const showKnow = w.status !== "mastered" && w.status !== "archived" && w.status !== "known";   // по ВНУТРЕННЕМУ статусу
     // срок «когда повторять» — только у выученного/повторения (у них есть расписание повтора).
     // «в процессе» ещё учатся (нет графика повторов), новые/архив — тоже без срока.
     const due = (ds === "mastered" || ds === "repeat") ? dueText(nextReviewAt(w), tt) : null;

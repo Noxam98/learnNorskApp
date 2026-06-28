@@ -12,7 +12,7 @@ function plAr(n) { if (n === 1) return "يوم"; if (n === 2) return "يومان
 // --- Локальные 5-язычные строки (i18n этого файла; interfaceTranslation не трогаем) ---
 export const L = langGuard({
     ru: {
-        chips: { all: "Все", new: "Новые", in_progress: "В процессе", repeat: "Повторение", mastered: "Выучено", weak: "Слабые", archived: "Архив" },
+        chips: { all: "Все", new: "Новые", in_progress: "В процессе", repeat: "Повторение", mastered: "Выучено", known: "Знакомые", weak: "Слабые", archived: "Архив" },
         searchPh: "Поиск по всем языкам — norsk, рус, eng…",
         topicAll: "Тема: все", topic: "Тема", levelAll: "Уровень: все", level: "Уровень",
         sortStrength: "По силе", sortDue: "Скоро повторять", sortAlpha: "Алфавит",
@@ -25,7 +25,7 @@ export const L = langGuard({
         inDays: (n) => `через ${n} ${plRu(n)}`,
     },
     en: {
-        chips: { all: "All", new: "New", in_progress: "In progress", repeat: "Review", mastered: "Mastered", weak: "Weak", archived: "Archive" },
+        chips: { all: "All", new: "New", in_progress: "In progress", repeat: "Review", mastered: "Mastered", known: "Familiar", weak: "Weak", archived: "Archive" },
         searchPh: "Search across all languages — norsk, rus, eng…",
         topicAll: "Topic: all", topic: "Topic", levelAll: "Level: all", level: "Level",
         sortStrength: "By strength", sortDue: "Due soon", sortAlpha: "Alphabetical",
@@ -38,7 +38,7 @@ export const L = langGuard({
         inDays: (n) => `in ${n} day${n === 1 ? "" : "s"}`,
     },
     ukr: {
-        chips: { all: "Усі", new: "Нові", in_progress: "У процесі", repeat: "Повторення", mastered: "Вивчено", weak: "Слабкі", archived: "Архів" },
+        chips: { all: "Усі", new: "Нові", in_progress: "У процесі", repeat: "Повторення", mastered: "Вивчено", known: "Знайомі", weak: "Слабкі", archived: "Архів" },
         searchPh: "Пошук усіма мовами — norsk, укр, eng…",
         topicAll: "Тема: усі", topic: "Тема", levelAll: "Рівень: усі", level: "Рівень",
         sortStrength: "За силою", sortDue: "Скоро повторювати", sortAlpha: "Алфавіт",
@@ -51,7 +51,7 @@ export const L = langGuard({
         inDays: (n) => `через ${n} ${plUk(n)}`,
     },
     pl: {
-        chips: { all: "Wszystkie", new: "Nowe", in_progress: "W trakcie", repeat: "Powtórka", mastered: "Opanowane", weak: "Słabe", archived: "Archiwum" },
+        chips: { all: "Wszystkie", new: "Nowe", in_progress: "W trakcie", repeat: "Powtórka", mastered: "Opanowane", known: "Znajome", weak: "Słabe", archived: "Archiwum" },
         searchPh: "Szukaj we wszystkich językach — norsk, pol, eng…",
         topicAll: "Temat: wszystkie", topic: "Temat", levelAll: "Poziom: wszystkie", level: "Poziom",
         sortStrength: "Wg siły", sortDue: "Wkrótce powtórka", sortAlpha: "Alfabetycznie",
@@ -64,7 +64,7 @@ export const L = langGuard({
         inDays: (n) => `za ${n} ${plPl(n)}`,
     },
     lt: {
-        chips: { all: "Visi", new: "Nauji", in_progress: "Eigoje", repeat: "Kartojimas", mastered: "Išmokti", weak: "Silpni", archived: "Archyvas" },
+        chips: { all: "Visi", new: "Nauji", in_progress: "Eigoje", repeat: "Kartojimas", mastered: "Išmokti", known: "Pažįstami", weak: "Silpni", archived: "Archyvas" },
         searchPh: "Ieškoti visomis kalbomis — norsk, lt, eng…",
         topicAll: "Tema: visos", topic: "Tema", levelAll: "Lygis: visi", level: "Lygis",
         sortStrength: "Pagal stiprumą", sortDue: "Greitai kartoti", sortAlpha: "Abėcėlė",
@@ -77,7 +77,7 @@ export const L = langGuard({
         inDays: (n) => `po ${n} ${plLt(n)}`,
     },
     lv: {
-        chips: { all: "Visi", new: "Jauni", in_progress: "Procesā", repeat: "Atkārtojums", mastered: "Apgūti", weak: "Vāji", archived: "Arhīvs" },
+        chips: { all: "Visi", new: "Jauni", in_progress: "Procesā", repeat: "Atkārtojums", mastered: "Apgūti", known: "Pazīstami", weak: "Vāji", archived: "Arhīvs" },
         searchPh: "Meklē visās valodās — norsk, lv, eng…",
         topicAll: "Tēma: visas", topic: "Tēma", levelAll: "Līmenis: visi", level: "Līmenis",
         sortStrength: "Pēc stipruma", sortDue: "Drīz jāatkārto", sortAlpha: "Alfabētiski",
@@ -90,7 +90,7 @@ export const L = langGuard({
         inDays: (n) => `pēc ${n} ${plLv(n)}`,
     },
     ar: {
-        chips: { all: "الكل", new: "جديدة", in_progress: "قيد التقدّم", repeat: "مراجعة", mastered: "متقَنة", weak: "ضعيفة", archived: "أرشيف" },
+        chips: { all: "الكل", new: "جديدة", in_progress: "قيد التقدّم", repeat: "مراجعة", mastered: "متقَنة", known: "مألوفة", weak: "ضعيفة", archived: "أرشيف" },
         searchPh: "ابحث بكل اللغات — norsk، عربي، eng…",
         topicAll: "الموضوع: الكل", topic: "الموضوع", levelAll: "المستوى: الكل", level: "المستوى",
         sortStrength: "حسب القوة", sortDue: "حان موعدها قريبًا", sortAlpha: "أبجديًا",
