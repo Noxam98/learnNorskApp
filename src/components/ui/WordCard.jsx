@@ -14,13 +14,17 @@ import { RampBar } from "../learning/StatusBits.jsx";
  * @param {{
  *   word:object, lang:string, t:object,
  *   added?:boolean, busy?:boolean, highlight?:boolean, flat?:boolean, isAdmin?:boolean,
- *   onToggle?:Function, onInfo?:Function, onAdminDelete?:Function, onHover?:(word:object|null)=>void,
+ *   onToggle?:Function, onCardClick?:Function, removeBtn?:boolean, removeLabel?:string,
+ *   onInfo?:Function, onAdminDelete?:Function, onHover?:(word:object|null)=>void,
  * }} p  word: {word|norwegian, part_of_speech, level, translate, forms?, hasTts?, hasDescription?, hasEmbedding?, pool_id}
  *   flat — НЕ заливать карточку зелёным при added (состояние видно по кнопке-галочке). Нужно
  *   в «Наборах», где обе колонки должны выглядеть одинаково (иначе правая вся зелёная).
+ *   onCardClick — что делает клик по ТЕЛУ карточки; по умолчанию = onToggle (как в Базе/поиске:
+ *     добавить/убрать). В «коллекции набора» сюда передают «открыть инфо», чтобы клик не удалял слово.
+ *   removeBtn — действие-кнопка рисуется явным «удалить» (корзина) вместо тоггла ＋/✓ (для коллекции).
  *   onHover — наведение/уход (для подсветки того же слова в другой колонке).
  */
-export function WordCard({ word, lang, t, added = false, busy = false, highlight = false, flat = false, isAdmin = false, status = null, ramp = null, onToggle, onInfo, onAdminDelete, onHover }) {
+export function WordCard({ word, lang, t, added = false, busy = false, highlight = false, flat = false, isAdmin = false, status = null, ramp = null, onToggle, onCardClick, removeBtn = false, removeLabel, onInfo, onAdminDelete, onHover }) {
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const no = word.word ?? word.norwegian;
@@ -29,7 +33,7 @@ export function WordCard({ word, lang, t, added = false, busy = false, highlight
     const prefix = chipPrefix(key, word.forms, { articles: showArticles, verbAa: showVerbAa });
     return (
         <div className={`wcard${added && !flat ? " is-added" : ""}${highlight ? " is-highlight" : ""}`}
-            data-word={no} onClick={onToggle}
+            data-word={no} onClick={onCardClick || onToggle}
             onMouseEnter={onHover ? () => onHover(word) : undefined}
             onMouseLeave={onHover ? () => onHover(null) : undefined}>
             <div className="wcard__body">
@@ -54,14 +58,21 @@ export function WordCard({ word, lang, t, added = false, busy = false, highlight
                         <Icon n="info" />
                     </button>
                 )}
-                {onToggle && (
+                {onToggle && (removeBtn ? (
+                    /* коллекция набора: явная кнопка удаления (корзина), клик по телу — инфо */
+                    <button className="iconbtn is-danger"
+                        aria-label={removeLabel || t.removeFromDict} title={removeLabel || t.removeFromDict}
+                        disabled={busy} onClick={onToggle}>
+                        {busy ? <BtnSpinner /> : <Icon n="trash" />}
+                    </button>
+                ) : (
                     <button className={`iconbtn${added ? " is-added" : ""}`}
                         aria-label={added ? t.removeFromDict : t.addToDict}
                         title={added ? t.removeFromDict : t.addToDict}
                         disabled={busy} onClick={onToggle}>
                         {busy ? <BtnSpinner /> : <Icon n={added ? "check" : "plus"} />}
                     </button>
-                )}
+                ))}
                 <SpeakButton
                     segments={[
                         { text: no, hasTts: word.hasTts !== false },

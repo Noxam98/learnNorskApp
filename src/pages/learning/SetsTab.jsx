@@ -16,6 +16,7 @@ import { useIsMobile } from "../../hooks/useMediaQuery.js";
 import PoolSearchPanel from "../../components/learning/PoolSearchPanel.jsx";
 import GenerateSetModal from "../../components/sets/GenerateSetModal.jsx";
 import PhotoImportModal from "../../components/sets/PhotoImportModal.jsx";
+import TextImportModal from "../../components/sets/TextImportModal.jsx";
 import { useMobileSetsLayout } from "./useMobileSetsLayout.js";
 
 
@@ -32,6 +33,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
     const [prompt, setPrompt] = useState(null);   // { mode:'create'|'rename', value, id }
     const [genOpen, setGenOpen] = useState(false); // открыта модалка AI-генерации слов (см. GenerateSetModal)
     const [photoOpen, setPhotoOpen] = useState(false); // открыт импорт слов с фото/камеры (см. PhotoImportModal)
+    const [textOpen, setTextOpen] = useState(false); // открыт импорт слов из произвольного текста (см. TextImportModal)
     const [confirmDel, setConfirmDel] = useState(null); // набор, ожидающий подтверждения удаления
     const [confirmReset, setConfirmReset] = useState(false); // подтверждение сброса прогресса набора
     const [busy, setBusy] = useState(false);
@@ -130,6 +132,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
                             ? { key: "reset", label: ll.resetRamp, icon: "repeat", onClick: () => setConfirmReset(true) }
                             : { key: "study", label: ll.studySet, icon: "play", disabled: !canStudy, onClick: studySet },
                         { key: "gen", label: ll.generate, icon: "sparkles", onClick: () => setGenOpen(true) },
+                        { key: "text", label: ll.importText, icon: "list", onClick: () => setTextOpen(true) },
                         { key: "photo", label: ll.importPhoto, icon: "camera", onClick: () => setPhotoOpen(true) },
                         { key: "rename", label: ll.rename, icon: "edit", onClick: () => setPrompt({ mode: "rename", value: active.name, id: active.id }) },
                         { key: "del", label: ll.del, icon: "trash", danger: true, onClick: () => setConfirmDel(active) },
@@ -166,7 +169,9 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     {words.map((w) => (
                         <WordCard key={w.pool_id} word={w} lang={lang} t={t} flat status={w.status} ramp={w.ramp}
                             added highlight={hoverPid != null && w.pool_id === hoverPid}
+                            removeBtn removeLabel={ll.remove}
                             onToggle={() => removeWord(w.pool_id)}
+                            onCardClick={openWord ? (() => openWord(w.norwegian)) : undefined}
                             onInfo={openWord ? (() => openWord(w.norwegian)) : undefined} />
                     ))}
                 </div>
@@ -297,6 +302,10 @@ export default function SetsTab({ lang, openSession, openWord }) {
             {/* импорт слов с фото/камеры — самодостаточный поток (выбор источника → OCR → правка) */}
             <PhotoImportModal open={photoOpen} setId={activeId} lang={lang} ll={ll}
                 onClose={() => setPhotoOpen(false)} onImported={reloadActive} />
+
+            {/* импорт слов из произвольного текста — самодостаточный поток (вставка → LLM-разбор → правка) */}
+            <TextImportModal open={textOpen} setId={activeId} lang={lang} ll={ll}
+                onClose={() => setTextOpen(false)} onImported={reloadActive} />
         </div>
     );
 }
