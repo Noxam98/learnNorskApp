@@ -497,8 +497,9 @@
 @media (max-width:760px){
   body.study-active .nav { display:none; }                 /* лого/профиль — в нижнем таб-баре */
   .study-root .study-main { padding-top: 0; transition: padding-top .28s var(--ease); }
-  /* при скрытом верхнем баре сохраняем верхний safe-area-отступ (контент не лезет под статус-бар) */
-  html[data-studynav-off] .study-root .study-main { padding-top: env(safe-area-inset-top); }
+  /* при скрытом верхнем баре сохраняем КОМФОРТНЫЙ верхний отступ (safe-area + sp-4), а не прижимаем
+     контент к самому краю — иначе панели «Наборов» лезут под статус-бар */
+  html[data-studynav-off] .study-root .study-main { padding-top: calc(env(safe-area-inset-top) + var(--sp-4)); }
   /* На мобилке приветствие («Добрый день…») и строка «Учёба · A1» съедают место — прячем весь
      заголовок раздела; навигация по вкладкам и так в липком хедере .study-navbar. */
   .study-root .study-head { display: none; }

@@ -29,7 +29,10 @@ export function useMobileSetsLayout(isMobile, activeId, setsLength) {
             // авто-скрытый таб-бар (is-hidden) уехал за край → его место свободно, не вычитаем
             const barH = (bar && !bar.classList.contains("is-hidden") && getComputedStyle(bar).display !== "none")
                 ? bar.getBoundingClientRect().height : 0;
-            setMobH(Math.max(240, Math.floor(vh() - top - barH - 4)));
+            // когда таб-бар виден — он сам даёт нижний отступ; когда скрыт — оставляем комфортный
+            // зазор (16px, как sp-4), чтобы панели не прижимались к нижнему краю экрана
+            const bottomGap = barH > 0 ? 0 : 16;
+            setMobH(Math.max(240, Math.floor(vh() - top - barH - bottomGap - 4)));
         };
         estimate();
         // Самокоррекция переполнения. КРИТИЧНО: вычитаем overflow ТОЛЬКО когда прошлая правка УЖЕ
