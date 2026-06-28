@@ -500,11 +500,14 @@
 .study-root .study-navbar { display: none; }
 @media (max-width:760px){
   body.study-active .nav { display:none; }                 /* лого/профиль — в нижнем таб-баре */
-  .study-root .study-main { padding-top: 0; transition: padding-top .28s var(--ease); }
+  /* ВАЖНО: study-root и study-main — на ОДНОМ <main class="shell study-root study-main">, поэтому
+     селектор КОМПАУНДНЫЙ (без пробела). С пробелом (descendant) он не матчит ничего и правило мёртвое
+     — именно из-за этого верхний отступ скрытой панели не появлялся (контент липнул к верху). */
+  .study-root.study-main { padding-top: 0; transition: padding-top .28s var(--ease), padding-bottom .28s var(--ease); }
   /* Панель скрыта → её flow-место отбираем (marginBottom:-navH в JS), контент уезжает вверх и
      ИСПОЛЬЗУЕТ освобождённое место. Верхний отступ = клиренс под статус-бар/чёлку (env, работает
      благодаря viewport-fit=cover) + комфортный зазор контента до края (как от панели, когда показана). */
-  html[data-studynav-off] .study-root .study-main { padding-top: calc(env(safe-area-inset-top) + var(--sp-3)); }
+  html[data-studynav-off] .study-root.study-main { padding-top: calc(env(safe-area-inset-top) + var(--sp-3)); }
   /* На мобилке приветствие («Добрый день…») и строка «Учёба · A1» съедают место — прячем весь
      заголовок раздела; навигация по вкладкам и так в липком хедере .study-navbar. */
   .study-root .study-head { display: none; }
