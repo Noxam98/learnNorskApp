@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
-import { AH } from "./MyPage.i18n.js";
+import { AH, NPS } from "./MyPage.i18n.js";
 import { LANGUAGES } from "../interface/languages.js";
 import { useIsMobile } from "../hooks/useMediaQuery.js";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
@@ -64,6 +64,13 @@ const MyPage = () => {
     const kbdAssist = useSystemStore((state) => state.kbdAssist);
     const kbdAssistZones = useSystemStore((state) => state.kbdAssistZones);
     const ah = AH[currentLanguage] || AH.en;
+    const nps = NPS[currentLanguage] || NPS.en;
+    // Порция новых слов за сессию (gamePrefs.newPerSession, дефолт 6; слайдер 4–10).
+    const newPerSession = Math.min(10, Math.max(4, user?.gamePrefs?.newPerSession || 6));
+    const setNewPerSession = (v) => {
+        useAuthStore.setState((s) => (s.user ? { user: { ...s.user, gamePrefs: { ...(s.user.gamePrefs || {}), newPerSession: v } } } : s));
+        api.setGamePrefs({ newPerSession: v }).catch(() => { /* офлайн — не критично */ });
+    };
     const isPhone = useIsMobile();
     const listenOffLocal = useSystemStore((state) => state.listenOffLocal);
     const [pushBusy, setPushBusy] = useState(false);
@@ -319,6 +326,16 @@ const MyPage = () => {
                                     ]} />
                             </div>
                         )}
+                        {/* Порция новых слов за сессию (порционное знакомство) — слайдер 4–10 */}
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="layers" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{nps.t}</span><span className="setrow__d">{nps.d}</span></span>
+                            <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flex: "none" }}>
+                                <input type="range" min="4" max="10" value={newPerSession}
+                                    onChange={(e) => setNewPerSession(Number(e.target.value))} style={{ width: 120 }} />
+                                <b style={{ minWidth: 16, textAlign: "center", fontSize: "var(--fs-15)" }}>{newPerSession}</b>
+                            </span>
+                        </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="alert" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.notifications}</span><span className="setrow__d">{t.notificationsDesc}</span></span>

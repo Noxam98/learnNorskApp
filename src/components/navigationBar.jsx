@@ -5,6 +5,7 @@ import { useAuth } from "../hooks/useAuth.js";
 import LanguageChooser from "./languageChooser.jsx";
 import { BrandMark, BrandName } from "./ui/BrandMark.jsx";
 import { Icon } from "./ui/Icon.jsx";
+import { NavGrip } from "./ui/NavGrip.jsx";
 import { useAutoHideNav } from "../hooks/useAutoHideNav.js";
 
 export const NavigationBar = () => {
@@ -80,11 +81,7 @@ export const NavigationBar = () => {
                 </Link>
             ))}
         </nav>
-        {tabbar.hidden && (
-            <button className="navgrip navgrip--bottom" onClick={tabbar.show} aria-label="nav">
-                <Icon n="chevron-up" sm />
-            </button>
-        )}
+        {tabbar.hidden && <NavGrip side="bottom" onShow={tabbar.show} />}
         </>
     );
 };

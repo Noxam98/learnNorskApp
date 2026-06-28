@@ -7,6 +7,7 @@ import { useAuthStore } from "../../store/AuthStore.jsx";
 import { useSessionStore } from "../../store/sessionStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../../components/ui/Icon.jsx";
+import { NavGrip } from "../../components/ui/NavGrip.jsx";
 import { useAutoHideNav } from "../../hooks/useAutoHideNav.js";
 import { WordInfoModal } from "../../components/ui/WordInfoModal.jsx";
 import LearningSession from "../../components/learning/LearningSession.jsx";
@@ -134,11 +135,7 @@ export default function LearningPage() {
             <div className={"study-navbar" + (studyNav.hidden ? " is-hidden" : "")} ref={navRef}
                 style={studyNav.hidden ? { transform: "translateY(-100%)", marginBottom: -navH } : undefined}
                 onPointerDown={studyNav.ping}>{segEl}</div>
-            {studyNav.hidden && (
-                <button className="navgrip navgrip--top" onClick={studyNav.show} aria-label="nav">
-                    <Icon n="chevron-down" sm />
-                </button>
-            )}
+            {studyNav.hidden && <NavGrip side="top" onShow={studyNav.show} />}
 
             <div className="study-head">
                 <div>
