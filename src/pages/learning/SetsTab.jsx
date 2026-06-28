@@ -126,11 +126,19 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     <span className="sets-pane__study-l">{ll.studyingShort}</span>
                 </label>
                 <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", justifyContent: "flex-end" }}>
-                    {/* все действия набора — под одним троеточием */}
+                    {/* отдельная кнопка запуска сессии набора — слева от троеточия */}
+                    {allLearned ? (
+                        <button className="btn btn--sm btn--accent" onClick={() => setConfirmReset(true)} title={ll.resetRamp}>
+                            <Icon n="repeat" sm /> {ll.resetRamp}
+                        </button>
+                    ) : (
+                        <button className="btn btn--sm btn--accent" onClick={studySet} disabled={!canStudy}
+                            title={canStudy ? ll.studySet : ll.needUnlearned}>
+                            <Icon n="play" sm /> {ll.studySet}
+                        </button>
+                    )}
+                    {/* остальные действия набора — под троеточием */}
                     <ActionMenu icon="more" align="right" items={[
-                        allLearned
-                            ? { key: "reset", label: ll.resetRamp, icon: "repeat", onClick: () => setConfirmReset(true) }
-                            : { key: "study", label: ll.studySet, icon: "play", disabled: !canStudy, onClick: studySet },
                         { key: "gen", label: ll.generate, icon: "sparkles", onClick: () => setGenOpen(true) },
                         { key: "text", label: ll.importText, icon: "list", onClick: () => setTextOpen(true) },
                         { key: "photo", label: ll.importPhoto, icon: "camera", onClick: () => setPhotoOpen(true) },
