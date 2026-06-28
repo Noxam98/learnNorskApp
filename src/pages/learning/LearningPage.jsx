@@ -1,6 +1,6 @@
 // Раздел «Учёба»: заголовок + сегмент-переключатель (Сегодня/Все слова/Экзамен/Прогресс)
 // с клиентским роутингом по ?tab=. Управляет общими оверлеями: сессия практики и карточка слова.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
@@ -91,12 +91,22 @@ export default function LearningPage() {
         return () => document.body.classList.remove("study-active");
     }, []);
 
-    // Мобильный хедер-навигация авто-скрывается по бездействию (уезжает за верхний край), оставляя грип.
-    // Место под навигацией при скрытии НЕ освобождаем: её flow-box остаётся на месте, панель лишь
-    // визуально слайдит вверх. Так паддинг контента постоянный и не зависит от того, показана панель
-    // или скрыта — контент не «прыгает».
-    // Авто-скрытие — ТОЛЬКО на вкладке «Наборы» (личные коллекции). На прочих вкладках панели не прячем.
+    // Мобильный хедер-навигация авто-скрывается по бездействию (за верхний край), оставляя грип.
+    // При скрытии тянем контент вверх отрицательным margin (= измеренная высота навигации) —
+    // ОСВОБОЖДАЕМ её место, и контент его использует. Чтобы контент при этом отступал от верхнего
+    // края ровно настолько же, насколько отступал от панели (её margin-bottom = sp-2), CSS добавляет
+    // study-main padding-top = safe-area + sp-2 при скрытой панели (см. study.css [data-studynav-off]).
+    const navRef = useRef(null);
+    // Авто-скрытие — ТОЛЬКО на вкладке «Наборы» (личные коллекции): её one-screen раскладка
+    // (useMobileSetsLayout) рассчитана на освобождаемое место. На прочих вкладках панели не прячем.
     const studyNav = useAutoHideNav({ flag: "data-studynav-off", active: tab === "sets" });
+    const [navH, setNavH] = useState(0);
+    useEffect(() => {
+        const measure = () => { const el = navRef.current; if (el) setNavH(el.offsetHeight || 0); };
+        measure();
+        window.addEventListener("resize", measure);
+        return () => window.removeEventListener("resize", measure);
+    }, []);
 
     // openSession() без слов → системная сессия (LearningSession сам тянет программу с бэка).
     // openSession(words, mode) — легаси-путь с готовым набором (полки/«Слабые» из других вкладок).
@@ -125,8 +135,8 @@ export default function LearningPage() {
     return (
         <main className="shell study-root study-main">
             {/* Мобильный липкий хедер-навигация (на десктопе скрыт). Авто-скрытие: уезжает вверх, остаётся грип. */}
-            <div className={"study-navbar" + (studyNav.hidden ? " is-hidden" : "")}
-                style={studyNav.hidden ? { transform: "translateY(-100%)" } : undefined}
+            <div className={"study-navbar" + (studyNav.hidden ? " is-hidden" : "")} ref={navRef}
+                style={studyNav.hidden ? { transform: "translateY(-100%)", marginBottom: -navH } : undefined}
                 onPointerDown={studyNav.ping}>{segEl}</div>
             {studyNav.hidden && <NavGrip side="top" onShow={studyNav.show} />}
 

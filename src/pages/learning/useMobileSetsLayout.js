@@ -6,6 +6,24 @@ import { useLayoutEffect, useRef, useState } from "react";
 
 // Высоты свёрнутых полосок и разделителя (для расчёта высот панелей + анимации).
 const DIVIDER_H = 30, SEARCH_COLLAPSED = 58, SET_COLLAPSED = 58;
+// Постоянный зазор контента до нижней панели/края экрана (= верхний sp-2): контент отступает от края
+// ровно настолько же, насколько отступает от таб-бара, когда он показан.
+const BOTTOM_GAP = 8;
+
+// safe-area снизу (домашний индикатор) — меряем один раз пробником. Нужно, чтобы при скрытом таб-баре
+// контент уезжал вниз в освобождённое место, но не залезал под индикатор, сохраняя тот же зазор.
+let _sab = null;
+function safeAreaBottom() {
+    if (_sab != null) return _sab;
+    try {
+        const p = document.createElement("div");
+        p.style.cssText = "position:fixed;left:0;bottom:0;width:0;height:env(safe-area-inset-bottom);visibility:hidden;pointer-events:none";
+        document.body.appendChild(p);
+        _sab = Math.round(p.getBoundingClientRect().height) || 0;
+        p.remove();
+    } catch { _sab = 0; }
+    return _sab;
+}
 
 export function useMobileSetsLayout(isMobile, activeId, setsLength) {
     const [mob, setMob] = useState("set"); // какая панель активна — "set" | "search"
@@ -25,14 +43,14 @@ export function useMobileSetsLayout(isMobile, activeId, setsLength) {
         const estimate = () => {
             const el = mobRef.current; if (!el) return;
             const top = el.getBoundingClientRect().top + window.scrollY;     // позиция панели в документе
-            const bar = document.querySelector(".tabbar");                   // нижний таб-бар (рендерится в App)
-            // Таб-бар — position:fixed (overlay). Его высоту резервируем ВСЕГДА, даже когда панель
-            // авто-скрыта: is-hidden лишь слайдит её за край (transform), getBoundingClientRect().height
-            // сохраняется. Так высота раскладки ПОСТОЯННА и не зависит от показа/скрытия таб-бара —
-            // нижний паддинг контента не «прыгает».
-            const barH = (bar && getComputedStyle(bar).display !== "none") ? bar.getBoundingClientRect().height : 0;
-            const bottomGap = 8;                                             // постоянный зазор над таб-баром
-            setMobH(Math.max(240, Math.floor(vh() - top - barH - bottomGap - 4)));
+            const bar = document.querySelector(".tabbar");                   // нижний таб-бар (рендерится в App, position:fixed)
+            const barVisible = bar && !bar.classList.contains("is-hidden") && getComputedStyle(bar).display !== "none";
+            // Таб-бар показан → резервируем его высоту (контент кончается над ним). Скрыт (уехал за край)
+            // → его место ОСВОБОЖДАЕТСЯ и достаётся контенту, резервируем только safe-area снизу. В обоих
+            // случаях добавляем ОДИН и тот же зазор BOTTOM_GAP — отступ контента от края такой же, как был
+            // от панели. Так скрытие реально расширяет раскладку, сохраняя единый отступ.
+            const reserve = (barVisible ? bar.getBoundingClientRect().height : safeAreaBottom()) + BOTTOM_GAP;
+            setMobH(Math.max(240, Math.floor(vh() - top - reserve)));
         };
         estimate();
         // Самокоррекция переполнения. КРИТИЧНО: вычитаем overflow ТОЛЬКО когда прошлая правка УЖЕ
