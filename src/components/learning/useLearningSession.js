@@ -151,13 +151,25 @@ export function useLearningSession({ words = [], system = false, setId = null, l
         }
     };
 
-    // «Не учить» из игры: жалоба на текущее слово (мусор) → убрать у себя + админу, и пропустить элемент.
+    // «Не учить» → «Ошибка в слове»: жалоба на текущее слово (мусор/некорректно) → убрать у себя
+    // + на модерацию, и пропустить элемент.
     const reportCurrent = async () => {
         const gw = elements[idx]?.gw;
         if (!gw) return;
         const pid = gw.pool_id ?? gw.id;
         try { await api.learningReport(pid); } catch { /* офлайн — не критично */ }
         // без тоста — просто убираем слово и идём дальше
+        setHist((h) => [...h, "skip"]);
+        if (idx + 1 < elements.length) setIdx((n) => n + 1);
+        else showSummary();
+    };
+
+    // «Не учить» → «Не актуально»: убрать слово ТОЛЬКО из своей Учёбы (без жалобы/модерации), и дальше.
+    const skipCurrent = async () => {
+        const gw = elements[idx]?.gw;
+        if (!gw) return;
+        const pid = gw.pool_id ?? gw.id;
+        try { await api.learningSkip(pid); } catch { /* офлайн — не критично */ }
         setHist((h) => [...h, "skip"]);
         if (idx + 1 < elements.length) setIdx((n) => n + 1);
         else showSummary();
@@ -214,6 +226,6 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     return {
         isSystem, phase, round, isDesktop, elements, idx, legacyGw,
         res, cards, hist, graduated, protectedNow, protectedTypo, after, gate, busy,
-        onResult, recordIntro, onGameFinish, reportCurrent, knowCurrent, again,
+        onResult, recordIntro, onGameFinish, reportCurrent, skipCurrent, knowCurrent, again,
     };
 }

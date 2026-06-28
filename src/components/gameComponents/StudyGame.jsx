@@ -23,13 +23,24 @@ const HINTS = langGuard({
     ar: { reveal: "انقر للكشف", next: "انقر للتالي", studied: "تمت المراجعة" },
 }, "StudyGame.HINTS");
 
+// Подписи мини-меню «Не учить» (две причины): «Не актуально» (убрать у себя) / «Ошибка в слове» (модерация).
+const SKIP = langGuard({
+    ru: { notRelevant: "Не актуально", wordError: "Ошибка в слове" },
+    ukr: { notRelevant: "Не актуально", wordError: "Помилка у слові" },
+    en: { notRelevant: "Not relevant", wordError: "Word is wrong" },
+    pl: { notRelevant: "Nieistotne", wordError: "Błąd w słowie" },
+    lt: { notRelevant: "Neaktualu", wordError: "Klaida žodyje" },
+    lv: { notRelevant: "Neaktuāli", wordError: "Kļūda vārdā" },
+    ar: { notRelevant: "غير مناسبة", wordError: "كلمة خاطئة" },
+}, "StudyGame.SKIP");
+
 const filterChosenWords = (dictList) =>
     dictList.flatMap((d) => d.words.filter((w) => w?.gameData?.isChoosedToGame));
 
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
 // words/onExit передаёт «Учёба» (переиспользует игру). Карточки — пассивный режим, в SRS не пишет.
-export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, onReport = null, onKnow = null, stepNo = 0, stepTotal = 0, segs: segsOverride = null, rank = 0 }) => {
+export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, onReport = null, onSkip = null, onKnow = null, stepNo = 0, stepTotal = 0, segs: segsOverride = null, rank = 0 }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -38,6 +49,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
     const t = interfaceTranslate[currentLanguage];
     const h = HINTS[currentLanguage] || HINTS.en;
+    const sk = SKIP[currentLanguage] || SKIP.en;
 
     const words = useMemo(() => shuffle(wordsProp || aiPlay || filterChosenWords(dictList)), []);
     const total = words.length;
@@ -45,17 +57,18 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
 
     const [idx, setIdx] = useState(0);
     const [flipped, setFlipped] = useState(false);
-    const keysRef = useRef(/** @type {{advance?: (() => void) | null, know?: (() => void) | null, report?: (() => void) | null}} */({}));
+    const [whyOpen, setWhyOpen] = useState(false);   // открыто ли мини-меню «Не учить» (две причины)
+    const keysRef = useRef(/** @type {{advance?: (() => void) | null, know?: (() => void) | null, why?: (() => void) | null}} */({}));
 
     useScrollLock();   // блокируем скролл фона на время карточек (общий ref-counted замок)
 
-    // ПК: пробел/энтер — как тап (перевернуть → следующая); 1 — «Уже знаю», 2 — «Не учить».
+    // ПК: пробел/энтер — как тап (перевернуть → следующая); 1 — «Уже знаю», 2 — открыть «Не учить» (причины).
     useEffect(() => {
         const onKey = (e) => {
             if (e.metaKey || e.ctrlKey || e.altKey) return;
             const k = keysRef.current;
             if ((e.code === "Digit1" || e.code === "Numpad1") && k.know) { e.preventDefault(); k.know(); return; }
-            if ((e.code === "Digit2" || e.code === "Numpad2") && k.report) { e.preventDefault(); k.report(); return; }
+            if ((e.code === "Digit2" || e.code === "Numpad2") && k.why) { e.preventDefault(); k.why(); return; }
             if (e.code === "Space" || e.code === "Enter" || e.code === "NumpadEnter") { e.preventDefault(); k.advance?.(); }
         };
         window.addEventListener("keydown", onKey);
@@ -81,6 +94,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
         const { back } = _sides(idx);
         if (back) speakText(back, hyLang(currentLanguage, !isNo2Int)).catch(() => {});
     }, [flipped]); // eslint-disable-line
+    useEffect(() => { setWhyOpen(false); }, [idx]);   // новая карточка → меню «Не учить» закрыто
 
     /** @type {import('react').CSSProperties} */
     const playStyle = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };
@@ -106,11 +120,14 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
 
     const finished = idx >= total;
     const advance = () => {
+        if (whyOpen) { setWhyOpen(false); return; }   // открыто меню «Не учить» → тап/пробел сначала закрывает его
         if (!flipped) { setFlipped(true); playSound("flip"); return; }
         if (idx + 1 < total) { setIdx(idx + 1); setFlipped(false); }
         else { setIdx(total); playSound("finish"); if (onFinish) onFinish({ total, correct: total }); } // финиш
     };
-    keysRef.current = finished ? {} : { advance, know: onKnow, report: onReport };   // актуальные обработчики для клавиш
+    // клавиша «2» открывает/закрывает мини-меню «Не учить» (его пункты — клик/тап)
+    const canWhy = !!(onReport || onSkip);
+    keysRef.current = finished ? {} : { advance, know: onKnow, why: canWhy ? () => setWhyOpen((v) => !v) : null };
     const restart = () => { setIdx(0); setFlipped(false); };
 
     const cur = finished ? null : words[idx];
@@ -165,17 +182,46 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                     <>
                         {/* Кнопки НАД карточкой (не на ней — чтобы не задеть при тапе по карточке):
                             «Уже знаю» появляется только ПОСЛЕ показа перевода (флип); «Не учить» — всегда. */}
-                        {(onReport || onKnow) && (
+                        {(canWhy || onKnow) && (
                             <div className="card-skip">
                                 {onKnow && (
                                     <button type="button" className="card-skip__btn card-skip__know" onClick={onKnow}>
                                         <span className="card-skip__key">1</span><Icon n="check" sm /> {t.alreadyKnow || "Уже знаю"}
                                     </button>
                                 )}
-                                {onReport && (
-                                    <button type="button" className="card-skip__btn card-skip__report" onClick={onReport}>
-                                        <span className="card-skip__key">2</span><Icon n="x-circle" sm /> {t.dontLearn || "Не учить"}
-                                    </button>
+                                {canWhy && (
+                                    <div className="card-skip__why">
+                                        {/* «Не учить» — текстовый триггер мини-меню с двумя причинами */}
+                                        <button type="button" className={"card-skip__btn card-skip__report" + (whyOpen ? " is-open" : "")}
+                                            onClick={() => setWhyOpen((v) => !v)} aria-expanded={whyOpen} aria-haspopup="menu">
+                                            <span className="card-skip__key">2</span><Icon n="x-circle" sm /> {t.dontLearn || "Не учить"}
+                                        </button>
+                                        <AnimatePresence>
+                                            {whyOpen && (
+                                                <>
+                                                    <div className="card-skip__backdrop" onClick={() => setWhyOpen(false)} />
+                                                    <motion.div className="card-skip__menu" role="menu"
+                                                        initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                        exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                                                        transition={{ duration: 0.16, ease: [0.2, 0.7, 0.2, 1] }}>
+                                                        {onSkip && (
+                                                            <button type="button" role="menuitem" className="card-skip__item"
+                                                                onClick={() => { setWhyOpen(false); onSkip(); }}>
+                                                                <Icon n="eye-off" sm /> {sk.notRelevant}
+                                                            </button>
+                                                        )}
+                                                        {onReport && (
+                                                            <button type="button" role="menuitem" className="card-skip__item card-skip__item--warn"
+                                                                onClick={() => { setWhyOpen(false); onReport(); }}>
+                                                                <Icon n="alert" sm /> {sk.wordError}
+                                                            </button>
+                                                        )}
+                                                    </motion.div>
+                                                </>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
                                 )}
                             </div>
                         )}

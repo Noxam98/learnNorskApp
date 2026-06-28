@@ -305,7 +305,8 @@ class ApiService {
     learningAnswer({ pool_id, correct, elapsed = null, mode = null, direction = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode, direction }); }
     learningAdd(poolId) { return this._send('POST', '/learning/add', { pool_id: poolId }); }       // добавить слово (по pool_id) в Учёбу
     learningRemove(poolId) { return this._send('POST', '/learning/remove', { pool_id: poolId }); } // убрать слово (по pool_id) из Учёбы
-    learningReport(poolId) { return this._send('POST', '/learning/report', { pool_id: poolId }); } // «не учить»: жалоба на мусорное слово + убрать у себя
+    learningReport(poolId) { return this._send('POST', '/learning/report', { pool_id: poolId }); } // «не учить» → «ошибка в слове»: жалоба + убрать у себя (на модерацию)
+    learningSkip(poolId) { return this._send('POST', '/learning/skip', { pool_id: poolId }); }     // «не учить» → «не актуально»: убрать только у себя, без модерации
     learningSession(size = 20, lang = 'ru') { return this._send('GET', `/learning/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
     learningGate() { return this._send('GET', '/learning/gate'); }
     learningGateExam(lang = "ru") { return this._send('GET', `/learning/gate/exam?lang=${encodeURIComponent(lang)}`); }

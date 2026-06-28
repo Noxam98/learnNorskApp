@@ -364,6 +364,19 @@
   .card-skip__know:hover { color: var(--game-correct); border-color: var(--game-correct); }
   .card-skip__report:hover { color: var(--game-incorrect); border-color: var(--game-incorrect); }
   .card-skip__key { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 4px; margin-right: 1px; border-radius: 6px; background: color-mix(in srgb, var(--game-ink-2) 16%, transparent); color: var(--game-ink-2); font-size: var(--fs-12); font-weight: 800; line-height: 1; }
+  /* «Не учить» → мини-меню из двух причин (Не актуально / Ошибка в слове) */
+  .card-skip__why { position: relative; }
+  .card-skip__report.is-open { opacity: 1; color: var(--game-ink); border-color: var(--game-border); }
+  .card-skip__backdrop { position: fixed; inset: 0; z-index: 1; }
+  .card-skip__menu { position: absolute; top: calc(100% + 8px); right: 0; z-index: 2; transform-origin: top right;
+    min-width: 210px; display: flex; flex-direction: column; gap: 2px; padding: 6px; border-radius: var(--r-md);
+    background: var(--game-surface, var(--game-bg-2)); border: 1px solid var(--game-border); box-shadow: 0 14px 36px rgba(0,0,0,.45); }
+  .card-skip__item { display: inline-flex; align-items: center; gap: 9px; width: 100%; padding: 10px 12px; border-radius: var(--r-sm, 8px);
+    background: transparent; border: none; color: var(--game-ink-2); font-size: var(--fs-14); font-weight: 600; cursor: pointer; text-align: left; }
+  .card-skip__item .ic { flex: none; opacity: .9; }
+  .card-skip__item:hover { background: color-mix(in srgb, var(--game-ink-2) 14%, transparent); color: var(--game-ink); }
+  .card-skip__item--warn { color: color-mix(in srgb, var(--game-incorrect) 80%, var(--game-ink-2)); }
+  .card-skip__item--warn:hover { background: color-mix(in srgb, var(--game-incorrect) 18%, transparent); color: var(--game-incorrect); }
   .qcount { font-size: var(--fs-14); font-weight: 700; letter-spacing: var(--ls-wide); text-transform: uppercase; color: var(--game-ink-2); }
   .qprompt { font-size: var(--fs-15); color: var(--game-ink-2); margin-top: var(--sp-6); }
   .qword {

@@ -40,7 +40,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     const {
         isSystem, phase, round, isDesktop, elements, idx, legacyGw,
         res, cards, hist, graduated, protectedNow, protectedTypo, after, gate, busy,
-        onResult, recordIntro, onGameFinish, reportCurrent, knowCurrent, again,
+        onResult, recordIntro, onGameFinish, reportCurrent, skipCurrent, knowCurrent, again,
     } = useLearningSession({ words, system, setId, lang, onClose });
 
     // --- Экран загрузки системной программы ---
@@ -197,6 +197,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 onResult={isStudy ? undefined : (w, ok) => onResult(w, ok, el.mode, el.dir)}
                 onFinish={isStudy ? (s) => { recordIntro(el.gw); onGameFinish(s, true); } : (s) => onGameFinish(s, false, el.mode)}
                 onReport={reportCurrent}
+                onSkip={skipCurrent}
                 onKnow={knowCurrent}
                 onExit={() => onClose?.(true)}
                 setGameState={() => onClose?.(true)}
