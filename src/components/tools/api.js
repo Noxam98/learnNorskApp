@@ -1,5 +1,4 @@
 import ky from 'ky';
-import CryptoJS from 'crypto-js';
 import { useSystemStore } from '../../store/systemStore.jsx';
 import { interfaceTranslate } from '../../interface/interfaceTranslation';
 
@@ -18,10 +17,6 @@ function toastForError(status) {
     useSystemStore.getState().showToast(status === 0 ? t.connectionError : t.providerError);
 }
 
-// Ключ шифрования токенов в localStorage. Это лишь лёгкая обфускация (на клиенте
-// настоящего секрета быть не может) — задаётся через env, иначе дефолт для разработки.
-const SECRET_KEY = import.meta.env.VITE_TOKEN_KEY || 'dev-token-key';
-
 class ApiService {
     constructor(baseUrl) {
         this.baseUrl = baseUrl.replace(/\/+$/, ''); // без хвостового слэша
@@ -31,33 +26,32 @@ class ApiService {
     }
 
     // --- Хранилище токенов (единственный источник правды) ---
+    // Токены лежат в localStorage как есть. Шифровать их на клиенте смысла нет (ключ всё равно в
+    // бандле = публичен) — это давало лишь ЛОЖНОЕ чувство защиты. Реальная защита от кражи токена —
+    // против XSS (CSP + отсутствие innerHTML/eval); при XSS токен и так читается из памяти.
     _initTokens() {
-        const accessToken = this._decryptToken(localStorage.getItem('access_token'));
-        const refreshToken = this._decryptToken(localStorage.getItem('refresh_token'));
-        if (accessToken && refreshToken) {
-            this.accessToken = accessToken;
-            this.refreshToken = refreshToken;
+        const access = localStorage.getItem('access_token');
+        const refresh = localStorage.getItem('refresh_token');
+        // принимаем только похожее на JWT (xxx.yyy.zzz); старые AES-блобы прежних версий — игнорируем
+        // и чистим (юзер один раз перелогинится), а не тащим битый токен в запросы
+        if (this._looksLikeJwt(access) && this._looksLikeJwt(refresh)) {
+            this.accessToken = access;
+            this.refreshToken = refresh;
+        } else if (access || refresh) {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
         }
     }
 
-    _encryptToken(token) {
-        return token ? CryptoJS.AES.encrypt(token, SECRET_KEY).toString() : null;
-    }
-
-    _decryptToken(encryptedToken) {
-        if (!encryptedToken) return null;
-        try {
-            return CryptoJS.AES.decrypt(encryptedToken, SECRET_KEY).toString(CryptoJS.enc.Utf8) || null;
-        } catch {
-            return null;
-        }
+    _looksLikeJwt(t) {
+        return typeof t === 'string' && t.split('.').length === 3;
     }
 
     _setTokens(accessToken, refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        localStorage.setItem('access_token', this._encryptToken(accessToken));
-        localStorage.setItem('refresh_token', this._encryptToken(refreshToken));
+        localStorage.setItem('access_token', accessToken);
+        localStorage.setItem('refresh_token', refreshToken);
     }
 
     isAuthenticated() {
@@ -340,6 +334,7 @@ class ApiService {
     setGenerate(id, { topic = "", level = "", count = 10, lang = 'ru' } = {}) { return this._send('POST', `/sets/${id}/generate`, { topic, level, count, lang }); } // ИИ-генерация слов в набор
     setReset(id) { return this._send('POST', `/sets/${id}/reset`); }   // сброс рампы выученных слов набора
     setOcr(id, { image, hint = "" } = {}) { return this._send('POST', `/sets/${id}/ocr`, { image, hint }); }   // фото → список слов (vision)
+    setParseText(id, { text, hint = "" } = {}) { return this._send('POST', `/sets/${id}/parse-text`, { text, hint }); } // произвольный текст → список слов (LLM)
     setImportWords(id, { words, lang = 'ru' } = {}) { return this._send('POST', `/sets/${id}/import-words`, { words, lang }); } // отредактированный список → в набор
 
     // Веб-пуши (напоминания о бездействии)
