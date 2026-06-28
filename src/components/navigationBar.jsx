@@ -10,9 +10,10 @@ import { useAutoHideNav } from "../hooks/useAutoHideNav.js";
 export const NavigationBar = () => {
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
     const t = interfaceTranslate[currentLanguage];
-    const { pathname } = useLocation();
-    // авто-скрытие нижнего таб-бара — только в режиме «Учёба» (на остальных страницах панель не прячем)
-    const tabbar = useAutoHideNav({ flag: "data-tabbar-off", active: pathname === "/learning" });
+    const { pathname, search } = useLocation();
+    // авто-скрытие нижнего таб-бара — только на вкладке «Наборы» Учёбы (?tab=sets); на остальных не прячем
+    const onSets = pathname === "/learning" && new URLSearchParams(search).get("tab") === "sets";
+    const tabbar = useAutoHideNav({ flag: "data-tabbar-off", active: onSets });
     const { user, setTheme } = useAuth();
     const theme = useSystemStore((s) => s.theme);
     const initial = (user?.username?.[0] || "").toUpperCase();

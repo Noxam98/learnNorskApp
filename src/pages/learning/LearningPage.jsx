@@ -93,7 +93,9 @@ export default function LearningPage() {
     // Мобильный хедер-навигация авто-скрывается по бездействию (за верхний край), оставляя грип.
     // При скрытии тянем контент вверх отрицательным margin (= измеренная высота) — освобождаем место.
     const navRef = useRef(null);
-    const studyNav = useAutoHideNav({ flag: "data-studynav-off" });
+    // Авто-скрытие — ТОЛЬКО на вкладке «Наборы» (личные коллекции): её one-screen раскладка
+    // (useMobileSetsLayout) рассчитана на освобождаемое место. На прочих вкладках панели не прячем.
+    const studyNav = useAutoHideNav({ flag: "data-studynav-off", active: tab === "sets" });
     const [navH, setNavH] = useState(0);
     useEffect(() => {
         const measure = () => { const el = navRef.current; if (el) setNavH(el.offsetHeight || 0); };
