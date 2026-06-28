@@ -57,6 +57,7 @@ export const pl = {
         modLbl: "Moderacja",
         statsLbl: "Statystyki",
         vibration: "Wibracje", vibrationDesc: "Wibracja klawiatury w grach",
+        kbdAssist: "Pomoc przy pisaniu", kbdAssistDesc: "Niewidocznie powiększa obszar dotyku oczekiwanej litery — mniej literówek",
         notifications: "Przypomnienia", notificationsDesc: "Push, jeśli 13 godzin bez nauki",
         vibrationStrength: "Siła wibracji", vibrationStrengthDesc: "Długość impulsu", vibeLow: "Słaba", vibeMid: "Średnia", vibeHigh: "Mocna",
         usernameExists: "Nazwa użytkownika już istnieje",

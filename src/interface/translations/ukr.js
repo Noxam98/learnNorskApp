@@ -56,6 +56,7 @@ export const ukr = {
         modLbl: "Модерація",
         statsLbl: "Статистика",
         vibration: "Вібрація", vibrationDesc: "Тактильний відгук клавіатури в іграх",
+        kbdAssist: "Допомога при наборі", kbdAssistDesc: "Непомітно збільшувати зону натискання потрібної літери — менше помилок",
         notifications: "Нагадування", notificationsDesc: "Пуш, якщо 13 годин без занять",
         vibrationStrength: "Сила вібрації", vibrationStrengthDesc: "Тривалість імпульсу", vibeLow: "Слабка", vibeMid: "Середня", vibeHigh: "Сильна",
         passwordLengthError: "Пароль повинен містити щонайменше 6 символів",

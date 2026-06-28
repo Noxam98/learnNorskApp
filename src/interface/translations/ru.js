@@ -61,6 +61,7 @@ export const ru = {
         modLbl: "Модерация",
         statsLbl: "Статистика",
         vibration: "Вибрация", vibrationDesc: "Тактильный отклик клавиатуры в играх",
+        kbdAssist: "Помощь при наборе", kbdAssistDesc: "Незаметно увеличивать зону нажатия нужной буквы — меньше опечаток",
         notifications: "Напоминания", notificationsDesc: "Пуш, если 13 часов без занятий",
         vibrationStrength: "Сила вибрации", vibrationStrengthDesc: "Длительность импульса", vibeLow: "Слабая", vibeMid: "Средняя", vibeHigh: "Сильная",
         unexpectedError: "Возникла непредвиденная ошибка",

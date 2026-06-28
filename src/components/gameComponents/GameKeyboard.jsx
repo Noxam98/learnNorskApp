@@ -40,6 +40,12 @@ const _KEY_ADJ = (() => {
 })();
 export const keysAdjacent = (a, b) => !!(a && b && _KEY_ADJ[a]?.has(b));
 
+// «Ассист» от опечаток: незаметно для юзера расширяем зону тапа ОЖИДАЕМОЙ след. буквы (assistKey)
+// на ASSIST_PX пикселей во все стороны. Тап по краю СОСЕДНЕЙ клавиши (палец слегка соскользнул)
+// у границы с ожидаемой → засчитывается как ожидаемая. Глубина «захвата» в соседнюю клавишу ≈
+// ASSIST_PX − зазор-ряда (~5px), т.е. пара миллиметров у границы — не крадём осознанные тапы по центру.
+const ASSIST_PX = 12;
+
 // Физическая клавиатура (ПК): позиция клавиши (e.code) → буква НАШЕЙ норв. раскладки.
 // По code, а НЕ по e.key — чтобы НЕ зависеть от раскладки ОС (рус/eng/no дают тот же результат).
 const CODE_MAP = {
@@ -65,18 +71,23 @@ const _isDesktop = () => { try { return window.matchMedia("(hover: hover) and (p
  *   canSubmit?: boolean, canBackspace?: boolean,
  *   onType?: (c: string) => void, onBackspace?: () => void, onSubmit?: () => void,
  *   onDunno?: (() => void) | null, dunnoLabel?: string, showDunno?: boolean, leftFiller?: boolean,
+ *   assistKey?: string | null,
  * }} props
  */
 export function GameKeyboard({
     lang, remainingOf, needed, extras = /** @type {string[]} */([]),
     canSubmit = false, canBackspace = false,
     onType, onBackspace, onSubmit, onDunno, dunnoLabel, showDunno = false,
+    assistKey = null,
 }) {
     const vibration = useSystemStore((s) => s.vibration);
     const vibeStrength = useSystemStore((s) => s.vibrationStrength);
+    const kbdAssist = useSystemStore((s) => s.kbdAssist);          // расширять зону тапа ожидаемой буквы
+    const showZones = useSystemStore((s) => s.kbdAssistZones);     // отладка: подсвечивать зону
     const buzz = () => { if (!vibration) return; try { navigator.vibrate?.(VIBE_MS[vibeStrength] || VIBE_MS.mid); } catch { /* нет вибро — ок */ } };
     const [pop, setPop] = useState(null);
     const pressingRef = useRef(null);
+    const typeAsRef = useRef(null);   // что реально ВВЕСТИ на отпускании: ассист мог перенацелить с нажатой на ожидаемую
     const pressTsRef = useRef(0);   // момент нажатия — для вибрации «на отпускании» при долгом тапе (≥200мс)
     const kbdRef = useRef(null);
     const [isDesktop] = useState(_isDesktop);
@@ -123,23 +134,45 @@ export function GameKeyboard({
     const isSpent = (c) => gated && (needed?.[c] || 0) > 0 && remainingOf(c) <= 0;
     const badge = (c) => (gated && (needed?.[c] || 0) > 1) ? remainingOf(c) : null;
 
+    // Ожидаемая след. буква (от родителя) — только если это реальная клавиша нашей раскладки и активна.
+    // Для подсветки зоны (отладка) считаем независимо от kbdAssist; перенацеливание тапа — только при kbdAssist.
+    const predicted = (assistKey && KBD_SET.has(assistKey) && active(assistKey)) ? assistKey : null;
+
+    // Перенацеливание у границы: нажата соседняя к ожидаемой клавиша (c), а палец попал в расширенную
+    // (±ASSIST_PX) зону ожидаемой → вернуть ожидаемую. Иначе — нажатую как есть.
+    const correctKey = (c, e) => {
+        if (!kbdAssist || !predicted || predicted === c || !keysAdjacent(c, predicted)) return c;
+        if (!e || e.clientX == null) return c;
+        const el = kbdRef.current?.querySelector(`[data-k="${predicted}"]`);
+        if (!el) return c;
+        const r = el.getBoundingClientRect();
+        const m = ASSIST_PX;
+        const inZone = e.clientX >= r.left - m && e.clientX <= r.right + m
+            && e.clientY >= r.top - m && e.clientY <= r.bottom + m;
+        return inZone ? predicted : c;
+    };
+
     const keyDown = (c, e) => {
         e?.preventDefault();
-        if (!active(c)) return;
-        pressingRef.current = c; setPop(c);
+        const out = correctKey(c, e);   // ассист мог перенацелить на ожидаемую букву
+        if (!active(out)) return;
+        pressingRef.current = c;        // pointerup матчим по ФИЗИЧЕСКИ нажатой кнопке
+        typeAsRef.current = out;        // а вводим/превью — скорректированную
+        setPop(out);
         pressTsRef.current = Date.now();
         buzz();   // одна вибрация на нажатие
         maybeShowHint();   // начал набор мышью на ПК → подсказать про физ-клавиатуру
     };
     const keyUp = (c, e) => {
         if (pressingRef.current === c) {
-            if (active(c)) onType?.(c);
+            const out = typeAsRef.current || c;
+            if (active(out)) onType?.(out);
             if (Date.now() - pressTsRef.current >= 200) buzz();   // долгий тап (≥200мс) — вибрация и на отпускании
         }
-        pressingRef.current = null; setPop(null);
+        pressingRef.current = null; typeAsRef.current = null; setPop(null);
         e?.currentTarget?.blur?.();   // снять фокус после отпускания — клавиша не «залипает» подсвеченной
     };
-    const keyCancel = (c) => { if (pressingRef.current === c) { pressingRef.current = null; setPop(null); } };
+    const keyCancel = (c) => { if (pressingRef.current === c) { pressingRef.current = null; typeAsRef.current = null; setPop(null); } };
 
     // ⌫ «Стереть»: одиночный тап — удалить символ; удержание — авто-повтор (после паузы 400мс,
     // далее каждые 60мс), свой поп-ап с иконкой. Повтор работает за счёт функционального setState
@@ -220,13 +253,15 @@ export function GameKeyboard({
     const symKey = (c, cls = "", ariaLabel) => {
         const b = badge(c);
         return (
-            <button key={c || "space"} className={"kbd__key" + cls + (isOff(c) ? " is-off" : "") + (isSpent(c) ? " is-spent" : "")}
+            <button key={c || "space"} data-k={c} className={"kbd__key" + cls + (isOff(c) ? " is-off" : "") + (isSpent(c) ? " is-spent" : "")}
                 disabled={isOff(c) || isSpent(c)} aria-label={ariaLabel}
                 onPointerDown={(e) => keyDown(c, e)} onPointerUp={(e) => keyUp(c, e)}
                 onPointerLeave={() => keyCancel(c)} onPointerCancel={() => keyCancel(c)} lang={lang}>
                 {c === " " ? "" : c}
                 {b != null && <span className="kbd__count">{b}</span>}
                 {pop === c && <span className="kbd__pop" aria-hidden="true">{c === " " ? "␣" : c}</span>}
+                {/* отладка (админ): зона тапа ожидаемой буквы — ровно расширение на ASSIST_PX (inset отрицателен) */}
+                {showZones && predicted === c && <span className="kbd__zone" aria-hidden="true" style={{ inset: -ASSIST_PX }} />}
             </button>
         );
     };

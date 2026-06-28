@@ -65,6 +65,7 @@ export const lt = {
         modLbl: "Moderacija",
         statsLbl: "Statistika",
         vibration: "Vibracija", vibrationDesc: "Klaviatūros vibracija žaidimuose",
+        kbdAssist: "Rašymo pagalba", kbdAssistDesc: "Nepastebimai padidina laukiamos raidės lietimo zoną — mažiau klaidų",
         notifications: "Priminimai", notificationsDesc: "Push, jei 13 valandų be praktikos",
         vibrationStrength: "Vibracijos stiprumas", vibrationStrengthDesc: "Impulso trukmė", vibeLow: "Silpna", vibeMid: "Vidutinė", vibeHigh: "Stipri",
         authorization: "Autorizacija",

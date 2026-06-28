@@ -71,6 +71,7 @@ export const en = {
         modLbl: "Moderation",
         statsLbl: "Stats",
         vibration: "Vibration", vibrationDesc: "Haptic feedback on the game keyboard",
+        kbdAssist: "Typing assist", kbdAssistDesc: "Invisibly enlarge the tap area of the expected letter — fewer typos",
         notifications: "Reminders", notificationsDesc: "Push if 13 hours without practice",
         vibrationStrength: "Vibration strength", vibrationStrengthDesc: "Pulse length", vibeLow: "Light", vibeMid: "Medium", vibeHigh: "Strong",
         noAccount: "Don't have an account?",

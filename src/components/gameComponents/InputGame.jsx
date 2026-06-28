@@ -18,6 +18,23 @@ import { useSystemStore } from "../../store/systemStore.jsx";
 
 const TYPO_NEXT_MS = 250;   // хвост после окончания озвучки ответа (Да/Нет), затем авто-переход
 
+// Ожидаемая след. буква для «ассиста» клавиатуры (расширение зоны тапа). Среди принятых ответов
+// берём первый, чей префикс снисходительно (foldLoose: å≈a, ø≈o, æ≈ae) совпадает с уже введённым,
+// и отдаём его следующий РЕАЛЬНЫЙ символ (с å/ø/æ — подсветить именно нужную клавишу).
+// null — если ввод разошёлся со всеми принятыми (юзер печатает не то — не помогаем «не туда»).
+const nextAssistKey = (targets, input) => {
+    const ic = [...(input || "")];
+    for (const tgt of (targets || [])) {
+        const tc = [...(tgt || "")];
+        let ok = true;
+        for (let i = 0; i < ic.length; i++) {
+            if (i >= tc.length || foldLoose(ic[i]) !== foldLoose(tc[i])) { ok = false; break; }
+        }
+        if (ok && ic.length < tc.length) return tc[ic.length].toLowerCase();
+    }
+    return null;
+};
+
 export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const isNo2Int = mode !== "int2no";
     // печатаем норвежское → наша экранная клавиатура; для ввода родного перевода (no2int) — штатный инпут
@@ -69,6 +86,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const qLang = hyLang(currentLanguage, isNo2Int);
     const aLang = hyLang(currentLanguage, !isNo2Int);
     const canType = (status === "ASKING" || status === "INCORRECT") && !resolving;
+    const assistKey = useKbd ? nextAssistKey(acceptSet, input) : null;   // ожидаемая буква → расширить её зону тапа
 
     // дебаунс submit: на новом слове блокируем отправку на 250мс (анти-фантомный Enter с прошлого задания)
     useEffect(() => {
@@ -245,7 +263,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     {/* наша клавиатура (свободный режим — без подсказок-букв), только для норвежского ответа */}
                     {useKbd && canType && !typoAsk && (
                         <GameKeyboard
-                            lang={aLang} extras={["-"]}
+                            lang={aLang} extras={["-"]} assistKey={assistKey}
                             canSubmit canBackspace={input.length > 0}
                             onType={(c) => setInput(input + c)} onBackspace={() => setInput((s) => s.slice(0, -1))} onSubmit={() => submit()}
                             onDunno={dontKnow} showDunno={status === "ASKING"} dunnoLabel={DUNNO[currentLanguage]} />

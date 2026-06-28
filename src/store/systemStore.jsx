@@ -29,6 +29,8 @@ export const useSystemStore = create(persist(
         autoAdvance: true,   // авто-переход к след. заданию после верного ответа; false = листать тапом
         vibration: true,     // тактильный отклик нашей экранной клавиатуры (по умолчанию вкл)
         vibrationStrength: "mid", // сила (длительность) вибрации: low | mid | high
+        kbdAssist: true,     // экранная клава: незаметно расширять зону тапа ОЖИДАЕМОЙ след. буквы (анти-опечатка). Вкл у всех; тумблер — только админу
+        kbdAssistZones: false, // отладка (только админ): подсвечивать на клавиатуре зону тапа следующей буквы
         pushEnabled: false,    // включены ли пуш-напоминания (намерение юзера; сама подписка — в браузере)
         autoHideNav: true,     // авто-скрытие панелей навигации на смартфоне (через бездействие → за край, остаётся грип)
         // Задания «на слух» выключены ЛОКАЛЬНО (только это устройство). null = следовать аккаунту
@@ -67,6 +69,8 @@ export const useSystemStore = create(persist(
         setAutoAdvance: (v) => set(produce((state) => { state.autoAdvance = !!v; })),
         setVibration: (v) => set(produce((state) => { state.vibration = !!v; })),
         setVibrationStrength: (v) => set(produce((state) => { state.vibrationStrength = VIBE_MS[v] ? v : "mid"; })),
+        setKbdAssist: (v) => set(produce((state) => { state.kbdAssist = !!v; })),
+        setKbdAssistZones: (v) => set(produce((state) => { state.kbdAssistZones = !!v; })),
         setPushEnabled: (v) => set(produce((state) => { state.pushEnabled = !!v; })),
         setAutoHideNav: (v) => set(produce((state) => { state.autoHideNav = !!v; })),
         // v: null (следовать аккаунту) | true (выкл на этом устройстве) | false (вкл на этом устройстве)
@@ -82,6 +86,7 @@ export const useSystemStore = create(persist(
             showArticles: state.showArticles, showVerbAa: state.showVerbAa,
             soundOn: state.soundOn, soundVolume: state.soundVolume, autoAdvance: state.autoAdvance,
             vibration: state.vibration, vibrationStrength: state.vibrationStrength,
+            kbdAssist: state.kbdAssist, kbdAssistZones: state.kbdAssistZones,
             pushEnabled: state.pushEnabled, listenOffLocal: state.listenOffLocal,
             autoHideNav: state.autoHideNav,
         }),

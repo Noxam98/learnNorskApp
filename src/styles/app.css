@@ -376,6 +376,11 @@
 }
 .kbd__pop .ic { width: 26px; height: 26px; }   /* иконка ⌫ в поп-апе крупнее */
 .kbd__pop--go { background: var(--game-correct); }   /* поп-ап ✓ — другого цвета (зелёный), не как буквы (accent) */
+/* отладка (только админ): подсветка фактической зоны тапа ожидаемой буквы (= клавиша + ASSIST_PX) */
+.kbd__zone {
+    position: absolute; pointer-events: none; z-index: 7; border-radius: var(--r-md);
+    border: 2px dashed var(--game-accent); background: rgba(98, 132, 232, .14);
+}
 @keyframes kpop { from { opacity: 0; transform: translateX(-50%) translateY(6px) scale(.8); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
 
 /* Прибавка прогресса на финале сессии: разово вырастает слева, затем ПОСТОЯННО мерцает со свечением */

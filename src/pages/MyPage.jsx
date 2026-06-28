@@ -61,6 +61,8 @@ const MyPage = () => {
     const vibrationStrength = useSystemStore((state) => state.vibrationStrength);
     const pushEnabled = useSystemStore((state) => state.pushEnabled);
     const autoHideNav = useSystemStore((state) => state.autoHideNav);
+    const kbdAssist = useSystemStore((state) => state.kbdAssist);
+    const kbdAssistZones = useSystemStore((state) => state.kbdAssistZones);
     const ah = AH[currentLanguage] || AH.en;
     const isPhone = useIsMobile();
     const listenOffLocal = useSystemStore((state) => state.listenOffLocal);
@@ -322,6 +324,20 @@ const MyPage = () => {
                             <span className="setrow__meta"><span className="setrow__t">{t.notifications}</span><span className="setrow__d">{t.notificationsDesc}</span></span>
                             <span className={`toggle${pushEnabled ? " is-on" : ""}`} style={pushBusy ? { opacity: 0.5, pointerEvents: "none" } : undefined} onClick={togglePush} />
                         </div>
+                        {/* Помощь при наборе (анти-опечатка): расширение зоны тапа ожидаемой буквы — для всех юзеров */}
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="target" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{t.kbdAssist}</span><span className="setrow__d">{t.kbdAssistDesc}</span></span>
+                            <span className={`toggle${kbdAssist ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setKbdAssist(!kbdAssist)} />
+                        </div>
+                        {/* Только админ: отладочная подсветка зоны (текст не i18n — служебный тумблер) */}
+                        {isAdmin && (
+                            <div className="setrow">
+                                <span className="setrow__ic"><Icon n="square" sm /></span>
+                                <span className="setrow__meta"><span className="setrow__t">Подсветка зоны след. буквы</span><span className="setrow__d">Отладка: показывать на клавиатуре фактическую зону тапа следующей буквы</span></span>
+                                <span className={`toggle${kbdAssistZones ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setKbdAssistZones(!kbdAssistZones)} />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

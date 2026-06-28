@@ -71,6 +71,7 @@ export const lv = {
         modLbl: "Moderācija",
         statsLbl: "Statistika",
         vibration: "Vibrācija", vibrationDesc: "Tastatūras vibroatbilde spēlēs",
+        kbdAssist: "Rakstīšanas palīgs", kbdAssistDesc: "Neuzkrītoši palielina gaidāmā burta pieskāriena zonu — mazāk kļūdu",
         notifications: "Atgādinājumi", notificationsDesc: "Paziņojums, ja 13 stundas bez prakses",
         vibrationStrength: "Vibrācijas stiprums", vibrationStrengthDesc: "Impulsa ilgums", vibeLow: "Viegla", vibeMid: "Vidēja", vibeHigh: "Spēcīga",
         noAccount: "Nav konta?",

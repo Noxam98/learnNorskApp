@@ -57,6 +57,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     }, [status]); // eslint-disable-line
 
     const canType = status === "ASKING" || status === "INCORRECT"; // в INCORRECT — повтор после показа ответа
+    const assistKey = targetChars[typed.length] || null;   // ожидаемая по порядку буква → расширить её зону тапа
 
     // дебаунс submit: на новом слове блокируем отправку на 250мс (анти-фантомный Enter с прошлого задания)
     useEffect(() => {
@@ -104,7 +105,7 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     {/* QWERTY-клавиатура (режим «сборка»: активны только буквы слова, бейдж-счётчик повторов) */}
                     {canType && (
                         <GameKeyboard
-                            lang={aLang} remainingOf={remainingOf} needed={needed} extras={extras}
+                            lang={aLang} remainingOf={remainingOf} needed={needed} extras={extras} assistKey={assistKey}
                             canSubmit canBackspace={typed.length > 0}
                             onType={onType} onBackspace={() => setTyped((t) => t.slice(0, -1))} onSubmit={() => submit()}
                             onDunno={dontKnow} dunnoLabel={DUNNO[currentLanguage]} showDunno={status === "ASKING"} />

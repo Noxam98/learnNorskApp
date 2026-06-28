@@ -71,6 +71,7 @@ export const ar = {
         modLbl: "المراجعة",
         statsLbl: "الإحصائيات",
         vibration: "الاهتزاز", vibrationDesc: "استجابة لمسية على لوحة مفاتيح اللعبة",
+        kbdAssist: "مساعدة الكتابة", kbdAssistDesc: "توسيع منطقة لمس الحرف المتوقع دون أن يُلاحَظ — أخطاء طباعية أقل",
         notifications: "التذكيرات", notificationsDesc: "إشعار إذا مرّت 13 ساعة دون تدريب",
         vibrationStrength: "قوة الاهتزاز", vibrationStrengthDesc: "مدة النبضة", vibeLow: "خفيف", vibeMid: "متوسط", vibeHigh: "قوي",
         noAccount: "ليس لديك حساب؟",
