@@ -14,10 +14,17 @@ vi.mock("../tools/api.js", () => ({
         learningStats: vi.fn(() => Promise.resolve({ due: 0, byStatus: {} })),
         learningGate: vi.fn(() => Promise.resolve({ open: false })),
         getPoolDistractors: vi.fn(() => Promise.resolve(null)),
+        learningSkip: vi.fn(() => Promise.resolve({ ok: true })),
+        learningReport: vi.fn(() => Promise.resolve({ ok: true })),
+        learningStatus: vi.fn(() => Promise.resolve({ ok: true })),
+        learningNextCards: vi.fn(() => Promise.resolve({ cards: [] })),
     },
 }));
 
 import { useLearningSession } from "./useLearningSession.js";
+import api from "../tools/api.js";
+
+const card = (pid) => ({ pool_id: pid, mode: "study", step: "card", direction: null, no: `w${pid}`, translate: { ru: [`п${pid}`] } });
 
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
@@ -47,5 +54,28 @@ describe("useLearningSession", () => {
         }));
         await act(async () => { result.current.onGameFinish({ correct: 1, total: 1 }, false, "choice"); });
         await waitFor(() => expect(result.current.phase).toBe("summary"));
+    });
+
+    it("карточку убрали кнопкой → догружается замена (добор до нормы), мгновенный переход", async () => {
+        take.mockResolvedValue({ elements: [card(1), card(2)] });   // 2 карточки в очереди
+        api.learningNextCards.mockResolvedValue({ cards: [card(9)] });
+        const { result } = renderHook(() => useLearningSession({ words: [], system: true, lang: "ru", newPerSession: 3, onClose: () => {} }));
+        await waitFor(() => expect(result.current.phase).toBe("play"));
+        // «не актуально» по первой карточке: не в зачёт → добор (дефицит 3-0-1=2), есть next → idx=1 сразу
+        await act(async () => { await result.current.skipCurrent(); });
+        expect(api.learningSkip).toHaveBeenCalledWith(1);
+        await waitFor(() => expect(api.learningNextCards).toHaveBeenCalled());
+        await waitFor(() => expect(result.current.elements.length).toBeGreaterThan(2));  // догрузилось в конец
+        expect(result.current.idx).toBe(1);
+    });
+
+    it("принятая карточка (тык) НЕ добирается — норма считается по принятым", async () => {
+        take.mockResolvedValue({ elements: [card(1)] });            // одна карточка
+        const { result } = renderHook(() => useLearningSession({ words: [], system: true, lang: "ru", newPerSession: 5, onClose: () => {} }));
+        await waitFor(() => expect(result.current.phase).toBe("play"));
+        // приняли тыком (isStudy) — добор НЕ дёргаем; очередь кончилась → summary
+        await act(async () => { result.current.onGameFinish({ total: 1, correct: 1 }, true); });
+        await waitFor(() => expect(result.current.phase).toBe("summary"));
+        expect(api.learningNextCards).not.toHaveBeenCalled();
     });
 });

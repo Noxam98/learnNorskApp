@@ -345,6 +345,11 @@
 .study-root .session-pills { display: flex; gap: var(--sp-2); flex-wrap: wrap; justify-content: center; }
 .study-root .session-pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: var(--r-full); background: var(--game-surface); border: 1px solid var(--game-border); color: var(--game-ink); font-weight: 700; font-size: var(--fs-13); }
 .study-root .session-pill .dot { width: 8px; height: 8px; border-radius: 50%; }
+/* добор следующей карточки в «живой» сессии — короткий спиннер поверх игрового слоя (z=90) */
+.session-topup { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 24px); transform: translateX(-50%);
+    z-index: 95; display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-full);
+    background: var(--game-surface); border: 1px solid var(--game-border); color: var(--game-ink-2); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+.session-topup .ln-spin { width: 18px; height: 18px; }
 .study-root .session-btn {
   display: inline-flex; align-items: center; gap: var(--sp-2); padding: 16px 32px; border-radius: var(--r-lg);
   background: var(--game-accent); color: #1a1208; font-weight: 800; font-size: var(--fs-16); border: none; cursor: pointer;

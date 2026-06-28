@@ -45,9 +45,12 @@ const toElements = (list, lang) => (list || [])
         gw: toGameWord(e, lang),
     }));
 
-export function useLearningSession({ words = [], system = false, setId = null, lang = "ru", onClose }) {
+export function useLearningSession({ words = [], system = false, setId = null, lang = "ru", newPerSession = 6, onClose }) {
     // Системный путь — когда явно сказано system или набор не передан.
     const isSystem = system || !words?.length;
+    // Норма новых слов за сессию (настройка профиля): СКОЛЬКО карточек нужно ПРИНЯТЬ (тык в карточку).
+    // Кнопки («уже знаю»/«не актуально»/«ошибка») карточку не засчитывают — взамен догружаем новую.
+    const target = Math.min(10, Math.max(1, newPerSession || 6));
 
     const [phase, setPhase] = useState(isSystem ? "load" : "play"); // load | play | summary | empty
     const [round, setRound] = useState(0);   // ключ перезапуска всей сессии
@@ -70,6 +73,10 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     const [after, setAfter] = useState(null); // свежая статистика после сессии
     const [gate, setGate] = useState(null);   // состояние ворот экзамена (для итога системной сессии)
     const [busy, setBusy] = useState(false);
+    // «Живая» сессия: добор карточек до нормы принятых (target).
+    const [acceptedNew, setAcceptedNew] = useState(0);   // принято карточек (тык-в-карточку) за сессию
+    const [poolDry, setPoolDry] = useState(false);       // пул новых исчерпан / ворота закрыты → больше не добираем
+    const [loadingNext, setLoadingNext] = useState(false); // ждём догрузку следующей карточки (только когда текущая — последняя)
 
     // Подтянуть системную программу с бэка.
     const loadProgram = async () => {
@@ -86,7 +93,9 @@ export function useLearningSession({ words = [], system = false, setId = null, l
                 await Promise.all(els
                     .filter((e) => e.mode === "choice" && !(e.gw?.options?.length || e.gw?.distractors?.length))
                     .map((e) => api.getPoolDistractors(e.gw?.pool_id, { n: 3, mode: e.dir, lang }).catch(() => null)));
-                setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setHist([]); setGraduated(0); setProtectedNow(0); setProtectedTypo(0); setAfter(null); setPhase("play");
+                setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setHist([]); setGraduated(0); setProtectedNow(0); setProtectedTypo(0); setAfter(null);
+                setAcceptedNew(0); setPoolDry(false); setLoadingNext(false);
+                setPhase("play");
             }
             else { setPhase("empty"); }
         } catch {
@@ -131,7 +140,8 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     // Системный путь: переходим к следующему элементу либо к итогу. Легаси: сразу итог.
     const onGameFinish = (stats, isStudy = false, gmode = null) => {
         const got = stats || { total: 0, correct: 0 };
-        if (isStudy) setCards((c) => c + (got.total || 1));
+        // тык-в-карточку = ПРИНЯЛ слово в учёбу → засчитываем в норму (target). Кнопки не сюда.
+        if (isStudy) { setCards((c) => c + (got.total || 1)); setAcceptedNew((a) => a + (got.total || 1)); }
         else setRes((p) => ({ correct: p.correct + (got.correct || 0), total: p.total + (got.total || 0) }));
         // «выпущено за сессию»: ввод (штатная клава) с ПЕРВОЙ попытки = слово прошло рампу и больше не придёт
         if (!isStudy && gmode === "input" && (got.correct || 0) > 0) setGraduated((g) => g + (got.correct || 0));
@@ -151,39 +161,52 @@ export function useLearningSession({ words = [], system = false, setId = null, l
         }
     };
 
-    // «Не учить» → «Ошибка в слове»: жалоба на текущее слово (мусор/некорректно) → убрать у себя
-    // + на модерацию, и пропустить элемент.
-    const reportCurrent = async () => {
-        const gw = elements[idx]?.gw;
+    // ── «Живая» сессия: карточки, убранные кнопкой, не в зачёт нормы → догружаем замену ──────────
+    const cardsAfter = (els, i) => els.slice(i + 1).filter((e) => e.step === "card").length;  // карточек ПОСЛЕ текущей
+    const queuedCardPids = (els) => els.filter((e) => e.step === "card").map((e) => e.gw?.pool_id ?? e.gw?.id).filter((x) => x != null);
+    // Догрузить deficit новых карточек в КОНЕЦ очереди. Возвращает число реально добавленных.
+    const topUp = async (deficit) => {
+        if (deficit <= 0 || poolDry) return 0;
+        let r;
+        try { r = await api.learningNextCards(deficit, queuedCardPids(elements)); }
+        catch { return 0; }
+        if (r?.blocked) { setPoolDry(true); return 0; }
+        const fresh = toElements(r?.cards || [], lang);
+        if (!fresh.length) { setPoolDry(true); return 0; }   // пул новых исчерпан → больше не дёргаем
+        setElements((els) => [...els, ...fresh]);
+        return fresh.length;
+    };
+    // Общий путь кнопок «убрать» карточку (know/skip/report): действие в фоне, карточка не в зачёт,
+    // при дефиците нормы — добор. mark — отметка полосы прогресса ("ok" у «уже знаю», иначе "skip").
+    const dismissAndNext = async (doAction, mark) => {
+        const el = elements[idx];
+        const gw = el?.gw;
         if (!gw) return;
-        const pid = gw.pool_id ?? gw.id;
-        try { await api.learningReport(pid); } catch { /* офлайн — не критично */ }
-        // без тоста — просто убираем слово и идём дальше
-        setHist((h) => [...h, "skip"]);
-        if (idx + 1 < elements.length) setIdx((n) => n + 1);
-        else showSummary();
+        doAction(gw.pool_id ?? gw.id).catch(() => { /* офлайн — не критично */ });
+        setHist((h) => [...h, mark]);
+        if (!isSystem) { showSummary(); return; }                 // легаси-путь — как раньше
+        // добор — только для карточек-знакомств; упражнения просто пропускаем (deficit=0)
+        const deficit = (el.step === "card") ? (target - acceptedNew - cardsAfter(elements, idx)) : 0;
+        if (idx + 1 < elements.length) {
+            setIdx((n) => n + 1);                                 // следующий элемент уже готов — мгновенно
+            if (deficit > 0) topUp(deficit);                      // фоном дольёт карточки в конец
+        } else if (deficit > 0 && !poolDry) {
+            setLoadingNext(true);                                 // текущая — последняя: ждём замену
+            const added = await topUp(deficit);
+            setLoadingNext(false);
+            if (added > 0) setIdx((n) => n + 1);
+            else showSummary();
+        } else {
+            showSummary();
+        }
     };
 
-    // «Не учить» → «Не актуально»: убрать слово ТОЛЬКО из своей Учёбы (без жалобы/модерации), и дальше.
-    const skipCurrent = async () => {
-        const gw = elements[idx]?.gw;
-        if (!gw) return;
-        const pid = gw.pool_id ?? gw.id;
-        try { await api.learningSkip(pid); } catch { /* офлайн — не критично */ }
-        setHist((h) => [...h, "skip"]);
-        if (idx + 1 < elements.length) setIdx((n) => n + 1);
-        else showSummary();
-    };
-
-    // «Уже знаю» из карточки: слово сразу в Выучено (mastered), без тоста, и идём дальше.
-    const knowCurrent = async () => {
-        const gw = elements[idx]?.gw;
-        if (!gw) return;
-        try { await api.learningStatus(gw.pool_id ?? gw.id, "known"); } catch { /* офлайн — не критично */ }
-        setHist((h) => [...h, "ok"]);
-        if (idx + 1 < elements.length) setIdx((n) => n + 1);
-        else showSummary();
-    };
+    // «Не учить» → «Ошибка в слове»: жалоба (мусор/некорректно) → убрать у себя + на модерацию.
+    const reportCurrent = () => dismissAndNext((pid) => api.learningReport(pid), "skip");
+    // «Не учить» → «Не актуально»: убрать слово ТОЛЬКО из своей Учёбы (без модерации).
+    const skipCurrent = () => dismissAndNext((pid) => api.learningSkip(pid), "skip");
+    // «Уже знаю»: слово сразу в Выучено (mastered). Карточка не в зачёт нормы.
+    const knowCurrent = () => dismissAndNext((pid) => api.learningStatus(pid, "known"), "ok");
 
     // Запустить ещё одну сессию заново.
     const again = async () => {
@@ -225,7 +248,7 @@ export function useLearningSession({ words = [], system = false, setId = null, l
 
     return {
         isSystem, phase, round, isDesktop, elements, idx, legacyGw,
-        res, cards, hist, graduated, protectedNow, protectedTypo, after, gate, busy,
+        res, cards, hist, graduated, protectedNow, protectedTypo, after, gate, busy, loadingNext,
         onResult, recordIntro, onGameFinish, reportCurrent, skipCurrent, knowCurrent, again,
     };
 }

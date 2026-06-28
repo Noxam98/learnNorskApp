@@ -40,6 +40,11 @@ const filterChosenWords = (dictList) =>
 const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
 // words/onExit передаёт «Учёба» (переиспользует игру). Карточки — пассивный режим, в SRS не пишет.
+/**
+ * @param {{ setGameState?: any, mode?: string, sound?: boolean, words?: any[], onExit?: any,
+ *   onFinish?: any, onReport?: (() => void) | null, onSkip?: (() => void) | null,
+ *   onKnow?: (() => void) | null, stepNo?: number, stepTotal?: number, segs?: any, rank?: number }} props
+ */
 export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onExit, onFinish, onReport = null, onSkip = null, onKnow = null, stepNo = 0, stepTotal = 0, segs: segsOverride = null, rank = 0 }) => {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const showArticles = useSystemStore((s) => s.showArticles);
@@ -207,13 +212,13 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                                         transition={{ duration: 0.16, ease: [0.2, 0.7, 0.2, 1] }}>
                                                         {onSkip && (
                                                             <button type="button" role="menuitem" className="card-skip__item"
-                                                                onClick={() => { setWhyOpen(false); onSkip(); }}>
+                                                                onClick={() => { setWhyOpen(false); onSkip?.(); }}>
                                                                 <Icon n="eye-off" sm /> {sk.notRelevant}
                                                             </button>
                                                         )}
                                                         {onReport && (
                                                             <button type="button" role="menuitem" className="card-skip__item card-skip__item--warn"
-                                                                onClick={() => { setWhyOpen(false); onReport(); }}>
+                                                                onClick={() => { setWhyOpen(false); onReport?.(); }}>
                                                                 <Icon n="alert" sm /> {sk.wordError}
                                                             </button>
                                                         )}

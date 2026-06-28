@@ -35,13 +35,15 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     const acctListenOff = useAuthStore((s) => !!s.user?.gamePrefs?.listenOff);
     const listenDisabled = listenOffLocal != null ? listenOffLocal : acctListenOff;
     const sessionLoading = useSessionStore((s) => s.loading); // следующая сессия ещё грузится фоном
+    // Норма новых слов за сессию (профиль): сколько карточек нужно ПРИНЯТЬ; кнопки добирают замену.
+    const newPerSession = useAuthStore((s) => s.user?.gamePrefs?.newPerSession) || 6;
 
     // Вся логика сессии (состояние + SRS + переходы) — в контроллере useLearningSession.
     const {
         isSystem, phase, round, isDesktop, elements, idx, legacyGw,
-        res, cards, hist, graduated, protectedNow, protectedTypo, after, gate, busy,
+        res, cards, hist, graduated, protectedNow, protectedTypo, after, gate, busy, loadingNext,
         onResult, recordIntro, onGameFinish, reportCurrent, skipCurrent, knowCurrent, again,
-    } = useLearningSession({ words, system, setId, lang, onClose });
+    } = useLearningSession({ words, system, setId, lang, newPerSession, onClose });
 
     // --- Экран загрузки системной программы ---
     if (phase === "load") {
@@ -178,30 +180,38 @@ export default function LearningSession({ words = [], mode = "choice", system = 
             rank: stageRank(segCell(e)),
         }));
         return (
-            <Game
-                key={`${round}-${idx}`}
-                words={[el.gw]}
-                mode={el.dir}
-                sound={soundOn}
-                stepNo={idx + 1}
-                stepTotal={elements.length}
-                segs={sessionSegs}
-                rank={stageRank(segCell(el))}   // стадия рампы слова → высота звуков «вход»/«верно»
-                listen={el.mode === "choice" && el.dir === "no2int" && !listenDisabled}   // стадия choice_no2int → «на слух»
-                listenMuted={el.mode === "choice" && el.dir === "no2int" && listenDisabled}   // та же стадия, но аудирование выкл → нудж «вернуть»
-                repeat={el.repeat}
-                baseCorrect={res.correct}
-                baseWrong={res.total - res.correct}
-                // записываем по АВТОРИТЕТНОМУ шагу системы (el.mode/el.dir), а не по тому, что
-                // сообщит игра — иначе клетка рампы могла бы не совпасть и слово застряло бы
-                onResult={isStudy ? undefined : (w, ok) => onResult(w, ok, el.mode, el.dir)}
-                onFinish={isStudy ? (s) => { recordIntro(el.gw); onGameFinish(s, true); } : (s) => onGameFinish(s, false, el.mode)}
-                onReport={reportCurrent}
-                onSkip={skipCurrent}
-                onKnow={knowCurrent}
-                onExit={() => onClose?.(true)}
-                setGameState={() => onClose?.(true)}
-            />
+            <>
+                <Game
+                    key={`${round}-${idx}`}
+                    words={[el.gw]}
+                    mode={el.dir}
+                    sound={soundOn}
+                    stepNo={idx + 1}
+                    stepTotal={elements.length}
+                    segs={sessionSegs}
+                    rank={stageRank(segCell(el))}   // стадия рампы слова → высота звуков «вход»/«верно»
+                    listen={el.mode === "choice" && el.dir === "no2int" && !listenDisabled}   // стадия choice_no2int → «на слух»
+                    listenMuted={el.mode === "choice" && el.dir === "no2int" && listenDisabled}   // та же стадия, но аудирование выкл → нудж «вернуть»
+                    repeat={el.repeat}
+                    baseCorrect={res.correct}
+                    baseWrong={res.total - res.correct}
+                    // записываем по АВТОРИТЕТНОМУ шагу системы (el.mode/el.dir), а не по тому, что
+                    // сообщит игра — иначе клетка рампы могла бы не совпасть и слово застряло бы
+                    onResult={isStudy ? undefined : (w, ok) => onResult(w, ok, el.mode, el.dir)}
+                    onFinish={isStudy ? (s) => { recordIntro(el.gw); onGameFinish(s, true); } : (s) => onGameFinish(s, false, el.mode)}
+                    onReport={reportCurrent}
+                    onSkip={skipCurrent}
+                    onKnow={knowCurrent}
+                    onExit={() => onClose?.(true)}
+                    setGameState={() => onClose?.(true)}
+                />
+                {/* добор следующей карточки (текущая была последней) — короткий лоадер */}
+                {loadingNext && (
+                    <div className="session-topup" aria-live="polite">
+                        <span className="ln-spin" aria-hidden="true" />
+                    </div>
+                )}
+            </>
         );
     }
 
