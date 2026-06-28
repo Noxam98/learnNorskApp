@@ -129,12 +129,12 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     {/* отдельная кнопка запуска сессии набора — слева от троеточия */}
                     {allLearned ? (
                         <button className="btn btn--sm btn--accent" onClick={() => setConfirmReset(true)} title={ll.resetRamp}>
-                            <Icon n="repeat" sm /> {ll.resetRamp}
+                            <Icon n="repeat" sm /> <span className="hide-mobile">{ll.resetRamp}</span>
                         </button>
                     ) : (
                         <button className="btn btn--sm btn--accent" onClick={studySet} disabled={!canStudy}
                             title={canStudy ? ll.studySet : ll.needUnlearned}>
-                            <Icon n="play" sm /> {ll.studySet}
+                            <Icon n="play" sm /> <span className="hide-mobile">{ll.studySet}</span>
                         </button>
                     )}
                     {/* остальные действия набора — под троеточием */}
