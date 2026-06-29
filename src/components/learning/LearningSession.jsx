@@ -18,12 +18,13 @@ import StudyGame from "../gameComponents/StudyGame.jsx";
 import BuildGame from "../gameComponents/BuildGame.jsx";
 import ClozeGame from "../gameComponents/ClozeGame.jsx";
 import OrderGame from "../gameComponents/OrderGame.jsx";
+import CellsGame from "../gameComponents/CellsGame.jsx";
 import { stageRank } from "../gameComponents/gameShared.jsx";
 import { T } from "./LearningSession.i18n.js";
 import { useLearningSession, LEGACY_DIR } from "./useLearningSession.js";
 
 // mode элемента/сессии → игровой компонент.
-const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: StudyGame, study: StudyGame, cloze: ClozeGame, order: OrderGame };
+const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: StudyGame, study: StudyGame, cloze: ClozeGame, order: OrderGame, cells: CellsGame };
 
 const STAGE = { position: "fixed", inset: 0, zIndex: 95, background: "var(--game-bg)", color: "var(--game-ink)", display: "flex", flexDirection: "column", overflow: "auto" };
 const chip = { display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, border: "1px solid var(--game-border)", background: "var(--game-surface)", fontWeight: 700, fontSize: "var(--fs-14)" };

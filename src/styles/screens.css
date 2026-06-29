@@ -530,3 +530,22 @@
 @media (max-width: 640px) {
   .play--order .otile { font-size: var(--fs-18); padding: 9px 13px; }
 }
+
+/* ── Игра «Напечатай фразу» (буквенные клетки, сгруппированы по словам) ── */
+.play--cells .cells-line { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; align-items: flex-end; margin: var(--sp-5) 0 var(--sp-2); min-height: 52px; }
+.play--cells .cells-word { display: inline-flex; gap: 5px; }
+.play--cells .cell {
+  width: 30px; height: 40px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: var(--fs-22); font-weight: 700; color: var(--game-ink);
+  border-bottom: 3px solid var(--game-border); border-radius: 4px 4px 0 0;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.play--cells .cell--filled { border-bottom-color: var(--game-accent); }
+.play--cells .cell--caret { border-bottom-color: var(--game-accent); background: color-mix(in srgb, var(--game-accent) 12%, transparent); }
+.play--cells .cell--tpl { color: var(--game-ink-2); opacity: .55; }
+.play--cells .cell--ok { color: var(--game-correct); border-bottom-color: var(--game-correct); }
+.play--cells .cell--bad { color: var(--game-incorrect); border-bottom-color: var(--game-incorrect); }
+@media (max-width: 640px) {
+  .play--cells .cell { width: 26px; height: 36px; font-size: var(--fs-20); }
+  .play--cells .cells-line { gap: 12px; }
+}
