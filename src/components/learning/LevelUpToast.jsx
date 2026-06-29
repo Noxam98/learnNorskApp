@@ -1,6 +1,5 @@
 // Празднование перехода на новый уровень CEFR. Конфетти + карточка, закрывается тапом.
 import { useEffect } from "react";
-import confetti from "canvas-confetti";
 import { Icon } from "../ui/Icon.jsx";
 import { useHistoryClose } from "../../hooks/useHistoryClose.js";
 import { langGuard } from "../../interface/i18nGuard.js";
@@ -19,11 +18,14 @@ export default function LevelUpToast({ lang = "ru", to = "A2", onClose }) {
     const t = T[lang] || T.ru;
     useHistoryClose(true, () => onClose?.()); // монтируется только при показе → системная «Назад»/свайп закрывает
     useEffect(() => {
-        try {
+        // canvas-confetti грузим лениво — только в момент празднования (редкое событие)
+        let tm, cancelled = false;
+        import("canvas-confetti").then(({ default: confetti }) => {
+            if (cancelled) return;
             confetti({ particleCount: 120, spread: 75, origin: { y: 0.35 }, zIndex: 99999 });
-            const tm = setTimeout(() => confetti({ particleCount: 60, spread: 100, origin: { y: 0.3 }, zIndex: 99999 }), 250);
-            return () => clearTimeout(tm);
-        } catch { /* */ }
+            tm = setTimeout(() => confetti({ particleCount: 60, spread: 100, origin: { y: 0.3 }, zIndex: 99999 }), 250);
+        }).catch(() => { /* */ });
+        return () => { cancelled = true; clearTimeout(tm); };
     }, []);
     return (
         <div className="study-root" onClick={() => onClose?.()}

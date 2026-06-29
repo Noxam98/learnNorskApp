@@ -24,7 +24,7 @@ export function usePopup(ref, open, setOpen) {
         const onResize = () => setOpen(false);
         document.addEventListener("mousedown", onDoc);
         document.addEventListener("touchstart", onDoc);
-        window.addEventListener("scroll", onScroll, true);
+        window.addEventListener("scroll", onScroll, { passive: true, capture: true });
         window.addEventListener("resize", onResize);
         return () => {
             document.removeEventListener("mousedown", onDoc);

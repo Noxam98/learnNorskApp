@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
-import confetti from "canvas-confetti";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { useAuthStore } from "../store/AuthStore.jsx";
@@ -40,14 +39,17 @@ function choiceStyle(kind) {
 }
 
 // Праздничный салют для победителя: центральный залп + боковые «пушки» ~1.2 сек.
+// canvas-confetti грузим лениво — только когда реально салютуем.
 function fireConfetti() {
-    confetti({ particleCount: 150, spread: 90, startVelocity: 45, origin: { y: 0.35 } });
-    const end = Date.now() + 1200;
-    (function frame() {
-        confetti({ particleCount: 6, angle: 60, spread: 60, origin: { x: 0 } });
-        confetti({ particleCount: 6, angle: 120, spread: 60, origin: { x: 1 } });
-        if (Date.now() < end) requestAnimationFrame(frame);
-    })();
+    import("canvas-confetti").then(({ default: confetti }) => {
+        confetti({ particleCount: 150, spread: 90, startVelocity: 45, origin: { y: 0.35 } });
+        const end = Date.now() + 1200;
+        (function frame() {
+            confetti({ particleCount: 6, angle: 60, spread: 60, origin: { x: 0 } });
+            confetti({ particleCount: 6, angle: 120, spread: 60, origin: { x: 1 } });
+            if (Date.now() < end) requestAnimationFrame(frame);
+        })();
+    }).catch(() => { /* */ });
 }
 
 // Варианты для «игровых» анимаций: стаггер-появление карточек вариантов.

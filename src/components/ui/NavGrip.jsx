@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useWindowResize } from "../../hooks/useWindowResize.js";
 
 // Грип возврата скрытой панели навигации. ТАП = показать панель; ПЕРЕТАСКИВАНИЕ = двигать грип
 // по горизонтали в пределах экрана (за край не уходит), позиция запоминается в localStorage.
@@ -37,13 +38,10 @@ export function NavGrip({ side, onShow }) {   // side: "top" | "bottom"
     };
 
     // вернуть грип в пределы экрана: при монтировании (вдруг сохранённая позиция шире нового экрана)
-    // и при ресайзе/повороте
-    useEffect(() => {
-        const onResize = () => setX((px) => (px == null ? px : clamp(px)));
-        onResize();
-        window.addEventListener("resize", onResize);
-        return () => window.removeEventListener("resize", onResize);
-    }, []);
+    // и при ресайзе/повороте (через общий resize-листенер)
+    const reclamp = () => setX((px) => (px == null ? px : clamp(px)));
+    useEffect(() => { reclamp(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    useWindowResize(reclamp);
 
     const style = x != null ? { left: x, right: "auto", transform: "none" } : undefined;
     return (

@@ -9,6 +9,7 @@ import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { NavGrip } from "../../components/ui/NavGrip.jsx";
 import { useAutoHideNav } from "../../hooks/useAutoHideNav.js";
+import { useWindowResize } from "../../hooks/useWindowResize.js";
 import { WordInfoModal } from "../../components/ui/WordInfoModal.jsx";
 import LearningSession from "../../components/learning/LearningSession.jsx";
 import PlacementScreen from "../../components/learning/PlacementScreen.jsx";
@@ -101,12 +102,9 @@ export default function LearningPage() {
     // (useMobileSetsLayout) рассчитана на освобождаемое место. На прочих вкладках панели не прячем.
     const studyNav = useAutoHideNav({ flag: "data-studynav-off", active: tab === "sets" });
     const [navH, setNavH] = useState(0);
-    useEffect(() => {
-        const measure = () => { const el = navRef.current; if (el) setNavH(el.offsetHeight || 0); };
-        measure();
-        window.addEventListener("resize", measure);
-        return () => window.removeEventListener("resize", measure);
-    }, []);
+    const measureNav = () => { const el = navRef.current; if (el) setNavH(el.offsetHeight || 0); };
+    useEffect(() => { measureNav(); }, []);
+    useWindowResize(measureNav);  // общий resize-листенер вместо собственного
 
     // openSession() без слов → системная сессия (LearningSession сам тянет программу с бэка).
     // openSession(words, mode) — легаси-путь с готовым набором (полки/«Слабые» из других вкладок).
