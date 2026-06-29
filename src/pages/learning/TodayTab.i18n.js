@@ -4,7 +4,7 @@ import { langGuard } from "../../interface/i18nGuard.js";
 export const T = langGuard({
     ru: {
         smartReview: "Smart Review · на сегодня",
-        readyA: "слов", readyB: "на сегодня",
+        readyA: "слов", readyB: "в сессии",
         reviewDesc: "Просроченные интервалы, слабые слова и немного новых — система собрала оптимальную сессию.",
         chReview: "повторить", chWeak: "слабых", chNew: "новое",
         startReview: "Заниматься", preparing: "Готовим сессию…",
@@ -46,7 +46,7 @@ export const T = langGuard({
     },
     en: {
         smartReview: "Smart Review · for today",
-        readyA: "words", readyB: "for today",
+        readyA: "words", readyB: "in the session",
         reviewDesc: "Overdue intervals, weak words and a few new ones — an optimal session.",
         chReview: "review", chWeak: "weak", chNew: "new",
         startReview: "Study", preparing: "Preparing session…",
@@ -88,7 +88,7 @@ export const T = langGuard({
     },
     ukr: {
         smartReview: "Smart Review · на сьогодні",
-        readyA: "слів", readyB: "на сьогодні",
+        readyA: "слів", readyB: "у сесії",
         reviewDesc: "Прострочені інтервали, слабкі слова й трохи нових — оптимальна сесія.",
         chReview: "повторити", chWeak: "слабких", chNew: "нове",
         startReview: "Займатися", preparing: "Готуємо сесію…",
@@ -130,7 +130,7 @@ export const T = langGuard({
     },
     pl: {
         smartReview: "Smart Review · na dziś",
-        readyA: "słów", readyB: "na dziś",
+        readyA: "słów", readyB: "w sesji",
         reviewDesc: "Zaległe interwały, słabe słowa i kilka nowych — optymalna sesja.",
         chReview: "powtórka", chWeak: "słabych", chNew: "nowe",
         startReview: "Ucz się", preparing: "Przygotowujemy sesję…",
@@ -172,7 +172,7 @@ export const T = langGuard({
     },
     lt: {
         smartReview: "Smart Review · šiandienai",
-        readyA: "žodžių", readyB: "šiandienai",
+        readyA: "žodžių", readyB: "sesijoje",
         reviewDesc: "Pradelsti intervalai, silpni žodžiai ir keli nauji — optimali sesija.",
         chReview: "kartoti", chWeak: "silpnų", chNew: "nauja",
         startReview: "Mokytis", preparing: "Ruošiame sesiją…",
@@ -214,7 +214,7 @@ export const T = langGuard({
     },
     lv: {
         smartReview: "Smart Review · šodienai",
-        readyA: "vārdi", readyB: "šodienai",
+        readyA: "vārdi", readyB: "sesijā",
         reviewDesc: "Nokavēti intervāli, vājie vārdi un nedaudz jaunu — optimāla sesija.",
         chReview: "atkārtot", chWeak: "vāji", chNew: "jauns",
         startReview: "Mācīties", preparing: "Gatavojam sesiju…",
@@ -256,7 +256,7 @@ export const T = langGuard({
     },
     ar: {
         smartReview: "مراجعة ذكية · لليوم",
-        readyA: "كلمات", readyB: "لليوم",
+        readyA: "كلمات", readyB: "في الجلسة",
         reviewDesc: "فترات متأخرة وكلمات ضعيفة وقليل من الجديدة — جلسة مثالية.",
         chReview: "مراجعة", chWeak: "ضعيفة", chNew: "جديدة",
         startReview: "ادرس", preparing: "نُحضّر الجلسة…",
