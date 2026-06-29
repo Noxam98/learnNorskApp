@@ -505,3 +505,28 @@
     .finish__grid { margin: var(--sp-5) 0; }
     .choices { margin-top: var(--sp-4); }
   }
+
+/* ── Игра «Порядок слов» (устойчивые выражения): плитки-слова. Переменные --game-* наследуются
+   от .play по DOM, поэтому правила top-level. ── */
+.play--order .order-answer {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center;
+  min-height: 58px; margin: var(--sp-4) 0 var(--sp-2); padding: 10px; border-radius: var(--r-lg);
+  border: 2px dashed var(--game-border); transition: border-color var(--dur) var(--ease);
+}
+.play--order .order-answer__ph { color: var(--game-ink-2); font-size: var(--fs-14); font-weight: 600; }
+.play--order .order-bank { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: var(--sp-3); }
+.play--order .otile {
+  font-family: inherit; font-size: var(--fs-20); font-weight: 700; color: var(--game-ink);
+  background: var(--game-surface); border: 1px solid var(--game-border); border-radius: var(--r-md);
+  padding: 10px 16px; cursor: pointer;
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.play--order .otile:hover { border-color: var(--game-accent); }
+.play--order .otile:active { transform: translateY(1px); }
+.play--order .otile--placed { background: color-mix(in srgb, var(--game-accent) 16%, var(--game-surface)); border-color: var(--game-accent); }
+.play--order .otile:disabled { cursor: default; }
+.play--order[data-state="correct"] .order-answer { border-color: var(--game-correct); border-style: solid; }
+.play--order[data-state="incorrect"] .order-answer { border-color: var(--game-incorrect); border-style: solid; }
+@media (max-width: 640px) {
+  .play--order .otile { font-size: var(--fs-18); padding: 9px 13px; }
+}
