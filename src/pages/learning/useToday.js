@@ -44,16 +44,20 @@ export function useToday({ reloadKey, refresh, openSession }) {
     // пользователь (новых не больше NEW_PER_SESSION). Пока сессия не прогрелась — оценка из stats.
     const sess = useSessionStore((s) => s.next);
     const sessComp = (sess?.composition && sess.composition.total > 0) ? sess.composition : null;
+    // Состав показываем ТОЛЬКО когда реальная сессия прогрелась (sessReady) — без оценки из пула.
+    const sessReady = !!sessComp;
     const composition = useMemo(() => sessComp ? {
         review: sessComp.review || 0,
         progress: sessComp.progress || 0,
         weak: sessComp.weak || 0,
         fresh: sessComp.fresh || 0,
+        phrases: sessComp.phrases || 0,   // устойчивые выражения в сессии (показываем, если есть)
     } : {
         review: by.repeat || 0,        // Повторение (выучено + подошёл срок)
         progress: by.in_progress || 0, // В процессе (начато, ещё не выучено)
         weak: by.weak || 0,            // Слабые
         fresh: by.new || 0,            // Новые
+        phrases: 0,                    // фразы не оцениваем из пула — только из реальной сессии
     }, [sessComp, by.repeat, by.in_progress, by.weak, by.new]);
     // Сколько реально будет в следующей сессии (для крупной цифры на кнопке). До прогрева — оценка из stats.
     const learnable = sessComp ? sessComp.total
@@ -101,7 +105,7 @@ export function useToday({ reloadKey, refresh, openSession }) {
     return {
         stats, gate, loading, error, lbOpen, setLbOpen, focusSaving, sessionLoading,
         gateOpen, gatePack, gateThreshold, gateLeft, by, total, placed,
-        composition, learnable, streak, isEmpty,
+        composition, learnable, streak, isEmpty, sessReady,
         curLevel, nextLevel, masteredAll, nextTarget, toNext, masteryFrac, ringNum, ringDen,
         focusTopics, toggleFocus, runReview,
     };

@@ -6,6 +6,7 @@
   --st-master:  #3C7A4E;
   --st-weak:    #B23A2E;
   --st-known:   #6E6A9E;   /* «Знакомые» — знал до приложения; не «Выучено» */
+  --st-phrase:  #8b7cf6;   /* устойчивые выражения (фразы) в составе сессии */
 }
 .study-root .nav__link .navic { width: 18px; height: 18px; }
 .study-root .seg {
@@ -89,6 +90,7 @@
 .study-root .review-cta__eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: var(--fs-12); font-weight: 700; letter-spacing: var(--ls-wider); text-transform: uppercase; color: rgba(255,255,255,.82); position: relative; }
 .study-root .review-cta__big { font-size: var(--fs-44); font-weight: 800; letter-spacing: var(--ls-tight); line-height: 1.02; position: relative; }
 .study-root .review-cta__big b { color: var(--game-accent); }
+.study-root .review-cta__big--loading { display: inline-flex; align-items: center; gap: 10px; font-size: var(--fs-22); font-weight: 700; opacity: .8; }
 .study-root .review-cta__desc { font-size: var(--fs-15); color: rgba(255,255,255,.82); position: relative; max-width: 40ch; line-height: var(--lh-normal); }
 .study-root .review-cta__btn {
   align-self: flex-start; position: relative;

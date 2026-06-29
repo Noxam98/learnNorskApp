@@ -20,7 +20,7 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
     const {
         stats, loading, error, lbOpen, setLbOpen, focusSaving, sessionLoading,
         gateOpen, gatePack, gateThreshold, gateLeft, by, placed,
-        composition, learnable, streak, isEmpty,
+        composition, learnable, streak, isEmpty, sessReady,
         nextLevel, toNext, masteryFrac, ringNum, ringDen,
         focusTopics, toggleFocus, runReview,
     } = useToday({ reloadKey, refresh, openSession });
@@ -188,15 +188,24 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
                             <div className="review-cta">
                                 <span className="review-cta__halo" /><span className="review-cta__halo2" />
                                 <span className="review-cta__eyebrow"><Icon n="repeat" sm /> {t.smartReview}</span>
-                                <div className="review-cta__big"><b>{learnable} {pl(lang, learnable, "word")}</b> {t.readyB.split("\n").map((l, i) => <span key={i}>{i ? <br /> : null}{l}</span>)}</div>
-                                <div className="review-cta__chips">
-                                    {composition.review > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-review)" }} />{composition.review} {t.chReview}</span>}
-                                    {composition.progress > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-learn)" }} />{composition.progress} {pl(lang, composition.progress, "started")}</span>}
-                                    {composition.weak > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {pl(lang, composition.weak, "weak")}</span>}
-                                    {composition.fresh > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-new)" }} />{composition.fresh} {pl(lang, composition.fresh, "fresh")}</span>}
-                                </div>
-                                {composition.fresh > 0 && (
-                                    <div className="review-cta__note"><Icon n="info" sm /> {t.portionNote}</div>
+                                {/* Состав показываем ТОЛЬКО когда реальная сессия прогрелась (sessReady);
+                                    до этого — плейсхолдер «готовим сессию», без оценочных счётчиков из пула. */}
+                                {sessReady ? (
+                                    <>
+                                        <div className="review-cta__big"><b>{learnable} {pl(lang, learnable, "word")}</b> {t.readyB.split("\n").map((l, i) => <span key={i}>{i ? <br /> : null}{l}</span>)}</div>
+                                        <div className="review-cta__chips">
+                                            {composition.review > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-review)" }} />{composition.review} {t.chReview}</span>}
+                                            {composition.progress > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-learn)" }} />{composition.progress} {pl(lang, composition.progress, "started")}</span>}
+                                            {composition.weak > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {pl(lang, composition.weak, "weak")}</span>}
+                                            {composition.fresh > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-new)" }} />{composition.fresh} {pl(lang, composition.fresh, "fresh")}</span>}
+                                            {composition.phrases > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-phrase, #8b7cf6)" }} />{composition.phrases} {pl(lang, composition.phrases, "phrase")}</span>}
+                                        </div>
+                                        {composition.fresh > 0 && (
+                                            <div className="review-cta__note"><Icon n="info" sm /> {t.portionNote}</div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="review-cta__big review-cta__big--loading"><BtnSpinner /> {t.preparing}</div>
                                 )}
                                 <button className="review-cta__btn" onClick={runReview} disabled={sessionLoading}>
                                     {sessionLoading ? <BtnSpinner /> : <Icon n="play" />} {t.startReview}
