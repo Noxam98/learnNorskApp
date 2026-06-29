@@ -180,8 +180,8 @@ export default function WordsTab({ lang, openSession, openWord, reloadKey, refre
             {sel.size > 0 && (
                 <div className="bulkbar">
                     <span className="bulkbar__count">{tt.selected} {sel.size}</span>
-                    <button className="bulk-btn" disabled={busy} onClick={() => bulk("know")}>
-                        <Icon n="check" /> {tt.markMastered}
+                    <button className="bulk-btn" disabled={busy} onClick={() => bulk("known")}>
+                        <Icon n="check-circle" /> {tt.know}
                     </button>
                     <button className="bulk-btn" disabled={busy} onClick={() => bulk("know")}>
                         <Icon n="archive" /> {tt.toArchive}
