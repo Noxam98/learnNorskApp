@@ -212,7 +212,8 @@ export default function WordsTab({ lang, openSession, openWord, reloadKey, refre
                             selected={sel.has(w.pool_id)}
                             onToggle={() => toggleSel(w.pool_id)}
                             onOpen={() => openWord?.(w.no, null)}
-                            onKnow={() => mutate(w.pool_id, "know")}
+                            onKnow={() => mutate(w.pool_id, "known")}
+                            onArchive={() => mutate(w.pool_id, "know")}
                             onReset={() => mutate(w.pool_id, "reset")}
                             onReport={() => report(w.pool_id)}
                             primaryTr={primaryTr(w)} />
@@ -223,7 +224,7 @@ export default function WordsTab({ lang, openSession, openWord, reloadKey, refre
     );
 }
 
-function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onReset, onReport, primaryTr }) {
+function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onArchive, onReset, onReport, primaryTr }) {
     const ds = w.dstatus || w.status;   // отображаемый статус (in_progress/repeat/...)
     const showKnow = w.status !== "mastered" && w.status !== "archived" && w.status !== "known";   // по ВНУТРЕННЕМУ статусу
     // срок «когда повторять» — только у выученного/повторения (у них есть расписание повтора).
@@ -236,7 +237,7 @@ function WordRow({ w, lang, tt, t, selected, onToggle, onOpen, onKnow, onReset, 
         { key: "speak", label: tt.speak, icon: "volume", onClick: () => speakText(w.no) },
         { key: "reset", label: tt.reset, icon: "rotate", onClick: onReset },
         { key: "report", label: t.dontLearn || "Не учить", icon: "x-circle", danger: true, onClick: onReport },
-        { key: "archive", label: tt.toArchive, icon: "archive", onClick: onKnow, danger: true },
+        { key: "archive", label: tt.toArchive, icon: "archive", onClick: onArchive, danger: true },
     ];
 
     // Клик по телу карточки (не по чекбоксу/меню/«Знаю») → открыть карточку слова.
