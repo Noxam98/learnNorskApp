@@ -191,8 +191,11 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                     stepTotal={elements.length}
                     segs={sessionSegs}
                     rank={stageRank(segCell(el))}   // стадия рампы слова → высота звуков «вход»/«верно»
-                    listen={el.mode === "choice" && el.dir === "no2int" && !listenDisabled}   // стадия choice_no2int → «на слух»
-                    listenMuted={el.mode === "choice" && el.dir === "no2int" && listenDisabled}   // та же стадия, но аудирование выкл → нудж «вернуть»
+                    // стадия choice_no2int → «на слух» (текст скрыт). Фразы — ИСКЛЮЧЕНИЕ: их выбор
+                    // перевода показываем ТЕКСТОМ + озвучка (listen=false → ChoiceGame сам читает слово),
+                    // т.к. на слух длинную фразу разбирать тяжелее, чем одно слово.
+                    listen={el.mode === "choice" && el.dir === "no2int" && !listenDisabled && el.gw?.part_of_speech !== "phrase"}
+                    listenMuted={el.mode === "choice" && el.dir === "no2int" && listenDisabled && el.gw?.part_of_speech !== "phrase"}
                     repeat={el.repeat}
                     baseCorrect={res.correct}
                     baseWrong={res.total - res.correct}
