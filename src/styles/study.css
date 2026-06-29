@@ -177,6 +177,9 @@
 .study-root .swordlist { grid-template-columns: 1fr 1fr; gap: var(--sp-2) var(--sp-3); } }
 .study-root .sword {
   position: relative;
+  /* длинный список «Мои слова» (до ~200 строк): пропускаем layout/paint вне экрана.
+     contain-intrinsic-size — оценка высоты строки, чтобы скролл-полоса не прыгала. */
+  content-visibility: auto; contain-intrinsic-size: auto 64px;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--r-md); padding: 10px 8px 10px 12px;
   display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--sp-3);

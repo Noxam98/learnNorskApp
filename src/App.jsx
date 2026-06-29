@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import { NavigationBar } from "./components/navigationBar";
@@ -13,15 +13,17 @@ import { interfaceTranslate } from "./interface/interfaceTranslation.jsx";
 import { BrandLoader } from "./components/ui/Spinner.jsx";
 import Toast from "./components/tools/error.jsx";
 import { UpdateBanner } from "./components/ui/UpdateBanner.jsx";
-import { PoolPage } from "./pages/PoolPage.jsx";
-import ModerationPage from "./pages/ModerationPage.jsx";
-import { OnlinePage } from "./pages/OnlinePage.jsx";
-import { GamesRedirect } from "./pages/GamesHub.jsx";
-import LearningPage from "./pages/learning/LearningPage.jsx";
-import LoginPage from "./pages/LoginPage.jsx";
-import RegisterPage from "./pages/RegisterPage.jsx";
-import MyPage from "./pages/MyPage.jsx";
-import { StatsPage } from "./pages/StatsPage.jsx";
+// Роуты — code-splitting: каждая страница в своём чанке (грузится по переходу). Тяжёлое
+// (framer-motion в «Учёбе», графики/StatsPage, OnlinePage с играми) уезжает из стартового бандла.
+const PoolPage = lazy(() => import("./pages/PoolPage.jsx").then((m) => ({ default: m.PoolPage })));
+const ModerationPage = lazy(() => import("./pages/ModerationPage.jsx"));
+const OnlinePage = lazy(() => import("./pages/OnlinePage.jsx").then((m) => ({ default: m.OnlinePage })));
+const GamesRedirect = lazy(() => import("./pages/GamesHub.jsx").then((m) => ({ default: m.GamesRedirect })));
+const LearningPage = lazy(() => import("./pages/learning/LearningPage.jsx"));
+const LoginPage = lazy(() => import("./pages/LoginPage.jsx"));
+const RegisterPage = lazy(() => import("./pages/RegisterPage.jsx"));
+const MyPage = lazy(() => import("./pages/MyPage.jsx"));
+const StatsPage = lazy(() => import("./pages/StatsPage.jsx").then((m) => ({ default: m.StatsPage })));
 
 function App() {
     const location = useLocation();
@@ -94,6 +96,7 @@ function App() {
     }, [isAuthed, isAdmin, currentLanguage]);
 
     const routes = (
+      <Suspense fallback={<BrandLoader />}>
         <Routes location={location}>
             <Route path="/" element={<Navigate to="/learning" />} />
             <Route path="/words" element={<Navigate to="/learning" replace />} />
@@ -107,6 +110,7 @@ function App() {
             <Route path="/stats" element={isAdmin ? <StatsPage /> : <Navigate to="/learning" replace />} />
             <Route path="/moderation" element={isAdmin ? <ModerationPage /> : <Navigate to="/learning" replace />} />
         </Routes>
+      </Suspense>
     );
 
     const isAuthScreen = path === "/authorization" || path === "/registration";
