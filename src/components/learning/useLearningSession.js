@@ -185,8 +185,9 @@ export function useLearningSession({ words = [], system = false, setId = null, l
         doAction(gw.pool_id ?? gw.id).catch(() => { /* офлайн — не критично */ });
         setHist((h) => [...h, mark]);
         if (!isSystem) { showSummary(); return; }                 // легаси-путь — как раньше
-        // добор — только для карточек-знакомств; упражнения просто пропускаем (deficit=0)
-        const deficit = (el.step === "card") ? (target - acceptedNew - cardsAfter(elements, idx)) : 0;
+        // добор — только в ОБЫЧНОЙ сессии (не в дрилле набора: там очередь = слова набора, чужие
+        // из общего пула подмешивать нельзя) и только для карточек-знакомств (упражнения → deficit=0).
+        const deficit = (!setId && el.step === "card") ? (target - acceptedNew - cardsAfter(elements, idx)) : 0;
         if (idx + 1 < elements.length) {
             setIdx((n) => n + 1);                                 // следующий элемент уже готов — мгновенно
             if (deficit > 0) topUp(deficit);                      // фоном дольёт карточки в конец
