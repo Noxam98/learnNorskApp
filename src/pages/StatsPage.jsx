@@ -64,7 +64,7 @@ export const StatsPage = () => {
             <div className="pgrid" style={{ display: "grid", gap: "var(--sp-4)", gridTemplateColumns: "1fr 1fr" }}>
                 <div className="card" style={{ padding: "var(--sp-5)", gridColumn: "1 / -1" }}>
                     <div className="label" style={{ marginBottom: "var(--sp-4)" }}>Фоновые задачи</div>
-                    {[["autofill", "Добавление слов"], ["embed", "Эмбеддинги"], ["describe", "Описания"], ["pos", "Части речи"], ["forms", "Грамм. формы"]].map(([key, name]) => {
+                    {[["autofill", "Добавление слов"], ["embed", "Эмбеддинги"], ["describe", "Описания"], ["pos", "Части речи"], ["forms", "Грамм. формы"], ["homograph", "Омонимы"]].map(([key, name]) => {
                         const paused = control?.[key];
                         return (
                             <div key={key} className="row between" style={{ padding: "6px 0", fontSize: "var(--fs-14)" }}>
