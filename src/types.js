@@ -60,7 +60,7 @@
 
 /**
  * Нормализованный элемент (выход toElements): игра монтируется на одном слове.
- * @typedef {{ mode: string, dir: string, step: RampCell | string | null, gw: GameWord }} NormElement
+ * @typedef {{ mode: string, dir: string, step: RampCell | string | null, repeat?: boolean, listen?: boolean, gw: GameWord }} NormElement
  */
 
 /**

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
-import { AH, NPS, GRM, GRM_POS } from "./MyPage.i18n.js";
+import { AH, NPS, LPK, GRM, GRM_POS } from "./MyPage.i18n.js";
 import { LANGUAGES } from "../interface/languages.js";
 import { useIsMobile } from "../hooks/useMediaQuery.js";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
@@ -10,7 +10,6 @@ import { useAuthStore } from "../store/AuthStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Dropdown } from "../components/ui/Dropdown.jsx";
 import GoogleSignInButton from "../components/ui/GoogleSignInButton.jsx";
-import { Modal } from "../components/ui/Modal.jsx";
 import NameEditModal from "../components/profile/NameEditModal.jsx";
 import PasswordModal from "../components/profile/PasswordModal.jsx";
 import api from "../components/tools/api.js";
@@ -65,6 +64,7 @@ const MyPage = () => {
     const kbdAssistZones = useSystemStore((state) => state.kbdAssistZones);
     const ah = AH[currentLanguage] || AH.en;
     const nps = NPS[currentLanguage] || NPS.en;
+    const lpk = LPK[currentLanguage] || LPK.en;
     const grm = GRM[currentLanguage] || GRM.en;
     const grmPos = GRM_POS[currentLanguage] || GRM_POS.en;
     // Порция новых слов за сессию (gamePrefs.newPerSession, дефолт 6; слайдер 4–10).
@@ -72,6 +72,20 @@ const MyPage = () => {
     const setNewPerSession = (v) => {
         useAuthStore.setState((s) => (s.user ? { user: { ...s.user, gamePrefs: { ...(s.user.gamePrefs || {}), newPerSession: v } } } : s));
         api.setGamePrefs({ newPerSession: v }).catch(() => { /* офлайн — не критично */ });
+    };
+    // Аудиозадания (gamePrefs.audio, дефолт ВКЛ.): аудио-узнавание вынесено в отдельную слуховую партию.
+    // Выкл → choice_no2int возвращается в дневную сессию текстом (без слуховой партии).
+    const audioOn = user?.gamePrefs?.audio !== false;
+    const toggleAudio = () => {
+        const next = !audioOn;
+        useAuthStore.setState((s) => (s.user ? { user: { ...s.user, gamePrefs: { ...(s.user.gamePrefs || {}), audio: next } } } : s));
+        api.setGamePrefs({ audio: next }).catch(() => { /* офлайн — не критично */ });
+    };
+    // Порог слуховой партии (gamePrefs.listenPack, дефолт 10; слайдер 5–20) — активен только при audioOn.
+    const listenPack = Math.min(20, Math.max(5, user?.gamePrefs?.listenPack || 10));
+    const setListenPack = (v) => {
+        useAuthStore.setState((s) => (s.user ? { user: { ...s.user, gamePrefs: { ...(s.user.gamePrefs || {}), listenPack: v } } } : s));
+        api.setGamePrefs({ listenPack: v }).catch(() => { /* офлайн — не критично */ });
     };
     // Грамм-упражнения в сессии (gamePrefs.grammar, дефолт ВКЛ.). Сохраняем тем же путём (set_user_game_prefs).
     const grammarOn = user?.gamePrefs?.grammar !== false;
@@ -89,9 +103,7 @@ const MyPage = () => {
         api.setGamePrefs({ grammarPos: next }).catch(() => { /* офлайн — не критично */ });
     };
     const isPhone = useIsMobile();
-    const listenOffLocal = useSystemStore((state) => state.listenOffLocal);
     const [pushBusy, setPushBusy] = useState(false);
-    const [listenScope, setListenScope] = useState(/** @type {null|boolean} */(null)); // !=null → открыта модалка «тут/везде», значение = целевое «выключено»
     const [lstats, setLstats] = useState(null);
     useEffect(() => {
         let on = true;
@@ -139,23 +151,6 @@ const MyPage = () => {
         useAuthStore.setState((s) => ({ user: { ...s.user, gamePrefs: { ...(s.user?.gamePrefs || {}), leaderboardOptOut: next } } }));
         api.setGamePrefs({ leaderboardOptOut: next }).catch(() => { /* офлайн — не критично */ });
     };
-
-    // Задания «на слух»: эффективно выключено = локальное переопределение (если задано) поверх аккаунта.
-    const acctListenOff = !!user?.gamePrefs?.listenOff;
-    const listenDisabled = listenOffLocal != null ? listenOffLocal : acctListenOff;
-    // Клик по тумблеру открывает выбор «тут/везде»; целевое «выключено» = инверсия текущего.
-    const applyListen = (scope) => {
-        const off = !!listenScope;   // целевое значение «выключено»
-        if (scope === "device") {
-            useSystemStore.getState().setListenOffLocal(off);
-        } else {
-            useSystemStore.getState().setListenOffLocal(null);   // снимаем локальное — рулит аккаунт
-            useAuthStore.setState((s) => ({ user: { ...s.user, gamePrefs: { ...(s.user?.gamePrefs || {}), listenOff: off } } }));
-            api.setGamePrefs({ listenOff: off }).catch(() => { /* офлайн */ });
-        }
-        setListenScope(null);
-    };
-
 
     // Статистика «Учёбы» (единый набор слов, SRS) — вместо личных словарей.
     const byStatus = lstats?.byStatus || {};
@@ -320,11 +315,28 @@ const MyPage = () => {
                             <span className="setrow__meta"><span className="setrow__t">{t.leaderboardSetting}</span><span className="setrow__d">{t.leaderboardSettingDesc}</span></span>
                             <span className={`toggle${!lbOptOut ? " is-on" : ""}`} onClick={toggleLeaderboard} />
                         </div>
+                        {/* Аудиозадания: аудио-узнавание вынесено в отдельную слуховую партию. Вкл (дефолт) —
+                            слова подтверждаются на слух партией по N; выкл — choice_no2int идёт в дневную текстом. */}
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="volume" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.listenTasks}</span><span className="setrow__d">{t.listenTasksDesc}</span></span>
-                            <span className={`toggle${!listenDisabled ? " is-on" : ""}`} onClick={() => setListenScope(!listenDisabled)} />
+                            <span className={`toggle${audioOn ? " is-on" : ""}`} onClick={toggleAudio} />
                         </div>
+                        {/* Порог слуховой партии — слайдер 5–20, виден/активен только при включённых аудиозаданиях */}
+                        {audioOn && (
+                            <div className="setrow">
+                                <span className="setrow__ic"><Icon n="headphones" sm /></span>
+                                <span className="setrow__meta">
+                                    <span className="setrow__t">{lpk.t.replace("{n}", listenPack)}</span>
+                                    <span className="setrow__d">{lpk.d.replace("{n}", listenPack)}</span>
+                                </span>
+                                <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flex: "none" }}>
+                                    <input type="range" min="5" max="20" value={listenPack}
+                                        onChange={(e) => setListenPack(Number(e.target.value))} style={{ width: 120 }} />
+                                    <b style={{ minWidth: 16, textAlign: "center", fontSize: "var(--fs-15)" }}>{listenPack}</b>
+                                </span>
+                            </div>
+                        )}
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="zap" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.vibration}</span><span className="setrow__d">{t.vibrationDesc}</span></span>
@@ -398,25 +410,6 @@ const MyPage = () => {
 
             <PasswordModal open={pwOpen} hasPassword={user?.hasPassword} t={t}
                 onClose={() => setPwOpen(false)} onSaved={refreshMe} />
-
-            {/* Выбор охвата для «Заданий на слух»: только это устройство или весь аккаунт (по-простому) */}
-            <Modal
-                open={listenScope !== null}
-                onClose={() => setListenScope(null)}
-                title={listenScope ? t.listenScopeOff : t.listenScopeOn}
-            >
-                {listenScope && <div className="scopechoice__warn"><Icon n="headphones" sm /> {t.listenOffWarn}</div>}
-                <div className="scopechoice">
-                    <button type="button" className="scopechoice__b" onClick={() => applyListen("device")}>
-                        <span className="scopechoice__t"><Icon n="user" sm /> {t.scopeDevice}</span>
-                        <span className="scopechoice__d">{t.scopeDeviceDesc}</span>
-                    </button>
-                    <button type="button" className="scopechoice__b" onClick={() => applyListen("account")}>
-                        <span className="scopechoice__t"><Icon n="globe" sm /> {t.scopeAccount}</span>
-                        <span className="scopechoice__d">{t.scopeAccountDesc}</span>
-                    </button>
-                </div>
-            </Modal>
         </main>
     );
 };

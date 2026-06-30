@@ -109,8 +109,9 @@ export default function LearningPage() {
     // openSession() без слов → системная сессия (LearningSession сам тянет программу с бэка).
     // openSession(words, mode) — легаси-путь с готовым набором (полки/«Слабые» из других вкладок).
     // openSession(null, mode, { setId }) — дрилл по личному набору (сессия только из его слов).
+    // openSession(null, "choice", { listen: true }) — слуховая сессия (источник /learning/listen).
     const openSession = (words = null, mode = "choice", opts = {}) =>
-        setSession({ words, mode, system: !words?.length || !!opts.setId, setId: opts.setId || null });
+        setSession({ words, mode, system: !words?.length || !!opts.setId || !!opts.listen, setId: opts.setId || null, listen: !!opts.listen });
     const openWord = (no, wordId) => setInfo({ no, wordId });
     const closeSession = (didPractice) => {
         setSession(null);
@@ -157,7 +158,7 @@ export default function LearningPage() {
             {Active && <Active {...tabProps} />}
 
             {session && (
-                <LearningSession words={session.words} mode={session.mode} system={session.system} setId={session.setId} lang={lang} onClose={closeSession} />
+                <LearningSession words={session.words} mode={session.mode} system={session.system} setId={session.setId} listen={session.listen} lang={lang} onClose={closeSession} />
             )}
             <WordInfoModal open={!!info} word={info?.no} wordId={info?.wordId}
                 lang={lang} t={tg} onClose={() => { setInfo(null); }} />

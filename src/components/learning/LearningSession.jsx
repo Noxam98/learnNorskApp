@@ -29,13 +29,9 @@ const COMP = { choice: ChoiceGame, build: BuildGame, input: InputGame, card: Stu
 const STAGE = { position: "fixed", inset: 0, zIndex: 95, background: "var(--game-bg)", color: "var(--game-ink)", display: "flex", flexDirection: "column", overflow: "auto" };
 const chip = { display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, border: "1px solid var(--game-border)", background: "var(--game-surface)", fontWeight: 700, fontSize: "var(--fs-14)" };
 
-export default function LearningSession({ words = [], mode = "choice", system = false, setId = null, lang = "ru", onClose }) {
+export default function LearningSession({ words = [], mode = "choice", system = false, setId = null, listen = false, lang = "ru", onClose }) {
     const t = T[lang] || T.ru;
     const soundOn = useSystemStore((s) => s.soundOn);
-    // Задания «на слух»: локальное переопределение устройства (null=следовать аккаунту) поверх gamePrefs.listenOff.
-    const listenOffLocal = useSystemStore((s) => s.listenOffLocal);
-    const acctListenOff = useAuthStore((s) => !!s.user?.gamePrefs?.listenOff);
-    const listenDisabled = listenOffLocal != null ? listenOffLocal : acctListenOff;
     const sessionLoading = useSessionStore((s) => s.loading); // следующая сессия ещё грузится фоном
     // Норма новых слов за сессию (профиль): сколько карточек нужно ПРИНЯТЬ; кнопки добирают замену.
     const newPerSession = useAuthStore((s) => s.user?.gamePrefs?.newPerSession) || 6;
@@ -45,7 +41,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         isSystem, phase, round, isDesktop, elements, idx, legacyGw,
         res, cards, hist, graduated, protectedNow, protectedTypo, after, gate, busy, loadingNext,
         onResult, recordIntro, onGameFinish, reportCurrent, skipCurrent, knowCurrent, again,
-    } = useLearningSession({ words, system, setId, lang, newPerSession, onClose });
+    } = useLearningSession({ words, system, setId, listen, lang, newPerSession, onClose });
 
     // --- Экран загрузки системной программы ---
     if (phase === "load") {
@@ -192,11 +188,11 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                     stepTotal={elements.length}
                     segs={sessionSegs}
                     rank={stageRank(segCell(el))}   // стадия рампы слова → высота звуков «вход»/«верно»
-                    // стадия choice_no2int → «на слух» (текст скрыт). Фразы — ИСКЛЮЧЕНИЕ: их выбор
-                    // перевода показываем ТЕКСТОМ + озвучка (listen=false → ChoiceGame сам читает слово),
-                    // т.к. на слух длинную фразу разбирать тяжелее, чем одно слово.
-                    listen={el.mode === "choice" && el.dir === "no2int" && !listenDisabled && el.gw?.part_of_speech !== "phrase"}
-                    listenMuted={el.mode === "choice" && el.dir === "no2int" && listenDisabled && el.gw?.part_of_speech !== "phrase"}
+                    // Аудио-узнавание («на слух», текст скрыт) — ТОЛЬКО для элементов слуховой сессии,
+                    // которые бэк пометил listen:true (из /learning/listen). Любой choice_no2int из
+                    // дневной сессии (audio выкл) приходит без listen → рендерится ТЕКСТОМ (listen=false).
+                    // Фразы — ИСКЛЮЧЕНИЕ: даже на слух показываем текстом (длинную фразу на слух тяжело).
+                    listen={!!el.listen && el.gw?.part_of_speech !== "phrase"}
                     repeat={el.repeat}
                     baseCorrect={res.correct}
                     baseWrong={res.total - res.correct}

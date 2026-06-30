@@ -21,6 +21,7 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
         stats, loading, error, lbOpen, setLbOpen, focusSaving, sessionLoading,
         gateOpen, gatePack, gateThreshold, gateLeft, by, placed,
         composition, learnable, streak, isEmpty, sessReady,
+        listenShow, listenReady, listenPending, listenLeft, runListen,
         nextLevel, toNext, masteryFrac, ringNum, ringDen,
         focusTopics, toggleFocus, runReview,
     } = useToday({ reloadKey, refresh, openSession });
@@ -135,6 +136,34 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
         </div>
     );
 
+    // Карточка слуховой сессии: видна, когда аудио вкл и есть слова в ожидании слуха. Готова партия
+    // (listenReady) → яркий призыв «N слов готовы к слуху»; иначе — приглушённо «ещё M до партии».
+    const listenCard = listenShow ? (
+        <div className="spanel" style={listenReady ? {
+            background: "var(--fjord-50)", borderColor: "color-mix(in srgb,var(--fjord-600) 30%,var(--surface))",
+        } : undefined}>
+            <div className="spanel__body" style={{ display: "flex", alignItems: "center", gap: "var(--sp-4)", flexWrap: "wrap" }}>
+                <span className="setrow-link__ic" style={{
+                    background: listenReady ? "var(--fjord-600)" : "color-mix(in srgb,var(--fjord-600) 15%,var(--surface))",
+                    color: listenReady ? "#fff" : "var(--fjord-600)", flex: "none",
+                }}>
+                    <Icon n="headphones" />
+                </span>
+                <div className="col" style={{ gap: 3, flex: 1, minWidth: 180 }}>
+                    <div style={{ fontSize: "var(--fs-16)", fontWeight: 800, letterSpacing: "var(--ls-tight)" }}>🔊 {t.listenCardT}</div>
+                    <div className="muted" style={{ fontSize: "var(--fs-13)", lineHeight: 1.45 }}>
+                        {listenReady
+                            ? fmt(t.listenReadyD, { n: listenPending })
+                            : fmt(t.listenWaitD, { n: listenPending, m: listenLeft })}
+                    </div>
+                </div>
+                <button className={listenReady ? "btn btn--accent" : "btn btn--outline"} onClick={runListen}>
+                    <Icon n="play" sm /> {t.listenBtn}
+                </button>
+            </div>
+        </div>
+    ) : null;
+
     return (
         <>
             {placed === false && (
@@ -214,6 +243,8 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
                             </div>
                         </>
                     )}
+                    {/* Слуховая сессия: аудио-подтверждение выученных слов отдельной партией */}
+                    {listenCard}
                     {/* Темы в фокусе — под Smart Review (на месте бывших «наборов для практики») */}
                     {focusPanel}
                 </div>

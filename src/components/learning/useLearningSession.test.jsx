@@ -18,6 +18,7 @@ vi.mock("../tools/api.js", () => ({
         learningReport: vi.fn(() => Promise.resolve({ ok: true })),
         learningStatus: vi.fn(() => Promise.resolve({ ok: true })),
         learningNextCards: vi.fn(() => Promise.resolve({ cards: [] })),
+        getListenSession: vi.fn(() => Promise.resolve({ words: [], composition: { listen: 0, total: 0 } })),
     },
 }));
 
@@ -43,6 +44,16 @@ describe("useLearningSession", () => {
         expect(result.current.phase).toBe("play");
         expect(result.current.legacyGw).toHaveLength(1);
         expect(result.current.legacyGw[0].id).toBe(1);
+    });
+
+    it("слуховая сессия (listen): грузит партию через getListenSession, элемент несёт listen:true", async () => {
+        api.getListenSession.mockResolvedValue({ words: [{ pool_id: 9, mode: "choice", direction: "no2int", step: "choice_no2int", listen: true, options: [1, 2] }] });
+        const { result } = renderHook(() => useLearningSession({ words: [], system: true, listen: true, lang: "ru", onClose: () => {} }));
+        expect(result.current.isListen).toBe(true);
+        await waitFor(() => expect(result.current.phase).toBe("play"));
+        expect(api.getListenSession).toHaveBeenCalled();
+        expect(take).not.toHaveBeenCalled();                 // дневную не трогаем
+        expect(result.current.elements[0].listen).toBe(true); // флаг проброшен на нормализованный элемент
     });
 
     it("системный путь: грузит программу через take и переходит в play", async () => {

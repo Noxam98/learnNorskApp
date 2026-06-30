@@ -23,6 +23,17 @@ export const NPS = langGuard({
     ar:  { t: "كلمات جديدة لكل جلسة", d: "كم كلمة جديدة تُقدَّم في الجلسة الواحدة — والبقية تمارين على كلمات بدأتها." },
 }, "MyPage.NPS");
 
+// Порог слуховой партии (gamePrefs.listenPack) — подписи слайдера. {n} = текущее значение.
+export const LPK = langGuard({
+    ru:  { t: "Порог слуховой партии: {n} слов", d: "Слова учатся текстом, а на слух подтверждаются отдельной партией по {n} слов." },
+    en:  { t: "Listening batch size: {n} words", d: "Words are learned by text, then confirmed by ear in a separate batch of {n}." },
+    ukr: { t: "Поріг слухової партії: {n} слів", d: "Слова вчаться текстом, а на слух підтверджуються окремою партією по {n} слів." },
+    pl:  { t: "Próg partii słuchowej: {n} słów", d: "Słowa uczy się tekstem, a ze słuchu potwierdza osobną partią po {n} słów." },
+    lt:  { t: "Klausymo partijos riba: {n} žodžių", d: "Žodžiai mokomi tekstu, o iš klausos patvirtinami atskira {n} žodžių partija." },
+    lv:  { t: "Klausīšanās partijas slieksnis: {n} vārdi", d: "Vārdus mācās ar tekstu, bet pēc dzirdes apstiprina atsevišķā {n} vārdu partijā." },
+    ar:  { t: "حجم دفعة الاستماع: {n} كلمة", d: "تُتعلَّم الكلمات بالنص، ثم تُؤكَّد سماعيًا في دفعة منفصلة من {n}." },
+}, "MyPage.LPK");
+
 // Грамматические упражнения в сессии (gamePrefs.grammar, дефолт вкл.) — тумблер.
 export const GRM = langGuard({
     ru:  { t: "Грамматика (род, формы)", d: "Добавлять упражнения на грамматику к выученным словам: род существительного и множественное число." },

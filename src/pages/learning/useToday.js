@@ -11,6 +11,7 @@ const CEFR = ["A1", "A2", "B1", "B2", "C1", "C2"];
 export function useToday({ reloadKey, refresh, openSession }) {
     const [stats, setStats] = useState(null);
     const [gate, setGate] = useState(null);   // {pack, threshold, open} — ворота экзамена пачки
+    const [listen, setListen] = useState(null); // {pending, pack, ready, audio} — слуховая партия
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [lbOpen, setLbOpen] = useState(false);   // открыта модалка полного рейтинга
@@ -24,6 +25,7 @@ export function useToday({ reloadKey, refresh, openSession }) {
         setLoading(true);
         setError(false);
         api.learningGate().then((g) => { if (on) setGate(g || null); }).catch(() => { if (on) setGate(null); });
+        api.getListenStatus().then((s) => { if (on) setListen(s || null); }).catch(() => { if (on) setListen(null); });
         api.learningStats()
             .then((s) => { if (on) { setStats(s || null); setLoading(false); } })
             .catch(() => { if (on) { setError(true); setLoading(false); } });
@@ -35,6 +37,16 @@ export function useToday({ reloadKey, refresh, openSession }) {
     const gatePack = gate?.pack || 0;
     const gateThreshold = gate?.threshold || 0;
     const gateLeft = Math.max(0, gateThreshold - gatePack);
+
+    // Слуховая партия: показываем карточку, когда аудио вкл и есть слова в ожидании слуха.
+    const listenAudio = !!listen?.audio;
+    const listenPending = listen?.pending || 0;
+    const listenPack = listen?.pack || 0;
+    const listenReady = !!listen?.ready;                                   // pending >= pack — партия готова
+    const listenLeft = Math.max(0, listenPack - listenPending);            // ещё M до партии
+    const listenShow = listenAudio && listenPending > 0;                   // есть что подтверждать на слух
+    // Старт слуховой сессии — системный путь с источником /learning/listen.
+    const runListen = () => openSession(null, "choice", { listen: true });
 
     const by = stats?.byStatus || {};
     const total = stats?.total || 0;
@@ -108,6 +120,7 @@ export function useToday({ reloadKey, refresh, openSession }) {
         stats, gate, loading, error, lbOpen, setLbOpen, focusSaving, sessionLoading,
         gateOpen, gatePack, gateThreshold, gateLeft, by, total, placed,
         composition, learnable, streak, isEmpty, sessReady,
+        listenShow, listenReady, listenPending, listenPack, listenLeft, runListen,
         curLevel, nextLevel, masteredAll, nextTarget, toNext, masteryFrac, ringNum, ringDen,
         focusTopics, toggleFocus, runReview,
     };

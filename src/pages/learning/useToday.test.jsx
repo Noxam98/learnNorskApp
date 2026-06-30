@@ -12,6 +12,7 @@ vi.mock("../../store/sessionStore.jsx", () => ({ useSessionStore: (sel) => sel({
 vi.mock("../../components/tools/api.js", () => ({
     default: {
         learningGate: vi.fn(), learningStats: vi.fn(), learningSession: vi.fn(), setFocusTopics: vi.fn(),
+        getListenStatus: vi.fn(() => Promise.resolve({ pending: 0, pack: 10, ready: false, audio: true })),
     },
 }));
 

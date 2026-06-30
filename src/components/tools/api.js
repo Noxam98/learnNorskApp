@@ -309,6 +309,9 @@ class ApiService {
     learningSkip(poolId) { return this._send('POST', '/learning/skip', { pool_id: poolId }); }     // «не учить» → «не актуально»: убрать только у себя, без модерации
     learningNextCards(n = 5, exclude = []) { return this._send('POST', '/learning/next-cards', { n, exclude }); } // живая сессия: добор новых карточек-знакомств
     learningSession(size = 20, lang = 'ru') { return this._send('GET', `/learning/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
+    // Слуховая сессия (аудио-узнавание вынесено из дневной): статус партии + сама партия слов.
+    getListenStatus() { return this._send('GET', '/learning/listen/status'); }                       // {pending, pack, ready, audio}
+    getListenSession(size = 20, lang = 'ru') { return this._send('GET', `/learning/listen?size=${size}&lang=${encodeURIComponent(lang)}`); } // {words:[...], composition}
     learningGate() { return this._send('GET', '/learning/gate'); }
     learningGateExam(lang = "ru") { return this._send('GET', `/learning/gate/exam?lang=${encodeURIComponent(lang)}`); }
     learningGateGrade({ lang = "ru", answers = [] }) { return this._send('POST', '/learning/gate/exam', { lang, answers }); }
