@@ -23,7 +23,10 @@ export const KBD_SET = new Set(KBD_ROWS.flat());
 // Выводим из раскладки с учётом «ступеньки» рядов (полу-клавиша): соседи = по горизонтали в ряду
 // + диагонали сверху/снизу (≈6 клавиш). keysAdjacent(a, b) — соседние ли клавиши a и b.
 const _KEY_ADJ = (() => {
-    const ROW_OFF = [0, 0.5, 1.0];   // горизонтальный сдвиг ряда (стандартная ступенька QWERTY)
+    // Реальная вёрстка: ряды 0 и 1 по 11 клавиш и оба ЦЕНТРИРОВАНЫ → выровнены (a ровно под q, без
+    // ступеньки); ряд 2 (7 клавиш) центрирован → сдвиг (11−7)/2 = 2. (Раньше тут была ступенька QWERTY
+    // [0,0.5,1.0], не совпадавшая с вёрсткой → ассист целил не на тех соседей.)
+    const ROW_OFF = [0, 0, 2];
     const pos = /** @type {Record<string,{r:number,x:number}>} */ ({});
     KBD_ROWS.forEach((row, r) => row.forEach((ch, c) => { pos[ch] = { r, x: c + ROW_OFF[r] }; }));
     const adj = /** @type {Record<string, Set<string>>} */ ({});
@@ -152,27 +155,58 @@ export function GameKeyboard({
         return inZone ? predicted : c;
     };
 
-    const keyDown = (c, e) => {
-        e?.preventDefault();
-        const out = correctKey(c, e);   // ассист мог перенацелить на ожидаемую букву
-        if (!active(out)) return;
-        pressingRef.current = c;        // pointerup матчим по ФИЗИЧЕСКИ нажатой кнопке
-        typeAsRef.current = out;        // а вводим/превью — скорректированную
-        setPop(out);
+    // ── Ввод букв = СЛЕЖЕНИЕ за пальцем по контейнеру (а не «нажми ровно по кнопке») ──
+    // pressingRef — идёт ли трекинг; typeAsRef — клавиша ПОД ПАЛЬЦЕМ сейчас (null = вне клавиатуры).
+    // Палец ведёт подсветку к БЛИЖАЙШЕЙ клавише (геометрия точка→прямоугольник, кламп у краёв: левее
+    // «a»/в паддинг-полосе → «a»); коммит — клавиша под пальцем НА ОТПУСКАНИИ; отпустил дальше ROUTE_PX
+    // от любой клавиши («где клавиатуры нет») → НЕ вводим.
+    const ROUTE_PX = 30;
+    const nearestKey = (x, y) => {
+        const kbd = kbdRef.current;
+        if (kbd == null || x == null) return null;
+        let best = null, bestD = Infinity;
+        kbd.querySelectorAll(".kbd__row [data-k]").forEach((el) => {
+            const k = el.getAttribute("data-k");
+            if (k == null || isOff(k) || isSpent(k)) return;   // только доступные клавиши
+            const r = el.getBoundingClientRect();
+            const dx = Math.max(r.left - x, 0, x - r.right), dy = Math.max(r.top - y, 0, y - r.bottom);
+            const d = dx * dx + dy * dy;
+            if (d < bestD) { bestD = d; best = k; }
+        });
+        return bestD <= ROUTE_PX * ROUTE_PX ? best : null;
+    };
+    const setActive = (k) => {
+        if (typeAsRef.current === k) return;
+        typeAsRef.current = k;
+        setPop(k);   // подсветка (анимация .kbd__pop) на текущей клавише под пальцем
+    };
+    const trackDown = (e) => {
+        // ⌫/✓/«Не знаю» — у них свои обработчики; буквы/пробел ведём здесь
+        if (e.target.closest(".kbd__key--act, .kbd__key--go, .kbd-dunno")) return;
+        e.preventDefault();
+        pressingRef.current = true;
         pressTsRef.current = Date.now();
-        buzz();   // одна вибрация на нажатие
-        maybeShowHint();   // начал набор мышью на ПК → подсказать про физ-клавиатуру
+        try { e.currentTarget.setPointerCapture?.(e.pointerId); } catch { /* no-op */ }
+        const k0 = nearestKey(e.clientX, e.clientY);
+        setActive(k0 ? correctKey(k0, e) : null);
+        buzz();             // один тик на касание
+        maybeShowHint();
     };
-    const keyUp = (c, e) => {
-        if (pressingRef.current === c) {
-            const out = typeAsRef.current || c;
-            if (active(out)) onType?.(out);
-            if (Date.now() - pressTsRef.current >= 200) buzz();   // долгий тап (≥200мс) — вибрация и на отпускании
+    const trackMove = (e) => {
+        if (!pressingRef.current) return;
+        const k0 = nearestKey(e.clientX, e.clientY);
+        setActive(k0 ? correctKey(k0, e) : null);   // подсветка едет за пальцем; вне поля → null
+    };
+    const trackEnd = (commit) => {
+        if (!pressingRef.current) return;
+        pressingRef.current = false;
+        const k = typeAsRef.current;
+        if (commit && k != null && active(k)) {   // коммит по клавише под пальцем; null (вне поля) → ничего
+            onType?.(k);
+            if (Date.now() - pressTsRef.current >= 200) buzz();
         }
-        pressingRef.current = null; typeAsRef.current = null; setPop(null);
-        e?.currentTarget?.blur?.();   // снять фокус после отпускания — клавиша не «залипает» подсвеченной
+        typeAsRef.current = null; setPop(null);
     };
-    const keyCancel = (c) => { if (pressingRef.current === c) { pressingRef.current = null; typeAsRef.current = null; setPop(null); } };
 
     // ⌫ «Стереть»: одиночный тап — удалить символ; удержание — авто-повтор (после паузы 400мс,
     // далее каждые 60мс), свой поп-ап с иконкой. Повтор работает за счёт функционального setState
@@ -254,9 +288,7 @@ export function GameKeyboard({
         const b = badge(c);
         return (
             <button key={c || "space"} data-k={c} className={"kbd__key" + cls + (isOff(c) ? " is-off" : "") + (isSpent(c) ? " is-spent" : "")}
-                disabled={isOff(c) || isSpent(c)} aria-label={ariaLabel}
-                onPointerDown={(e) => keyDown(c, e)} onPointerUp={(e) => keyUp(c, e)}
-                onPointerLeave={() => keyCancel(c)} onPointerCancel={() => keyCancel(c)} lang={lang}>
+                disabled={isOff(c) || isSpent(c)} aria-label={ariaLabel} lang={lang} tabIndex={-1}>
                 {c === " " ? "" : c}
                 {b != null && <span className="kbd__count">{b}</span>}
                 {pop === c && <span className="kbd__pop" aria-hidden="true">{c === " " ? "␣" : c}</span>}
@@ -267,7 +299,9 @@ export function GameKeyboard({
     };
 
     return (
-        <div className="kbd" ref={kbdRef} onContextMenu={(e) => e.preventDefault()}>
+        <div className="kbd" ref={kbdRef} onContextMenu={(e) => e.preventDefault()}
+            onPointerDown={trackDown} onPointerMove={trackMove}
+            onPointerUp={() => trackEnd(true)} onPointerCancel={() => trackEnd(false)}>
             {/* «Не знаю» — НАД клавиатурой (а не клавишей среди букв): единообразно во всех экранных
                 клавиатурах, чтобы случайно не задеть. Неприметная, в правом углу над панелью. */}
             {showDunno && onDunno && (
