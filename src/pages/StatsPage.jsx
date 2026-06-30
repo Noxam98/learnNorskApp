@@ -30,13 +30,15 @@ export const StatsPage = () => {
     const [err, setErr] = useState("");
     const [control, setControl] = useState(null); // {autofill, embed, describe} -> paused?
     const [hom, setHom] = useState(null); // сводка воркера-омонимов + история
+    const [nei, setNei] = useState(null); // сводка предрасчёта соседей (дистракторы)
 
     const load = () => api.getAdminStats().then(setData).catch(() => setErr("forbidden"));
     const loadControl = () => api.getAdminControl().then((r) => setControl(r.paused)).catch(() => {});
     const loadHom = () => api.getAdminHomograph().then(setHom).catch(() => {});
+    const loadNei = () => api.getAdminNeighbors().then(setNei).catch(() => {});
     useEffect(() => {
-        load(); loadControl(); loadHom();
-        const id = setInterval(() => { load(); loadControl(); loadHom(); }, 15000); // авто-обновление — видно процесс
+        load(); loadControl(); loadHom(); loadNei();
+        const id = setInterval(() => { load(); loadControl(); loadHom(); loadNei(); }, 15000); // авто-обновление — видно процесс
         return () => clearInterval(id);
     }, []);
 
@@ -128,6 +130,24 @@ export const StatsPage = () => {
                                     ))}
                                 </div>
                             )}
+                    </div>
+                )}
+
+                {nei && (
+                    <div className="card" style={{ padding: "var(--sp-5)" }}>
+                        <div className="label" style={{ marginBottom: "var(--sp-4)" }}>
+                            Кеш эмбеддингов (дистракторы)
+                            <span className="muted"> · {nei.ready ? "в RAM" : "не загружен"}</span>
+                        </div>
+                        <div className="row between" style={{ fontSize: "var(--fs-14)", padding: "3px 0" }}>
+                            <span className="muted">Векторов в памяти</span><b>{nei.loaded || 0}</b>
+                        </div>
+                        <div className="row between" style={{ fontSize: "var(--fs-14)", padding: "3px 0" }}>
+                            <span className="muted">Размерность</span><b>{nei.dim || 0}</b>
+                        </div>
+                        <div className="row between" style={{ fontSize: "var(--fs-14)", padding: "3px 0" }}>
+                            <span className="muted">Объём</span><b>{nei.mb || 0} МБ</b>
+                        </div>
                     </div>
                 )}
 

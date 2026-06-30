@@ -278,6 +278,7 @@ class ApiService {
     getAdminControl() { return this._send('GET', '/admin/control'); }
     setAdminControl(key, paused) { return this._send('POST', `/admin/control/${key}?paused=${paused}`); }
     getAdminHomograph() { return this._send('GET', '/admin/homograph'); }
+    getAdminNeighbors() { return this._send('GET', '/admin/neighbors'); }
     getPoolTopics() { return this._send('GET', '/pool/topics'); }
     getPoolDescription(word) { return this._send('GET', `/pool/${encodeURIComponent(word)}/description`); }
     getPoolSynonyms(word, { lang = "ru" } = {}) { return this._send('GET', `/pool/${encodeURIComponent(word)}/synonyms?lang=${encodeURIComponent(lang)}`); }
