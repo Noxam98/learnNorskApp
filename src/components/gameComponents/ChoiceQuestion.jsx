@@ -26,14 +26,14 @@ import { BrandLoader } from "../ui/Spinner.jsx";
  *   optionSub?: Record<string, string>, picked?: string | null, correct?: string | null,
  *   reveal?: boolean, allowRetry?: boolean, onPick?: (opt: string) => void,
  *   posText?: string, hint?: any, countText?: any, disabled?: boolean, loading?: boolean, numbered?: boolean,
- *   listenSlot?: any, showWord?: boolean, children?: any,
+ *   listenSlot?: any, showWord?: boolean, inline?: boolean, children?: any,
  * }} props
  */
 export const ChoiceQuestion = ({
     prompt, promptLang, options, optionLang, optionSub = {},
     picked = null, correct = null, reveal = false, allowRetry = false,
     onPick, posText, hint, countText, disabled = false, loading = false, numbered = false,
-    listenSlot = null, showWord = true, children,
+    listenSlot = null, showWord = true, inline = false, children,
 }) => (
     <div className="qcard">
         {countText && <div className="qcount">{countText}</div>}
@@ -48,7 +48,7 @@ export const ChoiceQuestion = ({
             </span>
         )}
 
-        <div className="choices">
+        <div className={`choices${inline ? " choices--inline" : ""}`}>
             {(options || []).map((opt, i) => {
                 const cls = reveal
                     ? (opt === correct ? " is-correct" : (opt === picked ? " is-wrong" : ""))

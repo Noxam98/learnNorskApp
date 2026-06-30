@@ -266,6 +266,9 @@
 
 /* Режим «выбор варианта» — кнопки ответов (тёмная тема игры) */
 .choices { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; max-width: 600px; margin-top: var(--sp-8); }
+/* грамм-выбор (артикли en/ei/et): короткие 2-буквенные варианты — в один ряд по 3, по центру.
+   Компаунд-селектор (специфичность выше .choices) — переживает мобильный 1fr/1fr-оверрайд ниже. */
+.choices.choices--inline { grid-template-columns: repeat(3, 1fr); max-width: 360px; margin-left: auto; margin-right: auto; }
 .choice {
     padding: 16px 18px; border-radius: var(--r-lg);
     font-size: var(--fs-18); font-weight: 600; cursor: pointer;

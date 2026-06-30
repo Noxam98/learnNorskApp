@@ -239,6 +239,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     disabled={status !== "ASKING"}
                     loading={!options}
                     numbered={isDesktop}
+                    inline={grammar}   // артикли en/ei/et — короткие, выводим в один ряд по 3
                     // грамм-вопрос: вместо слова/перевода — FormPrompt (лемма + подпись формы); сам word скрыт
                     showWord={grammar ? false : (!listenMode || revealText || status === "CORRECT" || status === "INCORRECT")}
                     listenSlot={grammar ? <FormPrompt word={current} lang={currentLanguage} /> : (listenMode ? (
