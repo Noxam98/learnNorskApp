@@ -5,6 +5,9 @@ import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { BrandLoader } from "../components/ui/Spinner.jsx";
 
+const POS_RU = { noun: "сущ.", verb: "глаг.", adjective: "прил.", adverb: "нареч." };
+const posRu = (k) => POS_RU[k] || k;
+
 const Bar = ({ value, total, label }) => {
     const pct = total ? Math.round((value / total) * 100) : 0;
     return (
@@ -26,12 +29,14 @@ export const StatsPage = () => {
     const [data, setData] = useState(null);
     const [err, setErr] = useState("");
     const [control, setControl] = useState(null); // {autofill, embed, describe} -> paused?
+    const [hom, setHom] = useState(null); // сводка воркера-омонимов + история
 
     const load = () => api.getAdminStats().then(setData).catch(() => setErr("forbidden"));
     const loadControl = () => api.getAdminControl().then((r) => setControl(r.paused)).catch(() => {});
+    const loadHom = () => api.getAdminHomograph().then(setHom).catch(() => {});
     useEffect(() => {
-        load(); loadControl();
-        const id = setInterval(() => { load(); loadControl(); }, 15000); // авто-обновление — видно процесс
+        load(); loadControl(); loadHom();
+        const id = setInterval(() => { load(); loadControl(); loadHom(); }, 15000); // авто-обновление — видно процесс
         return () => clearInterval(id);
     }, []);
 
@@ -86,6 +91,42 @@ export const StatsPage = () => {
                         );
                     })}
                 </div>
+
+                {hom && (
+                    <div className="card" style={{ padding: "var(--sp-5)", gridColumn: "1 / -1" }}>
+                        <div className="label" style={{ marginBottom: "var(--sp-4)" }}>
+                            Омонимы · разбито <b style={{ color: "var(--ink)" }}>{hom.splits || 0}</b>
+                            {hom.paused && <span className="muted"> · на паузе</span>}
+                        </div>
+                        <Bar value={hom.checked || 0} total={hom.total || 0} label="Проверено кандидатов" />
+                        {hom.updated > 0 && (
+                            <div className="muted" style={{ fontSize: "var(--fs-12)", marginBottom: "var(--sp-2)" }}>
+                                обновлено {new Date(hom.updated * 1000).toLocaleString()}
+                            </div>
+                        )}
+                        <div className="label" style={{ margin: "var(--sp-4) 0 var(--sp-2)" }}>История разбиений</div>
+                        {(!hom.recent || hom.recent.length === 0)
+                            ? <p className="muted" style={{ margin: 0 }}>Пока пусто</p>
+                            : (
+                                <div style={{ display: "grid", gap: 6, maxHeight: 380, overflowY: "auto" }}>
+                                    {hom.recent.map((h, i) => (
+                                        <div key={i} style={{ fontSize: "var(--fs-13)", padding: "6px 8px", background: "var(--surface-3)", borderRadius: 8 }}>
+                                            <div className="row between">
+                                                <b>{h.word}</b>
+                                                <span className="muted" style={{ fontSize: "var(--fs-12)" }}>{h.ts ? new Date(h.ts * 1000).toLocaleDateString() : ""}</span>
+                                            </div>
+                                            <div className="muted">
+                                                {posRu(h.pos)}: {(h.keep || []).join(", ")}
+                                                {Object.entries(h.others || {}).map(([op, ru]) => (
+                                                    <span key={op}> · <b style={{ color: "var(--fjord-600)" }}>+{posRu(op)}</b>: {(ru || []).join(", ")}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                    </div>
+                )}
 
                 <div className="card" style={{ padding: "var(--sp-5)" }}>
                     <div className="label" style={{ marginBottom: "var(--sp-4)" }}>Пул слов · всего <b style={{ color: "var(--ink)" }}>{p.total}</b></div>
