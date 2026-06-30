@@ -94,6 +94,15 @@ export const StatsPage = () => {
                     <Bar value={p.classified} total={p.total} label="Классифицировано (уровень)" />
                     <Bar value={p.description} total={p.total} label="С описанием" />
                     <Bar value={p.forms} total={p.formable ?? p.total} label="С грамм. формами (сущ./глаг./прил.)" />
+                    {p.forms_by_pos && [["noun", "· существительные"], ["verb", "· глаголы"], ["adjective", "· прилагательные"]].map(([k, name]) => (
+                        <Bar key={k} value={p.forms_by_pos[k]?.with} total={p.forms_by_pos[k]?.total} label={name} />
+                    ))}
+                    {p.noun_no_gender > 0 && (
+                        <div className="row between" style={{ fontSize: "var(--fs-13)", padding: "4px 0", color: "var(--st-weak, #B23A2E)" }}>
+                            <span>⚠ Сущ. с формами, но без рода (нет артикля)</span>
+                            <b>{p.noun_no_gender}</b>
+                        </div>
+                    )}
                 </div>
 
                 <div className="card" style={{ padding: "var(--sp-5)" }}>

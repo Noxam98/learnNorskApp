@@ -59,13 +59,17 @@ export const posMeta = (pos) => {
     return { cls: "pos--other", key: "other", raw };
 };
 
+// Служебные ключи forms (НЕ поверхностные формы): pos — метка части речи, gender — артикль.
+// Держать в синхроне с бэком (fuzzy.py FORMS_META_KEYS) и со схемами форм.
+export const FORMS_META_KEYS = ["pos", "gender"];
+
 // Поверхностные формы слова: лемма + словоформы из forms (def_sg/indef_pl/present/past/…),
-// без служебных pos/gender. Для приёма ответа во «Вводе»: hunden/snakker засчитываем как слово.
+// без служебных (FORMS_META_KEYS). Для приёма ответа во «Вводе»: hunden/snakker засчитываем как слово.
 export const wordForms = (lemma, forms) => {
     const out = lemma ? [lemma] : [];
     if (forms && typeof forms === "object") {
         for (const [k, v] of Object.entries(forms)) {
-            if (k === "pos" || k === "gender") continue;
+            if (FORMS_META_KEYS.includes(k)) continue;
             if (typeof v === "string" && v.trim()) out.push(v.trim());
         }
     }
