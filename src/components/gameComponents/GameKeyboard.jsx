@@ -91,6 +91,7 @@ export function GameKeyboard({
     const [pop, setPop] = useState(null);
     const pressingRef = useRef(null);
     const typeAsRef = useRef(null);   // что реально ВВЕСТИ на отпускании: ассист мог перенацелить с нажатой на ожидаемую
+    const pointerIdRef = useRef(null);   // мультитач: ведём только ПОСЛЕДНИЙ палец; новое касание коммитит предыдущий
     const pressTsRef = useRef(0);   // момент нажатия — для вибрации «на отпускании» при долгом тапе (≥200мс)
     const kbdRef = useRef(null);
     const [isDesktop] = useState(_isDesktop);
@@ -180,31 +181,37 @@ export function GameKeyboard({
         typeAsRef.current = k;
         setPop(k);   // подсветка (анимация .kbd__pop) на текущей клавише под пальцем
     };
+    const commitActive = () => {   // зафиксировать клавишу под текущим пальцем (если валидна и доступна)
+        const k = typeAsRef.current;
+        if (k != null && active(k)) {
+            onType?.(k);
+            if (Date.now() - pressTsRef.current >= 200) buzz();
+        }
+    };
     const trackDown = (e) => {
         // ⌫/✓/«Не знаю» — у них свои обработчики; буквы/пробел ведём здесь
         if (e.target.closest(".kbd__key--act, .kbd__key--go, .kbd-dunno")) return;
         e.preventDefault();
+        if (pressingRef.current) commitActive();   // МУЛЬТИТАЧ: новое касание ЗАВЕРШАЕТ предыдущее
         pressingRef.current = true;
+        pointerIdRef.current = e.pointerId;         // ведём именно этот (последний) палец
         pressTsRef.current = Date.now();
         try { e.currentTarget.setPointerCapture?.(e.pointerId); } catch { /* no-op */ }
         const k0 = nearestKey(e.clientX, e.clientY);
-        setActive(k0 ? correctKey(k0, e) : null);
-        buzz();             // один тик на касание
+        setActive(k0 ? correctKey(k0, e) : null);   // переход с клавиши прежнего пальца на новую
+        buzz();
         maybeShowHint();
     };
     const trackMove = (e) => {
-        if (!pressingRef.current) return;
+        if (!pressingRef.current || e.pointerId !== pointerIdRef.current) return;   // только активный палец
         const k0 = nearestKey(e.clientX, e.clientY);
         setActive(k0 ? correctKey(k0, e) : null);   // подсветка едет за пальцем; вне поля → null
     };
-    const trackEnd = (commit) => {
-        if (!pressingRef.current) return;
+    const trackEnd = (e, commit) => {
+        if (!pressingRef.current || e.pointerId !== pointerIdRef.current) return;   // коммитит только активный палец
         pressingRef.current = false;
-        const k = typeAsRef.current;
-        if (commit && k != null && active(k)) {   // коммит по клавише под пальцем; null (вне поля) → ничего
-            onType?.(k);
-            if (Date.now() - pressTsRef.current >= 200) buzz();
-        }
+        pointerIdRef.current = null;
+        if (commit) commitActive();   // клавиша под пальцем; null (вне поля) → ничего
         typeAsRef.current = null; setPop(null);
     };
 
@@ -301,7 +308,7 @@ export function GameKeyboard({
     return (
         <div className="kbd" ref={kbdRef} onContextMenu={(e) => e.preventDefault()}
             onPointerDown={trackDown} onPointerMove={trackMove}
-            onPointerUp={() => trackEnd(true)} onPointerCancel={() => trackEnd(false)}>
+            onPointerUp={(e) => trackEnd(e, true)} onPointerCancel={(e) => trackEnd(e, false)}>
             {/* «Не знаю» — НАД клавиатурой (а не клавишей среди букв): единообразно во всех экранных
                 клавиатурах, чтобы случайно не задеть. Неприметная, в правом углу над панелью. */}
             {showDunno && onDunno && (
