@@ -191,13 +191,13 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             )}
 
 
-            {view?.forms && posFormsRows(view.no, view.forms).length > 0 && (
+            {view?.forms && posFormsRows(view.no, view.forms, lang).length > 0 && (
                 <div style={{ marginTop: "var(--sp-5)" }}>
                     <div className="label row" style={{ gap: "var(--sp-2)", alignItems: "center", marginBottom: "var(--sp-2)" }}>
                         <Icon n="type" sm /> {t.grammForms || "Грамматические формы"}
                     </div>
                     <div className="forms-tbl">
-                        {posFormsRows(view.no, view.forms).map(({ label, value }) => (
+                        {posFormsRows(view.no, view.forms, lang).map(({ label, value }) => (
                             <div key={label} className="forms-tbl__row">
                                 <span className="forms-tbl__label">{label}</span>
                                 <span className="forms-tbl__val">{value}</span>

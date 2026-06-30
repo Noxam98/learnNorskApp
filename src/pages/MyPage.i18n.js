@@ -22,3 +22,14 @@ export const NPS = langGuard({
     lv:  { t: "Jauni vārdi sesijā", d: "Cik jaunu vārdu ieviest vienā sesijā — pārējais ir jau iesāktu vārdu vingrinājumi." },
     ar:  { t: "كلمات جديدة لكل جلسة", d: "كم كلمة جديدة تُقدَّم في الجلسة الواحدة — والبقية تمارين على كلمات بدأتها." },
 }, "MyPage.NPS");
+
+// Грамматические упражнения в сессии (gamePrefs.grammar, дефолт вкл.) — тумблер.
+export const GRM = langGuard({
+    ru:  { t: "Грамматика (род, формы)", d: "Добавлять упражнения на грамматику к выученным словам: род существительного и множественное число." },
+    en:  { t: "Grammar (gender, forms)", d: "Add grammar exercises on learned words: noun gender and plural forms." },
+    ukr: { t: "Граматика (рід, форми)", d: "Додавати граматичні вправи до вивчених слів: рід іменника та множина." },
+    pl:  { t: "Gramatyka (rodzaj, formy)", d: "Dodawaj ćwiczenia gramatyczne do nauczonych słów: rodzaj rzeczownika i liczbę mnogą." },
+    lt:  { t: "Gramatika (giminė, formos)", d: "Pridėti gramatikos pratimus prie išmoktų žodžių: daiktavardžio giminę ir daugiskaitą." },
+    lv:  { t: "Gramatika (dzimte, formas)", d: "Pievienot gramatikas vingrinājumus apgūtajiem vārdiem: lietvārda dzimti un daudzskaitli." },
+    ar:  { t: "القواعد (الجنس، الصيغ)", d: "أضف تمارين قواعد على الكلمات المتعلَّمة: جنس الاسم وصيغة الجمع." },
+}, "MyPage.GRM");

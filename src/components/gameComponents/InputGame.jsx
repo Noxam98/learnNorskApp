@@ -11,7 +11,7 @@ import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import { playSound } from "../tools/sound.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, foldLight, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, foldLight, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots, isGrammar, grammarAnswer, FormPrompt } from "./gameShared.jsx";
 import { GameKeyboard, keysAdjacent } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -37,8 +37,11 @@ const nextAssistKey = (targets, input) => {
 
 export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const isNo2Int = mode !== "int2no";
-    // печатаем норвежское → наша экранная клавиатура; для ввода родного перевода (no2int) — штатный инпут
-    const useKbd = !isNo2Int;
+    // грамм-упражнение (ввод формы): печатаем норвежскую форму (target.value), всегда экранной клавой.
+    const grammar = isGrammar(wordsProp?.[0]);
+    // печатаем норвежское → наша экранная клавиатура; для ввода родного перевода (no2int) — штатный инпут.
+    // грамм — всегда экранная клава (норв. форма с å/ø/æ).
+    const useKbd = grammar || !isNo2Int;
     const [input, setInput] = useState("");
     const [typoAsk, setTypoAsk] = useState(/** @type {{typed:string, correct:string}|null} */(null)); // найден near-miss — спросить «опечатка?»
     const [resolving, setResolving] = useState(false);   // после выбора Да/Нет — короткая пауза до авто-перехода (клавиатуру прячем)
@@ -61,7 +64,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, rank,
         // со звуком пауза перед переходом = длина озвучки ответа + хвост (correctPrimary/aLang ниже).
         // При опечатке (held) переход по тапу — там озвучивает сама игра, см. эффект ниже.
-        speakAnswer: () => (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null,
+        speakAnswer: () => (sound && correctPrimary && !grammar) ? speakTextEnd(correctPrimary, aLang) : null,
         onAdvance: () => { setInput(""); setTypoOk(false); setTypoAsk(null); setResolving(false); setLetterHint(null); typoRef.current = false; },   // новое слово — чистое поле
         onWrong: () => { resetInput(); setTypoOk(false); setTypoAsk(null); setLetterHint(null); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
@@ -71,20 +74,25 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const no = current?.translate?.no?.[0] || "";
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
+    const grammarAns = grammar ? grammarAnswer(current) : "";   // верный ввод грамм-формы (target.value)
     const question = isNo2Int ? no : (translations.join(", ") || no);
-    const accepted = (isNo2Int ? translations : (current?.translate?.no || [])).map((s) => s.trim()).filter(Boolean);
+    // грамм: единственный принятый ответ = target.value (норв. форма). Обычный ввод — как было.
+    const accepted = grammar ? [grammarAns].filter(Boolean)
+        : (isNo2Int ? translations : (current?.translate?.no || [])).map((s) => s.trim()).filter(Boolean);
     // при ВВОДе норвежского (int2no) принимаем и словоформы (hunden/snakker/snakket), не только лемму;
-    // для родного (no2int) словоформ нет. Для отображения «также принято» используем accepted (без форм).
-    const acceptSet = isNo2Int ? accepted : [...accepted, ...wordForms(no, current?.forms)];
+    // для родного (no2int) словоформ нет. Грамм — строго target.value (форм не подмешиваем).
+    const acceptSet = grammar ? accepted : (isNo2Int ? accepted : [...accepted, ...wordForms(no, current?.forms)]);
     // показ норв. слова — с артиклем/«å» по настройке: вопрос (no2int) и раскрытый ответ (int2no).
-    // Озвучка и сверка ввода — по «голой» лемме (артикль не печатают).
+    // Озвучка и сверка ввода — по «голой» лемме (артикль не печатают). Грамм — вопрос рисует FormPrompt.
     const promptDisp = isNo2Int ? noWithPrefix(no, current, { articles: showArticles, verbAa: showVerbAa }) : question;
-    const answerDisp = isNo2Int ? accepted.join(", ")
-        : [noWithPrefix(accepted[0] || no, current, { articles: showArticles, verbAa: showVerbAa }), ...accepted.slice(1)].join(", ");
-    const correctPrimary = (isNo2Int ? translations[0] : no) || "";
+    const answerDisp = grammar ? grammarAns
+        : (isNo2Int ? accepted.join(", ")
+            : [noWithPrefix(accepted[0] || no, current, { articles: showArticles, verbAa: showVerbAa }), ...accepted.slice(1)].join(", "));
+    const correctPrimary = grammar ? grammarAns : ((isNo2Int ? translations[0] : no) || "");
     const promptTarget = isNo2Int ? (ENDONYM[currentLanguage] || currentLanguage) : "Norsk";
     const qLang = hyLang(currentLanguage, isNo2Int);
-    const aLang = hyLang(currentLanguage, !isNo2Int);
+    // грамм-ответ — норвежская форма → язык ввода/вывода всегда «nb»
+    const aLang = grammar ? "nb" : hyLang(currentLanguage, !isNo2Int);
     const canType = (status === "ASKING" || status === "INCORRECT") && !resolving;
     const assistKey = useKbd ? nextAssistKey(acceptSet, input) : null;   // ожидаемая буква → расширить её зону тапа
 
@@ -100,9 +108,9 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (!useKbd && (status === "ASKING" || status === "INCORRECT") && inputRef.current) inputRef.current.focus();
     }, [status, current]); // eslint-disable-line
 
-    // Озвучка видимого слова при показе (+ прогрев правильного ответа заранее).
+    // Озвучка видимого слова при показе (+ прогрев правильного ответа заранее). Грамм — без озвучки.
     useEffect(() => {
-        if (!sound || status !== "ASKING") return;
+        if (!sound || status !== "ASKING" || grammar) return;
         if (question) speakText(question, qLang).catch(() => {});
         if (correctPrimary) prefetchTts(correctPrimary, aLang);
     }, [current, sound]); // eslint-disable-line
@@ -110,7 +118,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     // confirm/deny сами озвучивают и ждут конца аудио (afterTypoAudio), чтобы не было двойной озвучки.
     // После обычного ВЕРНОГО озвучкой+паузой управляет useGameLoop (speakAnswer).
     useEffect(() => {
-        if (sound && correctPrimary && !resolving && (status === "INCORRECT" || (status === "CORRECT" && held))) {
+        if (sound && correctPrimary && !resolving && !grammar && (status === "INCORRECT" || (status === "CORRECT" && held))) {
             speakText(correctPrimary, aLang).catch(() => {});
         }
     }, [status]); // eslint-disable-line
@@ -118,8 +126,11 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const submit = (e) => {
         e?.preventDefault?.();
         if (!submitArmedRef.current || typoAsk) return;   // дебаунс + не отправляем, пока ждём ответа на «опечатка?»
-        const fin = foldLoose(input);
-        const exactHit = acceptSet.find((a) => foldLoose(a) === fin);
+        // грамм-форму сверяем СТРОГО (foldLight сохраняет å/ø/æ): «boker» ≠ «bøker» — иначе упражнение
+        // на нерегулярное мн.ч. теряет смысл. Обычный ввод — снисходительно (foldLoose), как было.
+        const eq = grammar ? foldLight : foldLoose;
+        const fin = eq(input);
+        const exactHit = acceptSet.find((a) => eq(a) === fin);
         if (exactHit) {
             // зачтено. Если ввели БАЗОВУЮ букву вместо å/ø/æ (foldLight различается) — тихо показать
             // правильное написание (всегда верно, снисходительность сохраняется).
@@ -130,7 +141,9 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         // лишняя), слова от 3 букв (на 2-буквенных 1 правка ≈ совсем другое слово). НЕ зачитываем сами —
         // показываем что нашли и спрашиваем пользователя (он сам отвечает за свою учёбу). Только при вводе
         // норвежского (наша раскладка → карта соседства валидна).
-        if (useKbd) {
+        // грамм-форма: прощение опечаток отключено (scoring.typoForgive=false) — мимо ровно один путь: верно/неверно.
+        const typoForgive = grammar ? (current?.scoring?.typoForgive ?? false) : true;
+        if (useKbd && typoForgive) {
             // соседство проверяем ДВАЖДЫ: по свёрнутой строке (a/o/ae — для тех, кто печатает базовые буквы)
             // И по «сырой» с сохранёнными å/ø/æ (соседство по фактическим клавишам: å рядом с ø/p/æ).
             const finRaw = foldLight(input);
@@ -188,7 +201,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const otherAccepted = accepted.filter((a) => foldLoose(a) !== foldLoose(input));
     // экранный ввод: после ошибки (и при вопросе «опечатка?») показываем ШАБЛОН правильного слова
     // (тусклым) + красным неверные буквы по позициям — это и есть «что мы нашли». До этого — обычный ввод.
-    const tplTarget = (typoAsk ? typoAsk.correct : (no || "")).trim().toLowerCase();
+    const tplTarget = (typoAsk ? typoAsk.correct : (grammar ? grammarAns : no) || "").trim().toLowerCase();
     const inputSlots = useKbd ? tplSlots([...input], [...tplTarget], { tpl: status === "INCORRECT" || !!typoAsk, caret: canType && !typoAsk }) : null;
 
     return (
@@ -200,12 +213,19 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                 style={status === "CORRECT" && typoOk ? { cursor: "pointer" } : undefined}>
                 <div className="qcard">
                     <div className="qcount">{t.word} {qIndex} / {qTotal}</div>
-                    <div className="qprompt">{t.translateTo} {promptTarget}</div>
-                    <h1 className="qword" lang={qLang}>{hyphenate(promptDisp, qLang)}
-                        <SpeakButton text={question} lang={qLang} className="qspeak" lg
-                            ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
-                    </h1>
-                    {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
+                    {/* грамм-упражнение: вопрос о форме (лемма + подпись) без перевода/озвучки/части речи */}
+                    {grammar ? (
+                        <FormPrompt word={current} lang={currentLanguage} />
+                    ) : (
+                        <>
+                            <div className="qprompt">{t.translateTo} {promptTarget}</div>
+                            <h1 className="qword" lang={qLang}>{hyphenate(promptDisp, qLang)}
+                                <SpeakButton text={question} lang={qLang} className="qspeak" lg
+                                    ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
+                            </h1>
+                            {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
+                        </>
+                    )}
 
                     {useKbd ? (
                         <div className="build-line" lang={aLang}>

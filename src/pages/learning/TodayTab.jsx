@@ -199,6 +199,7 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
                                             {composition.weak > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {pl(lang, composition.weak, "weak")}</span>}
                                             {composition.fresh > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-new)" }} />{composition.fresh} {pl(lang, composition.fresh, "fresh")}</span>}
                                             {composition.phrases > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-phrase, #8b7cf6)" }} />{composition.phrases} {pl(lang, composition.phrases, "phrase")}</span>}
+                                            {composition.grammar > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-grammar, #8b7cf6)" }} />{composition.grammar} {pl(lang, composition.grammar, "grammar")}</span>}
                                         </div>
                                         {composition.fresh > 0 && (
                                             <div className="review-cta__note"><Icon n="info" sm /> {t.portionNote}</div>

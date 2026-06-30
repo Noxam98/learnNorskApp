@@ -8,19 +8,19 @@ import { Icon } from "../ui/Icon.jsx";
 import { BrandMark } from "../ui/BrandMark.jsx";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { posLabel, posMeta, chipPrefix } from "../ui/pos.js";
+import { posLabel, posMeta, chipPrefix, posFormsLine } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { playSound } from "../tools/sound.js";
 import { useScrollLock, ProgressSegments, semisOf } from "./gameShared.jsx";
 import { langGuard } from "../../interface/i18nGuard.js";
 const HINTS = langGuard({
-    ru: { reveal: "нажми — перевод", next: "нажми — дальше", studied: "Просмотрено" },
-    ukr: { reveal: "натисни — переклад", next: "натисни — далі", studied: "Переглянуто" },
-    en: { reveal: "tap to reveal", next: "tap for next", studied: "Reviewed" },
-    pl: { reveal: "dotknij — tłumaczenie", next: "dotknij — dalej", studied: "Przejrzano" },
-    lt: { reveal: "bakstelėk — vertimas", next: "bakstelėk — toliau", studied: "Peržiūrėta" },
-    lv: { reveal: "pieskaries — tulkojums", next: "pieskaries — tālāk", studied: "Apskatīts" },
-    ar: { reveal: "انقر للكشف", next: "انقر للتالي", studied: "تمت المراجعة" },
+    ru: { reveal: "нажми — перевод", next: "нажми — дальше", studied: "Просмотрено", forms: "Формы" },
+    ukr: { reveal: "натисни — переклад", next: "натисни — далі", studied: "Переглянуто", forms: "Форми" },
+    en: { reveal: "tap to reveal", next: "tap for next", studied: "Reviewed", forms: "Forms" },
+    pl: { reveal: "dotknij — tłumaczenie", next: "dotknij — dalej", studied: "Przejrzano", forms: "Formy" },
+    lt: { reveal: "bakstelėk — vertimas", next: "bakstelėk — toliau", studied: "Peržiūrėta", forms: "Formos" },
+    lv: { reveal: "pieskaries — tulkojums", next: "pieskaries — tālāk", studied: "Apskatīts", forms: "Formas" },
+    ar: { reveal: "انقر للكشف", next: "انقر للتالي", studied: "تمت المراجعة", forms: "الصيغ" },
 }, "StudyGame.HINTS");
 
 // Подписи мини-меню «Не учить» (две причины): «Не актуально» (убрать у себя) / «Ошибка в слове» (модерация).
@@ -146,6 +146,9 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     const frontLang = hyLang(currentLanguage, isNo2Int);   // лицевая: норвежская при no2int
     const backLang = hyLang(currentLanguage, !isNo2Int);
     const posText = cur ? posLabel(cur.part_of_speech, t) : "";
+    // Компактная парадигма форм (en bil · bilen · biler · bilene) — учит формам,
+    // которые потом тестируют грамм-упражнения. Показываем на обороте, когда формы есть.
+    const formsLine = cur?.forms ? posFormsLine(no, cur.forms, currentLanguage) : "";
     const noVisible = isNo2Int ? true : flipped; // когда видно норвежское — показываем озвучку
     // в системной сессии счётчик/полоса = прогресс ВСЕЙ сессии (а не одна карточка)
     const useStep = stepTotal > 0;
@@ -257,6 +260,12 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                     <div className="flashcard__example">
                                         <b lang={hyLang(currentLanguage, true)}>{cur.example.no}</b>
                                         {(cur.example[currentLanguage] || cur.example.ru) && <span className="muted"> — {cur.example[currentLanguage] || cur.example.ru}</span>}
+                                    </div>
+                                )}
+                                {flipped && formsLine && (
+                                    <div className="flashcard__forms" lang={hyLang(currentLanguage, true)}>
+                                        <span className="flashcard__forms-label">{h.forms}</span>
+                                        <span className="flashcard__forms-val">{formsLine}</span>
                                     </div>
                                 )}
                             </motion.div>

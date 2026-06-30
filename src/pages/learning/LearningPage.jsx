@@ -112,7 +112,15 @@ export default function LearningPage() {
     const openSession = (words = null, mode = "choice", opts = {}) =>
         setSession({ words, mode, system: !words?.length || !!opts.setId, setId: opts.setId || null });
     const openWord = (no, wordId) => setInfo({ no, wordId });
-    const closeSession = (didPractice) => { setSession(null); if (didPractice) setReloadKey((k) => k + 1); };
+    const closeSession = (didPractice) => {
+        setSession(null);
+        if (didPractice) setReloadKey((k) => k + 1);
+        // Старт сессии забирает прогретую программу (take → next=null). Экран итога её снова греет,
+        // но ВЫХОД ДО итога (Esc/×) оставлял next=null → «Сегодня» залипала на «готовим сессию»
+        // (sessReady=false), без честных чипов состава. Догреваем (prefetch идемпотентен — no-op,
+        // если уже греется/готова, напр. после итога). additive: на штатный путь не влияет.
+        useSessionStore.getState().prefetch(20);
+    };
     const openPlacement = () => setPlacement(true);
     const closePlacement = (didPlace) => { setPlacement(false); if (didPlace) setReloadKey((k) => k + 1); };
 

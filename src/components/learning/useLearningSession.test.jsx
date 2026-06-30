@@ -25,6 +25,12 @@ import { useLearningSession } from "./useLearningSession.js";
 import api from "../tools/api.js";
 
 const card = (pid) => ({ pool_id: pid, mode: "study", step: "card", direction: null, no: `w${pid}`, translate: { ru: [`п${pid}`] } });
+// грамм-элемент ввода нерегулярного мн.ч.: mode "input", но отдельный тир (grammar/target).
+const grammarInput = (pid) => ({
+    pool_id: pid, mode: "input", direction: "indefpl", step: "input_indefpl",
+    grammar: true, target: { field: "indef_pl", value: "bøker" }, repeat: true,
+    no: `w${pid}`, forms: { pos: "noun", indef_pl: "bøker" }, translate: { ru: [`п${pid}`] },
+});
 
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
@@ -67,6 +73,29 @@ describe("useLearningSession", () => {
         await waitFor(() => expect(api.learningNextCards).toHaveBeenCalled());
         await waitFor(() => expect(result.current.elements.length).toBeGreaterThan(2));  // догрузилось в конец
         expect(result.current.idx).toBe(1);
+    });
+
+    it("грамм input_indefpl (mode input) НЕ увеличивает graduated/protected — отдельный тир", async () => {
+        take.mockResolvedValue({ elements: [grammarInput(7)] });   // единственный элемент — грамм-ввод
+        const { result } = renderHook(() => useLearningSession({ words: [], system: true, lang: "ru", onClose: () => {} }));
+        await waitFor(() => expect(result.current.phase).toBe("play"));
+        // верный ввод грамм-формы (mode "input", repeat=true) → НЕ должен засчитаться как градуация/защита
+        await act(async () => { result.current.onGameFinish({ total: 1, correct: 1, typo: false }, false, "input"); });
+        await waitFor(() => expect(result.current.phase).toBe("summary"));
+        expect(result.current.graduated).toBe(0);
+        expect(result.current.protectedNow).toBe(0);
+        expect(result.current.protectedTypo).toBe(0);
+    });
+
+    it("обычный input (не грамм) с repeat — увеличивает graduated и protected", async () => {
+        // контроль: тот же путь без grammar/target засчитывается как раньше (гард не задел обычные)
+        take.mockResolvedValue({ elements: [{ pool_id: 8, mode: "input", direction: "int2no", step: "input_int2no", repeat: true, no: "hund", translate: { ru: ["собака"] } }] });
+        const { result } = renderHook(() => useLearningSession({ words: [], system: true, lang: "ru", onClose: () => {} }));
+        await waitFor(() => expect(result.current.phase).toBe("play"));
+        await act(async () => { result.current.onGameFinish({ total: 1, correct: 1, typo: false }, false, "input"); });
+        await waitFor(() => expect(result.current.phase).toBe("summary"));
+        expect(result.current.graduated).toBe(1);
+        expect(result.current.protectedNow).toBe(1);
     });
 
     it("принятая карточка (тык) НЕ добирается — норма считается по принятым", async () => {

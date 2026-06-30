@@ -35,14 +35,19 @@
  *   options?: { w: string, alt?: string | null }[],
  *   distractors?: string[],
  *   cloze?: { blank: string, answer: string, options: string[] },
+ *   grammar?: boolean,
+ *   target?: { field: string, value: string },
+ *   prompt?: { kind?: string, formLabel?: string, lemma?: string },
+ *   scoring?: { typoForgive?: boolean },
  * } & Record<string, any>} GameWord
  */
 
 /**
  * Клетка рампы SRS (имя ступени). Обычные слова: card → choice_int2no → choice_no2int (на слух) →
  * build_int2no → input_int2no. Служебные: card → cloze_1 → cloze_2 → cloze_3.
+ * Грамматика (overlay поверх выученных): choice_gender / input_indefpl — отдельный тир.
  * @typedef {'card' | 'choice_no2int' | 'choice_int2no' | 'build_int2no' | 'input_int2no'
- *          | 'cloze_1' | 'cloze_2' | 'cloze_3'} RampCell
+ *          | 'cloze_1' | 'cloze_2' | 'cloze_3' | 'choice_gender' | 'input_indefpl'} RampCell
  */
 
 /**

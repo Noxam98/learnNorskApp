@@ -274,11 +274,13 @@
   .setrow .dd__trigger { width: auto; padding: 9px 10px; gap: 7px; }
   .setrow .dd__valtxt { font-size: var(--fs-13); }
 
-  /* toggle */
-  .toggle { width: 46px; height: 27px; border-radius: var(--r-full); background: var(--border-2); position: relative; cursor: pointer; flex: none; transition: background var(--dur) var(--ease); }
+  /* toggle (рендерится как <span> ИЛИ доступная <button role="switch"> — сброс дефолтов кнопки,
+     чтобы вид совпадал; видимый фокус-ринг для клавиатуры) */
+  .toggle { width: 46px; height: 27px; border-radius: var(--r-full); background: var(--border-2); position: relative; cursor: pointer; flex: none; transition: background var(--dur) var(--ease); padding: 0; border: 0; margin: 0; appearance: none; -webkit-appearance: none; font: inherit; }
   .toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 21px; height: 21px; border-radius: 50%; background: #fff; box-shadow: var(--shadow-xs); transition: transform var(--dur) var(--ease); }
   .toggle.is-on { background: var(--fjord-600); }
   .toggle.is-on::after { transform: translateX(19px); }
+  button.toggle:focus-visible { outline: 2px solid var(--fjord-600); outline-offset: 2px; }
 
   .mini-select { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid var(--border-2); border-radius: var(--r-sm); font-size: var(--fs-14); font-weight: 600; cursor: pointer; background: var(--surface); }
   .mini-select .ic { color: var(--ink-3); }
@@ -346,6 +348,7 @@
   .pseg--st2 { background: color-mix(in srgb, var(--game-correct) 58%, var(--game-surface-2)); }
   .pseg--st3 { background: color-mix(in srgb, var(--game-correct) 80%, var(--game-surface-2)); }
   .pseg--st4 { background: var(--game-correct); }                                                 /* ввод — самый насыщенный */
+  .pseg--st5 { background: var(--st-grammar, #8b7cf6); }                                           /* грамматика — отдельный тир (фиолетовый) */
   /* текущий сегмент: пока вопрос открыт — мигает «будущим» зелёным; во время ожидания итога —
      нейтральный (is-pending); верно — зелёный стадии; неверно — оранжевый (is-wrong, как было). */
   @keyframes psegBlink { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
@@ -356,6 +359,8 @@
   /* center stage — занимает остаток высоты, прокручивается внутри как страховка */
   .pstage { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--sp-6) var(--sp-6); text-align: center; }
   .qcard { width: 100%; max-width: 600px; }
+  /* грамм-упражнение: крупная лемма выделена цветом тира (как сегмент прогресса грамматики) */
+  .qword--grammar { color: var(--st-grammar, #8b7cf6); }
   /* Кнопки НАД карточкой слова (Уже знаю / Не учить) — компактные вторичные, по центру.
      «Уже знаю» появляется после флипа (показа перевода); «Не учить» — всегда. */
   .card-skip { flex: none; display: flex; gap: var(--sp-2); justify-content: center; margin-bottom: var(--sp-5); flex-wrap: wrap; }
@@ -399,6 +404,10 @@
   .flashcard__example { margin-top: var(--sp-4); font-size: var(--fs-16); color: var(--game-ink); }
   .flashcard__example b { color: var(--game-ink); }
   .flashcard__example .muted { color: var(--game-ink-2); }
+  /* Компактная парадигма форм на обороте флешкарты (en bil · bilen · biler · bilene). */
+  .flashcard__forms { margin-top: var(--sp-4); display: flex; flex-direction: column; gap: 2px; }
+  .flashcard__forms-label { font-size: var(--fs-12); color: var(--game-ink-2); letter-spacing: var(--ls-wide); text-transform: uppercase; }
+  .flashcard__forms-val { font-size: var(--fs-16); font-weight: 600; color: var(--game-ink); overflow-wrap: break-word; word-break: break-word; }
   .flashcard__hint { font-size: var(--fs-14); color: var(--game-ink-2); letter-spacing: var(--ls-wide); text-transform: uppercase; }
   .qspeak { margin-left: 8px; vertical-align: middle; color: var(--game-ink-2); background: transparent; border: none; cursor: pointer; }
   .qspeak:hover { color: var(--game-ink); }

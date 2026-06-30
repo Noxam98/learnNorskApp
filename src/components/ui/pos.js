@@ -1,3 +1,5 @@
+import { langGuard } from "../../interface/i18nGuard.js";
+
 // Каноническое значение part_of_speech с бэкенда → ключ фронта (у прилагательного — "adj").
 const KEY_OF = {
     noun: "noun", verb: "verb", adjective: "adj", adverb: "adverb", preposition: "preposition",
@@ -84,31 +86,52 @@ export const chipPrefix = (posKey, forms, { articles = true, verbAa = true } = {
     return "";
 };
 
+// Локализованные подписи парадигмы форм (по языку UI), с en-фолбэком. Ключи стабильны и
+// привязаны к строению posFormsRows — добавление формы = добавление ключа во ВСЕ языки.
+export const FORM_ROW_LABELS = langGuard({
+    ru:  { sg: "ед. ч.", sg_def: "ед. ч. (определ.)", pl: "мн. ч.", pl_def: "мн. ч. (определ.)", inf: "инфинитив", present: "настоящее", past: "прош. время", perfect: "перфект", positive: "положит.", neuter: "ср. род", comparative: "сравнит.", superlative: "превосх." },
+    en:  { sg: "singular", sg_def: "singular (def.)", pl: "plural", pl_def: "plural (def.)", inf: "infinitive", present: "present", past: "past", perfect: "perfect", positive: "positive", neuter: "neuter", comparative: "comparative", superlative: "superlative" },
+    ukr: { sg: "одн.", sg_def: "одн. (означ.)", pl: "мн.", pl_def: "мн. (означ.)", inf: "інфінітив", present: "теперішній", past: "минулий", perfect: "перфект", positive: "звич.", neuter: "сер. рід", comparative: "вищий", superlative: "найвищий" },
+    pl:  { sg: "l. poj.", sg_def: "l. poj. (okr.)", pl: "l. mn.", pl_def: "l. mn. (okr.)", inf: "bezokolicznik", present: "teraźn.", past: "przeszły", perfect: "perfekt", positive: "stopień równy", neuter: "rodz. nij.", comparative: "wyższy", superlative: "najwyższy" },
+    lt:  { sg: "vns.", sg_def: "vns. (žym.)", pl: "dgs.", pl_def: "dgs. (žym.)", inf: "bendratis", present: "esam.", past: "būt.", perfect: "perfektas", positive: "nelyg.", neuter: "bevardė g.", comparative: "aukšt.", superlative: "aukšč." },
+    lv:  { sg: "vsk.", sg_def: "vsk. (not.)", pl: "dsk.", pl_def: "dsk. (not.)", inf: "nenoteiksme", present: "tagadne", past: "pagātne", perfect: "perfekts", positive: "pamata", neuter: "nekatra dz.", comparative: "pārākā", superlative: "vispārākā" },
+    ar:  { sg: "مفرد", sg_def: "مفرد (معرفة)", pl: "جمع", pl_def: "جمع (معرفة)", inf: "مصدر", present: "مضارع", past: "ماضٍ", perfect: "تام", positive: "عادي", neuter: "محايد", comparative: "تفضيل", superlative: "أعلى تفضيل" },
+}, "pos.FORM_ROW_LABELS");
+
 // Полный набор грамматических форм слова → [{label, value}] для подробного показа.
 // word — само норвежское слово (нужно для неопр. формы ед.ч. сущ. и инфинитива гл.).
-export const posFormsRows = (word, forms) => {
+// lang — язык UI для подписей форм (en-фолбэк). Существующие вызовы без lang → en.
+export const posFormsRows = (word, forms, lang = "en") => {
     if (!forms) return [];
+    const L = FORM_ROW_LABELS[lang] || FORM_ROW_LABELS.en;
     const r = [];
     const add = (label, value) => { if (value) r.push({ label, value }); };
     if (forms.pos === "noun") {
-        add("ед. ч.", [forms.gender, word].filter(Boolean).join(" "));
-        add("ед. ч. (определ.)", forms.def_sg);
-        add("мн. ч.", forms.indef_pl);
-        add("мн. ч. (определ.)", forms.def_pl);
+        add(L.sg, [forms.gender, word].filter(Boolean).join(" "));
+        add(L.sg_def, forms.def_sg);
+        add(L.pl, forms.indef_pl);
+        add(L.pl_def, forms.def_pl);
     } else if (forms.pos === "verb") {
-        add("инфинитив", `å ${word}`);
-        add("настоящее", forms.present);
-        add("прош. время", forms.past);
-        add("перфект", forms.perfect);
+        add(L.inf, `å ${word}`);
+        add(L.present, forms.present);
+        add(L.past, forms.past);
+        add(L.perfect, forms.perfect);
     } else if (forms.pos === "adjective") {
-        add("положит.", word);
-        add("ср. род", forms.neuter);
-        add("мн. ч.", forms.plural);
-        add("сравнит.", forms.comparative);
-        add("превосх.", forms.superlative);
+        add(L.positive, word);
+        add(L.neuter, forms.neuter);
+        add(L.pl, forms.plural);
+        add(L.comparative, forms.comparative);
+        add(L.superlative, forms.superlative);
     }
     return r;
 };
+
+// Компактная парадигма одной строкой: только значения форм через « · »
+// (напр. «en bil · bilen · biler · bilene»). Для тесных мест — флешкарты.
+// Переиспользует posFormsRows, чтобы порядок/состав форм был единым. (Подписи тут не выводятся,
+// поэтому lang не обязателен — но прокидываем для единообразия, когда вызывают со значением.)
+export const posFormsLine = (word, forms, lang = "en") =>
+    posFormsRows(word, forms, lang).map((row) => row.value).join(" · ");
 
 // Локализованная короткая метка части речи.
 export const posLabel = (pos, t) => {

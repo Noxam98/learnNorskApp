@@ -47,6 +47,43 @@ export { ENDONYM } from "../../interface/languages.js";   // самоназва�
 // Честный «Не знаю» в заданиях: подсветит верный ответ, но засчитает как НЕ угадано.
 export const DUNNO = langGuard({ ru: "Не знаю", ukr: "Не знаю", en: "I don't know", pl: "Nie wiem", lt: "Nežinau", lv: "Nezinu", ar: "لا أعرف" }, "gameShared.DUNNO");
 
+// Грамм-упражнения (overlay поверх выученных слов): вопрос о форме слова. Подпись запрашиваемой
+// формы по prompt.formLabel — коротко, по языку UI. Расширяется добавлением ключа формы.
+export const FORM_LABEL = langGuard({
+    ru: { gender: "Какой род (артикль)?", indef_pl: "Мн. число (неопр.)?" },
+    en: { gender: "Which article?", indef_pl: "Plural (indefinite)?" },
+    ukr: { gender: "Який рід (артикль)?", indef_pl: "Множина (неозн.)?" },
+    pl: { gender: "Jaki rodzajnik?", indef_pl: "Liczba mnoga (nieokr.)?" },
+    lt: { gender: "Kuris artikelis?", indef_pl: "Daugiskaita (neapibr.)?" },
+    lv: { gender: "Kurš artikuls?", indef_pl: "Daudzskaitlis (nenot.)?" },
+    ar: { gender: "أي أداة تعريف؟", indef_pl: "الجمع (نكرة)؟" },
+}, "gameShared.FORM_LABEL");
+
+// Является ли элемент грамм-упражнением (несёт параметризованный контракт target).
+export const isGrammar = (w) => !!(w && (w.grammar || w.target));
+
+// Верный ответ грамм-упражнения = target.value (НЕ перевод/лемма).
+export const grammarAnswer = (w) => (w?.target?.value ?? "").toString();
+
+// Варианты грамм-выбора (артикли) — берём как есть из el.options и ПЕРЕМЕШИВАЕМ.
+export const grammarOptions = (w) => shuffle(((w?.options) || []).map((o) => o?.w).filter(Boolean));
+
+// FormPrompt — вопрос о форме слова: крупная лемма + локализованная подпись запрашиваемой формы.
+// Используют грамм-ветки ChoiceGame/InputGame вместо обычного перевод-промпта.
+// props: word — элемент (берём prompt.lemma и prompt.formLabel), lang — язык UI.
+export const FormPrompt = ({ word, lang }) => {
+    const p = word?.prompt || {};
+    const lemma = p.lemma || word?.no || "";
+    const labels = FORM_LABEL[lang] || FORM_LABEL.en;
+    const label = labels[p.formLabel] || FORM_LABEL.en[p.formLabel] || "";
+    return (
+        <>
+            {label && <div className="qprompt">{label}</div>}
+            <h1 className="qword qword--grammar" lang="no">{lemma}</h1>
+        </>
+    );
+};
+
 /** @type {import('react').CSSProperties} */
 export const PLAY_STYLE = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };
 
@@ -65,7 +102,9 @@ export const foldLoose = (s) => (s || "").trim().toLowerCase()
 // \u041b\u0451\u0433\u043a\u0430\u044f \u043d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u0434\u043b\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0438 \u041e\u041f\u0415\u0427\u0410\u0422\u041e\u041a \u043f\u043e \u0420\u0415\u0410\u041b\u042c\u041d\u042b\u041c \u043a\u043b\u0430\u0432\u0438\u0448\u0430\u043c: \u0440\u0435\u0433\u0438\u0441\u0442\u0440 + \u043f\u0440\u043e\u0431\u0435\u043b\u044b, \u043d\u043e \u00e5/\u00f8/\u00e6
 // \u0421\u041e\u0425\u0420\u0410\u041d\u042f\u0415\u041c (\u0432 \u043e\u0442\u043b\u0438\u0447\u0438\u0435 \u043e\u0442 foldLoose, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u0441\u0432\u043e\u0440\u0430\u0447\u0438\u0432\u0430\u0435\u0442 \u0438\u0445 \u0432 a/o/ae). \u041d\u0443\u0436\u043d\u043e, \u0447\u0442\u043e\u0431\u044b \u0441\u043e\u0441\u0435\u0434\u0441\u0442\u0432\u043e \u043a\u043b\u0430\u0432\u0438\u0448
 // \u0441\u0447\u0438\u0442\u0430\u043b\u043e\u0441\u044c \u043f\u043e \u0444\u0430\u043a\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u043c \u043a\u043d\u043e\u043f\u043a\u0430\u043c (\u00e5 \u0440\u044f\u0434\u043e\u043c \u0441 \u00f8/p/\u00e6), \u0430 \u043d\u0435 \u043f\u043e \u0441\u0432\u0451\u0440\u043d\u0443\u0442\u044b\u043c a/o \u2014 \u0438\u043d\u0430\u0447\u0435 \u043f\u0440\u043e\u043c\u0430\u0445 \u00e5\u2192\u00f8 \u0442\u0435\u0440\u044f\u043b\u0441\u044f.
-export const foldLight = (s) => (s || "").trim().toLowerCase().replace(/\s+/g, " ");
+// NFC-нормализация: å/ø/æ из target.value грамм-формы могут прийти в разложенном виде (NFD:
+// a+◌̊), а экранный ввод даёт прекомпозированные — без NFC они НЕ совпали бы. Для ASCII — no-op.
+export const foldLight = (s) => (s || "").trim().normalize("NFC").toLowerCase().replace(/\s+/g, " ");
 
 export const uniq = (arr) => {
     const s = new Set();
@@ -218,7 +257,8 @@ export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = n
 
 // Ранг ступени рампы слова для цвета сегмента: 0 — карточка (серый), 1..4 — зелёный по нарастанию,
 // 4 = ввод с клавиатуры (самый насыщенный). cell — клетка рампы (card/choice_*/build_*/input_* | cloze_1..3).
-const RAMP_RANK = { card: 0, study: 0, choice_int2no: 1, choice_no2int: 2, build_int2no: 3, input_int2no: 4, cloze_1: 1, cloze_2: 2, cloze_3: 3, order_int2no: 3, cells_int2no: 4 };
+// Грамматика (choice_gender/input_indefpl) — ОТДЕЛЬНЫЙ тир (rank 5 → свой цвет, не зелёная рампа).
+const RAMP_RANK = { card: 0, study: 0, choice_int2no: 1, choice_no2int: 2, build_int2no: 3, input_int2no: 4, cloze_1: 1, cloze_2: 2, cloze_3: 3, order_int2no: 3, cells_int2no: 4, choice_gender: 5, input_indefpl: 5 };
 export const stageRank = (cell) => RAMP_RANK[cell || "card"] ?? 0;
 
 // Транспонировка звуков «вход в задание»/«верно» по стадии рампы (rank 0..4): чем дальше слово
@@ -260,7 +300,10 @@ export const ProgressSegments = ({ segs, status }) => {
                             else if (status === "CORRECT") cls += " pseg--st" + r;  // верно → зелёный стадии
                             else cls += " is-wrong";                                // неверно → оранжевый
                         } else {
-                            cls += " pseg--st" + Math.min(r + 1, 4) + " is-blink";  // ASKING → мигает будущим зелёным
+                            // ASKING → мигает «будущим» цветом. Зелёная рампа (0..4) — на тон вперёд;
+                            // грамматика (тир 5) — своим цветом (без подъёма по зелёной шкале).
+                            const blinkR = r >= 5 ? r : Math.min(r + 1, 4);
+                            cls += " pseg--st" + blinkR + " is-blink";
                         }
                     } else if (state === "err") cls += " is-wrong";                 // пройдено с ошибкой → оранжевый
                     else if (state !== "future") cls += " pseg--st" + r;            // пройдено верно → зелёный стадии

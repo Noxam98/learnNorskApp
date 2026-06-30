@@ -10,7 +10,7 @@ import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { ListenPrompt } from "./ListenPrompt.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, isGrammar, grammarAnswer, grammarOptions, FormPrompt } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
@@ -56,6 +56,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         // звуковая обратная связь (раньше тут был тихий Promise.resolve → «после ответа звука нет»).
         // Иначе (обычный выбор) — озвучка перевода-ответа до конца.
         speakAnswer: () => {
+            if (grammar) return null;   // грамм — ответ-артикль озвучивать не нужно
             if (listenMode) {
                 if (wordEndRef.current.ended) return sound ? speakTextEnd(no, qLang) : Promise.resolve();
                 return new Promise((res) => { wordEndRef.current.resolve = res; });
@@ -89,10 +90,12 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const no = current?.translate?.no?.[0] || "";
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
+    const grammar = isGrammar(current);   // грамм-упражнение (род/форма): вопрос о форме, верный = target.value
     const question = isNo2Int ? no : (translations.join(", ") || no);
     // для показа норвежского слова-вопроса — с артиклем/«å» по настройке (озвучка читает лемму)
     const promptDisp = isNo2Int ? noWithPrefix(no, current, { articles: showArticles, verbAa: showVerbAa }) : question;
-    const correctPrimary = (isNo2Int ? translations[0] : no) || "";
+    // грамм: верный ответ = target.value (артикль), а не перевод/лемма
+    const correctPrimary = grammar ? grammarAnswer(current) : ((isNo2Int ? translations[0] : no) || "");
     const promptTarget = isNo2Int ? (ENDONYM[currentLanguage] || currentLanguage) : "Norsk";
     const qLang = hyLang(currentLanguage, isNo2Int);    // язык вопроса
     const aLang = hyLang(currentLanguage, !isNo2Int);   // язык ответа/вариантов
@@ -101,14 +104,14 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     // В режиме «на слух» слово проигрывает ListenPrompt (со своим прогрессом) — тут не дублируем.
     useEffect(() => {
         setRevealText(false);   // новое слово — снова прячем текст (listen-режим)
-        if (!sound || status !== "ASKING") return;
+        if (!sound || status !== "ASKING" || grammar) return;   // грамм — без озвучки (ответ-артикль читать не нужно)
         if (question && !listenMode) speakText(question, qLang).catch(() => {});
         if (correctPrimary) prefetchTts(correctPrimary, aLang);
     }, [current, sound]); // eslint-disable-line
     // После ОШИБКИ озвучиваем верный ответ. После ВЕРНОГО озвучкой+паузой управляет useGameLoop
     // (speakAnswer), чтобы авто-переход совпал с длиной аудио.
     useEffect(() => {
-        if (sound && status === "INCORRECT" && correctPrimary) speakText(correctPrimary, aLang).catch(() => {});
+        if (sound && status === "INCORRECT" && correctPrimary && !grammar) speakText(correctPrimary, aLang).catch(() => {});
     }, [status]); // eslint-disable-line
 
     // Подгрузка вариантов.
@@ -117,6 +120,8 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         let cancelled = false;
         setOptions(null); setSubOf({});
         setChosen(null);
+        // грамм-упражнение: варианты = три артикля из el.options (перемешать), без подсказок/дистракторов
+        if (grammar) { setOptions(grammarOptions(current)); setSubOf({}); return; }
         // второй перевод правильного слова — на вторую строку его кнопки
         const correctSub = (isNo2Int && translations[1]) ? translations[1] : null;
         const applyRich = (rich) => {
@@ -223,24 +228,25 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     promptLang={qLang}
                     options={options}
                     optionSub={subOf}
-                    optionLang={aLang}
+                    optionLang={grammar ? "no" : aLang}
                     picked={chosen}
                     correct={correctPrimary}
                     reveal={status === "CORRECT" || status === "INCORRECT"}
                     onPick={(opt) => { maybeShowChoiceHint(); choose(opt); }}
-                    posText={posText}
-                    hint={`${t.translateTo} ${promptTarget}`}
+                    posText={grammar ? "" : posText}
+                    hint={grammar ? null : `${t.translateTo} ${promptTarget}`}
                     countText={`${t.word} ${qIndex} / ${qTotal}`}
                     disabled={status !== "ASKING"}
                     loading={!options}
                     numbered={isDesktop}
-                    showWord={!listenMode || revealText || status === "CORRECT" || status === "INCORRECT"}
-                    listenSlot={listenMode ? (
+                    // грамм-вопрос: вместо слова/перевода — FormPrompt (лемма + подпись формы); сам word скрыт
+                    showWord={grammar ? false : (!listenMode || revealText || status === "CORRECT" || status === "INCORRECT")}
+                    listenSlot={grammar ? <FormPrompt word={current} lang={currentLanguage} /> : (listenMode ? (
                         <ListenPrompt word={no} ttsLang={qLang} uiLang={currentLanguage} asking={status === "ASKING"}
                             onEnded={onWordEnded}
                             onShowText={() => setRevealText(true)}
                             onDisableAlways={() => { useSystemStore.getState().setListenOffLocal(true); setRevealText(true); }} />
-                    ) : null}
+                    ) : null)}
                 >
                     {status === "INCORRECT" && descriptionText && (
                         <div className="feedback" style={{ display: "flex" }}>

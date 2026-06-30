@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
-import { AH, NPS } from "./MyPage.i18n.js";
+import { AH, NPS, GRM } from "./MyPage.i18n.js";
 import { LANGUAGES } from "../interface/languages.js";
 import { useIsMobile } from "../hooks/useMediaQuery.js";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
@@ -65,11 +65,19 @@ const MyPage = () => {
     const kbdAssistZones = useSystemStore((state) => state.kbdAssistZones);
     const ah = AH[currentLanguage] || AH.en;
     const nps = NPS[currentLanguage] || NPS.en;
+    const grm = GRM[currentLanguage] || GRM.en;
     // Порция новых слов за сессию (gamePrefs.newPerSession, дефолт 6; слайдер 4–10).
     const newPerSession = Math.min(10, Math.max(4, user?.gamePrefs?.newPerSession || 6));
     const setNewPerSession = (v) => {
         useAuthStore.setState((s) => (s.user ? { user: { ...s.user, gamePrefs: { ...(s.user.gamePrefs || {}), newPerSession: v } } } : s));
         api.setGamePrefs({ newPerSession: v }).catch(() => { /* офлайн — не критично */ });
+    };
+    // Грамм-упражнения в сессии (gamePrefs.grammar, дефолт ВКЛ.). Сохраняем тем же путём (set_user_game_prefs).
+    const grammarOn = user?.gamePrefs?.grammar !== false;
+    const toggleGrammar = () => {
+        const next = !grammarOn;
+        useAuthStore.setState((s) => (s.user ? { user: { ...s.user, gamePrefs: { ...(s.user.gamePrefs || {}), grammar: next } } } : s));
+        api.setGamePrefs({ grammar: next }).catch(() => { /* офлайн — не критично */ });
     };
     const isPhone = useIsMobile();
     const listenOffLocal = useSystemStore((state) => state.listenOffLocal);
@@ -335,6 +343,14 @@ const MyPage = () => {
                                     onChange={(e) => setNewPerSession(Number(e.target.value))} style={{ width: 120 }} />
                                 <b style={{ minWidth: 16, textAlign: "center", fontSize: "var(--fs-15)" }}>{newPerSession}</b>
                             </span>
+                        </div>
+                        {/* Грамматика (род/формы): overlay-упражнения к выученным словам. Дефолт вкл.
+                            Доступный тумблер: настоящая кнопка role="switch" — фокус/Enter/Space + озвучка скринридером. */}
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="graduation" sm /></span>
+                            <span className="setrow__meta" id="grm-label"><span className="setrow__t">{grm.t}</span><span className="setrow__d">{grm.d}</span></span>
+                            <button type="button" className={`toggle${grammarOn ? " is-on" : ""}`} role="switch"
+                                aria-checked={grammarOn} aria-labelledby="grm-label" onClick={toggleGrammar} />
                         </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="alert" sm /></span>

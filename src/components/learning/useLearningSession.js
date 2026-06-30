@@ -3,6 +3,7 @@
 // «ещё сессия». Вся логика — здесь; LearningSession.jsx — только экраны. Вынесено из LearningSession.jsx.
 import { useEffect, useState } from "react";
 import { useSessionStore } from "../../store/sessionStore.jsx";
+import { isGrammar } from "../gameComponents/gameShared.jsx";
 import api from "../tools/api.js";
 
 // Направление перевода для легаси-набора (единое на сессию: родной → норвежский).
@@ -140,14 +141,19 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     // Системный путь: переходим к следующему элементу либо к итогу. Легаси: сразу итог.
     const onGameFinish = (stats, isStudy = false, gmode = null) => {
         const got = stats || { total: 0, correct: 0 };
+        // Грамм-упражнение (choice_gender / input_indefpl): mode совпадает с обычными играми
+        // ("input"/"choice"), но это ОТДЕЛЬНЫЙ тир — бэк его в «выучено»/CEFR не считает. Поэтому
+        // исключаем из «выпущено за сессию»/«защищено» (иначе input_indefpl ложно завышал бы их
+        // и зелёную прибавку прогресса к след. уровню). Флаг grammar/target несёт элемент (на gw).
+        const isGrammarEl = isGrammar(elements[idx]?.gw);
         // тык-в-карточку = ПРИНЯЛ слово в учёбу → засчитываем в норму (target). Кнопки не сюда.
         if (isStudy) { setCards((c) => c + (got.total || 1)); setAcceptedNew((a) => a + (got.total || 1)); }
         else setRes((p) => ({ correct: p.correct + (got.correct || 0), total: p.total + (got.total || 0) }));
         // «выпущено за сессию»: ввод (штатная клава) с ПЕРВОЙ попытки = слово прошло рампу и больше не придёт
-        if (!isStudy && gmode === "input" && (got.correct || 0) > 0) setGraduated((g) => g + (got.correct || 0));
+        if (!isStudy && !isGrammarEl && gmode === "input" && (got.correct || 0) > 0) setGraduated((g) => g + (got.correct || 0));
         // «защищено за сессию»: повтор-слово, прошедшее финальную стадию (ввод) — закрепилось.
         // Если ввод приняли С ОПЕЧАТКОЙ (got.typo) — отдельный счётчик (отдельный пункт итога).
-        if (!isStudy && gmode === "input" && (got.correct || 0) > 0 && elements[idx]?.repeat) {
+        if (!isStudy && !isGrammarEl && gmode === "input" && (got.correct || 0) > 0 && elements[idx]?.repeat) {
             if (got.typo) setProtectedTypo((p) => p + 1);
             else setProtectedNow((p) => p + (got.correct || 0));
         }

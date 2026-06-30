@@ -102,6 +102,7 @@
   --st-review: #2A6A74;
   --st-master: #3C7A4E;
   --st-weak:   #B23A2E;
+  --st-grammar:#7A5BD0;   /* грамм-упражнения (род/формы) — отдельный тир */
 
   /* ---- Radii ---- */
   --r-xs: 6px;
@@ -174,6 +175,7 @@
   --st-review: #6FBAC4;
   --st-master: #6FC089;
   --st-weak:   #E5917F;
+  --st-grammar:#A78BFA;   /* грамм-упражнения (род/формы) — отдельный тир (тёмная тема) */
 
   --pos-phrase: #5FC6D4;  --pos-phrase-bg: #133339;
   --pos-noun:   #6FC78A;  --pos-noun-bg:   #173326;

@@ -35,6 +35,9 @@ const FORMS = {
     fresh: { ru: ["новое", "новых", "новых"], ukr: ["нове", "нових", "нових"], en: ["new", "new"], pl: ["nowe", "nowe", "nowych"], lt: ["naujas", "nauji", "naujų"], lv: ["jauns", "jauni"], ar: ["جديدة", "جديدة"] },
     started: { ru: ["начатое", "начатых", "начатых"], ukr: ["розпочате", "розпочатих", "розпочатих"], en: ["started", "started"], pl: ["rozpoczęte", "rozpoczęte", "rozpoczętych"], lt: ["pradėtas", "pradėti", "pradėtų"], lv: ["iesākts", "iesākti"], ar: ["مبدوءة", "مبدوءة"] },
     phrase: { ru: ["фраза", "фразы", "фраз"], ukr: ["фраза", "фрази", "фраз"], en: ["phrase", "phrases"], pl: ["fraza", "frazy", "fraz"], lt: ["frazė", "frazės", "frazių"], lv: ["frāze", "frāzes"], ar: ["عبارة", "عبارات"] },
+    // грамм-чип в составе сессии — это СЧЁТ упражнений: «4 упражнения», «5 упражнений»
+    // (мн. число по числу, а не неизменяемое «грамматика»).
+    grammar: { ru: ["упражнение", "упражнения", "упражнений"], ukr: ["вправа", "вправи", "вправ"], en: ["exercise", "exercises"], pl: ["ćwiczenie", "ćwiczenia", "ćwiczeń"], lt: ["pratimas", "pratimai", "pratimų"], lv: ["vingrinājums", "vingrinājumi"], ar: ["تمرين", "تمارين"] },
 };
 
 // Вернуть правильную форму слова `key` для числа n на языке lang.
