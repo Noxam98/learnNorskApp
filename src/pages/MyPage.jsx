@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
-import { AH, NPS, GRM } from "./MyPage.i18n.js";
+import { AH, NPS, GRM, GRM_POS } from "./MyPage.i18n.js";
 import { LANGUAGES } from "../interface/languages.js";
 import { useIsMobile } from "../hooks/useMediaQuery.js";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
@@ -66,6 +66,7 @@ const MyPage = () => {
     const ah = AH[currentLanguage] || AH.en;
     const nps = NPS[currentLanguage] || NPS.en;
     const grm = GRM[currentLanguage] || GRM.en;
+    const grmPos = GRM_POS[currentLanguage] || GRM_POS.en;
     // Порция новых слов за сессию (gamePrefs.newPerSession, дефолт 6; слайдер 4–10).
     const newPerSession = Math.min(10, Math.max(4, user?.gamePrefs?.newPerSession || 6));
     const setNewPerSession = (v) => {
@@ -78,6 +79,14 @@ const MyPage = () => {
         const next = !grammarOn;
         useAuthStore.setState((s) => (s.user ? { user: { ...s.user, gamePrefs: { ...(s.user.gamePrefs || {}), grammar: next } } } : s));
         api.setGamePrefs({ grammar: next }).catch(() => { /* офлайн — не критично */ });
+    };
+    // Пер-POS тумблеры грамматики (gamePrefs.grammarPos): какой части речи давать упражнения. Нет → все вкл.
+    const grammarPos = user?.gamePrefs?.grammarPos || {};
+    const posOn = (k) => grammarPos[k] !== false;
+    const toggleGrammarPos = (k) => {
+        const next = { ...grammarPos, [k]: !posOn(k) };
+        useAuthStore.setState((s) => (s.user ? { user: { ...s.user, gamePrefs: { ...(s.user.gamePrefs || {}), grammarPos: next } } } : s));
+        api.setGamePrefs({ grammarPos: next }).catch(() => { /* офлайн — не критично */ });
     };
     const isPhone = useIsMobile();
     const listenOffLocal = useSystemStore((state) => state.listenOffLocal);
@@ -352,6 +361,15 @@ const MyPage = () => {
                             <button type="button" className={`toggle${grammarOn ? " is-on" : ""}`} role="switch"
                                 aria-checked={grammarOn} aria-labelledby="grm-label" onClick={toggleGrammar} />
                         </div>
+                        {grammarOn && (
+                            <div className="grm-pos">
+                                {["noun", "verb", "adjective", "pronoun"].map((k) => (
+                                    <button key={k} type="button" role="switch" aria-checked={posOn(k)}
+                                        className={`grm-pos__chip${posOn(k) ? " is-on" : ""}`}
+                                        onClick={() => toggleGrammarPos(k)}>{grmPos[k]}</button>
+                                ))}
+                            </div>
+                        )}
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="alert" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.notifications}</span><span className="setrow__d">{t.notificationsDesc}</span></span>

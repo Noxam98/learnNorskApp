@@ -269,6 +269,11 @@
   .setrow__meta { flex: 1; min-width: 0; }
   .setrow__t { font-weight: 600; font-size: var(--fs-15); }
   .setrow__d { font-size: var(--fs-13); color: var(--ink-3); }
+  /* пер-POS чипы-тумблеры под строкой «Грамматика» (выровнены под мету: иконка 36px + gap) */
+  .grm-pos { display: flex; flex-wrap: wrap; gap: var(--sp-2); padding: 0 0 var(--sp-4) calc(36px + var(--sp-4)); margin-top: calc(-1 * var(--sp-3)); }
+  .grm-pos__chip { font: inherit; font-size: var(--fs-13); font-weight: 600; line-height: 1; padding: 6px 13px; border-radius: var(--r-full); cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--ink-3); transition: background .15s, color .15s, border-color .15s; }
+  .grm-pos__chip.is-on { background: var(--fjord-600); color: #fff; border-color: var(--fjord-600); }
+  .grm-pos__chip:focus-visible { outline: 2px solid var(--fjord-600); outline-offset: 2px; }
   /* селектор в строке настроек (язык / сила вибрации) — компактный чип справа, не на всю строку */
   .setrow .dd { flex: 0 1 auto; min-width: 0; max-width: 52%; }
   .setrow .dd__trigger { width: auto; padding: 9px 10px; gap: 7px; }

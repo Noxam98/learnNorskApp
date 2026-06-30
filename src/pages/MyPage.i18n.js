@@ -33,3 +33,14 @@ export const GRM = langGuard({
     lv:  { t: "Gramatika (dzimte, formas)", d: "Pievienot gramatikas vingrinājumus apgūtajiem vārdiem: lietvārda dzimti un daudzskaitli." },
     ar:  { t: "القواعد (الجنس، الصيغ)", d: "أضف تمارين قواعد على الكلمات المتعلَّمة: جنس الاسم وصيغة الجمع." },
 }, "MyPage.GRM");
+
+// Пер-POS тумблеры грамматики (gamePrefs.grammarPos): какие части речи дриллить.
+export const GRM_POS = langGuard({
+    ru:  { noun: "Сущ.", verb: "Глаг.", adjective: "Прил.", pronoun: "Местоим." },
+    en:  { noun: "Nouns", verb: "Verbs", adjective: "Adjectives", pronoun: "Pronouns" },
+    ukr: { noun: "Ім.", verb: "Дієсл.", adjective: "Прикм.", pronoun: "Займ." },
+    pl:  { noun: "Rzecz.", verb: "Czas.", adjective: "Przym.", pronoun: "Zaim." },
+    lt:  { noun: "Daikt.", verb: "Veiksm.", adjective: "Būdv.", pronoun: "Įvardž." },
+    lv:  { noun: "Lietv.", verb: "Darb.", adjective: "Īpaš.", pronoun: "Vietn." },
+    ar:  { noun: "أسماء", verb: "أفعال", adjective: "صفات", pronoun: "ضمائر" },
+}, "MyPage.GRM_POS");
