@@ -66,24 +66,27 @@ export const StatsPage = () => {
                 <button className="btn btn--ghost btn--sm" onClick={load}><Icon n="settings" sm /> Обновить</button>
             </div>
 
-            <div className="pgrid" style={{ display: "grid", gap: "var(--sp-4)", gridTemplateColumns: "1fr 1fr" }}>
+            <div className="pgrid" style={{ display: "grid", gap: "var(--sp-4)", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))" }}>
                 <div className="card" style={{ padding: "var(--sp-5)", gridColumn: "1 / -1" }}>
                     <div className="label" style={{ marginBottom: "var(--sp-4)" }}>Фоновые задачи</div>
                     {[["autofill", "Добавление слов"], ["embed", "Эмбеддинги"], ["describe", "Описания"], ["pos", "Части речи"], ["forms", "Грамм. формы"], ["homograph", "Омонимы"]].map(([key, name]) => {
                         const paused = control?.[key];
                         return (
-                            <div key={key} className="row between" style={{ padding: "6px 0", fontSize: "var(--fs-14)" }}>
-                                <span className="row" style={{ gap: "var(--sp-2)" }}>
-                                    <span style={{ width: 8, height: 8, borderRadius: "var(--r-full)", background: paused ? "var(--surface-3)" : "#22c55e" }} />
+                            <div key={key} className="row between" style={{ padding: "6px 0", fontSize: "var(--fs-14)", gap: "var(--sp-2)", flexWrap: "wrap" }}>
+                                <span className="row" style={{ gap: "var(--sp-2)", minWidth: 0, flex: "1 1 auto" }}>
+                                    <span style={{ width: 8, height: 8, flexShrink: 0, borderRadius: "var(--r-full)", background: paused ? "var(--surface-3)" : "#22c55e" }} />
                                     {name} <span className="muted">{paused ? "· на паузе" : "· работает"}</span>
                                 </span>
                                 <button
                                     className="btn btn--sm"
                                     onClick={() => toggle(key)}
                                     disabled={control == null}
-                                    style={paused
-                                        ? { background: "var(--fjord-600)", color: "#fff" }
-                                        : { background: "transparent", color: "#ef4444", border: "1px solid #ef4444" }}
+                                    style={{
+                                        flexShrink: 0, whiteSpace: "nowrap",
+                                        ...(paused
+                                            ? { background: "var(--fjord-600)", color: "#fff" }
+                                            : { background: "transparent", color: "#ef4444", border: "1px solid #ef4444" }),
+                                    }}
                                 >
                                     {paused ? "▶ Возобновить" : "⏹ Остановить"}
                                 </button>
