@@ -169,7 +169,7 @@
 }
 
 .ln-spin {
-  display: inline-block; width: 1em; height: 1em;
+  display: inline-block; width: 1em; height: 1em; flex: none; aspect-ratio: 1;
   border-radius: var(--r-full);
   border: 2px solid currentColor; border-top-color: transparent;
   animation: ln-spin .8s linear infinite; vertical-align: -0.15em;
