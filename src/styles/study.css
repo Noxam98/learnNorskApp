@@ -581,6 +581,22 @@
            max(env(safe-area-inset-bottom), var(--sp-6)) var(--sp-5);
 }
 .study-root.intro-full .plc-hero__btn { align-self: stretch; justify-content: center; }
+.study-root.intro-full { overflow-x: hidden; }   /* страховка: онбординг никогда не скроллит вбок */
 @media (max-width: 760px) {
   .study-root.intro-full .plc-hero__title { font-size: var(--fs-34); }
 }
+
+/* Блок настроек в онбординге: тема-адаптивная карточка (.card даёт поверхность/границу по теме).
+   color:var(--ink) СБРАСЫВАЕТ белый цвет .intro-full — иначе заголовки (наследуют) невидимы в светлой теме.
+   Значок+заголовок+тумблер в строку (__head), описание на второй (__d). Без фикс-ширин → без гор. скролла. */
+.study-root.intro-full .intro-set {
+  color: var(--ink); text-align: left; width: 100%; max-width: 100%; box-sizing: border-box;
+  padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-4);
+}
+.intro-set__row { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.intro-set__head { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; }
+.intro-set__head .toggle { margin-left: auto; }
+.intro-set__ic { color: var(--fjord-600); display: grid; place-items: center; flex: none; }
+.intro-set__t { font-weight: 600; font-size: var(--fs-15); color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
+.intro-set__d { font-size: var(--fs-13); color: var(--ink-3); line-height: 1.4; }
+.intro-set__chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: 2px; }
