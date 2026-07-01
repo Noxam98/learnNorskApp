@@ -11,7 +11,7 @@ import { speakText, prefetchTts } from "../ui/tts.js";
 import { posLabel, posMeta, chipPrefix, posFormsLine } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { playSound } from "../tools/sound.js";
-import { useScrollLock, ProgressSegments, semisOf } from "./gameShared.jsx";
+import { useScrollLock, ProgressSegments, semisOf, filterChosenWords, shuffle } from "./gameShared.jsx";
 import { langGuard } from "../../interface/i18nGuard.js";
 const HINTS = langGuard({
     ru: { reveal: "нажми — перевод", next: "нажми — дальше", studied: "Просмотрено", forms: "Формы" },
@@ -33,11 +33,6 @@ const SKIP = langGuard({
     lv: { notRelevant: "Neaktuāli", wordError: "Kļūda vārdā" },
     ar: { notRelevant: "غير مناسبة", wordError: "كلمة خاطئة" },
 }, "StudyGame.SKIP");
-
-const filterChosenWords = (dictList) =>
-    dictList.flatMap((d) => d.words.filter((w) => w?.gameData?.isChoosedToGame));
-
-const shuffle = (arr) => arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
 
 // words/onExit передаёт «Учёба» (переиспользует игру). Карточки — пассивный режим, в SRS не пишет.
 /**

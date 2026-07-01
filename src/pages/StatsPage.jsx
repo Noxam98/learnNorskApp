@@ -38,7 +38,7 @@ export const StatsPage = () => {
     const loadNei = () => api.getAdminNeighbors().then(setNei).catch(() => {});
     useEffect(() => {
         load(); loadControl(); loadHom(); loadNei();
-        const id = setInterval(() => { load(); loadControl(); loadHom(); loadNei(); }, 15000); // авто-обновление — видно процесс
+        const id = setInterval(() => { if (document.hidden) return; load(); loadControl(); loadHom(); loadNei(); }, 15000); // авто-обновление; не поллим в фоновой вкладке
         return () => clearInterval(id);
     }, []);
 

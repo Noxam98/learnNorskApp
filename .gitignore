@@ -28,3 +28,15 @@ dist-ssr
 
 # Playwright MCP test artifacts
 .playwright-mcp/
+
+# Личные настройки Claude Code (не для команды)
+.claude/settings.local.json
+
+# Рабочие заметки/черновики (scratch), не для репозитория
+today*.md
+words*.md
+wsort*.md
+prog*.md
+my2.md
+pos-grammar-plan.md
+login-state.png
