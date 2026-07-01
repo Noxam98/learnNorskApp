@@ -45,6 +45,8 @@ const TAB_LABELS = langGuard({
 export default function LearningPage() {
     const lang = useSystemStore((s) => s.currentLanguage);
     const name = useAuthStore((s) => s.user?.displayName || s.user?.username || "");
+    const studyOnboarded = useAuthStore((s) => s.user?.gamePrefs?.studyOnboarded);
+    const userReady = useAuthStore((s) => !!s.user);
     const t = TAB_LABELS[lang] || TAB_LABELS.ru;
     const tg = (interfaceTranslate[lang] || {});
     const [params, setParams] = useSearchParams();
@@ -61,10 +63,13 @@ export default function LearningPage() {
     const [levelUp, setLevelUp] = useState(null);   // { from, to } — празднование перехода уровня
 
     useEffect(() => {
-        try { if (!localStorage.getItem("learn_onboarded")) setIntro(true); } catch { /* */ }
         // как только открыли «Учёбу» — фоном греем первую сессию, чтобы старт был мгновенным
         useSessionStore.getState().prefetch(20);
     }, []);
+    // Приветственное окно — ОДНОКРАТНО: пока в БД нет флага gamePrefs.studyOnboarded (ставит LearningIntro.finish).
+    useEffect(() => {
+        if (userReady && !studyOnboarded) setIntro(true);
+    }, [userReady, studyOnboarded]);
 
     useEffect(() => {
         let on = true;
@@ -84,7 +89,7 @@ export default function LearningPage() {
         return () => { on = false; };
     }, [reloadKey]);
 
-    const closeIntro = () => { try { localStorage.setItem("learn_onboarded", "1"); } catch { /* */ } setIntro(false); if (placed === false) setPlacement(true); };
+    const closeIntro = () => { setIntro(false); if (placed === false) setPlacement(true); };
 
     // На мобилке прячем верхнюю шапку (лого/профиль) — навигация в нижнем таб-баре (CSS по body.study-active)
     useEffect(() => {

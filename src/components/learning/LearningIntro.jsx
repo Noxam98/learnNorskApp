@@ -1,7 +1,11 @@
-// Онбординг «Учёбы» — один раз при первом заходе. Коротко объясняет механику:
-// откуда берутся слова, что значит «выучено», как работают интервалы. Затем ведёт к калибровке.
+// Онбординг «Учёбы» — один раз при первом заходе (флаг gamePrefs.studyOnboarded в БД). Объясняет
+// механику + даёт настроить аудио/грамматику под себя. Затем ведёт к калибровке. Позже менять — в Профиле.
+import { useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { langGuard } from "../../interface/i18nGuard.js";
+import api from "../tools/api.js";
+import { useAuthStore } from "../../store/AuthStore.jsx";
+import { GRM, GRM_POS, LPK } from "../../pages/MyPage.i18n.js";
 
 const T = langGuard({
     ru: {
@@ -62,8 +66,38 @@ const T = langGuard({
     },
 }, "LearningIntro.T");
 
+// Строки блока настроек (аудио + заголовок). Грамматику берём из готовых MyPage.i18n (GRM/GRM_POS/LPK).
+const S = langGuard({
+    ru:  { setup: "Настрой под себя", audioT: "Задания на слух", audioD: "Слова подтверждаются на слух отдельной партией. Выключи — будут только текстом." },
+    en:  { setup: "Make it yours", audioT: "Listening tasks", audioD: "Words are confirmed by ear in a separate batch. Turn off — text only." },
+    ukr: { setup: "Налаштуй під себе", audioT: "Завдання на слух", audioD: "Слова підтверджуються на слух окремою партією. Вимкни — лише текстом." },
+    pl:  { setup: "Dostosuj do siebie", audioT: "Zadania ze słuchu", audioD: "Słowa potwierdzasz ze słuchu osobną partią. Wyłącz — tylko tekstem." },
+    lt:  { setup: "Prisitaikyk", audioT: "Klausymo užduotys", audioD: "Žodžiai patvirtinami iš klausos atskira partija. Išjunk — tik tekstu." },
+    lv:  { setup: "Pielāgo sev", audioT: "Klausīšanās uzdevumi", audioD: "Vārdus apstiprina pēc dzirdes atsevišķā partijā. Izslēdz — tikai ar tekstu." },
+    ar:  { setup: "خصّصها لك", audioT: "مهام الاستماع", audioD: "تُؤكَّد الكلمات سماعيًا في دفعة منفصلة. أوقفها — بالنص فقط." },
+}, "LearningIntro.S");
+
 export default function LearningIntro({ lang = "ru", onDone }) {
     const t = T[lang] || T.ru;
+    const s = S[lang] || S.ru;
+    const grm = GRM[lang] || GRM.ru;
+    const grmPos = GRM_POS[lang] || GRM_POS.ru;
+    const lpk = LPK[lang] || LPK.ru;
+    const prefs = useAuthStore((st) => st.user?.gamePrefs) || {};
+    // Локальный черновик настроек (дефолты — «включено»); сохраняем разом по «Начать».
+    const [audio, setAudio] = useState(prefs.audio !== false);
+    const [listenPack, setListenPack] = useState(Math.min(20, Math.max(5, prefs.listenPack || 10)));
+    const [grammar, setGrammar] = useState(prefs.grammar !== false);
+    const [gpos, setGpos] = useState({ noun: true, verb: true, adjective: true, pronoun: true, ...(prefs.grammarPos || {}) });
+    const posOn = (k) => gpos[k] !== false;
+
+    const finish = () => {   // регистрируем прохождение онбординга + выбранные настройки в БД
+        const patch = { audio, listenPack, grammar, grammarPos: gpos, studyOnboarded: true };
+        useAuthStore.setState((st) => (st.user ? { user: { ...st.user, gamePrefs: { ...(st.user.gamePrefs || {}), ...patch } } } : st));
+        api.setGamePrefs(patch).catch(() => { /* офлайн — не критично, покажем ещё раз */ });
+        onDone?.();
+    };
+
     const rows = [
         { ic: "bookmark", t: t.p1t, d: t.p1d },
         { ic: "check-circle", t: t.p2t, d: t.p2d },
@@ -86,8 +120,41 @@ export default function LearningIntro({ lang = "ru", onDone }) {
                         </div>
                     ))}
                 </div>
+                {/* Настрой под себя: аудио + грамматика с тонкой пер-POS настройкой (позже — в Профиле). */}
+                <div className="plc-detect__t" style={{ marginTop: "var(--sp-2)", alignSelf: "flex-start" }}>{s.setup}</div>
+                <div className="card" style={{ padding: "2px var(--sp-4)", width: "100%" }}>
+                    <div className="setrow">
+                        <span className="setrow__ic"><Icon n="volume" sm /></span>
+                        <span className="setrow__meta"><span className="setrow__t">{s.audioT}</span><span className="setrow__d">{s.audioD}</span></span>
+                        <button type="button" className={`toggle${audio ? " is-on" : ""}`} role="switch" aria-checked={audio} onClick={() => setAudio((v) => !v)} />
+                    </div>
+                    {audio && (
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="headphones" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{lpk.t.replace("{n}", listenPack)}</span><span className="setrow__d">{lpk.d.replace("{n}", listenPack)}</span></span>
+                            <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flex: "none" }}>
+                                <input type="range" min="5" max="20" value={listenPack} onChange={(e) => setListenPack(Number(e.target.value))} style={{ width: 100 }} />
+                                <b style={{ minWidth: 16, textAlign: "center", fontSize: "var(--fs-15)" }}>{listenPack}</b>
+                            </span>
+                        </div>
+                    )}
+                    <div className="setrow">
+                        <span className="setrow__ic"><Icon n="graduation" sm /></span>
+                        <span className="setrow__meta"><span className="setrow__t">{grm.t}</span><span className="setrow__d">{grm.d}</span></span>
+                        <button type="button" className={`toggle${grammar ? " is-on" : ""}`} role="switch" aria-checked={grammar} onClick={() => setGrammar((v) => !v)} />
+                    </div>
+                    {grammar && (
+                        <div className="grm-pos">
+                            {["noun", "verb", "adjective", "pronoun"].map((k) => (
+                                <button key={k} type="button" role="switch" aria-checked={posOn(k)}
+                                    className={`grm-pos__chip${posOn(k) ? " is-on" : ""}`}
+                                    onClick={() => setGpos((p) => ({ ...p, [k]: !posOn(k) }))}>{grmPos[k]}</button>
+                            ))}
+                        </div>
+                    )}
+                </div>
                 <div className="plc-actions">
-                    <button className="plc-hero__btn" onClick={() => onDone?.()}><Icon n="play" /> {t.cta}</button>
+                    <button className="plc-hero__btn" onClick={finish}><Icon n="play" /> {t.cta}</button>
                 </div>
             </div>
         </div>
