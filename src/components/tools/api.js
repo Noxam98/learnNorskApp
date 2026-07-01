@@ -28,7 +28,8 @@ class ApiService {
     // --- Хранилище токенов (единственный источник правды) ---
     // Токены лежат в localStorage как есть. Шифровать их на клиенте смысла нет (ключ всё равно в
     // бандле = публичен) — это давало лишь ЛОЖНОЕ чувство защиты. Реальная защита от кражи токена —
-    // против XSS (CSP + отсутствие innerHTML/eval); при XSS токен и так читается из памяти.
+    // против XSS: нет innerHTML/eval (React экранирует). CSP на edge (Vercel) пока НЕ настроен —
+    // стоит добавить как defense-in-depth; при XSS токен и так читается из памяти.
     _initTokens() {
         const access = localStorage.getItem('access_token');
         const refresh = localStorage.getItem('refresh_token');

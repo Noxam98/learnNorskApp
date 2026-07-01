@@ -32,6 +32,9 @@ dist-ssr
 # Личные настройки Claude Code (не для команды)
 .claude/settings.local.json
 
+# Канон — npm (package-lock.json); yarn.lock не коммитим (второй лок-файл вводит в заблуждение)
+yarn.lock
+
 # Рабочие заметки/черновики (scratch), не для репозитория
 today*.md
 words*.md
