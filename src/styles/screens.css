@@ -438,8 +438,12 @@
     font-size: var(--fs-13); line-height: 1.4; color: var(--game-ink-2); text-align: start; }
   /* «нет формы» (несравнимое прил. и т.п.) — приглушённо, не как значение */
   .fparad__val--none { font-weight: 400; font-style: italic; color: var(--game-ink-2); font-size: var(--fs-13); }
-  /* строка парадигмы кликабельна — тап озвучивает форму (динамик-подсказка справа) */
-  .fparad__row--say { cursor: pointer; }
+  /* строка парадигмы кликабельна — тап озвучивает форму (динамик-подсказка справа).
+     Тап-хайлайт мобильного браузера глушим на ВСЕЙ карточке (она кликабельна целиком —
+     иначе тап по строке подсвечивал всю карточку); отклик — свой :active на строке. */
+  .flashcard { -webkit-tap-highlight-color: transparent; }
+  .fparad__row--say { cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .fparad__row--say:active { background: color-mix(in srgb, var(--st-grammar, #8b7cf6) 12%, transparent); }
   .fparad__speak { width: 13px; height: 13px; flex: none; margin-inline-start: auto; color: var(--game-ink-2); opacity: 0.6; align-self: center; }
   .fparad__row--say:active .fparad__speak, .fparad__row--say:hover .fparad__speak { opacity: 1; color: var(--st-grammar, #8b7cf6); }
   /* перевод-напоминание на карточке формы: блеклый, в потоке НАД норвежским словом */
