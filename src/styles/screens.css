@@ -424,6 +424,13 @@
   .flashcard__forms { margin-top: var(--sp-4); display: flex; flex-direction: column; gap: 2px; }
   .flashcard__forms-label { font-size: var(--fs-12); color: var(--game-ink-2); letter-spacing: var(--ls-wide); text-transform: uppercase; }
   .flashcard__forms-val { font-size: var(--fs-16); font-weight: 600; color: var(--game-ink); overflow-wrap: break-word; word-break: break-word; }
+  /* карточка ФОРМЫ: полная парадигма с подписями («ед. ч. (определ.): bilen»), целевая — фиолет ★ */
+  .fparad { gap: 3px; text-align: start; }
+  .fparad__row { display: flex; align-items: baseline; gap: 10px; padding: 2px 8px; border-radius: 8px; }
+  .fparad__row.is-target { background: color-mix(in srgb, var(--st-grammar, #8b7cf6) 16%, transparent); }
+  .fparad__row.is-target .fparad__val { color: var(--st-grammar, #8b7cf6); }
+  .fparad__label { flex: none; min-width: 108px; font-size: var(--fs-12); color: var(--game-ink-2); }
+  .fparad__val { font-size: var(--fs-16); font-weight: 700; color: var(--game-ink); overflow-wrap: break-word; word-break: break-word; }
   .flashcard__hint { font-size: var(--fs-14); color: var(--game-ink-2); letter-spacing: var(--ls-wide); text-transform: uppercase; }
   .qspeak { margin-left: 8px; vertical-align: middle; color: var(--game-ink-2); background: transparent; border: none; cursor: pointer; }
   .qspeak:hover { color: var(--game-ink); }

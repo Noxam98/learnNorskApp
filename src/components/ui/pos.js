@@ -105,23 +105,24 @@ export const posFormsRows = (word, forms, lang = "en") => {
     if (!forms) return [];
     const L = FORM_ROW_LABELS[lang] || FORM_ROW_LABELS.en;
     const r = [];
-    const add = (label, value) => { if (value) r.push({ label, value }); };
+    // key — стабильный ключ строки (для подсветки целевой формы на карточках трека форм)
+    const add = (key, label, value) => { if (value) r.push({ key, label, value }); };
     if (forms.pos === "noun") {
-        add(L.sg, [forms.gender, word].filter(Boolean).join(" "));
-        add(L.sg_def, forms.def_sg);
-        add(L.pl, forms.indef_pl);
-        add(L.pl_def, forms.def_pl);
+        add("sg", L.sg, [forms.gender, word].filter(Boolean).join(" "));
+        add("sg_def", L.sg_def, forms.def_sg);
+        add("pl", L.pl, forms.indef_pl);
+        add("pl_def", L.pl_def, forms.def_pl);
     } else if (forms.pos === "verb") {
-        add(L.inf, `å ${word}`);
-        add(L.present, forms.present);
-        add(L.past, forms.past);
-        add(L.perfect, forms.perfect);
+        add("inf", L.inf, `å ${word}`);
+        add("present", L.present, forms.present);
+        add("past", L.past, forms.past);
+        add("perfect", L.perfect, forms.perfect);
     } else if (forms.pos === "adjective") {
-        add(L.positive, word);
-        add(L.neuter, forms.neuter);
-        add(L.pl, forms.plural);
-        add(L.comparative, forms.comparative);
-        add(L.superlative, forms.superlative);
+        add("positive", L.positive, word);
+        add("neuter", L.neuter, forms.neuter);
+        add("pl", L.pl, forms.plural);
+        add("comparative", L.comparative, forms.comparative);
+        add("superlative", L.superlative, forms.superlative);
     }
     return r;
 };

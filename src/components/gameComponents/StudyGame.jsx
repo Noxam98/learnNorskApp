@@ -8,7 +8,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { BrandMark } from "../ui/BrandMark.jsx";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, prefetchTts } from "../ui/tts.js";
-import { posLabel, posMeta, chipPrefix, posFormsLine } from "../ui/pos.js";
+import { posLabel, posMeta, chipPrefix, posFormsLine, posFormsRows } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { playSound } from "../tools/sound.js";
 import { useScrollLock, ProgressSegments, semisOf, filterChosenWords, shuffle, FORM_LABEL } from "./gameShared.jsx";
@@ -153,6 +153,17 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     // Компактная парадигма форм (en bil · bilen · biler · bilene) — учит формам,
     // которые потом тестируют грамм-упражнения. Показываем на обороте, когда формы есть.
     const formsLine = cur?.forms ? posFormsLine(no, cur.forms, currentLanguage) : "";
+    // Карточка ФОРМЫ: на обороте — ПОЛНАЯ парадигма с локализованными подписями
+    // («ед. ч. (определ.): bilen»), целевая форма подсвечена. pos в forms может отсутствовать —
+    // дотягиваем из part_of_speech элемента.
+    const formRows = (formCard && cur?.forms)
+        ? posFormsRows(no, { ...cur.forms, pos: cur.forms.pos || posMeta(cur.part_of_speech).key }, currentLanguage)
+        : [];
+    // клетка трека форм → ключ строки парадигмы (какую подсветить)
+    const CELL_ROW = { gender: "sg", indef_pl: "pl", def_sg: "sg_def", def_pl: "pl_def",
+                       present: "present", past: "past", perfect: "perfect",
+                       neuter: "neuter", plural: "pl", comparative: "comparative", superlative: "superlative" };
+    const targetRow = formCard ? CELL_ROW[cur?.step] : null;
     const noVisible = isNo2Int ? true : flipped; // когда видно норвежское — показываем озвучку
     // в системной сессии счётчик/полоса = прогресс ВСЕЙ сессии (а не одна карточка)
     const useStep = stepTotal > 0;
@@ -268,7 +279,18 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                         {(cur.example[currentLanguage] || cur.example.ru) && <span className="muted"> — {cur.example[currentLanguage] || cur.example.ru}</span>}
                                     </div>
                                 )}
-                                {flipped && formsLine && (
+                                {flipped && formCard && formRows.length > 0 ? (
+                                    // карточка формы: полная парадигма с подписями, целевая строка подсвечена
+                                    <div className="flashcard__forms fparad" lang={hyLang(currentLanguage, true)}>
+                                        <span className="flashcard__forms-label">{h.forms}</span>
+                                        {formRows.map((r) => (
+                                            <div key={r.key} className={`fparad__row${r.key === targetRow ? " is-target" : ""}`}>
+                                                <span className="fparad__label">{r.label}</span>
+                                                <span className="fparad__val" lang="no">{r.value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : flipped && formsLine && (
                                     <div className="flashcard__forms" lang={hyLang(currentLanguage, true)}>
                                         <span className="flashcard__forms-label">{h.forms}</span>
                                         <span className="flashcard__forms-val">{formsLine}</span>
