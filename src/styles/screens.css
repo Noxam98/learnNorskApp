@@ -377,10 +377,10 @@
   .qcard { width: 100%; max-width: 600px; }
   /* грамм-упражнение: крупная лемма выделена цветом тира (как сегмент прогресса грамматики) */
   .qword--grammar { color: var(--st-grammar, #8b7cf6); }
-  /* ЗАДАНИЕ грамм-упражнения: под словом, крупно + фиолетовое подчёркивание — взгляд сразу сюда */
+  /* ЗАДАНИЕ грамм-упражнения: под словом, крупно + зелёное подчёркивание — взгляд сразу сюда */
   .qform-ask {
     margin-top: var(--sp-3); font-size: var(--fs-18); font-weight: 800; color: var(--game-ink);
-    text-decoration: underline; text-decoration-color: var(--st-grammar, #8b7cf6);
+    text-decoration: underline; text-decoration-color: var(--game-correct, #35a86b);
     text-decoration-thickness: 2.5px; text-underline-offset: 5px;
   }
   /* объяснение формы под вопросом грамм-упражнения (трек форм): что это, без подсказки ответа */
