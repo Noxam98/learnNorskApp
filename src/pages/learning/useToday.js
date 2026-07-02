@@ -32,6 +32,17 @@ export function useToday({ reloadKey, refresh, openSession }) {
         return () => { on = false; };
     }, [reloadKey]);
 
+    // Свежесть превью Smart Review: прогретая сессия протухает (фаза цикла/повторы уезжают за
+    // часы простоя) — на монтировании и при возврате во вкладку пересобираем, если ей >10 мин.
+    useEffect(() => {
+        const fresh = () => useSessionStore.getState().refreshIfStale();
+        fresh();
+        const onWake = () => { if (document.visibilityState !== "hidden") fresh(); };
+        window.addEventListener("focus", onWake);
+        document.addEventListener("visibilitychange", onWake);
+        return () => { window.removeEventListener("focus", onWake); document.removeEventListener("visibilitychange", onWake); };
+    }, []);
+
     // Ворота экзамена пачки: open → можно/нужно сдавать экзамен (новые слова заблокированы).
     const gateOpen = !!gate?.open;
     const gatePack = gate?.pack || 0;

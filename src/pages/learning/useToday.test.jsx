@@ -8,7 +8,10 @@ const setState = vi.fn();
 vi.mock("../../store/AuthStore.jsx", () => ({
     useAuthStore: Object.assign((sel) => sel({ user: { focusTopics: [] } }), { setState: (...a) => setState(...a) }),
 }));
-vi.mock("../../store/sessionStore.jsx", () => ({ useSessionStore: (sel) => sel({ loading: false, next: null }) }));
+vi.mock("../../store/sessionStore.jsx", () => ({
+    useSessionStore: Object.assign((sel) => sel({ loading: false, next: null }),
+        { getState: () => ({ refreshIfStale: () => {} }) }),
+}));
 vi.mock("../../components/tools/api.js", () => ({
     default: {
         learningGate: vi.fn(), learningStats: vi.fn(), learningSession: vi.fn(), setFocusTopics: vi.fn(),
