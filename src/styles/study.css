@@ -101,6 +101,16 @@
   transition: transform var(--dur) var(--ease);
 }
 .study-root .review-cta__btn:hover { transform: translateY(-2px); }
+/* шестерёнка настроек учёбы — верхний правый угол карточки Smart Review */
+.study-root .review-cta__gear {
+  position: absolute; top: 14px; inset-inline-end: 14px; z-index: 1;
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border: none; cursor: pointer; border-radius: var(--r-full);
+  background: rgba(255,255,255,.14); color: #fff;
+  transition: background var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.study-root .review-cta__gear:hover { background: rgba(255,255,255,.26); transform: rotate(20deg); }
+.study-root .review-cta__gear .ic { width: 17px; height: 17px; }
 .study-root .review-cta__chips { display: flex; gap: var(--sp-2); flex-wrap: wrap; position: relative; }
 .study-root .review-cta__chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: var(--r-full); font-size: var(--fs-12); font-weight: 700; background: rgba(255,255,255,.14); color: #fff; }
 .study-root .review-cta__chip .dot { width: 7px; height: 7px; border-radius: 50%; }

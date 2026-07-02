@@ -1,7 +1,9 @@
 // Вкладка «Сегодня» раздела «Учёба».
 // Рендерит ТОЛЬКО контент-область (под шапкой/сегмент-навигацией страницы).
 // Данные/логика — в контроллере useToday; здесь только разметка дашборда.
+import { useState } from "react";
 import { Icon } from "../../components/ui/Icon.jsx";
+import SessionSettings from "../../components/learning/SessionSettings.jsx";
 import { BtnSpinner, BrandLoader } from "../../components/ui/Spinner.jsx";
 import { StatusDot, statusLabel, STATUS_ORDER } from "../../components/learning/StatusBits.jsx";
 import { LeaderboardCard, LeaderboardModal } from "../../components/learning/Leaderboard.jsx";
@@ -25,6 +27,7 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
         nextLevel, toNext, masteryFrac, ringNum, ringDen,
         focusTopics, toggleFocus, runReview,
     } = useToday({ reloadKey, refresh, openSession });
+    const [settingsOpen, setSettingsOpen] = useState(false);   // попап настроек учёбы (шестерёнка)
 
     if (loading) return <BrandLoader />;
     if (error || !stats) {
@@ -216,6 +219,10 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
                             {/* Hero */}
                             <div className="review-cta">
                                 <span className="review-cta__halo" /><span className="review-cta__halo2" />
+                                {/* шестерёнка: настройки учёбы прямо отсюда (порция новых/аудио/формы) */}
+                                <button type="button" className="review-cta__gear" onClick={() => setSettingsOpen(true)} aria-label="settings">
+                                    <Icon n="settings" sm />
+                                </button>
                                 <span className="review-cta__eyebrow"><Icon n="repeat" sm /> {t.smartReview}</span>
                                 {/* Состав показываем ТОЛЬКО когда реальная сессия прогрелась (sessReady);
                                     до этого — плейсхолдер «готовим сессию», без оценочных счётчиков из пула. */}
@@ -285,6 +292,7 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
                 </div>
             </div>
 
+            <SessionSettings open={settingsOpen} onClose={() => setSettingsOpen(false)} lang={lang} />
             {lbOpen && <LeaderboardModal lang={lang} onClose={() => setLbOpen(false)} />}
         </>
     );
