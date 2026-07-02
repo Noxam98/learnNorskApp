@@ -5,7 +5,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import { BrandMark } from "../ui/BrandMark.jsx";
-import { posMeta, chipPrefix } from "../ui/pos.js";
+import { posMeta, chipPrefix, posLabel } from "../ui/pos.js";
+import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { langGuard } from "../../interface/i18nGuard.js";
 
@@ -175,10 +176,15 @@ export const FormPrompt = ({ word, lang }) => {
     const label = labels[p.formLabel] || FORM_LABEL.en[p.formLabel] || "";
     // трек форм: короткое объяснение формы под вопросом (что это, не подсказывая ответ)
     const why = word?.form_track ? ((FORM_EXPLAIN[lang] || FORM_EXPLAIN.en)[word?.step] || "") : "";
+    // как на карточке формы: блеклый перевод над словом + чип части речи — напоминание контекста
+    const tr = (word?.translate?.[lang] || []).filter(Boolean).join(", ");
+    const posText = posLabel(word?.part_of_speech, interfaceTranslate[lang]);
     return (
         <>
             {label && <div className="qprompt">{label}</div>}
+            {tr && <div className="fcard-trans">{tr}</div>}
             <h1 className="qword qword--grammar" lang="no">{lemma}</h1>
+            {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
             {why && <div className="qform-why">{why}</div>}
         </>
     );
