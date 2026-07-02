@@ -259,6 +259,8 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                 transition={{ duration: 0.22, ease: [0.2, 0.7, 0.2, 1] }}>
                                 <div className="qcount">{t.word} {dispNo} / {dispTotal}</div>
                                 <h1 className="qword" lang={frontLang}>
+                                    {/* карточка формы: перевод-напоминание — блекло, чуть НАД словом (absolute) */}
+                                    {formCard && tr && <span className="fcard-trans" lang={hyLang(currentLanguage, false)}>{tr}</span>}
                                     {hyphenate(front, frontLang)}
                                     {noVisible && (
                                         <SpeakButton text={no} hasTts={cur.hasTts} className="qspeak" lg
@@ -269,8 +271,6 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                     {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
                                     {formQ && <span className="qpos"><Icon n="graduation" sm /> {formQ}</span>}
                                 </span>
-                                {/* карточка формы: перевод мелко — напоминание значения слова */}
-                                {formCard && tr && <div className="fcard-trans" lang={hyLang(currentLanguage, false)}>{tr}</div>}
 
                                 <div className={`flashcard__back${flipped ? " is-shown" : ""}`}>
                                     <AnimatePresence mode="wait" initial={false}>
