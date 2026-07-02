@@ -11,16 +11,16 @@ import { speakText, prefetchTts } from "../ui/tts.js";
 import { posLabel, posMeta, chipPrefix, posFormsLine } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { playSound } from "../tools/sound.js";
-import { useScrollLock, ProgressSegments, semisOf, filterChosenWords, shuffle } from "./gameShared.jsx";
+import { useScrollLock, ProgressSegments, semisOf, filterChosenWords, shuffle, FORM_LABEL } from "./gameShared.jsx";
 import { langGuard } from "../../interface/i18nGuard.js";
 const HINTS = langGuard({
-    ru: { reveal: "нажми — перевод", next: "нажми — дальше", studied: "Просмотрено", forms: "Формы" },
-    ukr: { reveal: "натисни — переклад", next: "натисни — далі", studied: "Переглянуто", forms: "Форми" },
-    en: { reveal: "tap to reveal", next: "tap for next", studied: "Reviewed", forms: "Forms" },
-    pl: { reveal: "dotknij — tłumaczenie", next: "dotknij — dalej", studied: "Przejrzano", forms: "Formy" },
-    lt: { reveal: "bakstelėk — vertimas", next: "bakstelėk — toliau", studied: "Peržiūrėta", forms: "Formos" },
-    lv: { reveal: "pieskaries — tulkojums", next: "pieskaries — tālāk", studied: "Apskatīts", forms: "Formas" },
-    ar: { reveal: "انقر للكشف", next: "انقر للتالي", studied: "تمت المراجعة", forms: "الصيغ" },
+    ru: { reveal: "нажми — перевод", revealForm: "нажми — форма", next: "нажми — дальше", studied: "Просмотрено", forms: "Формы" },
+    ukr: { reveal: "натисни — переклад", revealForm: "натисни — форма", next: "натисни — далі", studied: "Переглянуто", forms: "Форми" },
+    en: { reveal: "tap to reveal", revealForm: "tap — the form", next: "tap for next", studied: "Reviewed", forms: "Forms" },
+    pl: { reveal: "dotknij — tłumaczenie", revealForm: "dotknij — forma", next: "dotknij — dalej", studied: "Przejrzano", forms: "Formy" },
+    lt: { reveal: "bakstelėk — vertimas", revealForm: "bakstelėk — forma", next: "bakstelėk — toliau", studied: "Peržiūrėta", forms: "Formos" },
+    lv: { reveal: "pieskaries — tulkojums", revealForm: "pieskaries — forma", next: "pieskaries — tālāk", studied: "Apskatīts", forms: "Formas" },
+    ar: { reveal: "انقر للكشف", revealForm: "انقر — الصيغة", next: "انقر للتالي", studied: "تمت المراجعة", forms: "الصيغ" },
 }, "StudyGame.HINTS");
 
 // Подписи мини-меню «Не учить» (две причины): «Не актуально» (убрать у себя) / «Ошибка в слове» (модерация).
@@ -75,24 +75,29 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
         return () => window.removeEventListener("keydown", onKey);
     }, []);
 
+    // Карточка ФОРМЫ (трек форм, form_track): лицо = лемма + вопрос формы, оборот = сама форма
+    // (обе стороны норвежские). Обычная карточка — перевод по направлению.
+    const isFormCard = (w) => !!w?.form_track;
+
     // Озвучка по направлению: видимое слово — при показе карточки, ответ — при перевороте.
     const _sides = (i) => {
         const w = words[i];
         const no = w?.translate?.no?.[0] || "";
         const tr = (w?.translate?.[currentLanguage] || []).filter(Boolean).join(", ");
+        if (isFormCard(w)) return { front: no, back: (w?.reveal || w?.target?.value || ""), backNo: true };
         return isNo2Int ? { front: no, back: tr } : { front: tr, back: no };
     };
     useEffect(() => {  // видимое игроку слово (+ прогрев ответа для мгновенного переворота)
         if (!sound) return;
         playSound("enter", { semis: semisOf(rank) });   // звук «вход в задание» по стадии (карточка — базовая)
-        const { front, back } = _sides(idx);
+        const { front, back, backNo } = _sides(idx);
         if (front) speakText(front, hyLang(currentLanguage, isNo2Int)).catch(() => {});
-        if (back) prefetchTts(back, hyLang(currentLanguage, !isNo2Int));
+        if (back) prefetchTts(back, hyLang(currentLanguage, backNo ? true : !isNo2Int));
     }, [idx]); // eslint-disable-line
     useEffect(() => {  // правильный ответ при перевороте
         if (!sound || !flipped) return;
-        const { back } = _sides(idx);
-        if (back) speakText(back, hyLang(currentLanguage, !isNo2Int)).catch(() => {});
+        const { back, backNo } = _sides(idx);
+        if (back) speakText(back, hyLang(currentLanguage, backNo ? true : !isNo2Int)).catch(() => {});
     }, [flipped]); // eslint-disable-line
     useEffect(() => { setWhyOpen(false); }, [idx]);   // новая карточка → меню «Не учить» закрыто
 
@@ -131,16 +136,20 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     const restart = () => { setIdx(0); setFlipped(false); };
 
     const cur = finished ? null : words[idx];
+    const formCard = cur ? isFormCard(cur) : false;
     const no = cur ? (cur.translate?.no?.[0] || "") : "";
     const tr = cur ? (cur.translate?.[currentLanguage] || []).filter(Boolean).join(", ") : "";
     // Артикль/«å» — только на видимой норвежской стороне (озвучка читает лемму без них).
-    const prefix = cur ? chipPrefix(posMeta(cur.part_of_speech).key, cur.forms, { articles: showArticles, verbAa: showVerbAa }) : "";
+    // Карточка формы — БЕЗ приставки: артикль слил бы ответ клетки «род».
+    const prefix = (cur && !formCard) ? chipPrefix(posMeta(cur.part_of_speech).key, cur.forms, { articles: showArticles, verbAa: showVerbAa }) : "";
     const noDisp = prefix ? `${prefix} ${no}` : no;
-    const front = isNo2Int ? noDisp : tr;
-    const back = isNo2Int ? tr : noDisp;
-    const frontLang = hyLang(currentLanguage, isNo2Int);   // лицевая: норвежская при no2int
-    const backLang = hyLang(currentLanguage, !isNo2Int);
-    const posText = cur ? posLabel(cur.part_of_speech, t) : "";
+    const front = formCard ? no : (isNo2Int ? noDisp : tr);
+    const back = formCard ? (cur.reveal || cur.target?.value || "") : (isNo2Int ? tr : noDisp);
+    const frontLang = hyLang(currentLanguage, formCard ? true : isNo2Int);   // лицевая: норвежская при no2int
+    const backLang = hyLang(currentLanguage, formCard ? true : !isNo2Int);   // оборот формы — тоже норвежский
+    // Подпись: у карточки формы — ВОПРОС о форме (как FormPrompt), иначе часть речи.
+    const formQ = formCard ? ((FORM_LABEL[currentLanguage] || FORM_LABEL.en)[cur?.prompt?.formLabel] || "") : "";
+    const posText = (cur && !formCard) ? posLabel(cur.part_of_speech, t) : "";
     // Компактная парадигма форм (en bil · bilen · biler · bilene) — учит формам,
     // которые потом тестируют грамм-упражнения. Показываем на обороте, когда формы есть.
     const formsLine = cur?.forms ? posFormsLine(no, cur.forms, currentLanguage) : "";
@@ -242,13 +251,15 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                             ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
                                     )}
                                 </h1>
-                                {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
+                                {formQ
+                                    ? <span className="qpos"><Icon n="graduation" sm /> {formQ}</span>
+                                    : posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
 
                                 <div className={`flashcard__back${flipped ? " is-shown" : ""}`}>
                                     <AnimatePresence mode="wait" initial={false}>
                                         {flipped
                                             ? <motion.span key="a" className="flashcard__answer" lang={backLang} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>{hyphenate(back, backLang)}</motion.span>
-                                            : <motion.span key="h" className="flashcard__hint" initial={{ opacity: 0 }} animate={{ opacity: 0.9 }} exit={{ opacity: 0 }}>{h.reveal}</motion.span>}
+                                            : <motion.span key="h" className="flashcard__hint" initial={{ opacity: 0 }} animate={{ opacity: 0.9 }} exit={{ opacity: 0 }}>{formCard ? h.revealForm : h.reveal}</motion.span>}
                                     </AnimatePresence>
                                 </div>
                                 {flipped && cur.example?.no && (
@@ -268,7 +279,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
 
                         <div className="pcta">
                             <button className="gbtn gbtn--accent" onClick={advance}>
-                                {flipped ? <>{t.next} <Icon n="arrow-right" sm /></> : <>{h.reveal} <Icon n="chevron-down" sm /></>}
+                                {flipped ? <>{t.next} <Icon n="arrow-right" sm /></> : <>{formCard ? h.revealForm : h.reveal} <Icon n="chevron-down" sm /></>}
                             </button>
                         </div>
                     </>

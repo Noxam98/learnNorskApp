@@ -118,4 +118,44 @@ describe("useLearningSession", () => {
         await waitFor(() => expect(result.current.phase).toBe("summary"));
         expect(api.learningNextCards).not.toHaveBeenCalled();
     });
+
+    // ── Трек ФОРМ (form_track): ответ/карточка уходят с form/cell/stage → form_srs ────────────
+    const formChoose = (pid) => ({
+        pool_id: pid, mode: "choice", direction: "past", step: "past", stage: "choose",
+        form_track: true, grammar: true, target: { field: "past", value: "gikk" },
+        options: [{ w: "gikk" }, { w: "gådde" }], repeat: true,
+        no: `w${pid}`, prompt: { formLabel: "past", lemma: "gå" }, translate: { ru: [`п${pid}`] },
+    });
+
+    it("ответ по элементу трека форм несёт form/cell/stage (в form_srs, не в base)", async () => {
+        take.mockResolvedValue({ elements: [formChoose(7)] });
+        const { result } = renderHook(() => useLearningSession({ words: [], system: true, lang: "ru", onClose: () => {} }));
+        await waitFor(() => expect(result.current.phase).toBe("play"));
+        const gw = result.current.elements[0].gw;
+        act(() => { result.current.onResult(gw, true, "choice", "past"); });
+        expect(api.learningAnswer).toHaveBeenCalledWith(expect.objectContaining({
+            pool_id: 7, correct: true, form: true, cell: "past", stage: "choose",
+        }));
+    });
+
+    it("карточка формы (recordIntro) регистрирует показ со stage card", async () => {
+        const formCard = { ...formChoose(9), mode: "study", stage: "card", options: undefined };
+        take.mockResolvedValue({ elements: [formCard] });
+        const { result } = renderHook(() => useLearningSession({ words: [], system: true, lang: "ru", onClose: () => {} }));
+        await waitFor(() => expect(result.current.phase).toBe("play"));
+        act(() => { result.current.recordIntro(result.current.elements[0].gw); });
+        expect(api.learningAnswer).toHaveBeenCalledWith(expect.objectContaining({
+            pool_id: 9, correct: true, form: true, cell: "past", stage: "card",
+        }));
+    });
+
+    it("обычный ответ БЕЗ form_track не несёт form-полей (гард не задел базу)", async () => {
+        take.mockResolvedValue({ elements: [{ pool_id: 5, mode: "choice", direction: "no2int", step: "choice_no2int", options: [1, 2], no: "hund", translate: { ru: ["собака"] } }] });
+        const { result } = renderHook(() => useLearningSession({ words: [], system: true, lang: "ru", onClose: () => {} }));
+        await waitFor(() => expect(result.current.phase).toBe("play"));
+        act(() => { result.current.onResult(result.current.elements[0].gw, true, "choice", "no2int"); });
+        const payload = api.learningAnswer.mock.calls.at(-1)[0];
+        expect(payload.form).toBeUndefined();
+        expect(payload.cell).toBeUndefined();
+    });
 });

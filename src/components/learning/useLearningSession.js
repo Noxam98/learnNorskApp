@@ -115,21 +115,27 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     }, [round]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Ответ → SRS. Направление берём у текущего элемента (системный) либо общее (легаси).
+    // Трек ФОРМ (form_track): ответ уходит с form/cell/stage → бэк пишет в form_srs (отдельный
+    // SRS-слой рампы форм card→choose→produce), base-рампу слова не трогает.
     const onResult = (w, ok, gmode, direction) => {
         api.learningAnswer({
             pool_id: w?.pool_id ?? w?.id,
             correct: ok,
             mode: gmode,
             direction,
+            ...(w?.form_track ? { form: true, cell: w.step, stage: w.stage } : {}),
         }).catch(() => { /* офлайн — не критично */ });
     };
 
     // Карточка-интро (study): фиксируем «слово показано». Бэк за study обновляет окно силы и
     // счётчики (но НЕ клетки рампы) — поэтому слово перестаёт быть «совсем новым» и рампа на
     // следующем заходе ведёт его к упражнениям (выбор → сборка → ввод).
+    // Карточка ФОРМЫ (form_track): показ двигает ступень card→choose в form_srs.
     const recordIntro = (w) => {
-        api.learningAnswer({ pool_id: w?.pool_id ?? w?.id, correct: true, mode: "study", direction: null })
-            .catch(() => { /* офлайн — не критично */ });
+        api.learningAnswer({
+            pool_id: w?.pool_id ?? w?.id, correct: true, mode: "study", direction: null,
+            ...(w?.form_track ? { form: true, cell: w.step, stage: "card" } : {}),
+        }).catch(() => { /* офлайн — не критично */ });
     };
 
     // Показать итог + подтянуть статистику.
