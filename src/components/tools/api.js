@@ -302,7 +302,7 @@ class ApiService {
         return this._send('GET', `/learning?${qs.toString()}`);
     }
     learningStats() { return this._send('GET', '/learning/stats'); }
-    getChangelog(limit = 30) { return this._send('GET', `/changelog?limit=${limit}`); } // «что нового»: {entries:[{id,day,kind,i18n}]}
+    getChangelog(limit = 30, offset = 0) { return this._send('GET', `/changelog?limit=${limit}&offset=${offset}`); } // «что нового»: {entries:[{id,day,kind,i18n}], total} — offset листает всю историю
     leaderboard(period = 'week', limit = 50) { return this._send('GET', `/learning/leaderboard?period=${period}&limit=${limit}`); }
     learningDue(limit = 20) { return this._send('GET', `/learning/due?limit=${limit}`); }
     learningActivity(days = 119) { return this._send('GET', `/learning/activity?days=${days}`); }

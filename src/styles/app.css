@@ -643,11 +643,39 @@
 .wn__x:hover { color: var(--ink); }
 .wn__scroll { overflow-y: auto; overscroll-behavior: contain; min-height: 60px; padding: 2px 2px 6px; }
 .wn__empty { color: var(--ink-3); font-size: var(--fs-14); text-align: center; padding: 18px 0; }
+/* шапка дня-аккордеона: дата + мини-точки типов + шеврон; свёрнут → строка-сводка заголовков */
+.wn__daybtn {
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px;
+    width: 100%; margin-top: 10px; padding: 8px 10px; cursor: pointer;
+    border: 1px solid transparent; border-radius: 12px; background: none; color: inherit;
+    font-family: inherit; text-align: start;
+}
+.wn__daybtn:not(.is-open) { background: var(--surface-2, var(--surface-3)); border-color: var(--border); }
+.wn__day:first-child .wn__daybtn { margin-top: 0; }
 .wn__date {
     font-size: var(--fs-12); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--ink-3); margin: 12px 0 6px 2px;
+    color: var(--ink-3);
 }
-.wn__day:first-child .wn__date { margin-top: 0; }
+.wn__minidots { display: inline-flex; gap: 4px; }
+.wn__minidot { width: 7px; height: 7px; border-radius: 50%; }
+.wn__minidot--feature { background: #8b7cf6; }
+.wn__minidot--fix     { background: var(--game-correct, #35a86b); }
+.wn__minidot--perf    { background: #e8a13c; }
+.wn__minidot--ui      { background: var(--fjord-600, #3a7bd5); }
+.wn__chev { display: inline-flex; color: var(--ink-3); transition: transform .18s var(--ease); }
+.wn__daybtn.is-open .wn__chev { transform: rotate(180deg); }
+.wn__gist {
+    grid-column: 1 / -1; font-size: var(--fs-13); font-weight: 600; color: var(--ink-2);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.wn__more {
+    display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
+    margin-top: 10px; padding: 9px; cursor: pointer; font-family: inherit;
+    font-size: var(--fs-13); font-weight: 700; color: var(--ink-3);
+    border: 1px dashed var(--border); border-radius: 12px; background: none;
+}
+.wn__more:hover { color: var(--ink); }
+.wn__more:disabled { opacity: 0.6; cursor: default; }
 /* элемент таймлайна: цветная точка-иконка + линия к следующей записи; вход — каскадом
    (animationDelay задаёт JSX), backwards — чтобы до старта элемент был невидим */
 .wn__item { position: relative; display: flex; gap: 12px; padding: 7px 0 7px 2px; animation: wnItem .2s var(--ease) backwards; }
