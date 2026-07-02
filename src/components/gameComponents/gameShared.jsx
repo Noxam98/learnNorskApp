@@ -59,6 +59,103 @@ export const FORM_LABEL = langGuard({
     ar: { gender: "أي أداة تعريف؟", indef_pl: "الجمع (نكرة)؟", def_sg: "صيغة المعرفة (مفرد)؟", def_pl: "صيغة المعرفة (جمع)؟", present: "المضارع؟", past: "الماضي؟", perfect: "(har …) الماضي التام؟", neuter: "صيغة المحايد؟", comparative: "اسم التفضيل (المقارنة)؟", superlative: "اسم التفضيل (الأعلى)؟", plural_adj: "الجمع / المعرفة؟", objcase: "صيغة المفعول؟", poss_neuter: "ملكية، محايد؟", poss_plural: "ملكية، جمع؟" },
 }, "gameShared.FORM_LABEL");
 
+// Доходчивое объяснение КАЖДОЙ формы (трек форм): что это и когда употребляется, с мини-примером.
+// Ключ = клетка формы (gw.step). Показывается на карточке формы (под целевой строкой парадигмы)
+// и под вопросом в выборе/вводе — объясняет форму, НЕ подсказывая ответ.
+export const FORM_EXPLAIN = langGuard({
+    ru: {
+        gender: "Род слова — его артикль: en (муж.), ei (жен.), et (ср.). Не выводится — учится вместе со словом.",
+        indef_pl: "Несколько предметов, без «эти»: biler — машины.",
+        def_sg: "«Тот самый» предмет — артикль приклеивается к концу слова: bilen — (эта) машина.",
+        def_pl: "«Те самые» предметы: bilene — (эти) машины.",
+        present: "Происходит сейчас или регулярно: jeg går — я иду / хожу.",
+        past: "Было и закончилось: i går gikk jeg — вчера я шёл.",
+        perfect: "Результат к настоящему, с har: jeg har gått — я (уже) сходил.",
+        neuter: "Форма при et-словах: et stort hus — большой дом.",
+        plural: "При множественном числе и после den/det/de: store hus — большие дома.",
+        comparative: "Сравнение, «более …»: større — больше (по размеру).",
+        superlative: "«Самый …»: størst — самый большой.",
+    },
+    en: {
+        gender: "The word's gender is its article: en (masc.), ei (fem.), et (neut.). Not derivable — memorize it with the word.",
+        indef_pl: "Several things, no “the”: biler — cars.",
+        def_sg: "“The” one — the article sticks to the end of the word: bilen — the car.",
+        def_pl: "“The” ones: bilene — the cars.",
+        present: "Happening now or regularly: jeg går — I walk / am walking.",
+        past: "Finished in the past: i går gikk jeg — yesterday I walked.",
+        perfect: "Result up to now, with har: jeg har gått — I have walked.",
+        neuter: "Form used with et-words: et stort hus — a big house.",
+        plural: "With plural nouns and after den/det/de: store hus — big houses.",
+        comparative: "Comparison, “more …”: større — bigger.",
+        superlative: "“The most …”: størst — the biggest.",
+    },
+    ukr: {
+        gender: "Рід слова — його артикль: en (чол.), ei (жін.), et (сер.). Не виводиться — вчиться разом зі словом.",
+        indef_pl: "Кілька предметів, без «ці»: biler — машини.",
+        def_sg: "«Той самий» предмет — артикль приклеюється до кінця слова: bilen — (ця) машина.",
+        def_pl: "«Ті самі» предмети: bilene — (ці) машини.",
+        present: "Відбувається зараз або регулярно: jeg går — я йду / ходжу.",
+        past: "Було й закінчилося: i går gikk jeg — учора я йшов.",
+        perfect: "Результат дотепер, з har: jeg har gått — я (вже) сходив.",
+        neuter: "Форма при et-словах: et stort hus — великий будинок.",
+        plural: "При множині та після den/det/de: store hus — великі будинки.",
+        comparative: "Порівняння, «більш …»: større — більший.",
+        superlative: "«Най…»: størst — найбільший.",
+    },
+    pl: {
+        gender: "Rodzaj słowa to jego rodzajnik: en (męski), ei (żeński), et (nijaki). Nie da się wywieść — ucz się go ze słowem.",
+        indef_pl: "Kilka rzeczy, bez „te”: biler — samochody.",
+        def_sg: "„Ten” konkretny — rodzajnik dokleja się na końcu słowa: bilen — (ten) samochód.",
+        def_pl: "„Te” konkretne: bilene — (te) samochody.",
+        present: "Dzieje się teraz lub regularnie: jeg går — idę / chodzę.",
+        past: "Było i minęło: i går gikk jeg — wczoraj szedłem.",
+        perfect: "Rezultat do teraz, z har: jeg har gått — (już) poszedłem.",
+        neuter: "Forma przy et-słowach: et stort hus — duży dom.",
+        plural: "Przy liczbie mnogiej i po den/det/de: store hus — duże domy.",
+        comparative: "Porównanie, „bardziej …”: større — większy.",
+        superlative: "„Naj…”: størst — największy.",
+    },
+    lt: {
+        gender: "Žodžio giminė — jo artikelis: en (vyr.), ei (mot.), et (bev.). Neišvedama — mokykis kartu su žodžiu.",
+        indef_pl: "Keli daiktai, be „tie“: biler — automobiliai.",
+        def_sg: "„Tas pats“ daiktas — artikelis prilimpa žodžio gale: bilen — (tas) automobilis.",
+        def_pl: "„Tie patys“ daiktai: bilene — (tie) automobiliai.",
+        present: "Vyksta dabar arba reguliariai: jeg går — einu / vaikštau.",
+        past: "Buvo ir baigėsi: i går gikk jeg — vakar ėjau.",
+        perfect: "Rezultatas iki dabar, su har: jeg har gått — (jau) nuėjau.",
+        neuter: "Forma prie et-žodžių: et stort hus — didelis namas.",
+        plural: "Su daugiskaita ir po den/det/de: store hus — dideli namai.",
+        comparative: "Palyginimas, „labiau …“: større — didesnis.",
+        superlative: "„Pats …“: størst — didžiausias.",
+    },
+    lv: {
+        gender: "Vārda dzimte — tā artikuls: en (vīr.), ei (siev.), et (nek.). Nav izsecināma — mācies kopā ar vārdu.",
+        indef_pl: "Vairākas lietas, bez „tie”: biler — mašīnas.",
+        def_sg: "„Tā pati” lieta — artikuls pielīp vārda beigās: bilen — (tā) mašīna.",
+        def_pl: "„Tās pašas” lietas: bilene — (tās) mašīnas.",
+        present: "Notiek tagad vai regulāri: jeg går — es eju / staigāju.",
+        past: "Bija un beidzās: i går gikk jeg — vakar es gāju.",
+        perfect: "Rezultāts līdz šim, ar har: jeg har gått — es (jau) aizgāju.",
+        neuter: "Forma pie et-vārdiem: et stort hus — liela māja.",
+        plural: "Daudzskaitlī un pēc den/det/de: store hus — lielas mājas.",
+        comparative: "Salīdzinājums, „vairāk …”: større — lielāks.",
+        superlative: "„Vis…”: størst — vislielākais.",
+    },
+    ar: {
+        gender: "جنس الكلمة هو أداتها: en (مذكّر)، ei (مؤنّث)، et (محايد). لا يُستنتج — احفظه مع الكلمة.",
+        indef_pl: "عدة أشياء، بدون «الـ»: biler — سيارات.",
+        def_sg: "الشيء «المحدد» — تلتصق الأداة بنهاية الكلمة: bilen — السيارة.",
+        def_pl: "الأشياء «المحددة»: bilene — السيارات.",
+        present: "يحدث الآن أو باستمرار: jeg går — أمشي.",
+        past: "حدث وانتهى: i går gikk jeg — أمس مشيت.",
+        perfect: "نتيجة حتى الآن، مع har: jeg har gått — لقد مشيت.",
+        neuter: "الصيغة مع كلمات et: et stort hus — بيت كبير.",
+        plural: "مع الجمع وبعد den/det/de: store hus — بيوت كبيرة.",
+        comparative: "مقارنة، «أكثر …»: større — أكبر.",
+        superlative: "«الأكثر …»: størst — الأكبر.",
+    },
+}, "gameShared.FORM_EXPLAIN");
+
 // Является ли элемент грамм-упражнением (несёт параметризованный контракт target).
 export const isGrammar = (w) => !!(w && (w.grammar || w.target));
 
@@ -76,13 +173,19 @@ export const FormPrompt = ({ word, lang }) => {
     const lemma = p.lemma || word?.no || "";
     const labels = FORM_LABEL[lang] || FORM_LABEL.en;
     const label = labels[p.formLabel] || FORM_LABEL.en[p.formLabel] || "";
+    // трек форм: короткое объяснение формы под вопросом (что это, не подсказывая ответ)
+    const why = word?.form_track ? ((FORM_EXPLAIN[lang] || FORM_EXPLAIN.en)[word?.step] || "") : "";
     return (
         <>
             {label && <div className="qprompt">{label}</div>}
             <h1 className="qword qword--grammar" lang="no">{lemma}</h1>
+            {why && <div className="qform-why">{why}</div>}
         </>
     );
 };
+
+// Принятые ответы грамм-выбора: target.value + target.accept (напр. род ei-слова: и ei, и en верны).
+export const grammarAccepts = (w) => [w?.target?.value, ...((w?.target?.accept) || [])].filter(Boolean).map(String);
 
 /** @type {import('react').CSSProperties} */
 export const PLAY_STYLE = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };

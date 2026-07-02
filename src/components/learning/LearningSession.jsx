@@ -202,9 +202,11 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                     // сообщит игра — иначе клетка рампы могла бы не совпасть и слово застряло бы
                     onResult={isStudy ? undefined : (w, ok) => onResult(w, ok, el.mode, el.dir)}
                     onFinish={isStudy ? (s) => { recordIntro(el.gw); onGameFinish(s, true); } : (s) => onGameFinish(s, false, el.mode)}
-                    onReport={reportCurrent}
-                    onSkip={skipCurrent}
-                    onKnow={knowCurrent}
+                    // «Уже знаю»/«Не учить» действуют на ВСЁ СЛОВО (пометить известным / убрать из
+                    // учёбы) — на элементах трека форм слово давно выучено, кнопки скрываем.
+                    onReport={el.gw?.form_track ? null : reportCurrent}
+                    onSkip={el.gw?.form_track ? null : skipCurrent}
+                    onKnow={el.gw?.form_track ? null : knowCurrent}
                     onExit={() => onClose?.(true)}
                     setGameState={() => onClose?.(true)}
                 />

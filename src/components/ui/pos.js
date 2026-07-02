@@ -108,7 +108,9 @@ export const posFormsRows = (word, forms, lang = "en") => {
     // key — стабильный ключ строки (для подсветки целевой формы на карточках трека форм)
     const add = (key, label, value) => { if (value) r.push({ key, label, value }); };
     if (forms.pos === "noun") {
-        add("sg", L.sg, [forms.gender, word].filter(Boolean).join(" "));
+        // ei-слово валидно и как общего рода (реформа 2005) — учим «ei/en klokke»
+        const g = forms.gender === "ei" ? "ei/en" : forms.gender;
+        add("sg", L.sg, [g, word].filter(Boolean).join(" "));
         add("sg_def", L.sg_def, forms.def_sg);
         add("pl", L.pl, forms.indef_pl);
         add("pl_def", L.pl_def, forms.def_pl);

@@ -377,6 +377,8 @@
   .qcard { width: 100%; max-width: 600px; }
   /* грамм-упражнение: крупная лемма выделена цветом тира (как сегмент прогресса грамматики) */
   .qword--grammar { color: var(--st-grammar, #8b7cf6); }
+  /* объяснение формы под вопросом грамм-упражнения (трек форм): что это, без подсказки ответа */
+  .qform-why { max-width: 480px; margin: 6px auto 0; font-size: var(--fs-13); line-height: 1.4; color: var(--game-ink-2); }
   /* Кнопки НАД карточкой слова (Уже знаю / Не учить) — компактные вторичные, по центру.
      «Уже знаю» появляется после флипа (показа перевода); «Не учить» — всегда. */
   .card-skip { flex: none; display: flex; gap: var(--sp-2); justify-content: center; margin-bottom: var(--sp-5); flex-wrap: wrap; }
@@ -431,6 +433,9 @@
   .fparad__row.is-target .fparad__val { color: var(--st-grammar, #8b7cf6); }
   .fparad__label { flex: none; min-width: 108px; font-size: var(--fs-12); color: var(--game-ink-2); }
   .fparad__val { font-size: var(--fs-16); font-weight: 700; color: var(--game-ink); overflow-wrap: break-word; word-break: break-word; }
+  /* объяснение изучаемой формы под целевой строкой: что это и когда употребляется */
+  .fparad__why { margin: 4px 8px 6px; padding-inline-start: 10px; border-inline-start: 2px solid var(--st-grammar, #8b7cf6);
+    font-size: var(--fs-13); line-height: 1.4; color: var(--game-ink-2); text-align: start; }
   .flashcard__hint { font-size: var(--fs-14); color: var(--game-ink-2); letter-spacing: var(--ls-wide); text-transform: uppercase; }
   .qspeak { margin-left: 8px; vertical-align: middle; color: var(--game-ink-2); background: transparent; border: none; cursor: pointer; }
   .qspeak:hover { color: var(--game-ink); }

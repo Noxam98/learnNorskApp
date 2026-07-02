@@ -11,7 +11,7 @@ import { speakText, prefetchTts } from "../ui/tts.js";
 import { posLabel, posMeta, chipPrefix, posFormsLine, posFormsRows } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { playSound } from "../tools/sound.js";
-import { useScrollLock, ProgressSegments, semisOf, filterChosenWords, shuffle, FORM_LABEL } from "./gameShared.jsx";
+import { useScrollLock, ProgressSegments, semisOf, filterChosenWords, shuffle, FORM_LABEL, FORM_EXPLAIN } from "./gameShared.jsx";
 import { langGuard } from "../../interface/i18nGuard.js";
 const HINTS = langGuard({
     ru: { reveal: "нажми — перевод", revealForm: "нажми — форма", next: "нажми — дальше", studied: "Просмотрено", forms: "Формы" },
@@ -147,9 +147,12 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     const back = formCard ? (cur.reveal || cur.target?.value || "") : (isNo2Int ? tr : noDisp);
     const frontLang = hyLang(currentLanguage, formCard ? true : isNo2Int);   // лицевая: норвежская при no2int
     const backLang = hyLang(currentLanguage, formCard ? true : !isNo2Int);   // оборот формы — тоже норвежский
-    // Подпись: у карточки формы — ВОПРОС о форме (как FormPrompt), иначе часть речи.
+    // Подписи: часть речи — ВСЕГДА (на карточке формы тоже — юзер должен видеть, что это
+    // прилагательное/глагол); у карточки формы дополнительно ВОПРОС о форме (как FormPrompt)
+    // и доходчивое объяснение изучаемой формы (FORM_EXPLAIN, по клетке).
     const formQ = formCard ? ((FORM_LABEL[currentLanguage] || FORM_LABEL.en)[cur?.prompt?.formLabel] || "") : "";
-    const posText = (cur && !formCard) ? posLabel(cur.part_of_speech, t) : "";
+    const formWhy = formCard ? ((FORM_EXPLAIN[currentLanguage] || FORM_EXPLAIN.en)[cur?.step] || "") : "";
+    const posText = cur ? posLabel(cur.part_of_speech, t) : "";
     // Компактная парадигма форм (en bil · bilen · biler · bilene) — учит формам,
     // которые потом тестируют грамм-упражнения. Показываем на обороте, когда формы есть.
     const formsLine = cur?.forms ? posFormsLine(no, cur.forms, currentLanguage) : "";
@@ -262,9 +265,10 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                             ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
                                     )}
                                 </h1>
-                                {formQ
-                                    ? <span className="qpos"><Icon n="graduation" sm /> {formQ}</span>
-                                    : posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
+                                <span className="row" style={{ justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
+                                    {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
+                                    {formQ && <span className="qpos"><Icon n="graduation" sm /> {formQ}</span>}
+                                </span>
 
                                 <div className={`flashcard__back${flipped ? " is-shown" : ""}`}>
                                     <AnimatePresence mode="wait" initial={false}>
@@ -284,9 +288,15 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                     <div className="flashcard__forms fparad" lang={hyLang(currentLanguage, true)}>
                                         <span className="flashcard__forms-label">{h.forms}</span>
                                         {formRows.map((r) => (
-                                            <div key={r.key} className={`fparad__row${r.key === targetRow ? " is-target" : ""}`}>
-                                                <span className="fparad__label">{r.label}</span>
-                                                <span className="fparad__val" lang="no">{r.value}</span>
+                                            <div key={r.key}>
+                                                <div className={`fparad__row${r.key === targetRow ? " is-target" : ""}`}>
+                                                    <span className="fparad__label">{r.label}</span>
+                                                    <span className="fparad__val" lang="no">{r.value}</span>
+                                                </div>
+                                                {/* объяснение ИЗУЧАЕМОЙ формы — что это и когда употребляется */}
+                                                {r.key === targetRow && formWhy && (
+                                                    <div className="fparad__why">{formWhy}</div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>

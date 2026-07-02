@@ -10,7 +10,7 @@ import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { ListenPrompt } from "./ListenPrompt.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, isGrammar, grammarAnswer, grammarOptions, FormPrompt } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, isGrammar, grammarAnswer, grammarAccepts, grammarOptions, FormPrompt } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
@@ -166,7 +166,8 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     const choose = (opt) => {
         if (status !== "ASKING" || !armed) return;
         setChosen(opt);
-        answer(opt === correctPrimary);
+        // грамм: допустимых ответов может быть >1 (род ei-слова: ei И en — реформа 2005)
+        answer(grammar ? grammarAccepts(current).includes(opt) : opt === correctPrimary);
     };
     // Честный «Не знаю»: ничего не выбрано — подсветится только верный, засчитывается как НЕ угадано.
     const dontKnow = () => { if (status !== "ASKING") return; setChosen(null); answer(false); };
@@ -230,7 +231,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     optionSub={subOf}
                     optionLang={grammar ? "no" : aLang}
                     picked={chosen}
-                    correct={correctPrimary}
+                    correct={grammar && chosen && grammarAccepts(current).includes(chosen) ? chosen : correctPrimary}
                     reveal={status === "CORRECT" || status === "INCORRECT"}
                     onPick={(opt) => { maybeShowChoiceHint(); choose(opt); }}
                     posText={grammar ? "" : posText}
