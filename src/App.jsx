@@ -13,6 +13,7 @@ import { interfaceTranslate } from "./interface/interfaceTranslation.jsx";
 import { BrandLoader } from "./components/ui/Spinner.jsx";
 import Toast from "./components/tools/error.jsx";
 import { UpdateBanner } from "./components/ui/UpdateBanner.jsx";
+import WhatsNew from "./components/ui/WhatsNew.jsx";
 // Роуты — code-splitting: каждая страница в своём чанке (грузится по переходу). Тяжёлое
 // (framer-motion в «Учёбе», графики/StatsPage, OnlinePage с играми) уезжает из стартового бандла.
 const PoolPage = lazy(() => import("./pages/PoolPage.jsx").then((m) => ({ default: m.PoolPage })));
@@ -131,6 +132,7 @@ function App() {
             {showFooter && <Footer />}
             <Toast text={toast} setText={showToast} type={toastType} url={toastUrl} action={toastAction} persist={toastPersist} />
             <UpdateBanner />
+            <WhatsNew />
         </div>
     );
 }

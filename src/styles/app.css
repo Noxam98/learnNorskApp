@@ -589,7 +589,9 @@
 @keyframes ubIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
 .update-banner__ic { display: inline-flex; color: var(--ember-600); }
 .update-banner__ic .ic { width: 18px; height: 18px; }
-.update-banner__msg { font-size: var(--fs-14); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.update-banner__msg { display: flex; flex-direction: column; min-width: 0; font-size: var(--fs-14); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* тизер свежайшей записи ченжлога — «зачем обновляться» одной строкой */
+.update-banner__teaser { font-size: var(--fs-12); font-weight: 600; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; }
 .update-banner__btn {
     flex: none; border: none; cursor: pointer; font-family: inherit; font-weight: 800; font-size: var(--fs-14);
     padding: 8px 16px; border-radius: var(--r-full); background: var(--ember-600); color: #fff;
@@ -601,6 +603,72 @@
 }
 .update-banner__x:hover { background: var(--surface-3); color: var(--ink); }
 .update-banner__x .ic { width: 15px; height: 15px; }
+
+/* «Что нового» — таймлайн обновлений (WhatsNew.jsx). Тема-адаптивно, точки по типу записи. */
+.wn-backdrop {
+    position: fixed; inset: 0; z-index: 9500; display: flex; align-items: flex-end; justify-content: center;
+    background: color-mix(in srgb, #0b1020 55%, transparent); backdrop-filter: blur(3px);
+    padding: 12px;
+}
+@media (min-width: 641px) { .wn-backdrop { align-items: center; } }
+.wn {
+    position: relative; overflow: hidden; display: flex; flex-direction: column;
+    width: min(480px, 100%); max-height: min(78vh, 640px);
+    background: var(--surface); color: var(--ink);
+    border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow-lg);
+    padding: 18px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+}
+.wn__halo {
+    position: absolute; top: -70px; inset-inline-end: -70px; width: 220px; height: 220px; pointer-events: none;
+    background: radial-gradient(closest-side, color-mix(in srgb, #8b7cf6 26%, transparent), transparent 70%);
+}
+.wn__head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.wn__spark {
+    flex: none; display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 14px; color: #fff;
+    background: linear-gradient(135deg, #8b7cf6, var(--fjord-600, #3a7bd5)); box-shadow: var(--shadow);
+}
+.wn__spark .ic { width: 20px; height: 20px; }
+.wn__titles { flex: 1; min-width: 0; }
+.wn__title { margin: 0; font-size: var(--fs-20); font-weight: 900; letter-spacing: -0.01em; }
+.wn__sub { margin: 2px 0 0; font-size: var(--fs-13); color: var(--ink-3); }
+.wn__x {
+    flex: none; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px;
+    border: none; background: var(--surface-3); color: var(--ink-3); border-radius: var(--r-full); cursor: pointer;
+}
+.wn__x:hover { color: var(--ink); }
+.wn__scroll { overflow-y: auto; overscroll-behavior: contain; min-height: 60px; padding: 2px 2px 6px; }
+.wn__empty { color: var(--ink-3); font-size: var(--fs-14); text-align: center; padding: 18px 0; }
+.wn__date {
+    font-size: var(--fs-12); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--ink-3); margin: 12px 0 6px 2px;
+}
+.wn__day:first-child .wn__date { margin-top: 0; }
+/* элемент таймлайна: цветная точка-иконка + линия к следующей записи */
+.wn__item { position: relative; display: flex; gap: 12px; padding: 7px 0 7px 2px; }
+.wn__item::before {
+    content: ""; position: absolute; inset-inline-start: 16px; top: 40px; bottom: -8px; width: 2px;
+    background: var(--border); border-radius: 1px;
+}
+.wn__item:last-child::before { display: none; }
+.wn__dot {
+    flex: none; z-index: 1; display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: var(--r-full); color: #fff; box-shadow: var(--shadow);
+}
+.wn__dot .ic { width: 15px; height: 15px; }
+.wn__dot--feature { background: #8b7cf6; }                    /* фича — фиолетовый (тир ★) */
+.wn__dot--fix     { background: var(--game-correct, #35a86b); } /* фикс — зелёный */
+.wn__dot--perf    { background: #e8a13c; }                    /* скорость — янтарный */
+.wn__dot--ui      { background: var(--fjord-600, #3a7bd5); }  /* интерфейс — синий */
+.wn__body { flex: 1; min-width: 0; padding-top: 2px; }
+.wn__t { font-size: var(--fs-15); font-weight: 800; line-height: 1.25; }
+.wn__d { font-size: var(--fs-13); color: var(--ink-2); margin-top: 2px; line-height: 1.4; }
+.wn__ok {
+    margin-top: 10px; border: none; cursor: pointer; font-family: inherit;
+    font-weight: 800; font-size: var(--fs-15); padding: 12px; border-radius: var(--r-full);
+    background: var(--ink); color: var(--surface);
+}
+.wn__ok:hover { filter: brightness(1.1); }
 
 /* ====================== RTL (арабский и пр. RTL-языки) ======================
    Каркас уже зеркалится сам (flex/grid + <html dir="rtl"> из реестра). Здесь — ТОЛЬКО

@@ -45,6 +45,17 @@ export const GRM = langGuard({
     ar:  { t: "القواعد (الجنس، الصيغ)", d: "أضف تمارين قواعد على الكلمات المتعلَّمة: جنس الاسم وصيغة الجمع." },
 }, "MyPage.GRM");
 
+// Статистика трека ФОРМ внутри грамм-карточки: клеток в работе / отработано / к повторению.
+export const FRM = langGuard({
+    ru:  { cells: "форм в работе", done: "отработано", due: "к повторению" },
+    en:  { cells: "forms in progress", done: "mastered", due: "due now" },
+    ukr: { cells: "форм у роботі", done: "відпрацьовано", due: "до повторення" },
+    pl:  { cells: "form w toku", done: "opanowane", due: "do powtórki" },
+    lt:  { cells: "formų mokomasi", done: "įsisavinta", due: "kartoti dabar" },
+    lv:  { cells: "formas apgūšanā", done: "apgūtas", due: "jāatkārto" },
+    ar:  { cells: "صيغ قيد التعلم", done: "مُتقنة", due: "للمراجعة الآن" },
+}, "MyPage.FRM");
+
 // Пер-POS тумблеры грамматики (gamePrefs.grammarPos): какие части речи дриллить.
 export const GRM_POS = langGuard({
     ru:  { noun: "Сущ.", verb: "Глаг.", adjective: "Прил.", pronoun: "Местоим." },

@@ -1,8 +1,13 @@
 // Баннер «доступна новая версия» — появляется, когда на сервере вышла новая сборка фронта.
-import { useState } from "react";
+// Совмещён с ченжлогом: показывает ТИЗЕР свежайшей записи «что нового» (если она уже
+// сгенерирована стражем пуша) — юзер видит, ЗАЧЕМ обновляться, а после перезагрузки
+// WhatsNew сам раскроет полный таймлайн.
+import { useEffect, useState } from "react";
 import { useVersionCheck } from "../../hooks/useVersionCheck.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { Icon } from "./Icon.jsx";
+import api from "../tools/api.js";
+import { wnText } from "./WhatsNew.jsx";
 import { langGuard } from "../../interface/i18nGuard.js";
 
 const T = langGuard({
@@ -18,13 +23,26 @@ const T = langGuard({
 export function UpdateBanner() {
     const update = useVersionCheck();
     const [dismissed, setDismissed] = useState(false);
+    const [teaser, setTeaser] = useState("");
     const lang = useSystemStore((s) => s.currentLanguage);
     const t = T[lang] || T.ru;
+
+    // тизер: заголовок свежайшей записи ченжлога (страж мог ещё не догнать деплой — тогда без тизера)
+    useEffect(() => {
+        if (!update) return;
+        api.getChangelog(1)
+            .then((r) => setTeaser(wnText(r?.entries?.[0], lang).t || ""))
+            .catch(() => { /* без тизера */ });
+    }, [update]); // eslint-disable-line
+
     if (!update || dismissed) return null;
     return (
         <div className="update-banner" role="status">
             <span className="update-banner__ic"><Icon n="sparkles" sm /></span>
-            <span className="update-banner__msg">{t.msg}</span>
+            <span className="update-banner__msg">
+                {t.msg}
+                {teaser && <span className="update-banner__teaser">✨ {teaser}</span>}
+            </span>
             <button className="update-banner__btn" onClick={() => window.location.reload()}>{t.btn}</button>
             <button className="update-banner__x" onClick={() => setDismissed(true)} aria-label="×"><Icon n="x" sm /></button>
         </div>

@@ -274,6 +274,17 @@
   .grm-pos__chip { font: inherit; font-size: var(--fs-13); font-weight: 600; line-height: 1; padding: 6px 13px; border-radius: var(--r-full); cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--ink-3); transition: background .15s, color .15s, border-color .15s; }
   .grm-pos__chip.is-on { background: var(--fjord-600); color: #fff; border-color: var(--fjord-600); }
   .grm-pos__chip:focus-visible { outline: 2px solid var(--fjord-600); outline-offset: 2px; }
+  /* прогресс трека ФОРМ внутри грамм-карточки: фиолет = тир ★ (как сегменты форм в сессии) */
+  .frm-stats { display: flex; flex-wrap: wrap; gap: var(--sp-2); padding: 0 0 var(--sp-4) calc(36px + var(--sp-4)); margin-top: calc(-1 * var(--sp-2)); }
+  .frm-stats__chip { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-12); font-weight: 700; line-height: 1; padding: 6px 11px; border-radius: var(--r-full); border: 1px solid transparent; }
+  .frm-stats__chip .ic { width: 13px; height: 13px; }
+  .frm-stats__chip--cells { color: var(--st-grammar, #8b7cf6); background: color-mix(in srgb, var(--st-grammar, #8b7cf6) 12%, transparent); }
+  .frm-stats__chip--done { color: var(--game-correct, #35a86b); background: color-mix(in srgb, var(--game-correct, #35a86b) 12%, transparent); }
+  .frm-stats__chip--due { color: var(--ember-600); background: color-mix(in srgb, var(--ember-600) 12%, transparent); }
+  /* строка-ссылка настроек («Что нового»): кликабельна целиком, шеврон справа */
+  .setrow--link { cursor: pointer; }
+  .setrow--link:hover .setrow__t { color: var(--fjord-600); }
+  .setrow__chev { display: inline-flex; color: var(--ink-3); flex: none; }
   /* селектор в строке настроек (язык / сила вибрации) — компактный чип справа, не на всю строку */
   .setrow .dd { flex: 0 1 auto; min-width: 0; max-width: 52%; }
   .setrow .dd__trigger { width: auto; padding: 9px 10px; gap: 7px; }

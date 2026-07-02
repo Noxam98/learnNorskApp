@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
-import { AH, NPS, LPK, GRM, GRM_POS } from "./MyPage.i18n.js";
+import { AH, NPS, LPK, GRM, GRM_POS, FRM } from "./MyPage.i18n.js";
+import { WN, openWhatsNew } from "../components/ui/WhatsNew.jsx";
 import { LANGUAGES } from "../interface/languages.js";
 import { useIsMobile } from "../hooks/useMediaQuery.js";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
@@ -67,6 +68,8 @@ const MyPage = () => {
     const lpk = LPK[currentLanguage] || LPK.en;
     const grm = GRM[currentLanguage] || GRM.en;
     const grmPos = GRM_POS[currentLanguage] || GRM_POS.en;
+    const frm = FRM[currentLanguage] || FRM.en;
+    const wn = WN[currentLanguage] || WN.en;
     // Порция новых слов за сессию (gamePrefs.newPerSession, дефолт 6; слайдер 4–10).
     const newPerSession = Math.min(10, Math.max(4, user?.gamePrefs?.newPerSession || 6));
     const setNewPerSession = (v) => {
@@ -382,6 +385,17 @@ const MyPage = () => {
                                 ))}
                             </div>
                         )}
+                        {/* Прогресс трека ФОРМ прямо в карточке настройки (настройка+результат вместе):
+                            фиолетовый — цвет тира ★ (как сегменты форм в сессии). Показываем, когда есть что показать. */}
+                        {grammarOn && (lstats?.forms?.cells || 0) > 0 && (
+                            <div className="frm-stats" aria-label={grm.t}>
+                                <span className="frm-stats__chip frm-stats__chip--cells"><Icon n="layers" sm /> {lstats.forms.cells} {frm.cells}</span>
+                                <span className="frm-stats__chip frm-stats__chip--done"><Icon n="check-circle" sm /> {lstats.forms.done} {frm.done}</span>
+                                {lstats.forms.due > 0 && (
+                                    <span className="frm-stats__chip frm-stats__chip--due"><Icon n="repeat" sm /> {lstats.forms.due} {frm.due}</span>
+                                )}
+                            </div>
+                        )}
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="alert" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.notifications}</span><span className="setrow__d">{t.notificationsDesc}</span></span>
@@ -392,6 +406,13 @@ const MyPage = () => {
                             <span className="setrow__ic"><Icon n="target" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.kbdAssist}</span><span className="setrow__d">{t.kbdAssistDesc}</span></span>
                             <span className={`toggle${kbdAssist ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setKbdAssist(!kbdAssist)} />
+                        </div>
+                        {/* «Что нового» — таймлайн обновлений приложения (WhatsNew, module-опенер) */}
+                        <div className="setrow setrow--link" role="button" tabIndex={0} onClick={openWhatsNew}
+                            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openWhatsNew(); } }}>
+                            <span className="setrow__ic"><Icon n="sparkles" sm /></span>
+                            <span className="setrow__meta"><span className="setrow__t">{wn.title}</span><span className="setrow__d">{wn.sub}</span></span>
+                            <span className="setrow__chev"><Icon n="chevron-right" sm /></span>
                         </div>
                         {/* Только админ: отладочная подсветка зоны (текст не i18n — служебный тумблер) */}
                         {isAdmin && (

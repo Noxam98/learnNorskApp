@@ -302,10 +302,12 @@ class ApiService {
         return this._send('GET', `/learning?${qs.toString()}`);
     }
     learningStats() { return this._send('GET', '/learning/stats'); }
+    getChangelog(limit = 30) { return this._send('GET', `/changelog?limit=${limit}`); } // «что нового»: {entries:[{id,day,kind,i18n}]}
     leaderboard(period = 'week', limit = 50) { return this._send('GET', `/learning/leaderboard?period=${period}&limit=${limit}`); }
     learningDue(limit = 20) { return this._send('GET', `/learning/due?limit=${limit}`); }
     learningActivity(days = 119) { return this._send('GET', `/learning/activity?days=${days}`); }
-    learningAnswer({ pool_id, correct, elapsed = null, mode = null, direction = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode, direction }); }
+    // form/cell/stage — трек ФОРМ (form_srs): без form-флага бэк намеренно игнорит такие ответы (гард).
+    learningAnswer({ pool_id, correct, elapsed = null, mode = null, direction = null, form = false, cell = null, stage = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode, direction, ...(form ? { form, cell, stage } : {}) }); }
     learningAdd(poolId) { return this._send('POST', '/learning/add', { pool_id: poolId }); }       // добавить слово (по pool_id) в Учёбу
     learningRemove(poolId) { return this._send('POST', '/learning/remove', { pool_id: poolId }); } // убрать слово (по pool_id) из Учёбы
     learningReport(poolId) { return this._send('POST', '/learning/report', { pool_id: poolId }); } // «не учить» → «ошибка в слове»: жалоба + убрать у себя (на модерацию)
