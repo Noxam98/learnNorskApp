@@ -160,13 +160,13 @@ export const FORM_EXPLAIN = langGuard({
 
 // Подписи откликов прохождения рампы (RampCheer): ступень/выучено/защищено/форма сдана.
 export const MASTERY = langGuard({
-    ru:  { step: "ступень", mastered: "Слово выучено!", protectedW: "Защищено", formDone: "Форма сдана" },
-    en:  { step: "step", mastered: "Word mastered!", protectedW: "Protected", formDone: "Form done" },
-    ukr: { step: "сходинка", mastered: "Слово вивчено!", protectedW: "Захищено", formDone: "Форму складено" },
-    pl:  { step: "etap", mastered: "Słowo opanowane!", protectedW: "Ochronione", formDone: "Forma zaliczona" },
-    lt:  { step: "pakopa", mastered: "Žodis išmoktas!", protectedW: "Apsaugota", formDone: "Forma įveikta" },
-    lv:  { step: "pakāpe", mastered: "Vārds apgūts!", protectedW: "Aizsargāts", formDone: "Forma nokārtota" },
-    ar:  { step: "درجة", mastered: "أُتقنت الكلمة!", protectedW: "محمي", formDone: "أُنجزت الصيغة" },
+    ru:  { step: "ступень", stepDown: "ступень ниже", mastered: "Слово выучено!", protectedW: "Защищено", formDone: "Форма сдана" },
+    en:  { step: "step", stepDown: "step down", mastered: "Word mastered!", protectedW: "Protected", formDone: "Form done" },
+    ukr: { step: "сходинка", stepDown: "сходинка нижче", mastered: "Слово вивчено!", protectedW: "Захищено", formDone: "Форму складено" },
+    pl:  { step: "etap", stepDown: "etap niżej", mastered: "Słowo opanowane!", protectedW: "Ochronione", formDone: "Forma zaliczona" },
+    lt:  { step: "pakopa", stepDown: "pakopa žemyn", mastered: "Žodis išmoktas!", protectedW: "Apsaugota", formDone: "Forma įveikta" },
+    lv:  { step: "pakāpe", stepDown: "pakāpe zemāk", mastered: "Vārds apgūts!", protectedW: "Aizsargāts", formDone: "Forma nokārtota" },
+    ar:  { step: "درجة", stepDown: "درجة أدنى", mastered: "أُتقنت الكلمة!", protectedW: "محمي", formDone: "أُنجزت الصيغة" },
 }, "gameShared.MASTERY");
 
 // Отклик прохождения ступени рампы при ВЕРНОМ ответе (рендерится в состоянии CORRECT):
@@ -200,6 +200,25 @@ export const RampCheer = ({ word, rank = 0, repeat = false, gmode = "" }) => {
         <div className="rampcheer" aria-hidden="true">
             <span className="rampcheer__pips">{[1, 2, 3, 4].map((i) => <i key={i} className={i <= rank ? "is-on" : ""} />)}</span>
             <span className="rampcheer__n">{m.step} {rank}/4</span>
+        </div>
+    );
+};
+
+// Отклик ОШИБКИ: ступень слова/формы ПОНИЗИЛАСЬ — красные пипсы нового уровня + «ступень ниже»
+// (в паре с падающим звуком «ошибка», транспонированным по высоте рампы). Грамм-overlay без
+// рампы (местоимения) — не показываем.
+export const RampDrop = ({ word, rank = 0 }) => {
+    const lang = useSystemStore((s) => s.currentLanguage);
+    const m = MASTERY[lang] || MASTERY.en;
+    const form = !!word?.form_track;
+    if (!form && word?.grammar) return null;              // overlay-клетка: отката рампы нет
+    // новый уровень после отката: формы produce→choose(2)/choose→card(0); база — на ступень ниже (min 1)
+    const newRank = form ? (word?.stage === "produce" ? 2 : 0) : Math.max(1, rank - 1);
+    return (
+        <div className="rampcheer rampcheer--drop" aria-hidden="true">
+            <Icon n="arrow-down" sm />
+            <span className="rampcheer__pips">{[1, 2, 3, 4].map((i) => <i key={i} className={i <= newRank ? "is-on is-down" : ""} />)}</span>
+            <span className="rampcheer__n">{m.stepDown}</span>
         </div>
     );
 };

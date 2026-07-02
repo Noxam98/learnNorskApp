@@ -11,7 +11,7 @@ import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import { playSound } from "../tools/sound.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, foldLight, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots, isGrammar, grammarAnswer, FormPrompt, RampCheer } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, foldLight, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots, isGrammar, grammarAnswer, FormPrompt, RampCheer , RampDrop } from "./gameShared.jsx";
 import { GameKeyboard, keysAdjacent } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -271,6 +271,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(230,122,82,.16)", color: "var(--game-incorrect)" }}><Icon n="x" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-incorrect)" }}>{t.notQuite}</div>
+                            <RampDrop word={current} rank={rank} />
                             <div className="fb-line">{t.mistake}</div>
                             <div className="fb-answer" lang={aLang}>{hyphenate(answerDisp, aLang)}</div>
                             <div className="fb-line fb-line--cta"><Icon n="edit" sm /> {t.typeRightToGo}</div>

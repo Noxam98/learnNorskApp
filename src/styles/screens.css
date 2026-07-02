@@ -411,6 +411,12 @@
   @keyframes mfly { 0% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.5); } }
   /* золотой сегмент полосы прогресса: на этом задании слово ВЫУЧЕНО */
   .pseg--mst { background: #E8B33C !important; box-shadow: 0 0 6px rgba(232, 179, 60, .55); }
+  /* понижение ступени при ошибке: красные пипсы нового уровня + «ступень ниже» */
+  .rampcheer--drop { color: var(--game-incorrect, #E67A52); }
+  .rampcheer--drop .ic { width: 14px; height: 14px; animation: rcDown .4s var(--ease); }
+  @keyframes rcDown { from { transform: translateY(-6px); opacity: 0; } }
+  .rampcheer--drop .rampcheer__pips i.is-down { background: var(--game-incorrect, #E67A52); }
+  .rampcheer--drop .rampcheer__n { color: var(--game-incorrect, #E67A52); }
 
   /* ЗАДАНИЕ грамм-упражнения: под словом, крупно + зелёное подчёркивание — взгляд сразу сюда */
   .qform-ask {

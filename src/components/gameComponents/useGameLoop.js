@@ -102,12 +102,13 @@ export function useGameLoop({
             if (ok) {
                 if (opts?.hold) { setStatus("CORRECT"); setHeld(true); }   // принято с опечаткой — ждём тап (звук играет игра)
                 else { playSound("correct", { semis: semisOf(rank) }); advance(); }
-            } else { playSound("wrong"); onWrong?.(); }
+            } else { playSound("wrong", { semis: semisOf(rank) }); onWrong?.(); }   // падение с высоты рампы
             return;
         }
         if (status !== "ASKING") return; // CORRECT/FINISHED — игнорируем
-        // «верно» транспонируем по стадии слова (rank); «ошибка» — всегда базовая. silent: звук играет сама игра.
-        if (!opts?.silent) playSound(ok ? "correct" : "wrong", ok ? { semis: semisOf(rank) } : undefined);
+        // и «верно», и «ошибку» транспонируем по стадии слова (rank): верно — подъём НА высоте,
+        // ошибка — падение С высоты. silent: звук играет сама игра.
+        if (!opts?.silent) playSound(ok ? "correct" : "wrong", { semis: semisOf(rank) });
         record(current, ok);                                   // SRS — только первая попытка
         setResults((rs) => [...rs, { id: current.id, ok }]);
         if (ok) {

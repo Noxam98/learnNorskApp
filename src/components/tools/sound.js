@@ -25,8 +25,9 @@ const SOUNDS = {
     // вход в задание — короткий мягкий подъём (квинта). semis: транспонировка по стадии слова —
     // на появлении слова слышно, на какой оно ступени рампы (карточка ниже всех → ввод выше всех).
     enter(c, { semis = 0 } = {}) { const o = out(c, 0.4); const t = c.currentTime; const s = semis; tone(c, o, { type: "triangle", freq: MIDI(64 + s), to: MIDI(71 + s), t, dur: 0.16, peak: 0.18 }); },
-    // ошибка — нисходящее «бз-з» (минор)
-    wrong(c) { const o = out(c, 0.55); const t = c.currentTime; tone(c, o, { type: "sawtooth", freq: MIDI(58), to: MIDI(53), t, dur: 0.18, peak: 0.26 }); tone(c, o, { type: "sawtooth", freq: MIDI(54), to: MIDI(49), t: t + 0.13, dur: 0.24, peak: 0.24 }); },
+    // ошибка — нисходящее «бз-з» (минор). semis: транспонировка по стадии слова — чем выше слово
+    // было по рампе, тем с большей высоты «падает» звук (зеркало растущего «верно»)
+    wrong(c, { semis = 0 } = {}) { const o = out(c, 0.55); const t = c.currentTime; const s = semis; tone(c, o, { type: "sawtooth", freq: MIDI(58 + s), to: MIDI(53 + s), t, dur: 0.18, peak: 0.26 }); tone(c, o, { type: "sawtooth", freq: MIDI(54 + s), to: MIDI(49 + s), t: t + 0.13, dur: 0.24, peak: 0.24 }); },
     // принято с опечаткой — мягкий нейтральный «динь-дынь» (не мажор «верно», не минор «ошибка»):
     // два близких тёплых тона на месте, без подъёма/спада — «почти, но ок»
     typo(c) { const o = out(c, 0.5); const t = c.currentTime; tone(c, o, { type: "triangle", freq: MIDI(71), t, dur: 0.1, peak: 0.26 }); tone(c, o, { type: "triangle", freq: MIDI(69), t: t + 0.11, dur: 0.16, peak: 0.24 }); },

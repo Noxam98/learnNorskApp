@@ -9,7 +9,7 @@ import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
-import { DUNNO, PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen , RampCheer } from "./gameShared.jsx";
+import { DUNNO, PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen , RampCheer , RampDrop } from "./gameShared.jsx";
 import { GameKeyboard, KBD_SET } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { langGuard } from "../../interface/i18nGuard.js";
@@ -137,6 +137,7 @@ export const CellsGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     {status === "INCORRECT" && (
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(230,122,82,.16)", color: "var(--game-incorrect)" }}><Icon n="x" lg /></div>
+                            <RampDrop word={current} rank={rank} />
                             <div className="fb-title" style={{ color: "var(--game-incorrect)" }}>{t.notQuite}</div>
                             <div className="fb-answer" lang={aLang}>{hyphenate(target, aLang)}</div>
                             <div className="fb-line fb-line--cta"><Icon n="edit" sm /> {lx.fix}</div>
