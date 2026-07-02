@@ -89,13 +89,13 @@ export const chipPrefix = (posKey, forms, { articles = true, verbAa = true } = {
 // Локализованные подписи парадигмы форм (по языку UI), с en-фолбэком. Ключи стабильны и
 // привязаны к строению posFormsRows — добавление формы = добавление ключа во ВСЕ языки.
 export const FORM_ROW_LABELS = langGuard({
-    ru:  { sg: "ед. ч.", sg_def: "ед. ч. (определ.)", pl: "мн. ч.", pl_def: "мн. ч. (определ.)", inf: "инфинитив", present: "настоящее", past: "прош. время", perfect: "перфект", positive: "положит.", neuter: "ср. род", comparative: "сравнит.", superlative: "превосх." },
-    en:  { sg: "singular", sg_def: "singular (def.)", pl: "plural", pl_def: "plural (def.)", inf: "infinitive", present: "present", past: "past", perfect: "perfect", positive: "positive", neuter: "neuter", comparative: "comparative", superlative: "superlative" },
-    ukr: { sg: "одн.", sg_def: "одн. (означ.)", pl: "мн.", pl_def: "мн. (означ.)", inf: "інфінітив", present: "теперішній", past: "минулий", perfect: "перфект", positive: "звич.", neuter: "сер. рід", comparative: "вищий", superlative: "найвищий" },
-    pl:  { sg: "l. poj.", sg_def: "l. poj. (okr.)", pl: "l. mn.", pl_def: "l. mn. (okr.)", inf: "bezokolicznik", present: "teraźn.", past: "przeszły", perfect: "perfekt", positive: "stopień równy", neuter: "rodz. nij.", comparative: "wyższy", superlative: "najwyższy" },
-    lt:  { sg: "vns.", sg_def: "vns. (žym.)", pl: "dgs.", pl_def: "dgs. (žym.)", inf: "bendratis", present: "esam.", past: "būt.", perfect: "perfektas", positive: "nelyg.", neuter: "bevardė g.", comparative: "aukšt.", superlative: "aukšč." },
-    lv:  { sg: "vsk.", sg_def: "vsk. (not.)", pl: "dsk.", pl_def: "dsk. (not.)", inf: "nenoteiksme", present: "tagadne", past: "pagātne", perfect: "perfekts", positive: "pamata", neuter: "nekatra dz.", comparative: "pārākā", superlative: "vispārākā" },
-    ar:  { sg: "مفرد", sg_def: "مفرد (معرفة)", pl: "جمع", pl_def: "جمع (معرفة)", inf: "مصدر", present: "مضارع", past: "ماضٍ", perfect: "تام", positive: "عادي", neuter: "محايد", comparative: "تفضيل", superlative: "أعلى تفضيل" },
+    ru:  { sg: "ед. число", sg_def: "«этот …»", pl: "мн. число", pl_def: "«эти …»", inf: "начальная (å)", present: "настоящее", past: "прошедшее", perfect: "с har (уже)", positive: "базовая", neuter: "для et-слов", comparative: "«более …»", superlative: "«самый …»", none: "нет формы" },
+    en:  { sg: "singular", sg_def: "“this …”", pl: "plural", pl_def: "“these …”", inf: "base (å)", present: "present", past: "past", perfect: "with har", positive: "base form", neuter: "for et-words", comparative: "“more …”", superlative: "“most …”", none: "no such form" },
+    ukr: { sg: "однина", sg_def: "«цей …»", pl: "множина", pl_def: "«ці …»", inf: "початкова (å)", present: "теперішній", past: "минулий", perfect: "з har (вже)", positive: "базова", neuter: "для et-слів", comparative: "«більш …»", superlative: "«най…»", none: "немає форми" },
+    pl:  { sg: "l. pojedyncza", sg_def: "„ten …”", pl: "l. mnoga", pl_def: "„te …”", inf: "podstawowa (å)", present: "teraźniejszy", past: "przeszły", perfect: "z har (już)", positive: "podstawowa", neuter: "dla słów z et", comparative: "„bardziej …”", superlative: "„naj…”", none: "brak formy" },
+    lt:  { sg: "vienaskaita", sg_def: "„tas …“", pl: "daugiskaita", pl_def: "„tie …“", inf: "pradinė (å)", present: "esamasis", past: "būtasis", perfect: "su har (jau)", positive: "pagrindinė", neuter: "et-žodžiams", comparative: "„labiau …“", superlative: "„pats …“", none: "formos nėra" },
+    lv:  { sg: "vienskaitlis", sg_def: "“tas …”", pl: "daudzskaitlis", pl_def: "“tie …”", inf: "pamatforma (å)", present: "tagadne", past: "pagātne", perfect: "ar har (jau)", positive: "pamata", neuter: "et-vārdiem", comparative: "“vairāk …”", superlative: "“vis…”", none: "formas nav" },
+    ar:  { sg: "مفرد", sg_def: "«هذا …»", pl: "جمع", pl_def: "«هذه …»", inf: "المصدر (å)", present: "مضارع", past: "ماضٍ", perfect: "مع har", positive: "أساسية", neuter: "مع كلمات et", comparative: "«أكثر …»", superlative: "«الأكثر …»", none: "لا توجد صيغة" },
 }, "pos.FORM_ROW_LABELS");
 
 // Полный набор грамматических форм слова → [{label, value}] для подробного показа.
@@ -105,8 +105,15 @@ export const posFormsRows = (word, forms, lang = "en") => {
     if (!forms) return [];
     const L = FORM_ROW_LABELS[lang] || FORM_ROW_LABELS.en;
     const r = [];
-    // key — стабильный ключ строки (для подсветки целевой формы на карточках трека форм)
-    const add = (key, label, value) => { if (value) r.push({ key, label, value }); };
+    // key — стабильный ключ строки (для подсветки целевой формы на карточках трека форм).
+    // «n/a» и подобные маркеры из автозаполнения = «формы не существует» → человеческое
+    // «нет формы» на языке юзера (none:true — потребитель может приглушить строку).
+    const JUNK = new Set(["n/a", "na", "-", "–", "—", "none", "null", "ingen"]);
+    const add = (key, label, value) => {
+        if (!value) return;
+        if (JUNK.has(String(value).trim().toLowerCase())) { r.push({ key, label, value: L.none, none: true }); return; }
+        r.push({ key, label, value });
+    };
     if (forms.pos === "noun") {
         // ei-слово валидно и как общего рода (реформа 2005) — учим «ei/en klokke»
         const g = forms.gender === "ei" ? "ei/en" : forms.gender;

@@ -436,6 +436,10 @@
   /* объяснение изучаемой формы под целевой строкой: что это и когда употребляется */
   .fparad__why { margin: 4px 8px 6px; padding-inline-start: 10px; border-inline-start: 2px solid var(--st-grammar, #8b7cf6);
     font-size: var(--fs-13); line-height: 1.4; color: var(--game-ink-2); text-align: start; }
+  /* «нет формы» (несравнимое прил. и т.п.) — приглушённо, не как значение */
+  .fparad__val--none { font-weight: 400; font-style: italic; color: var(--game-ink-2); font-size: var(--fs-13); }
+  /* перевод мелко на карточке формы — напоминание значения слова */
+  .fcard-trans { margin-top: 6px; font-size: var(--fs-13); color: var(--game-ink-2); }
   .flashcard__hint { font-size: var(--fs-14); color: var(--game-ink-2); letter-spacing: var(--ls-wide); text-transform: uppercase; }
   .qspeak { margin-left: 8px; vertical-align: middle; color: var(--game-ink-2); background: transparent; border: none; cursor: pointer; }
   .qspeak:hover { color: var(--game-ink); }
