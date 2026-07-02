@@ -703,6 +703,9 @@
     background: var(--ink); color: var(--surface);
 }
 .wn__ok:hover { filter: brightness(1.1); }
+/* попап настроек учёбы (SessionSettings): ряды intro-set с разделителями */
+.ssp .intro-set__row + .intro-set__row { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
+.ssp .intro-set__row:first-child { padding-top: 4px; }
 
 /* ====================== RTL (арабский и пр. RTL-языки) ======================
    Каркас уже зеркалится сам (flex/grid + <html dir="rtl"> из реестра). Здесь — ТОЛЬКО

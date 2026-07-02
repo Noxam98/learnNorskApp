@@ -55,40 +55,51 @@ export default function SessionSettings({ open, onClose, lang = "ru" }) {
                     </div>
                     <button className="wn__x" onClick={close} aria-label="×"><Icon n="x" sm /></button>
                 </header>
-                <div className="wn__scroll">
+                {/* паттерн онбординга (intro-set): значок+заголовок+контрол в строку, описание
+                    ВТОРОЙ строкой во всю ширину — на узких экранах не образует тесных колонок */}
+                <div className="wn__scroll ssp">
                     {/* порция новых слов за сессию (4–10) */}
-                    <div className="setrow">
-                        <span className="setrow__ic"><Icon n="layers" sm /></span>
-                        <span className="setrow__meta"><span className="setrow__t">{nps.t}</span><span className="setrow__d">{nps.d}</span></span>
-                        <span className="row" style={{ gap: 8, alignItems: "center", flex: "none" }}>
-                            <input type="range" min="4" max="10" value={newPer}
-                                onChange={(e) => patch({ newPerSession: Number(e.target.value) })} style={{ width: 90 }} />
-                            <b style={{ minWidth: 16, textAlign: "center", fontSize: "var(--fs-15)" }}>{newPer}</b>
-                        </span>
+                    <div className="intro-set__row">
+                        <div className="intro-set__head">
+                            <span className="intro-set__ic"><Icon n="layers" sm /></span>
+                            <span className="intro-set__t">{nps.t}</span>
+                            <span className="row" style={{ gap: 8, alignItems: "center", marginLeft: "auto", flex: "none" }}>
+                                <input type="range" min="4" max="10" value={newPer}
+                                    onChange={(e) => patch({ newPerSession: Number(e.target.value) })} style={{ width: 84 }} />
+                                <b style={{ minWidth: 16, textAlign: "center", fontSize: "var(--fs-15)" }}>{newPer}</b>
+                            </span>
+                        </div>
+                        <div className="intro-set__d">{nps.d}</div>
                     </div>
                     {/* слуховые задания (отдельная партия) */}
-                    <div className="setrow">
-                        <span className="setrow__ic"><Icon n="volume" sm /></span>
-                        <span className="setrow__meta"><span className="setrow__t">{t.listenTasks}</span><span className="setrow__d">{t.listenTasksDesc}</span></span>
-                        <button type="button" className={`toggle${audioOn ? " is-on" : ""}`} role="switch"
-                            aria-checked={audioOn} onClick={() => patch({ audio: !audioOn })} />
+                    <div className="intro-set__row">
+                        <div className="intro-set__head">
+                            <span className="intro-set__ic"><Icon n="volume" sm /></span>
+                            <span className="intro-set__t">{t.listenTasks}</span>
+                            <button type="button" className={`toggle${audioOn ? " is-on" : ""}`} role="switch"
+                                aria-checked={audioOn} onClick={() => patch({ audio: !audioOn })} />
+                        </div>
+                        <div className="intro-set__d">{t.listenTasksDesc}</div>
                     </div>
                     {/* грамматика/формы + тонкая настройка по частям речи */}
-                    <div className="setrow">
-                        <span className="setrow__ic"><Icon n="graduation" sm /></span>
-                        <span className="setrow__meta"><span className="setrow__t">{grm.t}</span><span className="setrow__d">{grm.d}</span></span>
-                        <button type="button" className={`toggle${grammarOn ? " is-on" : ""}`} role="switch"
-                            aria-checked={grammarOn} onClick={() => patch({ grammar: !grammarOn })} />
-                    </div>
-                    {grammarOn && (
-                        <div className="grm-pos">
-                            {["noun", "verb", "adjective", "pronoun"].map((k) => (
-                                <button key={k} type="button" role="switch" aria-checked={posOn(k)}
-                                    className={`grm-pos__chip${posOn(k) ? " is-on" : ""}`}
-                                    onClick={() => patch({ grammarPos: { ...gpos, [k]: !posOn(k) } })}>{grmPos[k]}</button>
-                            ))}
+                    <div className="intro-set__row">
+                        <div className="intro-set__head">
+                            <span className="intro-set__ic"><Icon n="graduation" sm /></span>
+                            <span className="intro-set__t">{grm.t}</span>
+                            <button type="button" className={`toggle${grammarOn ? " is-on" : ""}`} role="switch"
+                                aria-checked={grammarOn} onClick={() => patch({ grammar: !grammarOn })} />
                         </div>
-                    )}
+                        <div className="intro-set__d">{grm.d}</div>
+                        {grammarOn && (
+                            <div className="intro-set__chips">
+                                {["noun", "verb", "adjective", "pronoun"].map((k) => (
+                                    <button key={k} type="button" role="switch" aria-checked={posOn(k)}
+                                        className={`grm-pos__chip${posOn(k) ? " is-on" : ""}`}
+                                        onClick={() => patch({ grammarPos: { ...gpos, [k]: !posOn(k) } })}>{grmPos[k]}</button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <button className="wn__ok" onClick={close}>{s.close}</button>
             </section>
