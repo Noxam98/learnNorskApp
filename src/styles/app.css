@@ -609,15 +609,19 @@
     position: fixed; inset: 0; z-index: 9500; display: flex; align-items: flex-end; justify-content: center;
     background: color-mix(in srgb, #0b1020 55%, transparent); backdrop-filter: blur(3px);
     padding: 12px;
+    animation: wnFade .18s var(--ease);
 }
 @media (min-width: 641px) { .wn-backdrop { align-items: center; } }
+@keyframes wnFade { from { opacity: 0; } }
 .wn {
     position: relative; overflow: hidden; display: flex; flex-direction: column;
     width: min(480px, 100%); max-height: min(78vh, 640px);
     background: var(--surface); color: var(--ink);
     border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow-lg);
     padding: 18px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+    animation: wnUp .24s var(--ease);
 }
+@keyframes wnUp { from { opacity: 0; transform: translateY(28px) scale(0.98); } }
 .wn__halo {
     position: absolute; top: -70px; inset-inline-end: -70px; width: 220px; height: 220px; pointer-events: none;
     background: radial-gradient(closest-side, color-mix(in srgb, #8b7cf6 26%, transparent), transparent 70%);
@@ -644,8 +648,10 @@
     color: var(--ink-3); margin: 12px 0 6px 2px;
 }
 .wn__day:first-child .wn__date { margin-top: 0; }
-/* элемент таймлайна: цветная точка-иконка + линия к следующей записи */
-.wn__item { position: relative; display: flex; gap: 12px; padding: 7px 0 7px 2px; }
+/* элемент таймлайна: цветная точка-иконка + линия к следующей записи; вход — каскадом
+   (animationDelay задаёт JSX), backwards — чтобы до старта элемент был невидим */
+.wn__item { position: relative; display: flex; gap: 12px; padding: 7px 0 7px 2px; animation: wnItem .2s var(--ease) backwards; }
+@keyframes wnItem { from { opacity: 0; transform: translateX(-10px); } }
 .wn__item::before {
     content: ""; position: absolute; inset-inline-start: 16px; top: 40px; bottom: -8px; width: 2px;
     background: var(--border); border-radius: 1px;

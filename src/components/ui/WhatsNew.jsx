@@ -4,7 +4,6 @@
 // через openWhatsNew(). Дизайн — вертикальный таймлайн с цветом типа записи
 // (✨ фича / ✓ фикс / ⚡ скорость / ✎ интерфейс), сгруппированный по дням.
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { Icon } from "./Icon.jsx";
 import api from "../tools/api.js";
@@ -84,15 +83,11 @@ export default function WhatsNew() {
         else days.push({ day: e.day, items: [e] });
     }
 
+    if (!open) return null;
     return (
-        <AnimatePresence>
-            {open && (
-                <motion.div className="wn-backdrop" onClick={close}
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
-                    <motion.section className="wn" role="dialog" aria-modal="true" aria-label={t.title}
-                        onClick={(e) => e.stopPropagation()}
-                        initial={{ opacity: 0, y: 28, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 28, scale: 0.98 }} transition={{ duration: 0.24, ease: [0.2, 0.7, 0.2, 1] }}>
+        <div className="wn-backdrop" onClick={close}>
+                    <section className="wn" role="dialog" aria-modal="true" aria-label={t.title}
+                        onClick={(e) => e.stopPropagation()}>
                         <span className="wn__halo" aria-hidden="true" />
                         <header className="wn__head">
                             <span className="wn__spark"><Icon n="sparkles" /></span>
@@ -111,24 +106,21 @@ export default function WhatsNew() {
                                         const k = KIND[e.kind] || KIND.feature;
                                         const txt = wnText(e, lang);
                                         return (
-                                            <motion.div className="wn__item" key={e.id}
-                                                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: 0.05 * i + 0.03 * di, duration: 0.2 }}>
+                                            <div className="wn__item" key={e.id}
+                                                style={{ animationDelay: `${(0.05 * i + 0.03 * di).toFixed(2)}s` }}>
                                                 <span className={`wn__dot wn__dot--${k.cls}`}><Icon n={k.ic} sm /></span>
                                                 <div className="wn__body">
                                                     <div className="wn__t">{txt.t}</div>
                                                     {txt.d && <div className="wn__d">{txt.d}</div>}
                                                 </div>
-                                            </motion.div>
+                                            </div>
                                         );
                                     })}
                                 </div>
                             ))}
                         </div>
                         <button className="wn__ok" onClick={close}>{t.close}</button>
-                    </motion.section>
-                </motion.div>
-            )}
-        </AnimatePresence>
+                    </section>
+        </div>
     );
 }
