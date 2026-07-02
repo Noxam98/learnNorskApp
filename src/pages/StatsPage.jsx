@@ -158,6 +158,15 @@ export const StatsPage = () => {
                     <Bar value={p.classified} total={p.total} label="Классифицировано (уровень)" />
                     <Bar value={p.description} total={p.total} label="С описанием" />
                     <Bar value={p.forms} total={p.formable ?? p.total} label="С грамм. формами (сущ./глаг./прил.)" />
+                    {data.countability && (
+                        <>
+                            {/* бэкфилл исчисляемости нунов (countability_loop): mass-нуны не дриллятся по мн.ч. */}
+                            <Bar value={data.countability.marked} total={data.countability.total} label="Исчисляемость сущ. размечена" />
+                            <div className="muted" style={{ fontSize: "var(--fs-12)", marginTop: "-4px" }}>
+                                неисчисляемых: <b>{data.countability.uncountable}</b> · осталось разметить: <b>{Math.max(0, (data.countability.total || 0) - (data.countability.marked || 0))}</b>
+                            </div>
+                        </>
+                    )}
                     {p.forms_by_pos && [["noun", "· существительные"], ["verb", "· глаголы"], ["adjective", "· прилагательные"]].map(([k, name]) => (
                         <Bar key={k} value={p.forms_by_pos[k]?.with} total={p.forms_by_pos[k]?.total} label={name} />
                     ))}
