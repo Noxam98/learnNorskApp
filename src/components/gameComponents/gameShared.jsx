@@ -181,10 +181,12 @@ export const FormPrompt = ({ word, lang }) => {
     const posText = posLabel(word?.part_of_speech, interfaceTranslate[lang]);
     return (
         <>
-            {label && <div className="qprompt">{label}</div>}
+            {/* часть речи — сверху мелко; ЗАДАНИЕ — под словом, крупнее и с фиолетовым
+                подчёркиванием (взгляд сразу на «что спрашивают») */}
+            {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
             {tr && <div className="fcard-trans">{tr}</div>}
             <h1 className="qword qword--grammar" lang="no">{lemma}</h1>
-            {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
+            {label && <div className="qform-ask">{label}</div>}
             {why && <div className="qform-why">{why}</div>}
         </>
     );
