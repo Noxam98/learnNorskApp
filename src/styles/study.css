@@ -104,8 +104,8 @@
 .study-root .review-cta__chips { display: flex; gap: var(--sp-2); flex-wrap: wrap; position: relative; }
 .study-root .review-cta__chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: var(--r-full); font-size: var(--fs-12); font-weight: 700; background: rgba(255,255,255,.14); color: #fff; }
 .study-root .review-cta__chip .dot { width: 7px; height: 7px; border-radius: 50%; }
-/* чип фазы форм (цикл «слова↔формы»): фиолет тира ★, с иконкой */
-.study-root .review-cta__chip--forms { background: var(--st-grammar, #8b7cf6); }
+/* чип фазы форм (цикл «слова↔формы»): зелёный (в тон шкале прогресса), с иконкой */
+.study-root .review-cta__chip--forms { background: var(--st-master, #3C7A4E); }
 .study-root .review-cta__chip--forms .ic { width: 13px; height: 13px; }
 .study-root .review-cta__note { position: relative; display: flex; align-items: flex-start; gap: 6px;
     margin-top: var(--sp-3); font-size: var(--fs-12); line-height: 1.35; color: rgba(255,255,255,.82); }
