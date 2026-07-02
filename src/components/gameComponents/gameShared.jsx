@@ -369,7 +369,9 @@ export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = n
 // Ранг ступени рампы слова для цвета сегмента: 0 — карточка (серый), 1..4 — зелёный по нарастанию,
 // 4 = ввод с клавиатуры (самый насыщенный). cell — клетка рампы (card/choice_*/build_*/input_* | cloze_1..3).
 // Грамматика (choice_gender/input_indefpl) — ОТДЕЛЬНЫЙ тир (rank 5 → свой цвет, не зелёная рампа).
-const RAMP_RANK = { card: 0, study: 0, choice_int2no: 1, choice_no2int: 2, build_int2no: 3, input_int2no: 4, cloze_1: 1, cloze_2: 2, cloze_3: 3, order_int2no: 3, cells_int2no: 4, choice_gender: 5, input_indefpl: 5, input_present: 5, input_past: 5, input_perfect: 5, input_neuter: 5, input_comparative: 5, input_superlative: 5, input_pluraladj: 5, input_objcase: 5, input_possneut: 5, input_posspl: 5, form: 5 };
+// Грамматика/формы — по зелёной шкале стадий (карточка серая → ввод насыщенный), как база:
+// form_card/choose/produce — ступени рампы форм; overlay-клетки приравнены к выбору/вводу.
+const RAMP_RANK = { card: 0, study: 0, choice_int2no: 1, choice_no2int: 2, build_int2no: 3, input_int2no: 4, cloze_1: 1, cloze_2: 2, cloze_3: 3, order_int2no: 3, cells_int2no: 4, choice_gender: 2, input_indefpl: 4, input_present: 4, input_past: 4, input_perfect: 4, input_neuter: 4, input_comparative: 4, input_superlative: 4, input_pluraladj: 4, input_objcase: 4, input_possneut: 4, input_posspl: 4, form_card: 0, form_choose: 2, form_produce: 4 };
 export const stageRank = (cell) => RAMP_RANK[cell || "card"] ?? 0;
 
 // Транспонировка звуков «вход в задание»/«верно» по стадии рампы (rank 0..4): чем дальше слово

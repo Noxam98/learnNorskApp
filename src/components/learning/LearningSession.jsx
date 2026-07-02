@@ -172,8 +172,8 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         const isStudy = el.mode === "card" || el.mode === "study";
         // полоса прогресса сессии: сегмент на слово. Пройденные — ЦВЕТ СТАДИИ слова (карточка серая
         // → ввод самый насыщенный зелёный), текущее — акцент, предстоящие — пустые (появляются по ходу).
-        // Трек форм — фиолетовый тир ★ (rank 5), как и грамм-overlay.
-        const segCell = (e) => (e?.gw?.form_track ? "form"
+        // Трек форм — по зелёной шкале СТУПЕНИ рампы формы (карточка → выбор → ввод).
+        const segCell = (e) => (e?.gw?.form_track ? `form_${e?.gw?.stage || "card"}`
             : e?.step || ((e?.mode === "card" || e?.mode === "study") ? "card" : `${e?.mode}_${e?.dir}`));
         const sessionSegs = elements.map((e, i) => ({
             state: i < idx ? (hist[i] === "err" ? "err" : "ok") : (i === idx ? "now" : "future"),

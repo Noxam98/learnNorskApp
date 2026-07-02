@@ -76,9 +76,12 @@ describe("грамм-упражнения: деривация", () => {
         expect(foldLight("  a  b ")).toBe("a b");
     });
 
-    it("прогресс-бар: грамм-клетки — отдельный тир (rank 5), не зелёная рампа (0..4)", () => {
-        expect(stageRank("choice_gender")).toBe(5);
-        expect(stageRank("input_indefpl")).toBe(5);
+    it("прогресс-бар: грамматика/формы — по зелёной шкале стадий (выбор 2, ввод 4)", () => {
+        expect(stageRank("choice_gender")).toBe(2);
+        expect(stageRank("input_indefpl")).toBe(4);
+        expect(stageRank("form_card")).toBe(0);
+        expect(stageRank("form_choose")).toBe(2);
+        expect(stageRank("form_produce")).toBe(4);
         // базовая рампа не сдвинулась
         expect(stageRank("card")).toBe(0);
         expect(stageRank("choice_int2no")).toBe(1);
