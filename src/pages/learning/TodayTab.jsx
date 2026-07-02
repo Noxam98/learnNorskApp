@@ -223,6 +223,8 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
                                     <>
                                         <div className="review-cta__big"><b>{learnable} {pl(lang, learnable, "word")}</b> {t.readyB.split("\n").map((l, i) => <span key={i}>{i ? <br /> : null}{l}</span>)}</div>
                                         <div className="review-cta__chips">
+                                            {/* фаза форм цикла «слова↔формы»: партия выучена — сессия дрилит её формы */}
+                                            {composition.phase === "forms" && <span className="review-cta__chip review-cta__chip--forms"><Icon n="graduation" sm />{t.chFormsPhase}</span>}
                                             {composition.review > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-review)" }} />{composition.review} {t.chReview}</span>}
                                             {composition.progress > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-learn)" }} />{composition.progress} {pl(lang, composition.progress, "started")}</span>}
                                             {composition.weak > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {pl(lang, composition.weak, "weak")}</span>}
@@ -230,7 +232,9 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
                                             {composition.phrases > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-phrase, #8b7cf6)" }} />{composition.phrases} {pl(lang, composition.phrases, "phrase")}</span>}
                                             {composition.grammar > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-grammar, #8b7cf6)" }} />{composition.grammar} {pl(lang, composition.grammar, "grammar")}</span>}
                                         </div>
-                                        {composition.fresh > 0 && (
+                                        {composition.phase === "forms" ? (
+                                            <div className="review-cta__note"><Icon n="graduation" sm /> {t.formsDesc}</div>
+                                        ) : composition.fresh > 0 && (
                                             <div className="review-cta__note"><Icon n="info" sm /> {t.portionNote}</div>
                                         )}
                                     </>
