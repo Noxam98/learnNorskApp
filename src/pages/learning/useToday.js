@@ -77,6 +77,7 @@ export function useToday({ reloadKey, refresh, openSession }) {
         phrases: sessComp.phrases || 0,   // устойчивые выражения в сессии (показываем, если есть)
         grammar: sessComp.grammar || 0,   // грамм-упражнения (род/формы) в сессии — только из реальной
         phase: sessComp.phase || "words", // фаза цикла «слова↔формы»: forms → сессия форм партии
+        formsCellsLeft: sessComp.formsCellsLeft || 0, // несданных форм партии — до возврата новых слов
     } : {
         review: by.repeat || 0,        // Повторение (выучено + подошёл срок)
         progress: by.in_progress || 0, // В процессе (начато, ещё не выучено)
@@ -85,6 +86,7 @@ export function useToday({ reloadKey, refresh, openSession }) {
         phrases: 0,                    // фразы не оцениваем из пула — только из реальной сессии
         grammar: 0,                    // грамматику не оцениваем из пула — только из реальной сессии
         phase: "words",                // фазу знает только реальная сессия
+        formsCellsLeft: 0,
     }, [sessComp, by.repeat, by.in_progress, by.weak, by.new]);
     // Сколько реально будет в следующей сессии (для крупной цифры на кнопке). До прогрева — оценка из stats.
     const learnable = sessComp ? sessComp.total

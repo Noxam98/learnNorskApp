@@ -224,7 +224,7 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
                                         <div className="review-cta__big"><b>{learnable} {pl(lang, learnable, "word")}</b> {t.readyB.split("\n").map((l, i) => <span key={i}>{i ? <br /> : null}{l}</span>)}</div>
                                         <div className="review-cta__chips">
                                             {/* фаза форм цикла «слова↔формы»: партия выучена — сессия дрилит её формы */}
-                                            {composition.phase === "forms" && <span className="review-cta__chip review-cta__chip--forms"><Icon n="graduation" sm />{t.chFormsPhase}</span>}
+                                            {composition.phase === "forms" && <span className="review-cta__chip review-cta__chip--forms"><Icon n="graduation" sm />{t.chFormsPhase}{composition.formsCellsLeft > 0 ? ` · ${composition.formsCellsLeft}` : ""}</span>}
                                             {composition.review > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-review)" }} />{composition.review} {t.chReview}</span>}
                                             {composition.progress > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-learn)" }} />{composition.progress} {pl(lang, composition.progress, "started")}</span>}
                                             {composition.weak > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-weak)" }} />{composition.weak} {pl(lang, composition.weak, "weak")}</span>}
@@ -233,7 +233,7 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
                                             {composition.grammar > 0 && <span className="review-cta__chip"><span className="dot" style={{ background: "var(--st-master, #3C7A4E)" }} />{composition.grammar} {pl(lang, composition.grammar, "grammar")}</span>}
                                         </div>
                                         {composition.phase === "forms" ? (
-                                            <div className="review-cta__note"><Icon n="graduation" sm /> {t.formsDesc}</div>
+                                            <div className="review-cta__note"><Icon n="graduation" sm /> {t.formsDesc}{composition.formsCellsLeft > 0 ? ` ${fmt(t.formsLeftLine, { n: composition.formsCellsLeft })}` : ""}</div>
                                         ) : composition.fresh > 0 && (
                                             <div className="review-cta__note"><Icon n="info" sm /> {t.portionNote}</div>
                                         )}
