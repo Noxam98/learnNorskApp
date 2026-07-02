@@ -10,7 +10,7 @@ import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
-import { DUNNO, PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, shuffle } from "./gameShared.jsx";
+import { DUNNO, PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, shuffle , RampCheer } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { langGuard } from "../../interface/i18nGuard.js";
 
@@ -115,6 +115,7 @@ export const OrderGame = ({ setGameState, sound = false, words: wordsProp, onRes
                         <div className="feedback" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(98,192,131,.16)", color: "var(--game-correct)" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-correct)" }}>{t.correctly}</div>
+                            <RampCheer word={current} rank={rank} repeat={repeat} gmode="order" />
                         </div>
                     )}
                     {status === "INCORRECT" && (

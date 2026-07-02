@@ -40,6 +40,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     const {
         isSystem, phase, round, isDesktop, elements, idx, legacyGw,
         res, cards, hist, graduated, protectedNow, protectedTypo, after, gate, busy, loadingNext,
+        batchDone,
         onResult, recordIntro, onGameFinish, reportCurrent, skipCurrent, knowCurrent, again,
     } = useLearningSession({ words, system, setId, listen, lang, newPerSession, onClose });
 
@@ -110,6 +111,12 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                         </p>
                     )}
 
+                    {batchDone && (
+                        <p style={{ opacity: .95, marginTop: 6, fontWeight: 800, color: "#E8B33C" }}>
+                            <Icon n="award" sm /> {t.batchDone}
+                        </p>
+                    )}
+
                     {protectedNow > 0 && (
                         <p style={{ opacity: .9, marginTop: 6, fontWeight: 700, color: "var(--st-master)" }}>
                             <Icon n="lock" sm /> {t.protectedLabel}: {protectedNow}
@@ -176,7 +183,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         const segCell = (e) => (e?.gw?.form_track ? `form_${e?.gw?.stage || "card"}`
             : e?.step || ((e?.mode === "card" || e?.mode === "study") ? "card" : `${e?.mode}_${e?.dir}`));
         const sessionSegs = elements.map((e, i) => ({
-            state: i < idx ? (hist[i] === "err" ? "err" : "ok") : (i === idx ? "now" : "future"),
+            state: i < idx ? (hist[i] === "err" ? "err" : hist[i] === "mst" ? "mst" : "ok") : (i === idx ? "now" : "future"),
             rank: stageRank(segCell(e)),
         }));
         return (

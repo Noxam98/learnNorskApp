@@ -71,7 +71,7 @@
 /**
  * Сегмент полосы прогресса. Строка — легаси (экзамен/обычные игры). Объект { state, rank } —
  * системная сессия: state управляет видом, rank (0..4) задаёт оттенок стадии (0 серый … 4 зелёный).
- * @typedef {'ok' | 'err' | 'now' | 'done' | 'card' | ''} SegState
+ * @typedef {'ok' | 'err' | 'now' | 'done' | 'card' | '' | 'mst'} SegState
  * @typedef {SegState | { state: SegState | 'future', rank: number }} ProgressSeg
  */
 

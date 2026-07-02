@@ -8,6 +8,7 @@ import { BrandMark } from "../ui/BrandMark.jsx";
 import { posMeta, chipPrefix, posLabel } from "../ui/pos.js";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { useSystemStore } from "../../store/systemStore.jsx";
+import { playSound } from "../tools/sound.js";
 import { langGuard } from "../../interface/i18nGuard.js";
 
 // Блокировка скролла фона на время полноэкранной активности (игра/карточки/экзамен).
@@ -156,6 +157,52 @@ export const FORM_EXPLAIN = langGuard({
         superlative: "«الأكثر …»: størst — الأكبر.",
     },
 }, "gameShared.FORM_EXPLAIN");
+
+// Подписи откликов прохождения рампы (RampCheer): ступень/выучено/защищено/форма сдана.
+export const MASTERY = langGuard({
+    ru:  { step: "ступень", mastered: "Слово выучено!", protectedW: "Защищено", formDone: "Форма сдана" },
+    en:  { step: "step", mastered: "Word mastered!", protectedW: "Protected", formDone: "Form done" },
+    ukr: { step: "сходинка", mastered: "Слово вивчено!", protectedW: "Захищено", formDone: "Форму складено" },
+    pl:  { step: "etap", mastered: "Słowo opanowane!", protectedW: "Ochronione", formDone: "Forma zaliczona" },
+    lt:  { step: "pakopa", mastered: "Žodis išmoktas!", protectedW: "Apsaugota", formDone: "Forma įveikta" },
+    lv:  { step: "pakāpe", mastered: "Vārds apgūts!", protectedW: "Aizsargāts", formDone: "Forma nokārtota" },
+    ar:  { step: "درجة", mastered: "أُتقنت الكلمة!", protectedW: "محمي", formDone: "أُنجزت الصيغة" },
+}, "gameShared.MASTERY");
+
+// Отклик прохождения ступени рампы при ВЕРНОМ ответе (рендерится в состоянии CORRECT):
+//  • финальный ввод слова впервые → праздник «Слово выучено!» (золото, разлёт частиц, фанфара);
+//  • финальный ввод на повторе → сдержанное «Защищено»;
+//  • ввод формы (produce трека форм) → «Форма сдана ✓»;
+//  • иначе — пипсы высоты рампы «ступень N/4» (в унисон с ростом тона звука «верно»).
+export const RampCheer = ({ word, rank = 0, repeat = false, gmode = "" }) => {
+    const lang = useSystemStore((s) => s.currentLanguage);
+    const soundOn = useSystemStore((s) => s.soundOn);
+    const m = MASTERY[lang] || MASTERY.en;
+    const form = !!word?.form_track;
+    const formDone = form && word?.stage === "produce";
+    const finalInput = !form && gmode === "input" && word?.step === "input_int2no";
+    const mastered = finalInput && !repeat;
+    const shield = finalInput && repeat;
+    useEffect(() => {
+        if (mastered && soundOn) playSound("mastered");   // фанфара — только за первое «выучено»
+    }, []); // eslint-disable-line
+    if (mastered || shield || formDone) {
+        return (
+            <div className={`rampcheer rampcheer--big${mastered ? " rampcheer--gold" : ""}`}>
+                {mastered && <span className="mburst" aria-hidden="true">{Array.from({ length: 10 }).map((_, i) => <i key={i} />)}</span>}
+                <Icon n={mastered ? "trophy" : formDone ? "check-circle" : "lock"} sm />
+                <span>{mastered ? m.mastered : formDone ? m.formDone : m.protectedW}</span>
+            </div>
+        );
+    }
+    if (rank < 1 || rank > 4) return null;
+    return (
+        <div className="rampcheer" aria-hidden="true">
+            <span className="rampcheer__pips">{[1, 2, 3, 4].map((i) => <i key={i} className={i <= rank ? "is-on" : ""} />)}</span>
+            <span className="rampcheer__n">{m.step} {rank}/4</span>
+        </div>
+    );
+};
 
 // Является ли элемент грамм-упражнением (несёт параметризованный контракт target).
 export const isGrammar = (w) => !!(w && (w.grammar || w.target));
@@ -419,6 +466,7 @@ export const ProgressSegments = ({ segs, status }) => {
                             cls += " pseg--st" + blinkR + " is-blink";
                         }
                     } else if (state === "err") cls += " is-wrong";                 // пройдено с ошибкой → оранжевый
+                    else if (state === "mst") cls += " pseg--mst";                  // слово ВЫУЧЕНО здесь → золото
                     else if (state !== "future") cls += " pseg--st" + r;            // пройдено верно → зелёный стадии
                     // future → базовый «пустой» сегмент
                 } else if (state) {

@@ -36,6 +36,8 @@ const SOUNDS = {
     question(c) { const o = out(c, 0.45); const t = c.currentTime; tone(c, o, { type: "triangle", freq: MIDI(64), to: MIDI(76), t, dur: 0.22, peak: 0.22 }); },
     // финиш экрана/раунда — короткий бодрый аккорд
     finish(c) { const o = out(c, 0.6); const t = c.currentTime; [60, 64, 67].forEach((n) => tone(c, o, { type: "triangle", freq: MIDI(n), t, dur: 0.4, peak: 0.2 })); tone(c, o, { type: "sine", freq: MIDI(72), t: t + 0.12, dur: 0.4, peak: 0.22 }); },
+    // слово ВЫУЧЕНО (прошло всю рампу) — торжественный мажорный разлив вверх + «блеск» сверху
+    mastered(c) { const o = out(c, 0.65); const t = c.currentTime; [72, 76, 79, 84].forEach((n, i) => tone(c, o, { type: "triangle", freq: MIDI(n), t: t + i * 0.09, dur: 0.22, peak: 0.3 })); tone(c, o, { type: "sine", freq: MIDI(91), t: t + 0.42, dur: 0.36, peak: 0.2 }); },
     // переворот карточки (одиночная «учёба»)
     flip(c) { const o = out(c, 0.4); const t = c.currentTime; tone(c, o, { type: "triangle", freq: MIDI(67), to: MIDI(74), t, dur: 0.1, peak: 0.18 }); },
 };

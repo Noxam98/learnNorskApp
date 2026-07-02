@@ -377,6 +377,41 @@
   .qcard { width: 100%; max-width: 600px; }
   /* грамм-упражнение: крупная лемма выделена цветом тира (как сегмент прогресса грамматики) */
   .qword--grammar { color: var(--st-grammar, #8b7cf6); }
+  /* ── RampCheer: отклик прохождения ступени рампы при верном ответе ──
+     пипсы «ступень N/4» (в унисон с ростом тона) / золотое «Слово выучено!» с разлётом частиц */
+  .rampcheer { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px; animation: rcIn .22s var(--ease) backwards; }
+  @keyframes rcIn { from { opacity: 0; transform: translateY(4px) scale(.96); } }
+  .rampcheer__pips { display: inline-flex; gap: 4px; }
+  .rampcheer__pips i { width: 8px; height: 8px; border-radius: 50%; background: var(--game-border); }
+  .rampcheer__pips i.is-on { background: var(--game-correct, #62C083); }
+  .rampcheer__pips i.is-on:last-of-type { animation: rcPip .4s var(--ease); }
+  @keyframes rcPip { 50% { transform: scale(1.6); } }
+  .rampcheer__n { font-size: var(--fs-12); font-weight: 700; color: var(--game-ink-2); }
+  .rampcheer--big { position: relative; padding: 7px 14px; border-radius: var(--r-full); font-size: var(--fs-14); font-weight: 800;
+    background: color-mix(in srgb, var(--game-correct, #62C083) 15%, transparent); color: var(--game-correct, #62C083); }
+  .rampcheer--big .ic { width: 15px; height: 15px; }
+  .rampcheer--gold { background: color-mix(in srgb, #E8B33C 18%, transparent); color: #E8B33C; animation: rcGold .5s var(--ease); }
+  @keyframes rcGold { 0% { transform: scale(.7); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } }
+  /* разлёт частиц вокруг «Слово выучено!» */
+  .mburst { position: absolute; inset: 0; pointer-events: none; }
+  .mburst i { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: #E8B33C; opacity: 0;
+    animation: mfly .8s var(--ease) forwards; }
+  .mburst i:nth-child(2n) { background: var(--game-correct, #62C083); width: 5px; height: 5px; }
+  .mburst i:nth-child(3n) { border-radius: 1px; }
+  .mburst i:nth-child(1)  { --dx: -52px; --dy: -34px; animation-delay: 0s; }
+  .mburst i:nth-child(2)  { --dx: 48px;  --dy: -40px; animation-delay: .03s; }
+  .mburst i:nth-child(3)  { --dx: -70px; --dy: 6px;  animation-delay: .06s; }
+  .mburst i:nth-child(4)  { --dx: 66px;  --dy: 12px;  animation-delay: .02s; }
+  .mburst i:nth-child(5)  { --dx: -34px; --dy: 40px;  animation-delay: .08s; }
+  .mburst i:nth-child(6)  { --dx: 30px;  --dy: 44px;  animation-delay: .05s; }
+  .mburst i:nth-child(7)  { --dx: -14px; --dy: -52px; animation-delay: .04s; }
+  .mburst i:nth-child(8)  { --dx: 12px;  --dy: -58px; animation-delay: .07s; }
+  .mburst i:nth-child(9)  { --dx: -58px; --dy: -8px;  animation-delay: .09s; }
+  .mburst i:nth-child(10) { --dx: 56px;  --dy: -14px; animation-delay: .01s; }
+  @keyframes mfly { 0% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.5); } }
+  /* золотой сегмент полосы прогресса: на этом задании слово ВЫУЧЕНО */
+  .pseg--mst { background: #E8B33C !important; box-shadow: 0 0 6px rgba(232, 179, 60, .55); }
+
   /* ЗАДАНИЕ грамм-упражнения: под словом, крупно + зелёное подчёркивание — взгляд сразу сюда */
   .qform-ask {
     margin-top: var(--sp-3); font-size: var(--fs-18); font-weight: 800; color: var(--game-ink);

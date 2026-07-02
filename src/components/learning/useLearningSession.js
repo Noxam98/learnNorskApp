@@ -75,6 +75,8 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     const [protectedNow, setProtectedNow] = useState(0);      // «защищено» за сессию: повтор-слова, прошедшие финальную стадию (ввод) чисто
     const [protectedTypo, setProtectedTypo] = useState(0);    // из них принятых С ОПЕЧАТКОЙ (отдельный пункт итога)
     const [after, setAfter] = useState(null); // свежая статистика после сессии
+    const [cyclePhase, setCyclePhase] = useState("words"); // фаза цикла ЭТОЙ сессии (words|forms)
+    const [batchDone, setBatchDone] = useState(false);     // партия форм сдана этой сессией (баннер итога)
     const [gate, setGate] = useState(null);   // состояние ворот экзамена (для итога системной сессии)
     const [busy, setBusy] = useState(false);
     // «Живая» сессия: добор карточек до нормы принятых (target).
@@ -93,6 +95,8 @@ export function useLearningSession({ words = [], system = false, setId = null, l
                 : await useSessionStore.getState().take(20);
             const list = Array.isArray(r) ? r : (r?.elements || r?.items || r?.words || []);
             const els = toElements(list, lang);
+            setCyclePhase(r?.composition?.phase || "words");
+            setBatchDone(false);
             if (els.length) {
                 // Варианты «выбора» приходят inline в элементах сессии. Догружаем дистракторы ТОЛЬКО
                 // для тех choice, где их вдруг нет (страховка) — и ждём их, чтобы внутри сессии ничего
@@ -146,7 +150,12 @@ export function useLearningSession({ words = [], system = false, setId = null, l
         // следующую сессию греем ПОСЛЕ статов — к этому моменту ответы записаны, и бэк отдаст
         // свежий состав (со сдвинутыми по рампе словами), а не те же «выборы». В дрилле по набору
         // и в слуховой сессии общую дневную не греем (там «Ещё» перечитывает свой источник напрямую).
-        if (!setId && !isListen) useSessionStore.getState().prefetch(20);
+        // Заодно ловим ЗАКРЫТИЕ ПАРТИИ ФОРМ: эта сессия была фазой форм, следующая — уже слова.
+        if (!setId && !isListen) {
+            useSessionStore.getState().prefetch(20)
+                .then((nxt) => { if (cyclePhase === "forms" && (nxt?.composition?.phase || "words") === "words") setBatchDone(true); })
+                .catch(() => { /* офлайн */ });
+        }
     };
 
     // Финиш одной игры. isStudy=true — это была карточка-интро (НЕ ответ): считаем отдельно.
@@ -169,8 +178,10 @@ export function useLearningSession({ words = [], system = false, setId = null, l
             if (got.typo) setProtectedTypo((p) => p + 1);
             else setProtectedNow((p) => p + (got.correct || 0));
         }
-        // запоминаем исход элемента для полосы прогресса сессии
-        setHist((h) => [...h, isStudy ? "card" : ((got.correct || 0) > 0 ? "ok" : "err")]);
+        // запоминаем исход элемента для полосы прогресса сессии; ЗОЛОТО — слово прошло всю рампу
+        // впервые (финальный ввод, не повтор, не грамм-тир) — «здесь родилось выученное слово»
+        const gold = !isStudy && !isGrammarEl && gmode === "input" && (got.correct || 0) > 0 && !elements[idx]?.repeat;
+        setHist((h) => [...h, isStudy ? "card" : gold ? "mst" : ((got.correct || 0) > 0 ? "ok" : "err")]);
         if (isSystem) {
             if (idx + 1 < elements.length) setIdx((n) => n + 1);
             else showSummary();
@@ -268,6 +279,7 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     return {
         isSystem, isListen, phase, round, isDesktop, elements, idx, legacyGw,
         res, cards, hist, graduated, protectedNow, protectedTypo, after, gate, busy, loadingNext,
+        batchDone,
         onResult, recordIntro, onGameFinish, reportCurrent, skipCurrent, knowCurrent, again,
     };
 }

@@ -8,7 +8,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { hyLang } from "../ui/hyphenate.js";
 import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { speakText, speakTextEnd } from "../ui/tts.js";
-import { PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen } from "./gameShared.jsx";
+import { PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen , RampCheer } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 
 export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
@@ -90,6 +90,7 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     )}
                     <div className="pcta">
                         {status === "CORRECT" && <span className="qhint qhint--ok"><Icon n="check" sm /> {t.correctly}</span>}
+                        {status === "CORRECT" && <RampCheer word={current} rank={rank} repeat={repeat} gmode="cloze" />}
                         {status === "INCORRECT" && <span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span>}
                     </div>
                 </ChoiceQuestion>
