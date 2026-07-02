@@ -92,14 +92,25 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
         playSound("enter", { semis: semisOf(rank) });   // звук «вход в задание» по стадии (карточка — базовая)
         const { front, back, backNo } = _sides(idx);
         if (front) speakText(front, hyLang(currentLanguage, isNo2Int)).catch(() => {});
-        if (back) prefetchTts(back, hyLang(currentLanguage, backNo ? true : !isNo2Int));
+        if (back) prefetchTts(backNo ? formTts(back) : back, hyLang(currentLanguage, backNo ? true : !isNo2Int));
     }, [idx]); // eslint-disable-line
     useEffect(() => {  // правильный ответ при перевороте
         if (!sound || !flipped) return;
         const { back, backNo } = _sides(idx);
-        if (back) speakText(back, hyLang(currentLanguage, backNo ? true : !isNo2Int)).catch(() => {});
+        if (back) speakText(backNo ? formTts(back) : back, hyLang(currentLanguage, backNo ? true : !isNo2Int)).catch(() => {});
     }, [flipped]); // eslint-disable-line
     useEffect(() => { setWhyOpen(false); }, [idx]);   // новая карточка → меню «Не учить» закрыто
+
+    // «ei/en klokke» голосом читалась бы со слэшем — озвучиваем канонично «ei klokke»
+    const formTts = (v) => String(v).replace(/^ei\/en /, "ei ");
+    // Карточка ФОРМЫ: прогрев озвучки ВСЕХ форм парадигмы ЗАРАНЕЕ — тап по строке играет мгновенно
+    useEffect(() => {
+        const w = words[idx];
+        if (!w?.form_track || !w?.forms) return;
+        const noW = w?.translate?.no?.[0] || "";
+        posFormsRows(noW, { ...w.forms, pos: w.forms.pos || posMeta(w.part_of_speech).key }, currentLanguage)
+            .forEach((r) => { if (!r.none) prefetchTts(formTts(r.value), "nb"); });
+    }, [idx]); // eslint-disable-line
 
     /** @type {import('react').CSSProperties} */
     const playStyle = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };
@@ -291,9 +302,11 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                         <span className="flashcard__forms-label">{h.forms}</span>
                                         {formRows.map((r) => (
                                             <div key={r.key}>
-                                                <div className={`fparad__row${r.key === targetRow ? " is-target" : ""}`}>
+                                                <div className={`fparad__row${r.key === targetRow ? " is-target" : ""}${r.none ? "" : " fparad__row--say"}`}
+                                                    onClick={r.none ? undefined : (e) => { e.stopPropagation(); speakText(formTts(r.value), "nb").catch(() => {}); }}>
                                                     <span className="fparad__label">{r.label}</span>
                                                     <span className={`fparad__val${r.none ? " fparad__val--none" : ""}`} lang={r.none ? undefined : "no"}>{r.value}</span>
+                                                    {!r.none && <Icon n="volume" sm className="fparad__speak" />}
                                                 </div>
                                                 {/* объяснение ИЗУЧАЕМОЙ формы — что это и когда употребляется */}
                                                 {r.key === targetRow && formWhy && (

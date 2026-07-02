@@ -56,7 +56,8 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         // звуковая обратная связь (раньше тут был тихий Promise.resolve → «после ответа звука нет»).
         // Иначе (обычный выбор) — озвучка перевода-ответа до конца.
         speakAnswer: () => {
-            if (grammar) return null;   // грамм — ответ-артикль озвучивать не нужно
+            // грамм: артикль (род) не озвучиваем; РЕАЛЬНУЮ форму слова (трек форм) — озвучиваем
+            if (grammar) return (formWord && sound && correctPrimary) ? speakTextEnd(correctPrimary, "nb") : null;
             if (listenMode) {
                 if (wordEndRef.current.ended) return sound ? speakTextEnd(no, qLang) : Promise.resolve();
                 return new Promise((res) => { wordEndRef.current.resolve = res; });
@@ -91,6 +92,8 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     const no = current?.translate?.no?.[0] || "";
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
     const grammar = isGrammar(current);   // грамм-упражнение (род/форма): вопрос о форме, верный = target.value
+    // форма-СЛОВО (трек форм, не артикль): её озвучиваем как обычный ответ — норвежским голосом
+    const formWord = grammar && !!current?.form_track && current?.step !== "gender";
     const question = isNo2Int ? no : (translations.join(", ") || no);
     // для показа норвежского слова-вопроса — с артиклем/«å» по настройке (озвучка читает лемму)
     const promptDisp = isNo2Int ? noWithPrefix(no, current, { articles: showArticles, verbAa: showVerbAa }) : question;
@@ -104,14 +107,22 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     // В режиме «на слух» слово проигрывает ListenPrompt (со своим прогрессом) — тут не дублируем.
     useEffect(() => {
         setRevealText(false);   // новое слово — снова прячем текст (listen-режим)
-        if (!sound || status !== "ASKING" || grammar) return;   // грамм — без озвучки (ответ-артикль читать не нужно)
+        if (!sound || status !== "ASKING") return;
+        if (grammar) {          // грамм: артикли не читаем; форму-слово — лемма при показе + прогрев ответа
+            if (formWord) {
+                const lemma = current?.prompt?.lemma || no;
+                if (lemma) speakText(lemma, "nb").catch(() => {});
+                if (correctPrimary) prefetchTts(correctPrimary, "nb");
+            }
+            return;
+        }
         if (question && !listenMode) speakText(question, qLang).catch(() => {});
         if (correctPrimary) prefetchTts(correctPrimary, aLang);
     }, [current, sound]); // eslint-disable-line
     // После ОШИБКИ озвучиваем верный ответ. После ВЕРНОГО озвучкой+паузой управляет useGameLoop
     // (speakAnswer), чтобы авто-переход совпал с длиной аудио.
     useEffect(() => {
-        if (sound && status === "INCORRECT" && correctPrimary && !grammar) speakText(correctPrimary, aLang).catch(() => {});
+        if (sound && status === "INCORRECT" && correctPrimary && (!grammar || formWord)) speakText(correctPrimary, formWord ? "nb" : aLang).catch(() => {});
     }, [status]); // eslint-disable-line
 
     // Подгрузка вариантов.

@@ -39,6 +39,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const isNo2Int = mode !== "int2no";
     // грамм-упражнение (ввод формы): печатаем норвежскую форму (target.value), всегда экранной клавой.
     const grammar = isGrammar(wordsProp?.[0]);
+    // форма-СЛОВО (трек форм): озвучиваем лемму при показе и верную форму после ответа (norsk)
+    const formWord = grammar && !!wordsProp?.[0]?.form_track;
     // печатаем норвежское → наша экранная клавиатура; для ввода родного перевода (no2int) — штатный инпут.
     // грамм — всегда экранная клава (норв. форма с å/ø/æ).
     const useKbd = grammar || !isNo2Int;
@@ -64,7 +66,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, rank,
         // со звуком пауза перед переходом = длина озвучки ответа + хвост (correctPrimary/aLang ниже).
         // При опечатке (held) переход по тапу — там озвучивает сама игра, см. эффект ниже.
-        speakAnswer: () => (sound && correctPrimary && !grammar) ? speakTextEnd(correctPrimary, aLang) : null,
+        speakAnswer: () => (sound && correctPrimary && (!grammar || formWord)) ? speakTextEnd(correctPrimary, aLang) : null,
         onAdvance: () => { setInput(""); setTypoOk(false); setTypoAsk(null); setResolving(false); setLetterHint(null); typoRef.current = false; },   // новое слово — чистое поле
         onWrong: () => { resetInput(); setTypoOk(false); setTypoAsk(null); setLetterHint(null); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
@@ -108,9 +110,16 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (!useKbd && (status === "ASKING" || status === "INCORRECT") && inputRef.current) inputRef.current.focus();
     }, [status, current]); // eslint-disable-line
 
-    // Озвучка видимого слова при показе (+ прогрев правильного ответа заранее). Грамм — без озвучки.
+    // Озвучка видимого слова при показе (+ прогрев правильного ответа заранее).
+    // Грамм: форму-СЛОВО (трек форм) озвучиваем — лемма при показе + прогрев формы; артикли — нет.
     useEffect(() => {
-        if (!sound || status !== "ASKING" || grammar) return;
+        if (!sound || status !== "ASKING" || (grammar && !formWord)) return;
+        if (formWord) {
+            const lemma = current?.prompt?.lemma || no;
+            if (lemma) speakText(lemma, "nb").catch(() => {});
+            if (correctPrimary) prefetchTts(correctPrimary, aLang);
+            return;
+        }
         if (question) speakText(question, qLang).catch(() => {});
         if (correctPrimary) prefetchTts(correctPrimary, aLang);
     }, [current, sound]); // eslint-disable-line
@@ -118,7 +127,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     // confirm/deny сами озвучивают и ждут конца аудио (afterTypoAudio), чтобы не было двойной озвучки.
     // После обычного ВЕРНОГО озвучкой+паузой управляет useGameLoop (speakAnswer).
     useEffect(() => {
-        if (sound && correctPrimary && !resolving && !grammar && (status === "INCORRECT" || (status === "CORRECT" && held))) {
+        if (sound && correctPrimary && !resolving && (!grammar || formWord) && (status === "INCORRECT" || (status === "CORRECT" && held))) {
             speakText(correctPrimary, aLang).catch(() => {});
         }
     }, [status]); // eslint-disable-line
