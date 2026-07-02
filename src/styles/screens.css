@@ -438,11 +438,9 @@
     font-size: var(--fs-13); line-height: 1.4; color: var(--game-ink-2); text-align: start; }
   /* «нет формы» (несравнимое прил. и т.п.) — приглушённо, не как значение */
   .fparad__val--none { font-weight: 400; font-style: italic; color: var(--game-ink-2); font-size: var(--fs-13); }
-  /* перевод-напоминание на карточке формы: блеклый, абсолютом чуть НАД словом */
-  .flashcard .qword { position: relative; }
+  /* перевод-напоминание на карточке формы: блеклый, в потоке НАД норвежским словом */
   .fcard-trans {
-    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 2px;
-    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    margin-bottom: 2px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     font-size: var(--fs-13); font-weight: 400; color: var(--game-ink-2); opacity: 0.55;
   }
   .flashcard__hint { font-size: var(--fs-14); color: var(--game-ink-2); letter-spacing: var(--ls-wide); text-transform: uppercase; }

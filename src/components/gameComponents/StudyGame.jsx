@@ -258,9 +258,9 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                 exit={{ opacity: 0, x: -60, rotate: -1 }}
                                 transition={{ duration: 0.22, ease: [0.2, 0.7, 0.2, 1] }}>
                                 <div className="qcount">{t.word} {dispNo} / {dispTotal}</div>
+                                {/* карточка формы: перевод-напоминание — блекло, в потоке НАД норвежским словом */}
+                                {formCard && tr && <div className="fcard-trans" lang={hyLang(currentLanguage, false)}>{tr}</div>}
                                 <h1 className="qword" lang={frontLang}>
-                                    {/* карточка формы: перевод-напоминание — блекло, чуть НАД словом (absolute) */}
-                                    {formCard && tr && <span className="fcard-trans" lang={hyLang(currentLanguage, false)}>{tr}</span>}
                                     {hyphenate(front, frontLang)}
                                     {noVisible && (
                                         <SpeakButton text={no} hasTts={cur.hasTts} className="qspeak" lg
