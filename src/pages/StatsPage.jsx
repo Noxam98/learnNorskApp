@@ -71,7 +71,17 @@ export const StatsPage = () => {
             <div className="pgrid" style={{ display: "grid", gap: "var(--sp-4)", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))" }}>
                 <div className="card" style={{ padding: "var(--sp-5)", gridColumn: "1 / -1" }}>
                     <div className="label" style={{ marginBottom: "var(--sp-4)" }}>Фоновые задачи</div>
-                    {[["autofill", "Добавление слов"], ["embed", "Эмбеддинги"], ["describe", "Описания"], ["pos", "Части речи"], ["forms", "Грамм. формы"], ["homograph", "Омонимы"]].map(([key, name]) => {
+                    {/* показываем только те лупы, которые бэк реально отдаёт (ключи PAUSED) */}
+                    {[
+                        ["autofill", "Озвучка слов (доделка)"],
+                        ["tts_tr", "Озвучка переводов"],
+                        ["embed", "Эмбеддинги"],
+                        ["classify", "Уровни и темы"],
+                        ["describe", "Описания"],
+                        ["pos", "Части речи"],
+                        ["forms", "Грамм. формы"],
+                        ["homograph", "Омонимы"],
+                    ].filter(([key]) => !control || key in control).map(([key, name]) => {
                         const paused = control?.[key];
                         return (
                             <div key={key} className="row between" style={{ padding: "6px 0", fontSize: "var(--fs-14)", gap: "var(--sp-2)", flexWrap: "wrap" }}>
