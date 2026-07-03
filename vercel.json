@@ -6,7 +6,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'sha256-LxgtHe9bnIVlcMBDJ27w97mBoQOkoI9GMsuLg63GNbE=' https://accounts.google.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.gstatic.com https://*.googleusercontent.com; font-src 'self' data:; connect-src 'self' https://learn-norsk-backend.fly.dev wss://learn-norsk-backend.fly.dev https://accounts.google.com; media-src 'self' https://learn-norsk-backend.fly.dev blob:; frame-src https://accounts.google.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'sha256-LxgtHe9bnIVlcMBDJ27w97mBoQOkoI9GMsuLg63GNbE=' https://accounts.google.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.gstatic.com https://*.googleusercontent.com; font-src 'self' data:; connect-src 'self' https://api.learnnorsk.space wss://api.learnnorsk.space https://accounts.google.com; media-src 'self' https://api.learnnorsk.space blob:; frame-src https://accounts.google.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
         },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "X-Frame-Options", "value": "DENY" },
