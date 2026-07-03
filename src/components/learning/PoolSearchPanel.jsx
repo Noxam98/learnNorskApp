@@ -117,6 +117,7 @@ export default function PoolSearchPanel({ lang, setId, inSet, onPick, onRemove, 
                 const nq = term.toLowerCase();
                 setPoolExact(res.some((x) => x.inPool && (
                     (x.word || "").toLowerCase() === nq ||
+                    (x.viaForm || "").toLowerCase() === nq ||
                     Object.values(x.translate || {}).some((arr) => (arr || []).some((s) => (s || "").toLowerCase() === nq))
                 )));
             })

@@ -107,6 +107,7 @@ export function usePoolSearch(currentLanguage, t) {
                 // «есть в базе»: точное совпадение запроса со словом или его переводом (любой язык)
                 setPoolExact(res.find((x) => x.inPool && (
                     (x.word || "").toLowerCase() === nq ||
+                    (x.viaForm || "").toLowerCase() === nq ||
                     Object.values(x.translate || {}).some((arr) => (arr || []).some((s) => (s || "").toLowerCase() === nq))
                 )) || null);
             })

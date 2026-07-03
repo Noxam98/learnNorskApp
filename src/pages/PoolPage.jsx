@@ -131,7 +131,7 @@ export const PoolPage = () => {
                         {smart.map((w) => (
                             <button key={w.word} type="button" disabled={!!smartBusy} onClick={() => onGenerateAdd(w.word)}
                                 style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 999, cursor: "pointer", border: "1px solid var(--border)", background: "var(--surface)", color: "var(--ink-2)", fontWeight: 600, fontSize: "var(--fs-13)" }}>
-                                <Icon n="sparkles" sm /> {w.word}
+                                <Icon n="sparkles" sm /> {w.word}{w.viaForm ? <span className="muted" style={{ fontWeight: 400 }}> ← {w.viaForm}</span> : null}
                                 {smartBusy === w.word && <BtnSpinner />}
                             </button>
                         ))}
