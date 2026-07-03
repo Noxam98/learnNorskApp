@@ -6,7 +6,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { renderHook, act, waitFor, cleanup } from "@testing-library/react";
 
 const take = vi.fn();
-const prefetch = vi.fn();
+const prefetch = vi.fn().mockResolvedValue(null);   // код чейнит .then — мок обязан вернуть промис
 vi.mock("../../store/sessionStore.jsx", () => ({ useSessionStore: Object.assign(() => {}, { getState: () => ({ take, prefetch }) }) }));
 vi.mock("../tools/api.js", () => ({
     default: {
