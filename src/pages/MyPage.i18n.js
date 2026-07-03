@@ -66,3 +66,14 @@ export const GRM_POS = langGuard({
     lv:  { noun: "Lietv.", verb: "Darb.", adjective: "Īpaš.", pronoun: "Vietn." },
     ar:  { noun: "أسماء", verb: "أفعال", adjective: "صفات", pronoun: "ضمائر" },
 }, "MyPage.GRM_POS");
+
+// Источники данных — атрибуция открытых лицензий (CC BY и т.п.); названия не переводятся.
+export const SRC = langGuard({
+    ru:  { t: "Источники данных", d: "Формы и род — Norsk ordbank (Språkbanken, CC BY 4.0) и Bokmålsordboka (UiB / Språkrådet); переводы и примеры — LEXIN (OsloMet / HK-dir); калибровка уровней — Kelly-list (UiO)." },
+    en:  { t: "Data sources", d: "Forms and gender — Norsk ordbank (Språkbanken, CC BY 4.0) and Bokmålsordboka (UiB / Språkrådet); translations and examples — LEXIN (OsloMet / HK-dir); level calibration — Kelly list (UiO)." },
+    ukr: { t: "Джерела даних", d: "Форми та рід — Norsk ordbank (Språkbanken, CC BY 4.0) і Bokmålsordboka (UiB / Språkrådet); переклади та приклади — LEXIN (OsloMet / HK-dir); калібрування рівнів — Kelly-list (UiO)." },
+    pl:  { t: "Źródła danych", d: "Formy i rodzaj — Norsk ordbank (Språkbanken, CC BY 4.0) i Bokmålsordboka (UiB / Språkrådet); tłumaczenia i przykłady — LEXIN (OsloMet / HK-dir); kalibracja poziomów — Kelly-list (UiO)." },
+    lt:  { t: "Duomenų šaltiniai", d: "Formos ir giminė — Norsk ordbank (Språkbanken, CC BY 4.0) ir Bokmålsordboka (UiB / Språkrådet); vertimai ir pavyzdžiai — LEXIN (OsloMet / HK-dir); lygių kalibravimas — Kelly-list (UiO)." },
+    lv:  { t: "Datu avoti", d: "Formas un dzimte — Norsk ordbank (Språkbanken, CC BY 4.0) un Bokmålsordboka (UiB / Språkrådet); tulkojumi un piemēri — LEXIN (OsloMet / HK-dir); līmeņu kalibrēšana — Kelly-list (UiO)." },
+    ar:  { t: "مصادر البيانات", d: "الصيغ والجنس — Norsk ordbank (Språkbanken, CC BY 4.0) وBokmålsordboka (UiB / Språkrådet)؛ الترجمات والأمثلة — LEXIN (OsloMet / HK-dir)؛ معايرة المستويات — Kelly-list (UiO)." },
+}, "MyPage.SRC");

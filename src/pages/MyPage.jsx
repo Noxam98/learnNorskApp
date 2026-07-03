@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
-import { AH, NPS, LPK, GRM, GRM_POS, FRM } from "./MyPage.i18n.js";
+import { AH, NPS, LPK, GRM, GRM_POS, FRM, SRC } from "./MyPage.i18n.js";
 import { WN, openWhatsNew } from "../components/ui/WhatsNew.jsx";
 import { LANGUAGES } from "../interface/languages.js";
 import { useIsMobile } from "../hooks/useMediaQuery.js";
@@ -425,6 +425,11 @@ const MyPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Атрибуция открытых данных (CC BY): требование лицензий источников */}
+            <p className="muted" style={{ fontSize: 12, lineHeight: 1.5, margin: "10px 4px 0", opacity: .75 }}>
+                <b>{(SRC[currentLanguage] || SRC.en).t}.</b> {(SRC[currentLanguage] || SRC.en).d}
+            </p>
 
             <NameEditModal open={nameOpen} initial={user?.name} t={t}
                 onClose={() => setNameOpen(false)} onSaved={refreshMe} />
