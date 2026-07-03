@@ -92,7 +92,15 @@
   /* Фильтр-бар пула */
   .poolbar { display: flex; flex-direction: column; gap: var(--sp-3); margin-bottom: var(--sp-4); }
   .poolbar__chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
-  .poolbar__row { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-2); }
+  /* сортировка + направление + «N/на стр.» — одной строкой и на мобилках:
+     ряд не переносится, дропдаун сортировки ужимается с многоточием,
+     размер страницы прижат вправо */
+  .poolbar__row { display: flex; align-items: center; flex-wrap: nowrap; gap: var(--sp-2); min-width: 0; }
+  .poolbar__row .sortctl { display: inline-flex; align-items: center; gap: 6px; min-width: 0; flex: 1 1 auto; }
+  .poolbar__row .sortctl .dd { min-width: 0; }
+  .poolbar__row .dd__trigger { max-width: 100%; }
+  .poolbar__row .dd__valtxt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .poolbar__row .poolbar__sel { margin-left: auto; flex: 0 0 auto; }
   .fchip {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 6px 11px; border-radius: var(--r-full);
