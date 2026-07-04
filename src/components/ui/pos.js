@@ -89,13 +89,13 @@ export const chipPrefix = (posKey, forms, { articles = true, verbAa = true } = {
 // Локализованные подписи парадигмы форм (по языку UI), с en-фолбэком. Ключи стабильны и
 // привязаны к строению posFormsRows — добавление формы = добавление ключа во ВСЕ языки.
 export const FORM_ROW_LABELS = langGuard({
-    ru:  { sg: "ед. число", sg_def: "«этот …»", pl: "мн. число", pl_def: "«эти …»", inf: "начальная (å)", present: "настоящее", past: "прошедшее", perfect: "с har (уже)", positive: "базовая", neuter: "для et-слов", comparative: "«более …»", superlative: "«самый …»", none: "нет формы" },
-    en:  { sg: "singular", sg_def: "“this …”", pl: "plural", pl_def: "“these …”", inf: "base (å)", present: "present", past: "past", perfect: "with har", positive: "base form", neuter: "for et-words", comparative: "“more …”", superlative: "“most …”", none: "no such form" },
-    ukr: { sg: "однина", sg_def: "«цей …»", pl: "множина", pl_def: "«ці …»", inf: "початкова (å)", present: "теперішній", past: "минулий", perfect: "з har (вже)", positive: "базова", neuter: "для et-слів", comparative: "«більш …»", superlative: "«най…»", none: "немає форми" },
-    pl:  { sg: "l. pojedyncza", sg_def: "„ten …”", pl: "l. mnoga", pl_def: "„te …”", inf: "podstawowa (å)", present: "teraźniejszy", past: "przeszły", perfect: "z har (już)", positive: "podstawowa", neuter: "dla słów z et", comparative: "„bardziej …”", superlative: "„naj…”", none: "brak formy" },
-    lt:  { sg: "vienaskaita", sg_def: "„tas …“", pl: "daugiskaita", pl_def: "„tie …“", inf: "pradinė (å)", present: "esamasis", past: "būtasis", perfect: "su har (jau)", positive: "pagrindinė", neuter: "et-žodžiams", comparative: "„labiau …“", superlative: "„pats …“", none: "formos nėra" },
-    lv:  { sg: "vienskaitlis", sg_def: "“tas …”", pl: "daudzskaitlis", pl_def: "“tie …”", inf: "pamatforma (å)", present: "tagadne", past: "pagātne", perfect: "ar har (jau)", positive: "pamata", neuter: "et-vārdiem", comparative: "“vairāk …”", superlative: "“vis…”", none: "formas nav" },
-    ar:  { sg: "مفرد", sg_def: "«هذا …»", pl: "جمع", pl_def: "«هذه …»", inf: "المصدر (å)", present: "مضارع", past: "ماضٍ", perfect: "مع har", positive: "أساسية", neuter: "مع كلمات et", comparative: "«أكثر …»", superlative: "«الأكثر …»", none: "لا توجد صيغة" },
+    ru:  { sg: "ед. число", sg_def: "«этот …»", pl: "мн. число", pl_def: "«эти …»", inf: "начальная (å)", present: "настоящее", past: "прошедшее", perfect: "с har (уже)", positive: "базовая", neuter: "для et-слов", comparative: "«более …»", superlative: "«самый …»", subj: "подлежащее", objc: "дополнение", none: "нет формы" },
+    en:  { sg: "singular", sg_def: "“this …”", pl: "plural", pl_def: "“these …”", inf: "base (å)", present: "present", past: "past", perfect: "with har", positive: "base form", neuter: "for et-words", comparative: "“more …”", superlative: "“most …”", subj: "subject", objc: "object", none: "no such form" },
+    ukr: { sg: "однина", sg_def: "«цей …»", pl: "множина", pl_def: "«ці …»", inf: "початкова (å)", present: "теперішній", past: "минулий", perfect: "з har (вже)", positive: "базова", neuter: "для et-слів", comparative: "«більш …»", superlative: "«най…»", subj: "підмет", objc: "додаток", none: "немає форми" },
+    pl:  { sg: "l. pojedyncza", sg_def: "„ten …”", pl: "l. mnoga", pl_def: "„te …”", inf: "podstawowa (å)", present: "teraźniejszy", past: "przeszły", perfect: "z har (już)", positive: "podstawowa", neuter: "dla słów z et", comparative: "„bardziej …”", superlative: "„naj…”", subj: "podmiot", objc: "dopełnienie", none: "brak formy" },
+    lt:  { sg: "vienaskaita", sg_def: "„tas …“", pl: "daugiskaita", pl_def: "„tie …“", inf: "pradinė (å)", present: "esamasis", past: "būtasis", perfect: "su har (jau)", positive: "pagrindinė", neuter: "et-žodžiams", comparative: "„labiau …“", superlative: "„pats …“", subj: "veiksnys", objc: "papildinys", none: "formos nėra" },
+    lv:  { sg: "vienskaitlis", sg_def: "“tas …”", pl: "daudzskaitlis", pl_def: "“tie …”", inf: "pamatforma (å)", present: "tagadne", past: "pagātne", perfect: "ar har (jau)", positive: "pamata", neuter: "et-vārdiem", comparative: "“vairāk …”", superlative: "“vis…”", subj: "priekšmets", objc: "papildinātājs", none: "formas nav" },
+    ar:  { sg: "مفرد", sg_def: "«هذا …»", pl: "جمع", pl_def: "«هذه …»", inf: "المصدر (å)", present: "مضارع", past: "ماضٍ", perfect: "مع har", positive: "أساسية", neuter: "مع كلمات et", comparative: "«أكثر …»", superlative: "«الأكثر …»", subj: "فاعل", objc: "مفعول", none: "لا توجد صيغة" },
 }, "pos.FORM_ROW_LABELS");
 
 // Полный набор грамматических форм слова → [{label, value}] для подробного показа.
@@ -132,6 +132,16 @@ export const posFormsRows = (word, forms, lang = "en") => {
         add("pl", L.pl, forms.plural);
         add("comparative", L.comparative, forms.comparative);
         add("superlative", L.superlative, forms.superlative);
+    } else if (forms.pos === "pronoun") {
+        // курируемая парадигма: личные (obj — объектный падеж) и притяжательные (ср. род / мн.)
+        if (forms.obj) {
+            add("subj", L.subj, word);          // подлежащее: jeg
+            add("objc", L.objc, forms.obj);     // дополнение: meg
+        } else {
+            add("positive", L.positive, word);  // базовая (общий род): min
+            add("neuter", L.neuter, forms.neuter);  // ср. род: mitt
+            add("pl", L.pl, forms.plural);      // мн.: mine
+        }
     }
     return r;
 };
