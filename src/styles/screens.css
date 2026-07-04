@@ -506,6 +506,13 @@
     margin-bottom: 2px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     font-size: var(--fs-13); font-weight: 400; color: var(--game-ink-2); opacity: 0.55;
   }
+  /* «Ага» на карточке-знакомстве: составное слово = основа + основа */
+  .fcard-compound {
+    display: inline-flex; align-items: center; gap: 6px; margin: 6px 0 2px;
+    font-size: var(--fs-15); color: var(--game-ink-2);
+  }
+  .fcard-compound b { color: var(--game-ink); font-weight: 700; }
+  .fcard-compound__plus { opacity: 0.6; font-weight: 400; }
   .flashcard__hint { font-size: var(--fs-14); color: var(--game-ink-2); letter-spacing: var(--ls-wide); text-transform: uppercase; }
   .qspeak { margin-left: 8px; vertical-align: middle; color: var(--game-ink-2); background: transparent; border: none; cursor: pointer; }
   .qspeak:hover { color: var(--game-ink); }

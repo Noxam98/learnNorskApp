@@ -282,6 +282,15 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                     {posText && <span className="qpos"><span className="dot" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} /> {posText}</span>}
                                     {formQ && <span className="qpos"><Icon n="graduation" sm /> {formQ}</span>}
                                 </span>
+                                {/* «Ага»: составное слово собрано из знакомых основ (barn + hage) */}
+                                {cur.compound?.parts?.length >= 2 && (
+                                    <div className="fcard-compound" lang={hyLang(currentLanguage, true)}>
+                                        <Icon n="layers" sm />
+                                        {cur.compound.parts.map((p, i) => (
+                                            <span key={i}>{i > 0 && <span className="fcard-compound__plus"> + </span>}<b>{p}</b></span>
+                                        ))}
+                                    </div>
+                                )}
 
                                 <div className={`flashcard__back${flipped ? " is-shown" : ""}`}>
                                     <AnimatePresence mode="wait" initial={false}>
