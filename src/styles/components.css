@@ -195,10 +195,10 @@
 .cw-part { position: relative; cursor: pointer; border-radius: 4px; transition: background .12s ease; }
 .cw-part::before {
     content: ""; position: absolute; left: 1px; right: 1px; top: -0.34em; height: 0.2em;
-    border: 2px solid var(--accent); border-bottom: none; border-radius: 3px 3px 0 0;
+    border: 2px solid var(--ember-600); border-bottom: none; border-radius: 3px 3px 0 0;
     pointer-events: none;
 }
-.cw-part:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.cw-part:hover { background: color-mix(in srgb, var(--ember-600) 14%, transparent); }
 .syn__diff { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
     flex: none; padding: 0; border: none; background: transparent; cursor: pointer;
     border-radius: var(--r-xs); color: inherit; opacity: .5; margin: -2px -5px -2px 0;
