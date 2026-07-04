@@ -94,15 +94,17 @@ export function useToday({ reloadKey, refresh, openSession }) {
 
     // Авто-добор: у юзера ВООБЩЕ нет слов в учёбе (total=0) и ворота не закрыты — система сама
     // подсыпает новые из Базы (сборка сессии на бэке делает suggest_words). Один раз за монтирование.
+    // ТОЛЬКО после плейсмента (placed): иначе новичку досыпется A1 ДО выбора уровня (bug: B1-юзер
+    // получал å være). Не выбравшего уровень ведём на плейсмент (LearningPage), а не досыпаем.
     useEffect(() => {
         if (loading || !stats || autoFillTried.current) return;
-        if (total === 0 && !gateOpen) {
+        if (total === 0 && !gateOpen && placed) {
             autoFillTried.current = true;
             api.learningSession(20)
                 .then((r) => { if ((r?.words || []).length) refresh(); })
                 .catch(() => { });
         }
-    }, [loading, stats, total, gateOpen, refresh]);
+    }, [loading, stats, total, gateOpen, placed, refresh]);
 
     const streak = stats?.streak || 0;
     // Главный CTA — системная сессия: режим/состав выбирает система (openSession без слов).
