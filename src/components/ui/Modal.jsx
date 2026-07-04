@@ -6,7 +6,7 @@ import { useHistoryClose } from "../../hooks/useHistoryClose.js";
 // Лёгкий модал в стиле дизайн-системы.
 // Крестик — единый для всех модалок: круглая кнопка, вынесенная за правый верхний угол
 // (как в карточке слова). Поэтому карточка всегда overflow:visible.
-export const Modal = ({ open, onClose, title, children, footer, headerExtra, maxWidth = 460, manageHistory = true }) => {
+export const Modal = ({ open, onClose, title, children, footer, headerExtra, headerLeft, maxWidth = 460, manageHistory = true }) => {
     // Пока модалка открыта — системная «Назад»/свайп (Android) закрывает ЕЁ, а не уводит
     // со страницы: держим запись в истории, popstate → onClose (см. useHistoryClose).
     // manageHistory=false — модалка сама ведёт историю (внутренняя навигация со стеком карточек,
@@ -52,6 +52,9 @@ export const Modal = ({ open, onClose, title, children, footer, headerExtra, max
                         borderRadius: "var(--r-lg)",
                     }}
                 >
+                    {/* Необязательная кнопка слева-сверху (напр. «назад» в навигации карточек) —
+                        абсолютно на карточке, зеркально крестику (см. .modalback). */}
+                    {headerLeft}
                     {/* Крестик — позиционирование в .modalx (десктоп: за углом; мобилка: внутри карточки). */}
                     <button className="iconbtn modalx" onClick={onClose} aria-label="Закрыть"><Icon n="x" /></button>
                     <div className="modalhead" style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", paddingBottom: 0, paddingLeft: "var(--sp-5)" }}>

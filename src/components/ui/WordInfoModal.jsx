@@ -214,18 +214,16 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     };
 
     const titleNode = (
-        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", minWidth: 0 }}>
-            {stack.length > 0 && (
-                <button className="iconbtn" onClick={() => window.history.back()} style={{ flexShrink: 0 }}
-                    aria-label={t.back || "Назад"} title={t.back || "Назад"}>
-                    <Icon n="chevron-left" sm />
-                </button>
-            )}
-            {posText
-                ? <span className={`chip pos ${posMeta(posKey).cls}`} style={{ fontWeight: 600 }}>{posText}</span>
-                : null}
-        </span>
+        posText
+            ? <span className={`chip pos ${posMeta(posKey).cls}`} style={{ fontWeight: 600 }}>{posText}</span>
+            : <span />
     );
+    // Кнопка «назад» по стеку карточек — абсолютно на модалке (зеркально крестику, см. .modalback),
+    // видна только когда есть куда возвращаться. Клик = history.back → onPop → goBack.
+    const backNode = stack.length > 0 ? (
+        <button className="iconbtn modalback" onClick={() => window.history.back()}
+            aria-label={t.back || "Назад"} title={t.back || "Назад"}><Icon n="chevron-left" /></button>
+    ) : null;
 
     // Меню «Действия» — в шапке модалки справа, у крестика
     const actionsNode = view ? (
@@ -242,7 +240,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     return (
         <>
-        <Modal open={open} onClose={onClose} title={titleNode} headerExtra={actionsNode} manageHistory={false}>
+        <Modal open={open} onClose={onClose} title={titleNode} headerExtra={actionsNode} headerLeft={backNode} manageHistory={false}>
             {/* Само слово + озвучка — крупно, слитно; под ним перевод. Подтянуто к части речи сверху. */}
             <div className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "nowrap", minWidth: 0, position: "relative", marginTop: "calc(-1 * var(--sp-3))", marginBottom: view?.translate?.[lang]?.length ? "var(--sp-1)" : "var(--sp-4)" }}>
                 <span style={{ fontSize: "var(--fs-24)", fontWeight: 800, overflow: cwSegs ? "visible" : "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0, paddingTop: cwSegs ? "0.5em" : 0 }}>

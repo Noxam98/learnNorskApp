@@ -336,11 +336,17 @@
    угол), а шапке добавляем правый отступ, чтобы заголовок/действия не уезжали под него. */
 .modalx { position: absolute; top: var(--sp-5); right: var(--sp-5); transform: translate(100%, -100%);
           z-index: 3; background: var(--surface); box-shadow: var(--shadow-sm); }
+/* Кнопка «назад» — зеркало крестика в левом-верхнем углу (десктоп: за углом; мобилка: внутри). */
+.modalback { position: absolute; top: var(--sp-5); left: var(--sp-5); transform: translate(-100%, -100%);
+             z-index: 3; background: var(--surface); box-shadow: var(--shadow-sm); }
 /* Десктоп: overflow visible — вынесенный за угол крестик не обрезается карточкой. */
 .modalcard { overflow: visible; }
 @media (max-width: 768px) {
   .modalx { top: 8px; right: 8px; transform: none; }
+  .modalback { top: 8px; left: 8px; transform: none; }
   .modalhead { padding-right: 46px; }
+  /* Мобилка: кнопка «назад» внутри карточки слева → отступ шапки, чтобы заголовок не уезжал под неё. */
+  .modalcard:has(.modalback) .modalhead { padding-left: 46px; }
   /* Мобилка: крестик внутри карточки → клипаем возможный горизонтальный «выезд» контента. */
   .modalcard { overflow: hidden; }
 }
