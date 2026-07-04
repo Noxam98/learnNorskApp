@@ -189,10 +189,16 @@
 .syn { display: inline-flex; align-items: center; gap: 6px; }
 .syn__go { cursor: pointer; }
 
-/* Части составного слова в заголовке карточки: [скобки] + точка-соединитель; наведение
-   подсвечивает часть — подсказка «кликабельно» (клик → мини-попап с переводом). */
-.cw-part { transition: background .12s ease; }
-.cw-part:hover { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+/* Части составного слова в заголовке карточки: слово читается как есть, но НАД каждой
+   кликабельной частью — горизонтальная полоса с засечками на концах (⎴), намёк «кликабельно»
+   (клик → мини-попап с переводом). Полоса — псевдоэлемент, в em (масштабируется со шрифтом). */
+.cw-part { position: relative; cursor: pointer; border-radius: 4px; transition: background .12s ease; }
+.cw-part::before {
+    content: ""; position: absolute; left: 1px; right: 1px; top: -0.34em; height: 0.2em;
+    border: 2px solid var(--accent); border-bottom: none; border-radius: 3px 3px 0 0;
+    pointer-events: none;
+}
+.cw-part:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
 .syn__diff { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
     flex: none; padding: 0; border: none; background: transparent; cursor: pointer;
     border-radius: var(--r-xs); color: inherit; opacity: .5; margin: -2px -5px -2px 0;

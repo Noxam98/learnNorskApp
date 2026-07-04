@@ -244,20 +244,15 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
         <Modal open={open} onClose={onClose} title={titleNode} headerExtra={actionsNode} manageHistory={false}>
             {/* Само слово + озвучка — крупно, слитно; под ним перевод. Подтянуто к части речи сверху. */}
             <div className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "nowrap", minWidth: 0, position: "relative", marginTop: "calc(-1 * var(--sp-3))", marginBottom: view?.translate?.[lang]?.length ? "var(--sp-1)" : "var(--sp-4)" }}>
-                <span style={{ fontSize: "var(--fs-24)", fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>
+                <span style={{ fontSize: "var(--fs-24)", fontWeight: 800, overflow: cwSegs ? "visible" : "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0, paddingTop: cwSegs ? "0.5em" : 0 }}>
                     {cwSegs
                         ? cwSegs.map((s, i) => s.lemma ? (
-                            // часть слова — в квадратных скобках (акцент), кликабельна
+                            // часть слова: НАД ней — полоса с засечками (⎴), сама кликабельна; слово читается как есть
                             <span key={i} className="cw-part" onClick={(e) => openPart(s.lemma, e)}
-                                title={t.openCard || "Открыть карточку"}
-                                style={{ cursor: "pointer", borderRadius: "5px", padding: "0 1px" }}>
-                                <span style={{ color: "var(--accent)", fontWeight: 700 }}>[</span>
-                                {s.text}
-                                <span style={{ color: "var(--accent)", fontWeight: 700 }}>]</span>
-                            </span>
+                                title={t.openCard || "Открыть карточку"}>{s.text}</span>
                         ) : (
-                            // соединительная частица (fuge) — точкой (в title — какая именно)
-                            <span key={i} title={s.text} style={{ color: "var(--accent)", opacity: 0.65, padding: "0 3px" }}>·</span>
+                            // соединительная морфема (fuge) — обычным текстом, без полосы
+                            <span key={i}>{s.text}</span>
                         ))
                         : (view?.no || word || "")}
                 </span>
