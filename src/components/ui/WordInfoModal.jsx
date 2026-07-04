@@ -71,7 +71,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const toggleDiff = (other) => setDiffWith((cur) => (cur === other ? null : other));
 
     const loadWord = (no, id) => {
-        setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null });
+        setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null, compound: null });
         setDiffWith(null); setFixOpen(false); setDelConfirm(false);
         setAskOpen(false);   // вопрос о слове сбрасывает своё поле сам (AskWordModal на open=false)
         const fresh = (v) => v && v.no === no; // игнорируем ответы устаревшей навигации
@@ -81,7 +81,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
-        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null } : v)).catch(() => {});
+        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, compound: m?.compound || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null } : v)).catch(() => {});
     };
 
     useEffect(() => {
@@ -202,6 +202,31 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                                 <span className="forms-tbl__label">{label}</span>
                                 <span className="forms-tbl__val">{value}</span>
                             </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Составное слово (sammensetning): части кликабельны — навигация внутри модалки,
+                как у синонимов; соединитель (fuge -s-/-e-) показываем между частями. */}
+            {view?.compound && (
+                <div style={{ marginTop: "var(--sp-5)" }}>
+                    <div className="label row" style={{ gap: "var(--sp-2)", alignItems: "center", marginBottom: "var(--sp-2)" }}>
+                        <Icon n="layers" sm /> {t.compound || "Составное слово"}
+                    </div>
+                    <div className="row wrap" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
+                        {view.compound.parts.map((part, i) => (
+                            <span key={i} className="row" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
+                                {i > 0 && (
+                                    <span className="muted" style={{ fontSize: "var(--fs-13)" }}>
+                                        {view.compound.fuge ? `+ ${view.compound.fuge} +` : "+"}
+                                    </span>
+                                )}
+                                <span className="chip syn" style={{ background: "var(--surface-3)", color: "var(--ink)", cursor: "pointer" }}
+                                    onClick={() => loadWord(part)} title={t.description}>
+                                    <b>{part}</b>
+                                </span>
+                            </span>
                         ))}
                     </div>
                 </div>

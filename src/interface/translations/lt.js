@@ -148,6 +148,7 @@ export const lt = {
         accuracy: "Tikslumas",
         mastered: "Įsisavinta",
         similar: "Susiję žodžiai",
+        compound: "Sudurtinis žodis",
         difference: "Skirtumas",
         fixDesc: "Taisyti aprašymą",
         fixHintPlaceholder: "Teisinga reikšmė / kas ne taip",

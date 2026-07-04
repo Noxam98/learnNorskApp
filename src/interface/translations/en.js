@@ -149,6 +149,7 @@ export const en = {
         accuracy: "Accuracy",
         mastered: "Mastered",
         similar: "Related words",
+        compound: "Compound word",
         difference: "Difference",
         fixDesc: "Fix description",
         fixHintPlaceholder: "Correct meaning / what's wrong",

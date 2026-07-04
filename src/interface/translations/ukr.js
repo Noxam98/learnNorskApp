@@ -148,6 +148,7 @@ export const ukr = {
         accuracy: "Точність",
         mastered: "Впевнено знаю",
         similar: "Близькі за змістом",
+        compound: "Складне слово",
         difference: "Різниця",
         fixDesc: "Виправити опис",
         fixHintPlaceholder: "Правильне значення / що не так",

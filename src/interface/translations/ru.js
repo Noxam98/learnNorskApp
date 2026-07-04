@@ -147,6 +147,7 @@ export const ru = {
         accuracy: "Точность",
         mastered: "Уверенно знаю",
         similar: "Близкие по смыслу",
+        compound: "Составное слово",
         difference: "Разница",
         fixDesc: "Исправить описание",
         fixHintPlaceholder: "Правильное значение / что не так",

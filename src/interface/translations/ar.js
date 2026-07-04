@@ -149,6 +149,7 @@ export const ar = {
         accuracy: "الدقة",
         mastered: "متقَن",
         similar: "كلمات ذات صلة",
+        compound: "كلمة مركبة",
         difference: "الفرق",
         fixDesc: "إصلاح الوصف",
         fixHintPlaceholder: "المعنى الصحيح / ما الخطأ",

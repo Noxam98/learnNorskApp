@@ -148,6 +148,7 @@ export const pl = {
         accuracy: "Dokładność",
         mastered: "Opanowane",
         similar: "Powiązane słowa",
+        compound: "Wyraz złożony",
         difference: "Różnica",
         fixDesc: "Popraw opis",
         fixHintPlaceholder: "Poprawne znaczenie / co nie tak",

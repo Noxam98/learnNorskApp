@@ -149,6 +149,7 @@ export const lv = {
         accuracy: "Precizitāte",
         mastered: "Apgūts",
         similar: "Saistīti vārdi",
+        compound: "Salikts vārds",
         difference: "Atšķirība",
         fixDesc: "Labot aprakstu",
         fixHintPlaceholder: "Pareizā nozīme / kas nav kārtībā",
