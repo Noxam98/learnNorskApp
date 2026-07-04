@@ -9,6 +9,7 @@ import { StatusDot, statusLabel, STATUS_ORDER } from "../../components/learning/
 import { LeaderboardCard, LeaderboardModal } from "../../components/learning/Leaderboard.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { pl } from "../../components/ui/plural.js";
+import { useAuthStore } from "../../store/AuthStore.jsx";
 import { T } from "./TodayTab.i18n.js";
 import { useToday } from "./useToday.js";
 
@@ -18,6 +19,9 @@ function fmt(s, vars) {
 
 export default function TodayTab({ lang, go, openSession, openPlacement, reloadKey, refresh }) {
     const t = T[lang] || T.ru;
+    // Порция новых за сессию (gamePrefs.newPerSession, дефолт 6) — тот же источник, что слайдер
+    // в профиле: подпись «до N за сессию» должна показывать РЕАЛЬНЫЙ потолок, а не хардкод.
+    const newPerSession = useAuthStore((s) => s.user?.gamePrefs?.newPerSession) || 6;
     // Вся логика дашборда (статистика/ворота/состав/уровень/фокус) — в контроллере useToday.
     const {
         stats, loading, error, lbOpen, setLbOpen, focusSaving, sessionLoading,
@@ -242,7 +246,7 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
                                         {composition.phase === "forms" ? (
                                             <div className="review-cta__note"><Icon n="graduation" sm /> {t.formsDesc}{composition.formsCellsLeft > 0 ? ` ${fmt(t.formsLeftLine, { n: composition.formsCellsLeft })}` : ""}</div>
                                         ) : composition.fresh > 0 && (
-                                            <div className="review-cta__note"><Icon n="info" sm /> {t.portionNote}</div>
+                                            <div className="review-cta__note"><Icon n="info" sm /> {fmt(t.portionNote, { n: newPerSession })}</div>
                                         )}
                                     </>
                                 ) : (
