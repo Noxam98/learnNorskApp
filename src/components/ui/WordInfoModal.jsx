@@ -114,7 +114,8 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     // затем грузим новую. pushState добавляет запись, которую «Назад»/свайп потом снимет.
     const navTo = (no, id) => {
         if (!no || no === curRef.current.no) return;
-        setStack((s) => [...s, curRef.current]);
+        const prev = curRef.current;   // ЗАХВАТ до loadWord: иначе updater setStack прочитает уже НОВОЕ
+        setStack((s) => [...s, prev]); // слово (loadWord перезаписывает curRef синхронно) → «назад» вернул бы ту же карточку
         depthRef.current += 1;
         if (typeof window !== "undefined") window.history.pushState({ __wim: depthRef.current }, "");
         loadWord(no, id);
