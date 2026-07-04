@@ -157,7 +157,7 @@ export const PoolPage = () => {
                             added={!!added[w.pool_id]} busy={addingId === w.pool_id} highlight={highlightWord === w.word}
                             isAdmin={isAdmin}
                             onToggle={() => (added[w.pool_id] ? onRemove(w) : onAdd(w))}
-                            onInfo={() => setDescWord(w.word)}
+                            onCardClick={() => setDescWord(w.word)}
                             onAdminDelete={() => onAdminDelete(w.word)} />
                     ))}
                 </div>
