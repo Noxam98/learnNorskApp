@@ -159,7 +159,7 @@ export const ru = {
         nothingFound: "Ничего не найдено", clearFilters: "Сбросить", pageSize: "на стр.",
         poolSort: { alpha: "А-Я", level: "Уровень", added: "Новые" },
         sortLabels: { relevance: "По релевантности", alpha: "А-Я", level: "Уровень", freq: "Частота использования", added: "Новые", pos: "Часть речи", strength: "По силе", due: "Скоро повторять" },
-        poolGenHint: "Нет нужного слова? Добавить через ИИ:", poolGen: "Сгенерировать", genFailed: "Не удалось сгенерировать слово", genWord: "Генерирую слово…",
+        poolGenHint: "Нет нужного слова? Добавить через ИИ:", poolGen: "Сгенерировать", genFailed: "Не удалось сгенерировать слово", genWord: "Генерирую слово…", compoundsUnlocked: "🧩 Разблокировано составных слов: {n}",
         addAllToNewDict: "В новый словарь", newDictTitle: "Новый словарь", create: "Создать",
         dictNameLabel: "Название словаря", willAddWords: "Будет добавлено слов", allWordsName: "Все слова",
         dictExistsError: "Словарь с таким именем уже есть",

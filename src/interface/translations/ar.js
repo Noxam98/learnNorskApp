@@ -161,7 +161,7 @@ export const ar = {
         nothingFound: "لم يتم العثور على شيء", clearFilters: "مسح", pageSize: "لكل صفحة",
         poolSort: { alpha: "أ-ي", level: "المستوى", added: "الأحدث" },
         sortLabels: { relevance: "الصلة", alpha: "أ-ي", level: "المستوى", freq: "تكرار الاستخدام", added: "الأحدث", pos: "نوع الكلمة", strength: "حسب القوة", due: "حان موعدها قريبًا" },
-        poolGenHint: "لا تجد كلمة؟ أضفها عبر الذكاء الاصطناعي:", poolGen: "توليد", genFailed: "تعذّر توليد الكلمة", genWord: "جارٍ توليد الكلمة…",
+        poolGenHint: "لا تجد كلمة؟ أضفها عبر الذكاء الاصطناعي:", poolGen: "توليد", genFailed: "تعذّر توليد الكلمة", genWord: "جارٍ توليد الكلمة…", compoundsUnlocked: "🧩 كلمات مركبة مفتوحة: {n}",
         addAllToNewDict: "إلى قاموس جديد", newDictTitle: "قاموس جديد", create: "إنشاء",
         dictNameLabel: "اسم القاموس", willAddWords: "الكلمات المراد إضافتها", allWordsName: "كل الكلمات",
         dictExistsError: "يوجد قاموس بهذا الاسم بالفعل",

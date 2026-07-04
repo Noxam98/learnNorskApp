@@ -160,7 +160,7 @@ export const pl = {
         nothingFound: "Nic nie znaleziono", clearFilters: "Wyczyść", pageSize: "na str.",
         poolSort: { alpha: "A-Z", level: "Poziom", added: "Najnowsze" },
         sortLabels: { relevance: "Trafność", alpha: "A-Z", level: "Poziom", freq: "Częstotliwość użycia", added: "Najnowsze", pos: "Część mowy", strength: "Wg siły", due: "Wkrótce powtórka" },
-        poolGenHint: "Brak słowa? Dodaj przez AI:", poolGen: "Wygeneruj", genFailed: "Nie udało się wygenerować słowa", genWord: "Generuję słowo…",
+        poolGenHint: "Brak słowa? Dodaj przez AI:", poolGen: "Wygeneruj", genFailed: "Nie udało się wygenerować słowa", genWord: "Generuję słowo…", compoundsUnlocked: "🧩 Odblokowano wyrazów złożonych: {n}",
         addAllToNewDict: "Do nowego słownika", newDictTitle: "Nowy słownik", create: "Utwórz",
         dictNameLabel: "Nazwa słownika", willAddWords: "Słów do dodania", allWordsName: "Wszystkie słowa",
         dictExistsError: "Słownik o tej nazwie już istnieje",

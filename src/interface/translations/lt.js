@@ -160,7 +160,7 @@ export const lt = {
         nothingFound: "Nieko nerasta", clearFilters: "Išvalyti", pageSize: "psl.",
         poolSort: { alpha: "A-Z", level: "Lygis", added: "Naujausi" },
         sortLabels: { relevance: "Pagal aktualumą", alpha: "A-Z", level: "Lygis", freq: "Vartojimo dažnis", added: "Naujausi", pos: "Kalbos dalis", strength: "Pagal stiprumą", due: "Greitai kartoti" },
-        poolGenHint: "Nėra žodžio? Pridėk per DI:", poolGen: "Sugeneruoti", genFailed: "Nepavyko sugeneruoti žodžio", genWord: "Generuoju žodį…",
+        poolGenHint: "Nėra žodžio? Pridėk per DI:", poolGen: "Sugeneruoti", genFailed: "Nepavyko sugeneruoti žodžio", genWord: "Generuoju žodį…", compoundsUnlocked: "🧩 Atrakinta sudurtinių žodžių: {n}",
         addAllToNewDict: "Į naują žodyną", newDictTitle: "Naujas žodynas", create: "Sukurti",
         dictNameLabel: "Žodyno pavadinimas", willAddWords: "Bus pridėta žodžių", allWordsName: "Visi žodžiai",
         dictExistsError: "Žodynas tokiu pavadinimu jau yra",

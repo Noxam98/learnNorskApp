@@ -3,8 +3,17 @@
 // «ещё сессия». Вся логика — здесь; LearningSession.jsx — только экраны. Вынесено из LearningSession.jsx.
 import { useEffect, useState } from "react";
 import { useSessionStore } from "../../store/sessionStore.jsx";
+import { useSystemStore } from "../../store/systemStore.jsx";
+import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import { isGrammar } from "../gameComponents/gameShared.jsx";
 import api from "../tools/api.js";
+
+// Маленькое празднование: выучил слово-основу → бэк вернул unlockedCompounds>0 → тост.
+function celebrateUnlock(n) {
+    const st = useSystemStore.getState();
+    const t = interfaceTranslate[st.currentLanguage] || interfaceTranslate.ru;
+    st.showToast((t.compoundsUnlocked || "🧩 Разблокировано составных слов: {n}").replace("{n}", n), "success");
+}
 
 // Направление перевода для легаси-набора (единое на сессию: родной → норвежский).
 export const LEGACY_DIR = "int2no";
@@ -128,7 +137,8 @@ export function useLearningSession({ words = [], system = false, setId = null, l
             mode: gmode,
             direction,
             ...(w?.form_track ? { form: true, cell: w.step, stage: w.stage } : {}),
-        }).catch(() => { /* офлайн — не критично */ });
+        }).then((r) => { if (r?.unlockedCompounds > 0) celebrateUnlock(r.unlockedCompounds); })
+            .catch(() => { /* офлайн — не критично */ });
     };
 
     // Карточка-интро (study): фиксируем «слово показано». Бэк за study обновляет окно силы и

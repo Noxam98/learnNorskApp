@@ -161,7 +161,7 @@ export const lv = {
         nothingFound: "Nekas nav atrasts", clearFilters: "Notīrīt", pageSize: "lapā",
         poolSort: { alpha: "A-Z", level: "Līmenis", added: "Jaunākie" },
         sortLabels: { relevance: "Atbilstība", alpha: "A-Z", level: "Līmenis", freq: "Lietošanas biežums", added: "Jaunākie", pos: "Vārdšķira", strength: "Pēc stipruma", due: "Drīz jāatkārto" },
-        poolGenHint: "Nevari atrast vārdu? Pievieno ar MI:", poolGen: "Ģenerēt", genFailed: "Neizdevās izģenerēt vārdu", genWord: "Ģenerēju vārdu…",
+        poolGenHint: "Nevari atrast vārdu? Pievieno ar MI:", poolGen: "Ģenerēt", genFailed: "Neizdevās izģenerēt vārdu", genWord: "Ģenerēju vārdu…", compoundsUnlocked: "🧩 Atbloķēti saliktie vārdi: {n}",
         addAllToNewDict: "Uz jaunu vārdnīcu", newDictTitle: "Jauna vārdnīca", create: "Izveidot",
         dictNameLabel: "Vārdnīcas nosaukums", willAddWords: "Pievienojamie vārdi", allWordsName: "Visi vārdi",
         dictExistsError: "Vārdnīca ar šādu nosaukumu jau pastāv",
