@@ -160,7 +160,7 @@ export const ukr = {
         nothingFound: "Нічого не знайдено", clearFilters: "Скинути", pageSize: "на стор.",
         poolSort: { alpha: "А-Я", level: "Рівень", added: "Нові" },
         sortLabels: { relevance: "За релевантністю", alpha: "А-Я", level: "Рівень", freq: "Частота вживання", added: "Нові", pos: "Частина мови", strength: "За силою", due: "Скоро повторювати" },
-        poolGenHint: "Немає потрібного слова? Додати через ШІ:", poolGen: "Згенерувати", genFailed: "Не вдалося згенерувати слово",
+        poolGenHint: "Немає потрібного слова? Додати через ШІ:", poolGen: "Згенерувати", genFailed: "Не вдалося згенерувати слово", genWord: "Генерую слово…",
         addAllToNewDict: "У новий словник", newDictTitle: "Новий словник", create: "Створити",
         dictNameLabel: "Назва словника", willAddWords: "Буде додано слів", allWordsName: "Усі слова",
         dictExistsError: "Словник із такою назвою вже існує",

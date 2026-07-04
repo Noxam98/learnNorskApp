@@ -47,16 +47,22 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const onCloseRef = useRef(onClose); onCloseRef.current = onClose;
 
     // Мини-попап части составного слова: клик по части в заголовке → перевод + «открыть карточку».
-    const [partPop, setPartPop] = useState(null);   // { lemma, left, translate, loading }
+    const [partPop, setPartPop] = useState(null);   // { lemma, left, translate, loading, generating }
     const openPart = (lemma, e) => {
         const el = e?.currentTarget;
         const parentW = el?.offsetParent?.clientWidth || 0;
         const left = Math.max(0, Math.min(el?.offsetLeft ?? 0, Math.max(0, parentW - 224)));
-        setPartPop({ lemma, left, translate: null, loading: true });
-        api.getPoolMeta(lemma)
-            .then((m) => setPartPop((p) => p && p.lemma === lemma
-                ? { ...p, loading: false, translate: (m?.translate?.[lang] || []).slice(0, 3).join(", ") } : p))
-            .catch(() => setPartPop((p) => p && p.lemma === lemma ? { ...p, loading: false } : p));
+        setPartPop({ lemma, left, translate: null, loading: true, generating: false });
+        const upd = (patch) => setPartPop((p) => (p && p.lemma === lemma ? { ...p, ...patch } : p));
+        const trOf = (m) => (m?.translate?.[lang] || []).slice(0, 3).join(", ");
+        api.getPoolMeta(lemma).then((m) => {
+            if (m && m.pool_id) { upd({ loading: false, translate: trOf(m) }); return; }
+            // части нет в базе → генерируем (перевод/формы), показываем индикатор генерации
+            upd({ loading: false, generating: true });
+            api.generateWord(lemma)
+                .then((g) => upd({ generating: false, translate: trOf(g) }))
+                .catch(() => upd({ generating: false }));
+        }).catch(() => upd({ loading: false }));
     };
 
     const [revoiceBusy, setRevoiceBusy] = useState(false);
@@ -94,10 +100,10 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     // тоггл сравнения с близким словом: повторный клик по тому же — закрыть (загрузку ведёт WordDiff)
     const toggleDiff = (other) => setDiffWith((cur) => (cur === other ? null : other));
 
-    const loadWord = (no, id) => {
+    const loadWord = (no, id, triedGen = false) => {
         curRef.current = { no, id };
         setPartPop(null);
-        setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null, compound: null });
+        setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null, compound: null, generating: false });
         setDiffWith(null); setFixOpen(false); setDelConfirm(false);
         setAskOpen(false);   // вопрос о слове сбрасывает своё поле сам (AskWordModal на open=false)
         const fresh = (v) => v && v.no === no; // игнорируем ответы устаревшей навигации
@@ -107,7 +113,17 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
-        api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, compound: m?.compound || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null } : v)).catch(() => {});
+        api.getPoolMeta(no).then((m) => {
+            setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, compound: m?.compound || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null } : v);
+            // карточки нет в базе (напр. часть композита) → генерируем слово и перезагружаем.
+            // triedGen страхует от петли, если генерация так и не создала запись.
+            if (!m?.pool_id && !triedGen) {
+                setView((v) => fresh(v) ? { ...v, generating: true } : v);
+                api.generateWord(no)
+                    .then(() => { if (curRef.current.no === no) loadWord(no, id, true); })
+                    .catch(() => setView((v) => fresh(v) ? { ...v, generating: false } : v));
+            }
+        }).catch(() => {});
     };
 
     // Переход по клику (часть композита / синоним): текущую карточку — в стек и в историю,
@@ -263,7 +279,9 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                         <div className="row" style={{ gap: "var(--sp-2)", alignItems: "baseline", justifyContent: "space-between" }}>
                             <b style={{ fontSize: "var(--fs-15)" }}>{partPop.lemma}</b>
                             <span className="muted" style={{ fontSize: "var(--fs-13)", textAlign: "right", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
-                                {partPop.loading ? <Dots /> : (partPop.translate || "—")}
+                                {partPop.loading ? <Dots />
+                                    : partPop.generating ? <span className="row" style={{ gap: 4, alignItems: "center", justifyContent: "flex-end" }}><BtnSpinner /> {t.genWord || "Генерирую…"}</span>
+                                    : (partPop.translate || "—")}
                             </span>
                         </div>
                         <button className="btn btn--outline btn--sm" style={{ marginTop: "var(--sp-2)", width: "100%" }}
@@ -298,6 +316,11 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                             {t.topics?.[k] || k}
                         </span>
                     ))}
+                </div>
+            )}
+            {view?.generating && (
+                <div className="row" style={{ gap: "var(--sp-2)", alignItems: "center", color: "var(--ember-600)", marginBottom: "var(--sp-3)" }}>
+                    <BtnSpinner /> <span style={{ fontSize: "var(--fs-14)" }}>{t.genWord || "Генерирую слово…"}</span>
                 </div>
             )}
             {!view || view.descLoading ? (

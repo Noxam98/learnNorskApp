@@ -161,7 +161,7 @@ export const en = {
         nothingFound: "Nothing found", clearFilters: "Clear", pageSize: "per page",
         poolSort: { alpha: "A-Z", level: "Level", added: "Newest" },
         sortLabels: { relevance: "Relevance", alpha: "A-Z", level: "Level", freq: "Usage frequency", added: "Newest", pos: "Part of speech", strength: "By strength", due: "Due soon" },
-        poolGenHint: "Can't find a word? Add via AI:", poolGen: "Generate", genFailed: "Couldn't generate the word",
+        poolGenHint: "Can't find a word? Add via AI:", poolGen: "Generate", genFailed: "Couldn't generate the word", genWord: "Generating word…",
         addAllToNewDict: "To new dictionary", newDictTitle: "New dictionary", create: "Create",
         dictNameLabel: "Dictionary name", willAddWords: "Words to add", allWordsName: "All words",
         dictExistsError: "A dictionary with this name already exists",
