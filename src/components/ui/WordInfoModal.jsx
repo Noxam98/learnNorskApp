@@ -247,10 +247,17 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                 <span style={{ fontSize: "var(--fs-24)", fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>
                     {cwSegs
                         ? cwSegs.map((s, i) => s.lemma ? (
+                            // часть слова — в квадратных скобках (акцент), кликабельна
                             <span key={i} className="cw-part" onClick={(e) => openPart(s.lemma, e)}
-                                style={{ cursor: "pointer", borderBottom: "2px dotted var(--accent)", paddingBottom: "1px" }}>{s.text}</span>
+                                title={t.openCard || "Открыть карточку"}
+                                style={{ cursor: "pointer", borderRadius: "5px", padding: "0 1px" }}>
+                                <span style={{ color: "var(--accent)", fontWeight: 700 }}>[</span>
+                                {s.text}
+                                <span style={{ color: "var(--accent)", fontWeight: 700 }}>]</span>
+                            </span>
                         ) : (
-                            <span key={i} style={{ opacity: 0.45 }}>{s.text}</span>
+                            // соединительная частица (fuge) — точкой (в title — какая именно)
+                            <span key={i} title={s.text} style={{ color: "var(--accent)", opacity: 0.65, padding: "0 3px" }}>·</span>
                         ))
                         : (view?.no || word || "")}
                 </span>

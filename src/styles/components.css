@@ -188,6 +188,11 @@
 /* близкое слово: кликабельный текст + кнопка «разница» внутри чипа */
 .syn { display: inline-flex; align-items: center; gap: 6px; }
 .syn__go { cursor: pointer; }
+
+/* Части составного слова в заголовке карточки: [скобки] + точка-соединитель; наведение
+   подсвечивает часть — подсказка «кликабельно» (клик → мини-попап с переводом). */
+.cw-part { transition: background .12s ease; }
+.cw-part:hover { background: color-mix(in srgb, var(--accent) 16%, transparent); }
 .syn__diff { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
     flex: none; padding: 0; border: none; background: transparent; cursor: pointer;
     border-radius: var(--r-xs); color: inherit; opacity: .5; margin: -2px -5px -2px 0;
