@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal } from "./Modal.jsx";
 import { Icon } from "./Icon.jsx";
 import { SpeakButton } from "./SpeakButton.jsx";
@@ -34,6 +34,30 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const [delConfirm, setDelConfirm] = useState(false); // подтверждение удаления слова из БД (админ)
     const [delBusy, setDelBusy] = useState(false);
     const [askOpen, setAskOpen] = useState(false);   // открыт вопрос о слове нейросети (см. AskWordModal)
+
+    // Стек навигации ВНУТРИ карточки: клик по части композита / синониму открывает новую
+    // карточку и кладёт текущую в стек; свайп/«Назад» возвращает на предыдущую, а закрывает
+    // только на корневой. Историю ведём сами (Modal с manageHistory={false}): в state каждой
+    // записи кладём её глубину — так лишний popstate от закрытия саб-модалки (правка/вопрос,
+    // у них своя history-запись) не путается с нашим «назад» (сравниваем глубину приземления).
+    const [stack, setStack] = useState([]);            // [{ no, id }] предыдущих карточек (для кнопки «назад»)
+    const stackRef = useRef([]); stackRef.current = stack;
+    const curRef = useRef({ no: null, id: undefined }); // текущая карточка — что кладём в стек при переходе
+    const depthRef = useRef(0);                        // наша глубина в истории (1 = корень)
+    const onCloseRef = useRef(onClose); onCloseRef.current = onClose;
+
+    // Мини-попап части составного слова: клик по части в заголовке → перевод + «открыть карточку».
+    const [partPop, setPartPop] = useState(null);   // { lemma, left, translate, loading }
+    const openPart = (lemma, e) => {
+        const el = e?.currentTarget;
+        const parentW = el?.offsetParent?.clientWidth || 0;
+        const left = Math.max(0, Math.min(el?.offsetLeft ?? 0, Math.max(0, parentW - 224)));
+        setPartPop({ lemma, left, translate: null, loading: true });
+        api.getPoolMeta(lemma)
+            .then((m) => setPartPop((p) => p && p.lemma === lemma
+                ? { ...p, loading: false, translate: (m?.translate?.[lang] || []).slice(0, 3).join(", ") } : p))
+            .catch(() => setPartPop((p) => p && p.lemma === lemma ? { ...p, loading: false } : p));
+    };
 
     const [revoiceBusy, setRevoiceBusy] = useState(false);
     const revoice = async () => {
@@ -71,6 +95,8 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     const toggleDiff = (other) => setDiffWith((cur) => (cur === other ? null : other));
 
     const loadWord = (no, id) => {
+        curRef.current = { no, id };
+        setPartPop(null);
         setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null, compound: null });
         setDiffWith(null); setFixOpen(false); setDelConfirm(false);
         setAskOpen(false);   // вопрос о слове сбрасывает своё поле сам (AskWordModal на open=false)
@@ -84,16 +110,79 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
         api.getPoolMeta(no).then((m) => setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, compound: m?.compound || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null } : v)).catch(() => {});
     };
 
+    // Переход по клику (часть композита / синоним): текущую карточку — в стек и в историю,
+    // затем грузим новую. pushState добавляет запись, которую «Назад»/свайп потом снимет.
+    const navTo = (no, id) => {
+        if (!no || no === curRef.current.no) return;
+        setStack((s) => [...s, curRef.current]);
+        depthRef.current += 1;
+        if (typeof window !== "undefined") window.history.pushState({ __wim: depthRef.current }, "");
+        loadWord(no, id);
+    };
+    // Назад по стеку карточек (единственный вызывающий — onPop истории, чтобы учёт записей был один).
+    const goBack = () => {
+        const s = stackRef.current;
+        if (!s.length) return;
+        const prev = s[s.length - 1];
+        setStack(s.slice(0, -1));
+        loadWord(prev.no, prev.id);
+    };
+
     useEffect(() => {
-        if (open && word) loadWord(word, wordId);
-        if (!open) { setView(null); setDiffWith(null); setFixOpen(false); setEditOpen(false); setDelConfirm(false); }
+        if (open && word) { setStack([]); loadWord(word, wordId); }
+        if (!open) { setView(null); setStack([]); setPartPop(null); setDiffWith(null); setFixOpen(false); setEditOpen(false); setDelConfirm(false); }
     }, [open, word, wordId]); // eslint-disable-line
+
+    // Закрыть мини-попап части по клику вне него.
+    useEffect(() => {
+        if (!partPop) return;
+        const onDown = (e) => { if (!e.target.closest?.(".cw-pop") && !e.target.closest?.(".cw-part")) setPartPop(null); };
+        document.addEventListener("mousedown", onDown);
+        return () => document.removeEventListener("mousedown", onDown);
+    }, [partPop]);
+
+    // История карточки: 1 запись на корень + по одной на каждый переход. «Назад»/свайп (popstate)
+    // сравнивает глубину приземления с нашей: меньше — возвращаемся на предыдущую карточку;
+    // ноль — выходим из модалки; равна (снялась саб-модалка) — ничего не делаем.
+    useEffect(() => {
+        if (!open || typeof window === "undefined") return;
+        depthRef.current = 1;
+        window.history.pushState({ __wim: 1 }, "");
+        const onPop = () => {
+            const st = window.history.state;
+            const j = st && typeof st.__wim === "number" ? st.__wim : 0;
+            if (j >= depthRef.current) return;          // приземлились на нашу текущую (саб-модалка) — не наш back
+            if (j > 0) { depthRef.current = j; goBack(); }   // назад к предыдущей карточке
+            else { depthRef.current = 0; onCloseRef.current?.(); }  // вышли из модалки
+        };
+        window.addEventListener("popstate", onPop);
+        return () => {
+            window.removeEventListener("popstate", onPop);
+            // закрыли не «Назад» (крестик/фон) → снимаем все свои записи истории
+            if (depthRef.current > 0) { window.history.go(-depthRef.current); depthRef.current = 0; }
+        };
+    }, [open]); // eslint-disable-line
 
     // (back/свайп-закрытие теперь обеспечивает сам <Modal> через useHistoryClose)
 
     const inDict = !!view?.inLearning;   // слово в «Учёбе» пользователя
     const posKey = view?.part_of_speech;
     const posText = posKey ? posLabelFull(posKey, t) : "";
+
+    // Разбор составного слова для ЗАГОЛОВКА: режем само слово на части по forledd/fuge/etterledd
+    // (только если они реально складываются в слово — иначе санди/несовпадение, показываем целиком).
+    // Части кликабельны (пунктир снизу), соединитель (fuge) приглушён — читается как одно слово.
+    const cwSegs = (() => {
+        const cw = view?.compound;
+        const w = view?.no || "";
+        if (!cw || !w) return null;
+        if ((cw.forledd + (cw.fuge || "") + cw.etterledd).toLowerCase() !== w.toLowerCase()) return null;
+        const cut1 = cw.forledd.length, cut2 = cut1 + (cw.fuge || "").length;
+        const segs = [{ text: w.slice(0, cut1), lemma: cw.forledd }];
+        if (cut2 > cut1) segs.push({ text: w.slice(cut1, cut2) });   // соединитель (fuge) — не кликабельный
+        segs.push({ text: w.slice(cut2), lemma: cw.etterledd });
+        return segs;
+    })();
 
     // Шапка слова для под-модалок: слово + озвучка + часть речи + перевод (как в основной модалке)
     const wordRefNode = view ? (
@@ -124,9 +213,17 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     };
 
     const titleNode = (
-        posText
-            ? <span className={`chip pos ${posMeta(posKey).cls}`} style={{ fontWeight: 600 }}>{posText}</span>
-            : <span />
+        <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", minWidth: 0 }}>
+            {stack.length > 0 && (
+                <button className="iconbtn" onClick={() => window.history.back()} style={{ flexShrink: 0 }}
+                    aria-label={t.back || "Назад"} title={t.back || "Назад"}>
+                    <Icon n="chevron-left" sm />
+                </button>
+            )}
+            {posText
+                ? <span className={`chip pos ${posMeta(posKey).cls}`} style={{ fontWeight: 600 }}>{posText}</span>
+                : null}
+        </span>
     );
 
     // Меню «Действия» — в шапке модалки справа, у крестика
@@ -144,12 +241,36 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     return (
         <>
-        <Modal open={open} onClose={onClose} title={titleNode} headerExtra={actionsNode}>
+        <Modal open={open} onClose={onClose} title={titleNode} headerExtra={actionsNode} manageHistory={false}>
             {/* Само слово + озвучка — крупно, слитно; под ним перевод. Подтянуто к части речи сверху. */}
-            <div className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "nowrap", minWidth: 0, marginTop: "calc(-1 * var(--sp-3))", marginBottom: view?.translate?.[lang]?.length ? "var(--sp-1)" : "var(--sp-4)" }}>
-                <span style={{ fontSize: "var(--fs-24)", fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{view?.no || word || ""}</span>
+            <div className="row" style={{ gap: "var(--sp-2)", alignItems: "center", flexWrap: "nowrap", minWidth: 0, position: "relative", marginTop: "calc(-1 * var(--sp-3))", marginBottom: view?.translate?.[lang]?.length ? "var(--sp-1)" : "var(--sp-4)" }}>
+                <span style={{ fontSize: "var(--fs-24)", fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>
+                    {cwSegs
+                        ? cwSegs.map((s, i) => s.lemma ? (
+                            <span key={i} className="cw-part" onClick={(e) => openPart(s.lemma, e)}
+                                style={{ cursor: "pointer", borderBottom: "2px dotted var(--accent)", paddingBottom: "1px" }}>{s.text}</span>
+                        ) : (
+                            <span key={i} style={{ opacity: 0.45 }}>{s.text}</span>
+                        ))
+                        : (view?.no || word || "")}
+                </span>
                 <SpeakButton text={view?.no || word} hasTts={view?.hasTts}
                     ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
+                {partPop && (
+                    <div className="cw-pop card" style={{ position: "absolute", top: "calc(100% + 4px)", left: partPop.left, zIndex: 20,
+                        padding: "var(--sp-3)", boxShadow: "var(--shadow-lg)", borderRadius: "var(--r-md)", minWidth: 150, maxWidth: 224 }}>
+                        <div className="row" style={{ gap: "var(--sp-2)", alignItems: "baseline", justifyContent: "space-between" }}>
+                            <b style={{ fontSize: "var(--fs-15)" }}>{partPop.lemma}</b>
+                            <span className="muted" style={{ fontSize: "var(--fs-13)", textAlign: "right", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
+                                {partPop.loading ? <Dots /> : (partPop.translate || "—")}
+                            </span>
+                        </div>
+                        <button className="btn btn--outline btn--sm" style={{ marginTop: "var(--sp-2)", width: "100%" }}
+                            onClick={() => navTo(partPop.lemma)}>
+                            <Icon n="arrow-right" sm /> {t.openCard || "Открыть карточку"}
+                        </button>
+                    </div>
+                )}
             </div>
             {view?.translate?.[lang]?.length > 0 && (
                 <p style={{ margin: "0 0 var(--sp-4)", fontSize: "var(--fs-13)", color: "var(--ink-3)" }}>
@@ -207,31 +328,6 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                 </div>
             )}
 
-            {/* Составное слово (sammensetning): части кликабельны — навигация внутри модалки,
-                как у синонимов; соединитель (fuge -s-/-e-) показываем между частями. */}
-            {view?.compound && (
-                <div style={{ marginTop: "var(--sp-5)" }}>
-                    <div className="label row" style={{ gap: "var(--sp-2)", alignItems: "center", marginBottom: "var(--sp-2)" }}>
-                        <Icon n="layers" sm /> {t.compound || "Составное слово"}
-                    </div>
-                    <div className="row wrap" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
-                        {view.compound.parts.map((part, i) => (
-                            <span key={i} className="row" style={{ gap: "var(--sp-2)", alignItems: "center" }}>
-                                {i > 0 && (
-                                    <span className="muted" style={{ fontSize: "var(--fs-13)" }}>
-                                        {view.compound.fuge ? `+ ${view.compound.fuge} +` : "+"}
-                                    </span>
-                                )}
-                                <span className="chip syn" style={{ background: "var(--surface-3)", color: "var(--ink)", cursor: "pointer" }}
-                                    onClick={() => loadWord(part)} title={t.description}>
-                                    <b>{part}</b>
-                                </span>
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            )}
-
             {view?.synonyms === null && !view?.descLoading && (
                 <div className="row" style={{ gap: "var(--sp-3)", marginTop: "var(--sp-5)", color: "var(--ink-3)" }}>
                     <Dots /> <span style={{ fontSize: "var(--fs-14)" }}>{t.similar}</span>
@@ -243,7 +339,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
                     <div className="row wrap" style={{ gap: "var(--sp-2)" }}>
                         {view.synonyms.map((s) => (
                             <span key={s.word} className="chip syn" style={{ background: "var(--surface-3)", color: "var(--ink)" }}>
-                                <span className="syn__go" title={t.description} onClick={() => loadWord(s.word)}>
+                                <span className="syn__go" title={t.description} onClick={() => navTo(s.word)}>
                                     <b>{s.word}</b>{s.translate?.[0] ? ` — ${s.translate[0]}` : ""}
                                 </span>
                                 <button
