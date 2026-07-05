@@ -1,11 +1,12 @@
 // @ts-check
-// Игра «Cloze» (вставь пропущенное слово) — для служебных слов A1. Предложение с пропуском «___»
-// и варианты-кнопки (правильное служебное слово + дистракторы той же части речи). Предложение и
-// варианты приходят готовыми в элементе сессии (`cloze: {blank, answer, options}`), сгенерированы
-// бэком из УЖЕ ВЫУЧЕННЫХ слов юзера. Механика цикла (рампа/SRS/переход) — в useGameLoop.
+// Игра «Cloze» (вставь пропущенное слово) — для служебных слов A1-A2. Предложение с пропуском «___»
+// и варианты-кнопки (правильное служебное слово + дистракторы ДРУГОГО типа связи). Приходят готовыми
+// в элементе сессии (`cloze: {blank, answer, options[, optionsTr, sentTr]}`) из выверенного статического
+// банка (db.cloze_bank). НА РАЗБОРЕ показываем переводы: значение каждого варианта (optionsTr) и всего
+// предложения (sentTr) на родном языке юзера. Механика цикла (рампа/SRS/переход) — в useGameLoop.
 import { useState, useEffect } from "react";
 import { Icon } from "../ui/Icon.jsx";
-import { hyLang } from "../ui/hyphenate.js";
+import { hyLang, hyphenate } from "../ui/hyphenate.js";
 import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { speakText, speakTextEnd } from "../ui/tts.js";
 import { PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen , RampCheer , RampDrop } from "./gameShared.jsx";
@@ -25,9 +26,20 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
 
     const cloze = current?.cloze || {};
     const aLang = hyLang(currentLanguage, true);   // ответ/варианты — норвежские
+    const nLang = hyLang(currentLanguage);         // родной язык юзера (BCP) — для переводов на разборе
     const correct = cloze.answer || (current?.translate?.no?.[0] || "");
     const options = cloze.options || [];
     const prompt = (cloze.blank || "").replace("___", "＿＿＿");   // видимый пропуск
+
+    // Переводы НА РАЗБОРЕ (после ответа): значение каждого варианта (ответ — контекстно, дистракторы —
+    // общее) + перевод всего предложения. Показываем ТОЛЬКО на reveal — иначе выдали бы ответ.
+    const reveal = status === "CORRECT" || status === "INCORRECT";
+    const pickNative = (o) => (o && typeof o === "object") ? (o[currentLanguage] || o.ru || "") : "";
+    const optionSub = reveal
+        ? Object.fromEntries(options.map((o) => [o, pickNative(cloze.optionsTr?.[o])]))
+        : {};
+    const sentTr = pickNative(cloze.sentTr);
+    const filledSentence = (cloze.blank || "").replace("___", correct);
 
     // После ОШИБКИ озвучиваем полное предложение с верным словом. После ВЕРНОГО озвучкой+паузой
     // управляет useGameLoop (speakAnswer), чтобы авто-переход совпал с длиной аудио.
@@ -74,18 +86,27 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     promptLang={aLang}
                     options={options}
                     optionLang={aLang}
+                    optionSub={optionSub}
+                    optionSubLang={nLang}
                     picked={chosen}
                     correct={correct}
-                    reveal={status === "CORRECT" || status === "INCORRECT"}
+                    reveal={reveal}
                     onPick={choose}
                     hint={t.clozeFill}
                     countText={`${t.word} ${qIndex} / ${qTotal}`}
                     disabled={status !== "ASKING"}
                     loading={!options.length}
                 >
-                    {status === "INCORRECT" && descriptionText && (
-                        <div className="feedback" style={{ display: "flex" }}>
-                            <div className="fb-line muted">{descriptionText}</div>
+                    {reveal && (sentTr || (status === "INCORRECT" && descriptionText)) && (
+                        <div className="feedback" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            {sentTr && (
+                                <div className="fb-line">
+                                    <span lang={aLang}>{hyphenate(filledSentence, aLang)}</span>
+                                    <span className="muted"> — </span>
+                                    <span className="muted" lang={nLang}>{hyphenate(sentTr, nLang)}</span>
+                                </div>
+                            )}
+                            {status === "INCORRECT" && descriptionText && <div className="fb-line muted">{descriptionText}</div>}
                         </div>
                     )}
                     <div className="pcta">

@@ -23,14 +23,14 @@ import { BrandLoader } from "../ui/Spinner.jsx";
 /**
  * @param {{
  *   prompt?: string, promptLang?: string, options?: string[] | null, optionLang?: string,
- *   optionSub?: Record<string, string>, picked?: string | null, correct?: string | null,
+ *   optionSub?: Record<string, string>, optionSubLang?: string, picked?: string | null, correct?: string | null,
  *   reveal?: boolean, allowRetry?: boolean, onPick?: (opt: string) => void,
  *   posText?: string, hint?: any, countText?: any, disabled?: boolean, loading?: boolean, numbered?: boolean,
  *   listenSlot?: any, showWord?: boolean, inline?: boolean, children?: any,
  * }} props
  */
 export const ChoiceQuestion = ({
-    prompt, promptLang, options, optionLang, optionSub = {},
+    prompt, promptLang, options, optionLang, optionSub = {}, optionSubLang,
     picked = null, correct = null, reveal = false, allowRetry = false,
     onPick, posText, hint, countText, disabled = false, loading = false, numbered = false,
     listenSlot = null, showWord = true, inline = false, children,
@@ -66,7 +66,7 @@ export const ChoiceQuestion = ({
                     >
                         {numbered && i < 9 && <span className="choice__num" aria-hidden="true">{i + 1}</span>}
                         <span className="choice__main">{hyphenate(opt, optionLang)}</span>
-                        {sub && <span className="choice__sub">{hyphenate(sub, optionLang)}</span>}
+                        {sub && <span className="choice__sub" lang={optionSubLang || optionLang}>{hyphenate(sub, optionSubLang || optionLang)}</span>}
                     </button>
                 );
             })}
