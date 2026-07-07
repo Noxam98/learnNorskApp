@@ -285,7 +285,7 @@ class ApiService {
     getPoolSynonyms(word, { lang = "ru" } = {}) { return this._send('GET', `/pool/${encodeURIComponent(word)}/synonyms?lang=${encodeURIComponent(lang)}`); }
     getWordDiff(a, b, lang = "ru") { return this._send('GET', `/pool/diff?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}&lang=${encodeURIComponent(lang)}`); }
     redescribe(word, hint) { return this._send('POST', `/pool/${encodeURIComponent(word)}/redescribe`, { hint }); }
-    getPoolMeta(word) { return this._send('GET', `/pool/${encodeURIComponent(word)}/meta`); }
+    getPoolMeta(word, poolId) { return this._send('GET', `/pool/${encodeURIComponent(word)}/meta${poolId ? `?pool_id=${poolId}` : ''}`); }
     askWord(word, question, lang = "ru") { return this._send('POST', `/pool/${encodeURIComponent(word)}/ask`, { question, lang }); }
     revoiceWord(word) { return this._send('POST', `/pool/${encodeURIComponent(word)}/revoice`); }
 

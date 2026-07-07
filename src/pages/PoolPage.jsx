@@ -157,7 +157,7 @@ export const PoolPage = () => {
                             added={!!added[w.pool_id]} busy={addingId === w.pool_id} highlight={highlightWord === w.word}
                             isAdmin={isAdmin}
                             onToggle={() => (added[w.pool_id] ? onRemove(w) : onAdd(w))}
-                            onCardClick={() => setDescWord(w.word)}
+                            onCardClick={() => setDescWord(w)}
                             onAdminDelete={() => onAdminDelete(w.word)} />
                     ))}
                 </div>
@@ -210,7 +210,7 @@ export const PoolPage = () => {
                 })}
             </Modal>
 
-            <WordInfoModal open={!!descWord} word={descWord}
+            <WordInfoModal open={!!descWord} word={descWord?.word} wordId={descWord?.pool_id}
                 lang={currentLanguage} t={t} onClose={() => setDescWord(null)} />
         </main>
     );
