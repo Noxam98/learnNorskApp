@@ -281,8 +281,8 @@ class ApiService {
     getAdminHomograph() { return this._send('GET', '/admin/homograph'); }
     getAdminNeighbors() { return this._send('GET', '/admin/neighbors'); }
     getPoolTopics() { return this._send('GET', '/pool/topics'); }
-    getPoolDescription(word) { return this._send('GET', `/pool/${encodeURIComponent(word)}/description`); }
-    getPoolSynonyms(word, { lang = "ru" } = {}) { return this._send('GET', `/pool/${encodeURIComponent(word)}/synonyms?lang=${encodeURIComponent(lang)}`); }
+    getPoolDescription(word, poolId) { return this._send('GET', `/pool/${encodeURIComponent(word)}/description${poolId ? `?pool_id=${poolId}` : ''}`); }
+    getPoolSynonyms(word, { lang = "ru", poolId } = {}) { return this._send('GET', `/pool/${encodeURIComponent(word)}/synonyms?lang=${encodeURIComponent(lang)}${poolId ? `&pool_id=${poolId}` : ''}`); }
     getWordDiff(a, b, lang = "ru") { return this._send('GET', `/pool/diff?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}&lang=${encodeURIComponent(lang)}`); }
     redescribe(word, hint) { return this._send('POST', `/pool/${encodeURIComponent(word)}/redescribe`, { hint }); }
     getPoolMeta(word, poolId) { return this._send('GET', `/pool/${encodeURIComponent(word)}/meta${poolId ? `?pool_id=${poolId}` : ''}`); }

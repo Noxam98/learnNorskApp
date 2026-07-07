@@ -210,7 +210,7 @@ export const PoolPage = () => {
                 })}
             </Modal>
 
-            <WordInfoModal open={!!descWord} word={descWord?.word} wordId={descWord?.pool_id}
+            <WordInfoModal open={!!descWord} word={descWord?.word} poolId={descWord?.pool_id}
                 lang={currentLanguage} t={t} onClose={() => setDescWord(null)} />
         </main>
     );

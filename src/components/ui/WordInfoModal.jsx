@@ -18,9 +18,10 @@ import api from "../tools/api.js";
 
 // Описание слова + похожие слова (кликабельные — навигация по пулу) +
 // кнопка добавить/удалить просматриваемое слово в текущий словарь.
-// wordId передаётся только для исходного слова словаря — тогда описание
-// тянется по id (генерится по требованию). Синонимы — всегда слова из пула.
-export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
+// wordId — dict_word id (карточка из Учёбы): описание/синонимы по нему (/words/{id}/…).
+// poolId — id записи ПУЛА (карточка из Базы, dict_word нет): им дизамбигуируем ОМОНИМЫ
+// в /pool/…-эндпоинтах (напр. `ro` сущ./глаг.). Передаётся ровно один из двух.
+export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) => {
     const addToLearning = useWordsStore((s) => s.addToLearning);
     const removeFromLearning = useWordsStore((s) => s.removeFromLearning);
     const loadData = useWordsStore((s) => s.loadData);
@@ -42,7 +43,7 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     // у них своя history-запись) не путается с нашим «назад» (сравниваем глубину приземления).
     const [stack, setStack] = useState([]);            // [{ no, id }] предыдущих карточек (для кнопки «назад»)
     const stackRef = useRef([]); stackRef.current = stack;
-    const curRef = useRef({ no: null, id: undefined }); // текущая карточка — что кладём в стек при переходе
+    const curRef = useRef({ no: null, id: undefined, poolId: undefined }); // текущая карточка — что кладём в стек при переходе
     const depthRef = useRef(0);                        // наша глубина в истории (1 = корень)
     const onCloseRef = useRef(onClose); onCloseRef.current = onClose;
 
@@ -100,27 +101,30 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
     // тоггл сравнения с близким словом: повторный клик по тому же — закрыть (загрузку ведёт WordDiff)
     const toggleDiff = (other) => setDiffWith((cur) => (cur === other ? null : other));
 
-    const loadWord = (no, id, triedGen = false) => {
-        curRef.current = { no, id };
+    // id — dict_word id (слово из словаря юзера → эндпоинты /words/{id}/…, они по нему точны).
+    // poolId — id записи ПУЛА (База, где dict_word нет): им дизамбигуируем омонимы в /pool/…-эндпоинтах
+    // (напр. `ro` сущ./глаг.). Передаётся ровно один: словарные карточки — id, карточки Базы — poolId.
+    const loadWord = (no, id, poolId, triedGen = false) => {
+        curRef.current = { no, id, poolId };
         setPartPop(null);
         setView({ no, desc: "", descLoading: true, synonyms: null, topics: [], level: null, compound: null, generating: false });
         setDiffWith(null); setFixOpen(false); setDelConfirm(false);
         setAskOpen(false);   // вопрос о слове сбрасывает своё поле сам (AskWordModal на open=false)
         const fresh = (v) => v && v.no === no; // игнорируем ответы устаревшей навигации
-        const descP = id ? api.getWordDescription(id) : api.getPoolDescription(no);
-        const synP = id ? api.getSynonyms(id, { lang }) : api.getPoolSynonyms(no, { lang });
+        const descP = id ? api.getWordDescription(id) : api.getPoolDescription(no, poolId);
+        const synP = id ? api.getSynonyms(id, { lang }) : api.getPoolSynonyms(no, { lang, poolId });
         descP.then((r) => setView((v) => fresh(v) ? { ...v, desc: r.description?.[lang] || r.description?.en || "", descLoading: false } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
-        api.getPoolMeta(no, id).then((m) => {
+        api.getPoolMeta(no, poolId).then((m) => {
             setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, compound: m?.compound || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null } : v);
             // карточки нет в базе (напр. часть композита) → генерируем слово и перезагружаем.
             // triedGen страхует от петли, если генерация так и не создала запись.
             if (!m?.pool_id && !triedGen) {
                 setView((v) => fresh(v) ? { ...v, generating: true } : v);
                 api.generateWord(no)
-                    .then(() => { if (curRef.current.no === no) loadWord(no, id, true); })
+                    .then(() => { if (curRef.current.no === no) loadWord(no, id, poolId, true); })
                     .catch(() => setView((v) => fresh(v) ? { ...v, generating: false } : v));
             }
         }).catch(() => {});
@@ -128,13 +132,13 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
 
     // Переход по клику (часть композита / синоним): текущую карточку — в стек и в историю,
     // затем грузим новую. pushState добавляет запись, которую «Назад»/свайп потом снимет.
-    const navTo = (no, id) => {
+    const navTo = (no, id, poolId) => {
         if (!no || no === curRef.current.no) return;
         const prev = curRef.current;   // ЗАХВАТ до loadWord: иначе updater setStack прочитает уже НОВОЕ
         setStack((s) => [...s, prev]); // слово (loadWord перезаписывает curRef синхронно) → «назад» вернул бы ту же карточку
         depthRef.current += 1;
         if (typeof window !== "undefined") window.history.pushState({ __wim: depthRef.current }, "");
-        loadWord(no, id);
+        loadWord(no, id, poolId);
     };
     // Назад по стеку карточек (единственный вызывающий — onPop истории, чтобы учёт записей был один).
     const goBack = () => {
@@ -142,13 +146,13 @@ export const WordInfoModal = ({ open, word, wordId, lang, t, onClose }) => {
         if (!s.length) return;
         const prev = s[s.length - 1];
         setStack(s.slice(0, -1));
-        loadWord(prev.no, prev.id);
+        loadWord(prev.no, prev.id, prev.poolId);
     };
 
     useEffect(() => {
-        if (open && word) { setStack([]); loadWord(word, wordId); }
+        if (open && word) { setStack([]); loadWord(word, wordId, poolId); }
         if (!open) { setView(null); setStack([]); setPartPop(null); setDiffWith(null); setFixOpen(false); setEditOpen(false); setDelConfirm(false); }
-    }, [open, word, wordId]); // eslint-disable-line
+    }, [open, word, wordId, poolId]); // eslint-disable-line
 
     // Закрыть мини-попап части по клику вне него.
     useEffect(() => {
