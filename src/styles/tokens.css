@@ -201,7 +201,9 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+/* touch-action: manipulation — гасит зум по двойному тапу (тап/скролл сохраняются);
+   pinch/десктоп-зум блокируются во viewport и src/noZoom.js */
+html { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
 
 body {
   margin: 0;
