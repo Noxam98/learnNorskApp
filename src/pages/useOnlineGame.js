@@ -9,7 +9,10 @@ import { startRaceMusic, stopRaceMusic, playGallop, playFall } from "../componen
 
 export function useOnlineGame(lang, to) {
     const wsRef = useRef(null);
-    const [connected, setConnected] = useState(false);
+    // Три состояния соединения: connecting (первый коннект) / online / reconnecting (разрыв, ждём переподключения).
+    // Сокет больше НЕ одноразовый: onclose планирует реконнект с экспоненциальным backoff.
+    const [status, setStatus] = useState("connecting");
+    const connected = status === "online";
     const [rooms, setRooms] = useState([]);
     const [room, setRoom] = useState(null);
     const [countdown, setCountdown] = useState(null);
@@ -31,32 +34,72 @@ export function useOnlineGame(lang, to) {
     const [raceGrace, setRaceGrace] = useState(null); // {sec, leader} — окно добивания
     const [raceGo, setRaceGo] = useState(false);    // вспышка «Поехали!»
     const fbTimer = useRef(null);
+    const raceGoTimer = useRef(null);
+
+    // Инфраструктура реконнекта.
+    const reconnectTimer = useRef(null);
+    const attemptRef = useRef(0);        // счётчик попыток для backoff
+    const closedRef = useRef(false);     // намеренный размонтаж — НЕ переподключаться
+    const langRef = useRef(lang);        // актуальный язык для URL нового сокета
+    const toRef = useRef(to);            // актуальные i18n-строки для тостов ошибок (без пересоздания сокета)
+    toRef.current = to;
 
     const send = useCallback((obj) => {
         const ws = wsRef.current;
         if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj));
     }, []);
 
-    useEffect(() => {
-        const ws = new WebSocket(api.onlineSocketUrl(lang));
+    // Полный сброс игрового состояния гонки/квиза (используется на left и на входе в лобби).
+    const resetGameState = useCallback(() => {
+        setQuestion(null); setReveal(null); setCountdown(null); setPreparing(false);
+        setRaceWord(null); setRacePos([]); setRaceGrace(null); setRaceGo(false);
+        setRaceFeedback(null); setRaceStreak(0);
+        stopRaceMusic();
+    }, []);
+
+    const connect = useCallback(() => {
+        if (closedRef.current) return;
+        const ws = new WebSocket(api.onlineSocketUrl(langRef.current));
         wsRef.current = ws;
-        ws.onopen = () => { setConnected(true); ws.send(JSON.stringify({ type: "watch" })); };
-        ws.onclose = () => setConnected(false);
+        ws.onopen = () => {
+            if (wsRef.current !== ws) return;   // StrictMode / устаревший сокет
+            attemptRef.current = 0;
+            setStatus("online");
+            ws.send(JSON.stringify({ type: "watch" }));
+            // Восстановление после разрыва: если были в комнате — просим сервер вернуть нас туда.
+            const rid = roomRef.current?.id;
+            if (rid) ws.send(JSON.stringify({ type: "rejoin", roomId: rid }));
+        };
+        ws.onclose = (ev) => {
+            if (wsRef.current !== ws) return;
+            if (closedRef.current) return;      // намеренное закрытие при unmount — не реконнектим
+            // Фатальные коды: 4401 (не авторизован) / 4409 (слишком много соединений/вкладок) —
+            // авто-реконнект бесполезен (снова получим то же) → НЕ зацикливаемся, показываем
+            // терминальное «связь потеряна» с ручной кнопкой «Переподключиться».
+            if (ev && (ev.code === 4401 || ev.code === 4409)) {
+                closedRef.current = true;
+                setStatus("dropped");
+                return;
+            }
+            setStatus("reconnecting");
+            const n = Math.min(attemptRef.current++, 4);      // 0..4
+            const delay = Math.min(1000 * 2 ** n, 15000);     // 1s → 2s → 4s → 8s → 15s (кап)
+            clearTimeout(reconnectTimer.current);
+            reconnectTimer.current = setTimeout(connect, delay);
+        };
         ws.onmessage = (e) => {
+            if (wsRef.current !== ws) return;   // сообщения устаревшего сокета игнорируем
             let m; try { m = JSON.parse(e.data); } catch { return; }
             switch (m.type) {
                 case "rooms": setRooms(m.rooms || []); break;
                 case "room":
+                    if (!m.room) break;
                     roomRef.current = m.room;
                     setRoom(m.room);
-                    if (m.room.state === "lobby") {
-                        setCountdown(null); setQuestion(null); setReveal(null); setPreparing(false);
-                        setRaceWord(null); setRacePos([]); setRaceGrace(null); setRaceGo(false); setRaceFeedback(null); setRaceStreak(0);
-                        stopRaceMusic();
-                    }
+                    if (m.room.state === "lobby") resetGameState();
                     break;
                 case "countdown": setCountdown(m.sec); playSound(m.sec === 1 ? "start" : "tick"); break;
-                case "preparing": setPreparing(true); break;
+                case "preparing": setPreparing(true); setCountdown(null); break;
                 case "question":
                     setQuestion(m); setChosen(null); setReveal(null); setPodium(null); setCountdown(null); setPreparing(false);
                     answeredRef.current = []; setAnswered([]);
@@ -75,14 +118,15 @@ export function useOnlineGame(lang, to) {
                 case "race_go":
                     setRaceTotal(m.total); setPreparing(false); setCountdown(null);
                     setRaceGo(true); startRaceMusic();   // звук старта уже сыграл отсчёт на «1»
-                    setTimeout(() => setRaceGo(false), 1100);
+                    clearTimeout(raceGoTimer.current);
+                    raceGoTimer.current = setTimeout(() => setRaceGo(false), 1100);
                     break;
                 case "race_word": setRaceWord(m); break;
                 case "race_result": {
                     setRaceFeedback(m.correct ? "right" : "wrong");
                     setRaceStreak((s) => (m.correct ? s + 1 : 0));
                     if (m.correct) playGallop(); else playFall();   // топот / падение
-                    if (fbTimer.current) clearTimeout(fbTimer.current);
+                    clearTimeout(fbTimer.current);
                     fbTimer.current = setTimeout(() => setRaceFeedback(null), 600);
                     break;
                 }
@@ -90,20 +134,59 @@ export function useOnlineGame(lang, to) {
                 case "race_grace": setRaceGrace({ sec: m.sec, leader: m.leader, total: m.total || 25 }); break;
                 case "ended":
                     setPodium(m.podium); setPodiumGame(m.game || "quiz");
-                    setQuestion(null); setReveal(null); setPreparing(false);
-                    setRaceWord(null); setRaceGrace(null); setRaceGo(false); stopRaceMusic();
+                    // Гасим игровое состояние симметрично left (кроме podium), иначе после «В лобби»
+                    // остаётся stale racePos и RaceScreen рендерится пустым.
+                    setQuestion(null); setReveal(null); setCountdown(null); setPreparing(false);
+                    setRaceWord(null); setRacePos([]); setRaceGrace(null); setRaceGo(false);
+                    setRaceFeedback(null); setRaceStreak(0);
+                    stopRaceMusic();
                     break;
                 case "left":
-                    setRoom(null); setQuestion(null); setReveal(null); setPodium(null); setCountdown(null); setPreparing(false);
-                    setRaceWord(null); setRacePos([]); setRaceGrace(null); setRaceGo(false); stopRaceMusic();
+                    setRoom(null); roomRef.current = null; setPodium(null);
+                    resetGameState();
                     break;
-                case "error": case "game_error":
-                    useSystemStore.getState().showToast(to[m.msg] || to.genericError || "—"); break;
+                case "error": case "game_error": {
+                    // Гасим переходные экраны, чтобы ошибка не «зависала» под спиннером/отсчётом.
+                    setPreparing(false); setCountdown(null); setReveal(null);
+                    const T = toRef.current || {};
+                    useSystemStore.getState().showToast(T[m.msg] || T.genericError || "Ошибка связи");
+                    break;
+                }
                 default: break;
             }
         };
-        return () => { stopRaceMusic(); try { ws.close(); } catch { /* no-op */ } };
-    }, [lang]); // eslint-disable-line
+    }, [resetGameState]);
+
+    // Единожды при монтировании: подключаемся. Смена языка сокет НЕ пересоздаёт (см. эффект ниже),
+    // иначе фон/блип рвал бы соединение. При unmount — намеренное закрытие без реконнекта.
+    useEffect(() => {
+        closedRef.current = false;
+        connect();
+        return () => {
+            closedRef.current = true;
+            clearTimeout(reconnectTimer.current);
+            clearTimeout(fbTimer.current);
+            clearTimeout(raceGoTimer.current);
+            stopRaceMusic();
+            try { wsRef.current?.close(); } catch { /* no-op */ }
+        };
+    }, [connect]);
+
+    // Смена языка интерфейса — сообщением по живому сокету, без разрыва соединения.
+    useEffect(() => {
+        langRef.current = lang;
+        const ws = wsRef.current;
+        if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: "set_lang", lang }));
+    }, [lang]);
+
+    // Ручной реконнект: кнопка «Переподключиться» после фатального обрыва (4401/4409) или по желанию.
+    const reconnect = useCallback(() => {
+        closedRef.current = false;
+        attemptRef.current = 0;
+        clearTimeout(reconnectTimer.current);
+        setStatus("reconnecting");
+        connect();
+    }, [connect]);
 
     const answer = (i, ev) => {
         if (chosen != null || reveal) return;
@@ -117,8 +200,8 @@ export function useOnlineGame(lang, to) {
     const answerRace = useCallback((payload) => { send({ type: "answer", ...payload }); }, [send]);
 
     return {
-        connected, rooms, room, countdown, question, chosen, reveal, podium, podiumGame,
+        status, connected, rooms, room, countdown, question, chosen, reveal, podium, podiumGame,
         preparing, answered, racePos, raceWord, raceTotal, raceFeedback, raceStreak, raceGrace, raceGo,
-        send, answer, answerRace, setPodium,
+        send, answer, answerRace, setPodium, reconnect,
     };
 }

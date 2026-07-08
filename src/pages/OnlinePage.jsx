@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { motion, AnimatePresence, LayoutGroup, MotionConfig, useReducedMotion } from "framer-motion";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
 import { useAuthStore } from "../store/AuthStore.jsx";
@@ -56,6 +56,20 @@ function fireConfetti() {
 const OPT_LIST = { hidden: {}, show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } } };
 const OPT_ITEM = { hidden: { opacity: 0, y: 28, scale: 0.9 }, show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 320, damping: 22 } } };
 
+// Лёгкий оверлей поверх сохранённого экрана: соединение временно потеряно, идёт реконнект.
+// Не заменяет весь UI (стейт игры/лобби сохранён), лишь сообщает о переподключении.
+function ReconnectingOverlay({ label }) {
+    return (
+        <div role="status" aria-live="polite" style={{ position: "fixed", left: 0, right: 0, top: "calc(env(safe-area-inset-top, 0px) + 10px)", display: "flex", justifyContent: "center", zIndex: 9999, pointerEvents: "none" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 16px", borderRadius: 999, background: "var(--surface)", color: "var(--ink)", border: "1px solid var(--border)", boxShadow: "var(--shadow-md)", fontSize: "var(--fs-13)", fontWeight: 700 }}>
+                <motion.span animate={{ rotate: 360 }} transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
+                    style={{ width: 14, height: 14, borderRadius: "50%", border: "2px solid var(--border)", borderTopColor: "var(--ember-600)", display: "inline-block" }} />
+                {label}
+            </div>
+        </div>
+    );
+}
+
 export const OnlinePage = () => {
     const lang = useSystemStore((s) => s.currentLanguage);
     const theme = useSystemStore((s) => s.theme);
@@ -65,10 +79,11 @@ export const OnlinePage = () => {
 
     // Вся сетевая логика и игровое состояние — в контроллере useOnlineGame (см. useOnlineGame.js).
     const {
-        connected, rooms, room, countdown, question, chosen, reveal, podium, podiumGame,
+        status, rooms, room, countdown, question, chosen, reveal, podium, podiumGame,
         preparing, answered, racePos, raceWord, raceTotal, raceFeedback, raceStreak, raceGrace, raceGo,
-        send, answer, answerRace, setPodium,
+        send, answer, answerRace, setPodium, reconnect,
     } = useOnlineGame(lang, to);
+    const reduce = useReducedMotion();   // prefers-reduced-motion → гасим салют/крупные анимации
     const [createOpen, setCreateOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
 
@@ -85,14 +100,30 @@ export const OnlinePage = () => {
     // Салют синхронно с выездом первого места на подиуме (строки появляются со стаггером).
     useEffect(() => {
         if (!podium) return;
-        const id = setTimeout(() => { fireConfetti(); playWin(); }, 400);
+        const id = setTimeout(() => { if (!reduce) fireConfetti(); playWin(); }, 400);
         return () => clearTimeout(id);
-    }, [podium]);
+    }, [podium, reduce]);
 
     // ---------- Рендер ----------
-    if (!connected) {
-        return <main className="shell" style={{ padding: "var(--sp-6)", textAlign: "center" }}>
-            <p className="muted">{to.connecting || "…"}</p>
+    // Экраны считаем в content, поверх — лёгкий оверлей «переподключение…» (стейт сохранён, не сбрасываем).
+    const content = (() => {
+    // Самый первый коннект — полноэкранный спиннер (в стиле экрана подготовки набора).
+    if (status === "connecting") {
+        return <main style={SCREEN}>
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.1, repeat: Infinity, ease: "linear" }}
+                style={{ width: 46, height: 46, borderRadius: "50%", border: "4px solid var(--border)", borderTopColor: "var(--ember-600)", marginBottom: "var(--sp-4)" }} />
+            <div className="muted">{to.connecting || "Подключение…"}</div>
+        </main>;
+    }
+
+    // Фатальный обрыв (4401/4409): авто-реконнекта нет — терминальный экран с ручной кнопкой.
+    if (status === "dropped") {
+        return <main style={SCREEN}>
+            <Icon n="globe" style={{ width: 40, height: 40, color: "var(--ink-3)", marginBottom: "var(--sp-3)" }} />
+            <div style={{ fontWeight: 800, marginBottom: "var(--sp-2)" }}>{to.connLost || "Связь потеряна"}</div>
+            <button className="btn btn--accent" onClick={reconnect}>
+                <Icon n="repeat" sm /> {to.reconnectBtn || "Переподключиться"}
+            </button>
         </main>;
     }
 
@@ -132,12 +163,19 @@ export const OnlinePage = () => {
     if (room) {
         // Обратный отсчёт — переиспользуемый компонент
         if (countdown != null) {
+            // Для гонки отсчёт рисуем внутри лесного .race-контейнера — цельный вход в гонку
+            // (без резкой смены «плоское лобби → лес»).
+            if (room?.settings?.game === "race") {
+                return <div className="race" data-theme={theme} style={{ position: "fixed", inset: 0, zIndex: 90, display: "grid", placeItems: "center" }}>
+                    <Countdown sec={countdown} label={to.starting || "Старт через"} />
+                </div>;
+            }
             return <main style={SCREEN}><Countdown sec={countdown} label={to.starting || "Старт через"} /></main>;
         }
         // Гонка слов — отдельный экран (дорожки + поле ответа + оверлеи).
         // Не завязываемся на room.state: сервер для играющих не шлёт room-detail
         // со state=playing (только список комнат) — ориентируемся на данные гонки.
-        if (room.settings.game === "race" && (raceWord || racePos.length || raceGo)) {
+        if (room?.settings?.game === "race" && (raceWord || racePos.length || raceGo)) {
             return <RaceScreen positions={racePos} total={raceTotal} word={raceWord}
                 feedback={raceFeedback} streak={raceStreak} grace={raceGrace} goFlash={raceGo}
                 lang={lang} theme={theme} roomName={room.name}
@@ -189,7 +227,8 @@ export const OnlinePage = () => {
                                         : kind === "correct" ? { opacity: 1, scale: [1, 1.05, 1], boxShadow: ["0 0 0 rgba(0,0,0,0)", "0 0 24px var(--success)", "0 0 0 rgba(0,0,0,0)"] }
                                             : kind === "wrong" ? { opacity: 1, x: [0, -8, 8, -5, 5, 0] }
                                                 : { opacity: 0.6 };
-                                    const voters = reveal ? (reveal.votes?.[question.keys?.[i]] || []) : [];
+                                    // keys теперь приходят в сообщении reveal, а не в вопросе (контракт бэка).
+                                    const voters = reveal ? (reveal.votes?.[reveal.keys?.[i]] || []) : [];
                                     // Слово — сверху; аватарки выбравших — в зарезервированной полосе СНИЗУ кнопки
                                     // (всегда есть, поэтому высота кнопки постоянна и ничего не прыгает; слово не перекрыто).
                                     return <motion.button key={i} variants={OPT_ITEM} animate={revAnim} lang={optLang}
@@ -211,9 +250,10 @@ export const OnlinePage = () => {
 
                     {reveal && (
                         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} style={{ marginTop: "var(--sp-8)" }}>
-                            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 420, damping: 12 }}
-                                style={{ textAlign: "center", fontWeight: 900, fontSize: "var(--fs-28)", color: reveal.gained > 0 ? "var(--success)" : "var(--ink-3)", margin: "0 0 var(--sp-5)" }}>
-                                {reveal.gained > 0 ? `+${reveal.gained}` : "—"}
+                            <motion.div role="status" aria-live="assertive" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 420, damping: 12 }}
+                                style={{ textAlign: "center", fontWeight: 900, fontSize: "var(--fs-28)", color: reveal.gained > 0 ? "var(--success)" : "var(--danger)", margin: "0 0 var(--sp-5)" }}>
+                                {/* Текст «Верно/Неверно» — не только цвет (доступность). */}
+                                {reveal.gained > 0 ? `${to.answerCorrect || "Верно"} +${reveal.gained}` : (to.answerWrong || "Неверно")}
                                 {reveal.streak >= 2 && <motion.span animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 0.5, repeat: 1 }} style={{ marginLeft: 10, display: "inline-block" }}>🔥 {reveal.streak}</motion.span>}
                             </motion.div>
                             <div className="panel">
@@ -235,8 +275,10 @@ export const OnlinePage = () => {
             </main>;
         }
         // Лобби
-        const s = room.settings;
-        const amHost = !!room.players.find((p) => p.isYou)?.isHost;
+        const s = room.settings || {};
+        const roster = room.players || [];
+        const amHost = !!roster.find((p) => p.isYou)?.isHost;
+        const enoughPlayers = roster.length >= 2;   // «Готов»/старт бессмысленны в одиночку
         // AI-набор готовится → «Готов»/старт заблокированы, на кнопке статус + лоадер
         const aiBusy = s.source === "ai" && room.aiStatus && room.aiStatus !== "ready";
         const aiStatusLabel = room.aiStatus === "indexing" ? (to.aiIndexing || "Индексация слов…")
@@ -266,9 +308,9 @@ export const OnlinePage = () => {
                     setEditOpen(false);
                 }} />
             <div className="panel">
-                <div className="panel__head"><span className="panel__title">{to.players || "Игроки"} {room.players.length}/{s.maxPlayers}</span></div>
+                <div className="panel__head"><span className="panel__title">{to.players || "Игроки"} {roster.length}/{s.maxPlayers}</span></div>
                 <div className="panel__body">
-                    {room.players.map((p) => (
+                    {roster.map((p) => (
                         <div className="setrow" key={p.name + (p.isYou ? "_you" : "")}>
                             <span className="setrow__ic">
                                 {s.game === "race" && p.animal
@@ -285,7 +327,7 @@ export const OnlinePage = () => {
             </div>
 
             {s.game === "race" && (() => {
-                const myAnimal = room.players.find((p) => p.isYou)?.animal;
+                const myAnimal = roster.find((p) => p.isYou)?.animal;
                 return (
                     <div className="panel" style={{ marginTop: "var(--sp-3)" }}>
                         <div className="panel__head"><span className="panel__title">{to.chooseRunner || "Выбери бегуна"}</span></div>
@@ -324,8 +366,8 @@ export const OnlinePage = () => {
             ) : (
                 <button className={`btn btn--block btn--lg ${aiBusy ? "btn--accent" : myReady ? "btn--ghost" : "btn--accent"}`}
                     style={{ marginTop: "var(--sp-4)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}
-                    disabled={aiBusy}
-                    onClick={() => !aiBusy && send({ type: "ready", ready: !myReady })}>
+                    disabled={aiBusy || !enoughPlayers}
+                    onClick={() => !aiBusy && enoughPlayers && send({ type: "ready", ready: !myReady })}>
                     {aiBusy
                         ? <>{room.aiStatus !== "error" && spinner} {aiStatusLabel}</>
                         : (myReady ? (to.cancelReady || "Не готов") : (to.imReady || "Я готов"))}
@@ -333,12 +375,12 @@ export const OnlinePage = () => {
             )}
             {amHost && (
                 <button className="btn btn--primary btn--block" style={{ marginTop: "var(--sp-3)" }}
-                    disabled={aiBusy}
-                    onClick={() => !aiBusy && send({ type: "force_start" })}>
+                    disabled={aiBusy || !enoughPlayers}
+                    onClick={() => !aiBusy && enoughPlayers && send({ type: "force_start" })}>
                     <Icon n="play" sm /> {to.startNow || "Старт (хост)"}
                 </button>
             )}
-            {room.players.length < 2 && <p className="muted" style={{ textAlign: "center", marginTop: "var(--sp-3)" }}>{to.needPlayers || "Нужно ≥2 игроков"}</p>}
+            {!enoughPlayers && <p className="muted" style={{ textAlign: "center", marginTop: "var(--sp-3)" }}>{to.needPlayers || "Нужно ≥2 игроков"}</p>}
         </main>;
     }
 
@@ -353,22 +395,39 @@ export const OnlinePage = () => {
         </div>
         {rooms.length ? (
             <div className="panel"><div className="panel__body">
-                {rooms.map((r) => (
-                    <div className="setrow" key={r.id} style={{ cursor: r.state === "lobby" && r.players < r.max ? "pointer" : "default", opacity: r.state === "lobby" ? 1 : 0.55 }}
-                        onClick={() => { if (r.state === "lobby" && r.players < r.max) send({ type: "join", roomId: r.id }); }}>
-                        <span className="setrow__ic"><Icon n="play" sm /></span>
-                        <span className="setrow__meta">
-                            <span className="setrow__t">{r.name}</span>
-                            <span className="setrow__d">
-                                {(to.games?.[r.game]) || r.game} · {r.count} {to.wordsShort || "сл."}{r.source === "dict" ? ` · ${to.sourceDict || "мои словари"}` : `${r.source === "ai" ? ` · ${to.sourceAi || "AI"}` : ""}${r.level ? ` · ${r.level}` : ""}${r.topic ? ` · ${t.topics?.[r.topic] || r.topic}` : ""}`}
-                                {r.state !== "lobby" ? ` · ${to.inGame || "идёт игра"}` : ""}
+                {rooms.map((r) => {
+                    const isOpen = r.state === "lobby" && r.players < r.max;
+                    // Полная/идущая комната кликается впустую → бейдж + приглушение, клик заблокирован.
+                    const badge = r.state !== "lobby" ? (to.inGame || "идёт игра")
+                        : (r.players >= r.max ? (to.full || "заполнено") : null);
+                    return (
+                        <div className="setrow" key={r.id} aria-disabled={!isOpen}
+                            style={{ cursor: isOpen ? "pointer" : "default", opacity: isOpen ? 1 : 0.55 }}
+                            onClick={() => { if (isOpen) send({ type: "join", roomId: r.id }); }}>
+                            <span className="setrow__ic"><Icon n="play" sm /></span>
+                            <span className="setrow__meta">
+                                <span className="setrow__t">{r.name}</span>
+                                <span className="setrow__d">
+                                    {(to.games?.[r.game]) || r.game} · {r.count} {to.wordsShort || "сл."}{r.source === "dict" ? ` · ${to.sourceDict || "мои словари"}` : `${r.source === "ai" ? ` · ${to.sourceAi || "AI"}` : ""}${r.level ? ` · ${r.level}` : ""}${r.topic ? ` · ${t.topics?.[r.topic] || r.topic}` : ""}`}
+                                </span>
                             </span>
-                        </span>
-                        <b>{r.players}/{r.max}</b>
-                    </div>
-                ))}
+                            {badge && <span style={{ fontSize: "var(--fs-11)", fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: "var(--surface-3)", color: "var(--ink-3)", whiteSpace: "nowrap", marginRight: 6 }}>{badge}</span>}
+                            <b>{r.players}/{r.max}</b>
+                        </div>
+                    );
+                })}
             </div></div>
-        ) : <p className="muted" style={{ textAlign: "center", marginTop: "var(--sp-5)" }}>{to.noRooms || "Пока нет открытых комнат"}</p>}
+        ) : (
+            // Пустое состояние — единый паттерн: иконка + заголовок + подсказка + акцентная кнопка.
+            <div style={{ textAlign: "center", padding: "var(--sp-8) var(--sp-4)", display: "flex", flexDirection: "column", alignItems: "center", gap: "var(--sp-3)" }}>
+                <Icon n="globe" style={{ width: 48, height: 48, color: "var(--ink-3)" }} />
+                <h2 style={{ margin: 0, fontSize: "var(--fs-20)" }}>{to.noRooms || "Пока нет открытых комнат"}</h2>
+                <p className="muted" style={{ margin: 0, maxWidth: 320 }}>{to.noRoomsHint || "Создайте комнату и позовите друзей."}</p>
+                <button className="btn btn--accent btn--lg" style={{ marginTop: "var(--sp-3)" }} onClick={() => setCreateOpen(true)}>
+                    <Icon n="plus" sm /> {to.create || "Создать комнату"}
+                </button>
+            </div>
+        )}
 
         <RoomForm open={createOpen} onClose={() => setCreateOpen(false)} theme={theme} t={t} to={to}
             initial={savedPrefs} onConfirm={(name, settings) => {
@@ -377,6 +436,14 @@ export const OnlinePage = () => {
                 setCreateOpen(false);
             }} />
     </main>;
+    })();
+
+    // MotionConfig reducedMotion="user" глушит transform/layout-анимации всего дерева онлайна
+    // (Countdown/StageTimer/PlayerTag/варианты) при prefers-reduced-motion — один узел вместо правок в каждом.
+    return <MotionConfig reducedMotion="user">
+        {content}
+        {status === "reconnecting" && <ReconnectingOverlay label={to.reconnecting || "Переподключение…"} />}
+    </MotionConfig>;
 };
 
 

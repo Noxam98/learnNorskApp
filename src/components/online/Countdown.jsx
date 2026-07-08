@@ -7,7 +7,8 @@ import { motion } from "framer-motion";
 //   label — подпись над цифрой («Старт через»).
 export function Countdown({ sec, label }) {
     return (
-        <div style={{ textAlign: "center" }}>
+        // role/aria-live — отсчёт озвучивается скринридером (каждая секунда)
+        <div role="timer" aria-live="assertive" aria-atomic="true" aria-label={`${label ? label + " " : ""}${sec}`} style={{ textAlign: "center" }}>
             {label && <div className="muted" style={{ marginBottom: "var(--sp-3)" }}>{label}</div>}
             <div style={{ position: "relative", display: "inline-grid", placeItems: "center" }}>
                 <motion.span key={`ring${sec}`}

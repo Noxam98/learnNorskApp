@@ -202,6 +202,7 @@ export const pl = {
             aiGenerating: "AI dobiera słowa…", aiIndexing: "Indeksowanie słów…", aiError: "Błąd generacji", aiRetry: "Ponów generację",
             dictionary: "Słownik", allDicts: "Wszystkie słowniki", startNow: "Start (host)",
             games: { quiz: "Quiz", race: "Wyścig słów" }, genericError: "Błąd",
+            reconnecting: "Ponowne łączenie…", full: "pełny", answerCorrect: "Dobrze", answerWrong: "Źle", noRoomsHint: "Utwórz pokój i zaproś znajomych.", connLost: "Utracono połączenie", reconnectBtn: "Połącz ponownie",
             chooseRunner: "Wybierz biegacza", secWhat: "Co gramy", secWords: "Źródło słów", secParty: "Ustawienia gry", quizDesc: "4 opcje, na czas", raceDesc: "Wyścig zwierząt", aiHint: "AI dobierze słowa wg tematu", gameType: "Tryb gry", answerMode: "Odpowiedź", answerType: "Pisanie", answerChoice: "Wybór",
             room_not_found: "Nie znaleziono pokoju", room_in_game: "Gra już trwa",
             room_full: "Pokój pełny", not_enough_words: "Za mało słów dla tych ustawień",

@@ -203,6 +203,7 @@ export const ar = {
             aiGenerating: "الذكاء الاصطناعي يختار الكلمات…", aiIndexing: "جارٍ فهرسة الكلمات…", aiError: "خطأ في التوليد", aiRetry: "إعادة التوليد",
             dictionary: "القاموس", allDicts: "كل القواميس", startNow: "ابدأ (المضيف)",
             games: { quiz: "اختبار", race: "سباق الكلمات" }, genericError: "خطأ",
+            reconnecting: "إعادة الاتصال…", full: "ممتلئة", answerCorrect: "صحيح", answerWrong: "خطأ", noRoomsHint: "أنشئ غرفة وادعُ أصدقاءك.", connLost: "انقطع الاتصال", reconnectBtn: "إعادة الاتصال",
             chooseRunner: "اختر عدّاءك", secWhat: "ماذا نلعب", secWords: "مصدر الكلمات", secParty: "إعدادات المباراة", quizDesc: "4 خيارات، حسب السرعة", raceDesc: "سباق الحيوانات", aiHint: "يختار الذكاء الاصطناعي الكلمات حسب الموضوع", gameType: "وضع اللعبة", answerMode: "الإجابة", answerType: "كتابة", answerChoice: "اختيار",
             room_not_found: "الغرفة غير موجودة", room_in_game: "اللعبة بدأت بالفعل",
             room_full: "الغرفة ممتلئة", not_enough_words: "لا توجد كلمات كافية لهذه الإعدادات",

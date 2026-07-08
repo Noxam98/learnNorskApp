@@ -202,6 +202,7 @@ export const ukr = {
             aiGenerating: "Нейромережа добирає слова…", aiIndexing: "Індексація слів…", aiError: "Помилка генерації", aiRetry: "Повторити генерацію",
             dictionary: "Словник", allDicts: "Усі словники", startNow: "Старт (хост)",
             games: { quiz: "Вікторина", race: "Гонка слів" }, genericError: "Помилка",
+            reconnecting: "Перепідключення…", full: "заповнено", answerCorrect: "Правильно", answerWrong: "Неправильно", noRoomsHint: "Створіть кімнату та покличте друзів.", connLost: "Зв'язок втрачено", reconnectBtn: "Перепідключитися",
             chooseRunner: "Обери бігуна", secWhat: "Що граємо", secWords: "Звідки слова", secParty: "Параметри партії", quizDesc: "4 варіанти, на швидкість", raceDesc: "Звірина гонка", aiHint: "ШІ добере слова за темою", gameType: "Режим гри", answerMode: "Відповідь", answerType: "Друк", answerChoice: "Вибір",
             room_not_found: "Кімнату не знайдено", room_in_game: "Гра вже триває",
             room_full: "Кімната заповнена", not_enough_words: "Недостатньо слів для цих налаштувань",

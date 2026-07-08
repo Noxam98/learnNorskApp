@@ -202,6 +202,7 @@ export const lt = {
             aiGenerating: "DI parenka žodžius…", aiIndexing: "Žodžių indeksavimas…", aiError: "Generavimo klaida", aiRetry: "Kartoti generavimą",
             dictionary: "Žodynas", allDicts: "Visi žodynai", startNow: "Pradėti (host)",
             games: { quiz: "Viktorina", race: "Žodžių lenktynės" }, genericError: "Klaida",
+            reconnecting: "Jungiamasi iš naujo…", full: "užpildyta", answerCorrect: "Teisingai", answerWrong: "Neteisingai", noRoomsHint: "Sukurkite kambarį ir pakvieskite draugų.", connLost: "Ryšys nutrūko", reconnectBtn: "Jungtis iš naujo",
             chooseRunner: "Pasirink bėgiką", secWhat: "Ką žaidžiame", secWords: "Žodžių šaltinis", secParty: "Partijos nustatymai", quizDesc: "4 variantai, greičiui", raceDesc: "Gyvūnų lenktynės", aiHint: "DI parinks žodžius pagal temą", gameType: "Žaidimo režimas", answerMode: "Atsakymas", answerType: "Rašymas", answerChoice: "Pasirinkimas",
             room_not_found: "Kambarys nerastas", room_in_game: "Žaidimas jau prasidėjo",
             room_full: "Kambarys pilnas", not_enough_words: "Per mažai žodžių šiems nustatymams",

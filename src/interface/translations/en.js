@@ -203,6 +203,7 @@ export const en = {
             aiGenerating: "AI is picking words…", aiIndexing: "Indexing words…", aiError: "Generation error", aiRetry: "Retry generation",
             dictionary: "Dictionary", allDicts: "All dictionaries", startNow: "Start (host)",
             games: { quiz: "Quiz", race: "Word Race" }, genericError: "Error",
+            reconnecting: "Reconnecting…", full: "full", answerCorrect: "Correct", answerWrong: "Wrong", noRoomsHint: "Create a room and invite friends.", connLost: "Connection lost", reconnectBtn: "Reconnect",
             chooseRunner: "Choose your runner", secWhat: "What we play", secWords: "Word source", secParty: "Match settings", quizDesc: "4 options, on speed", raceDesc: "Animal race", aiHint: "AI picks words by topic", gameType: "Game mode", answerMode: "Answer", answerType: "Typing", answerChoice: "Choice",
             room_not_found: "Room not found", room_in_game: "Game already started",
             room_full: "Room is full", not_enough_words: "Not enough words for these settings",

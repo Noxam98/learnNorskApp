@@ -201,6 +201,7 @@ export const ru = {
             aiGenerating: "Нейросеть подбирает слова…", aiIndexing: "Индексация слов…", aiError: "Ошибка генерации", aiRetry: "Повторить генерацию",
             dictionary: "Словарь", allDicts: "Все словари", startNow: "Старт (хост)",
             games: { quiz: "Викторина", race: "Гонка слов" }, genericError: "Ошибка",
+            reconnecting: "Переподключение…", full: "заполнено", answerCorrect: "Верно", answerWrong: "Неверно", noRoomsHint: "Создайте комнату и позовите друзей.", connLost: "Связь потеряна", reconnectBtn: "Переподключиться",
             chooseRunner: "Выбери бегуна", secWhat: "Что играем", secWords: "Откуда слова", secParty: "Параметры партии", quizDesc: "4 варианта, на скорость", raceDesc: "Звериная гонка", aiHint: "ИИ подберёт слова по теме", gameType: "Режим игры", answerMode: "Ответ", answerType: "Печать", answerChoice: "Выбор",
             room_not_found: "Комната не найдена", room_in_game: "Игра уже идёт",
             room_full: "Комната заполнена", not_enough_words: "Недостаточно слов для этих настроек",

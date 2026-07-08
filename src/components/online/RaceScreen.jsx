@@ -11,31 +11,38 @@ const RACE_I18N = {
     ru: { tagline: "Кто первым правильно ответит все слова", you: "Ты", exit: "Выйти", ready: "на старте", moving: "рывок!", stalled: "заглох", restarting: "завёлся", finished: "финиш", dnf: "отключился",
         go: "Поехали!", toNo: "Переведите на норвежский", toLang: "Переведите на", placeholder: "Введите перевод…", check: "Проверить",
         correctRow: "верно подряд", bannerLeader: "{name} на финише!", bannerTimer: "У вас {n} сек", hurry: "Время поджимает!",
-        podium: "Подиум", yourPlace: "Твоё место", reached: "доехал {a}/{b}", playAgain: "Играть снова", toLobby: "В лобби", word: "слово", of: "из" },
+        podium: "Подиум", yourPlace: "Твоё место", reached: "доехал {a}/{b}", playAgain: "Играть снова", toLobby: "В лобби", word: "слово", of: "из",
+        listen: "Прослушать", correct: "Верно!", wrong: "Неверно", exitConfirm: "Точно выйти?", oppFinished: "{name} финишировал" },
     en: { tagline: "First to answer every word correctly wins", you: "You", exit: "Exit", ready: "idling", moving: "boost!", stalled: "stalled", restarting: "restarting", finished: "finish", dnf: "left",
         go: "Go!", toNo: "Translate to Norwegian", toLang: "Translate to", placeholder: "Type the translation…", check: "Check",
         correctRow: "in a row", bannerLeader: "{name} hit the finish!", bannerTimer: "You have {n}s", hurry: "Time is running out!",
-        podium: "Podium", yourPlace: "Your place", reached: "reached {a}/{b}", playAgain: "Play again", toLobby: "To lobby", word: "word", of: "of" },
+        podium: "Podium", yourPlace: "Your place", reached: "reached {a}/{b}", playAgain: "Play again", toLobby: "To lobby", word: "word", of: "of",
+        listen: "Listen", correct: "Correct!", wrong: "Wrong", exitConfirm: "Leave for real?", oppFinished: "{name} finished" },
     ukr: { tagline: "Хто першим правильно відповість усі слова", you: "Ти", exit: "Вийти", ready: "на старті", moving: "ривок!", stalled: "заглух", restarting: "завівся", finished: "фініш", dnf: "вийшов",
         go: "Поїхали!", toNo: "Перекладіть норвезькою", toLang: "Перекладіть на", placeholder: "Введіть переклад…", check: "Перевірити",
         correctRow: "правильно поспіль", bannerLeader: "{name} на фініші!", bannerTimer: "У вас {n} с", hurry: "Час спливає!",
-        podium: "Подіум", yourPlace: "Твоє місце", reached: "доїхав {a}/{b}", playAgain: "Грати знову", toLobby: "До лобі", word: "слово", of: "з" },
+        podium: "Подіум", yourPlace: "Твоє місце", reached: "доїхав {a}/{b}", playAgain: "Грати знову", toLobby: "До лобі", word: "слово", of: "з",
+        listen: "Прослухати", correct: "Правильно!", wrong: "Неправильно", exitConfirm: "Точно вийти?", oppFinished: "{name} фінішував" },
     pl: { tagline: "Wygrywa pierwszy, kto poprawnie odpowie wszystkie słowa", you: "Ty", exit: "Wyjdź", ready: "na luzie", moving: "przyspieszenie!", stalled: "zgasł", restarting: "odpala", finished: "meta", dnf: "rozłączony",
         go: "Jedziemy!", toNo: "Przetłumacz na norweski", toLang: "Przetłumacz na", placeholder: "Wpisz tłumaczenie…", check: "Sprawdź",
         correctRow: "pod rząd", bannerLeader: "{name} na mecie!", bannerTimer: "Masz {n} s", hurry: "Czas ucieka!",
-        podium: "Podium", yourPlace: "Twoje miejsce", reached: "dojechał {a}/{b}", playAgain: "Zagraj ponownie", toLobby: "Do poczekalni", word: "słowo", of: "z" },
+        podium: "Podium", yourPlace: "Twoje miejsce", reached: "dojechał {a}/{b}", playAgain: "Zagraj ponownie", toLobby: "Do poczekalni", word: "słowo", of: "z",
+        listen: "Odsłuchaj", correct: "Dobrze!", wrong: "Źle", exitConfirm: "Na pewno wyjść?", oppFinished: "{name} na mecie" },
     lt: { tagline: "Laimi pirmas teisingai atsakęs visus žodžius", you: "Tu", exit: "Išeiti", ready: "tuščia eiga", moving: "startas!", stalled: "užgeso", restarting: "užvedama", finished: "finišas", dnf: "atsijungė",
         go: "Pirmyn!", toNo: "Išverskite į norvegų", toLang: "Išverskite į", placeholder: "Įveskite vertimą…", check: "Tikrinti",
         correctRow: "iš eilės", bannerLeader: "{name} finiše!", bannerTimer: "Turite {n} s", hurry: "Laikas baigiasi!",
-        podium: "Podiumas", yourPlace: "Tavo vieta", reached: "pasiekė {a}/{b}", playAgain: "Žaisti dar kartą", toLobby: "Į laukiamąjį", word: "žodis", of: "iš" },
+        podium: "Podiumas", yourPlace: "Tavo vieta", reached: "pasiekė {a}/{b}", playAgain: "Žaisti dar kartą", toLobby: "Į laukiamąjį", word: "žodis", of: "iš",
+        listen: "Klausyti", correct: "Teisingai!", wrong: "Neteisingai", exitConfirm: "Tikrai išeiti?", oppFinished: "{name} finišavo" },
     lv: { tagline: "Uzvar pirmais, kurš pareizi atbild visus vārdus", you: "Tu", exit: "Iziet", ready: "tukšgaitā", moving: "rāviens!", stalled: "noslāpis", restarting: "iedarbina", finished: "finišs", dnf: "atvienojies",
         go: "Brauc!", toNo: "Iztulko uz norvēģu", toLang: "Iztulko uz", placeholder: "Ievadi tulkojumu…", check: "Pārbaudīt",
         correctRow: "pēc kārtas", bannerLeader: "{name} finišā!", bannerTimer: "Tev ir {n} s", hurry: "Laiks beidzas!",
-        podium: "Pjedestāls", yourPlace: "Tava vieta", reached: "sasniedza {a}/{b}", playAgain: "Spēlēt vēlreiz", toLobby: "Uz vestibilu", word: "vārds", of: "no" },
+        podium: "Pjedestāls", yourPlace: "Tava vieta", reached: "sasniedza {a}/{b}", playAgain: "Spēlēt vēlreiz", toLobby: "Uz vestibilu", word: "vārds", of: "no",
+        listen: "Klausīties", correct: "Pareizi!", wrong: "Nepareizi", exitConfirm: "Tiešām iziet?", oppFinished: "{name} finišēja" },
     ar: { tagline: "يفوز أول من يجيب عن كل الكلمات بشكل صحيح", you: "أنت", exit: "خروج", ready: "في وضع الخمول", moving: "اندفاع!", stalled: "متوقّف", restarting: "إعادة التشغيل", finished: "خط النهاية", dnf: "غادر",
         go: "انطلق!", toNo: "ترجم إلى النرويجية", toLang: "ترجم إلى", placeholder: "اكتب الترجمة…", check: "تحقق",
         correctRow: "على التوالي", bannerLeader: "{name} بلغ خط النهاية!", bannerTimer: "أمامك {n} ث", hurry: "الوقت ينفد!",
-        podium: "منصة التتويج", yourPlace: "مركزك", reached: "بلغ {a}/{b}", playAgain: "العب مرة أخرى", toLobby: "إلى الردهة", word: "كلمة", of: "من" },
+        podium: "منصة التتويج", yourPlace: "مركزك", reached: "بلغ {a}/{b}", playAgain: "العب مرة أخرى", toLobby: "إلى الردهة", word: "كلمة", of: "من",
+        listen: "استماع", correct: "صحيح!", wrong: "خطأ", exitConfirm: "الخروج فعلاً؟", oppFinished: "{name} أنهى السباق" },
 };
 
 function badgeFor(state, T) {
@@ -96,16 +103,24 @@ function Lane({ player, total, T }) {
 function AnswerZone({ word, lang, T, feedback, streak, onAnswer }) {
     const [val, setVal] = useState("");
     const [picked, setPicked] = useState(null);
+    const [sent, setSent] = useState(false);    // анти-дабл-сабмит (печать): ждём ответ сервера
     const inputRef = useRef(null);
     const isType = word.mode !== "choice";
     const isNoPrompt = word.dir === "no2int";   // показываем норвежское слово
     const promptLabel = isNoPrompt ? `${T.toLang} ${ENDONYM[lang] || lang}` : T.toNo;
 
-    useEffect(() => { setVal(""); setPicked(null); }, [word.token]);
+    useEffect(() => { setVal(""); setPicked(null); setSent(false); }, [word.token]);
     useEffect(() => { if (isType && inputRef.current && !feedback) inputRef.current.focus(); }, [word.token, feedback, isType]);
+    // Сервер ответил (right/wrong) → снимаем блокировку: при ошибке можно повторить это же слово.
+    useEffect(() => { if (feedback) setSent(false); }, [feedback]);
 
-    const submit = () => { const v = val.trim(); if (v) onAnswer({ token: word.token, text: v }); };
+    const submit = () => {
+        if (sent || feedback) return;   // одно слово — один сабмит, пока не пришёл ответ
+        const v = val.trim(); if (!v) return;
+        setSent(true); onAnswer({ token: word.token, text: v });
+    };
     const pick = (i) => { if (picked != null || feedback) return; setPicked(i); onAnswer({ token: word.token, choice: i }); };
+    const lock = !!feedback || sent;
 
     return (
         <div className={"answerzone" + (feedback === "right" ? " is-right" : "") + (feedback === "wrong" ? " is-wrong" : "")}>
@@ -117,18 +132,22 @@ function AnswerZone({ word, lang, T, feedback, streak, onAnswer }) {
                 <div className="az__word">
                     <span className="az__no">{word.prompt}</span>
                     {isNoPrompt && (
-                        <button className="az__speak" onClick={() => speak(word.prompt)} aria-label="Listen" title="Listen">
+                        <button className="az__speak" onClick={() => speak(word.prompt)} aria-label={T.listen} title={T.listen}>
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" /></svg>
                         </button>
                     )}
                     <span className="az__pos">{T.word} {(word.i ?? 0) + 1} {T.of} {word.total}</span>
                 </div>
+                {/* Результат словом (не только цветом) + live-region для скринридера. */}
+                <div className="az__fb" role="status" aria-live="assertive" aria-atomic="true">
+                    {feedback === "right" ? T.correct : feedback === "wrong" ? T.wrong : " "}
+                </div>
                 {isType ? (
                     <div className="az__type">
                         <input ref={inputRef} className="az__input" value={val} placeholder={T.placeholder}
                             onChange={(e) => setVal(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
-                            disabled={!!feedback} spellCheck="false" autoComplete="off" autoCapitalize="off" />
-                        <button className="az__check" onClick={submit}>
+                            disabled={lock} spellCheck="false" autoComplete="off" autoCapitalize="off" />
+                        <button className="az__check" onClick={submit} disabled={lock}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                             {T.check}
                         </button>
@@ -156,7 +175,7 @@ function GoFlash({ T }) {
     return (
         <div className="ov ov-go">
             <div className="ov-scrim" />
-            <div className="go"><div className="go__flag">🐾</div><div className="go__word">{T.go}</div></div>
+            <div className="go" role="status" aria-live="assertive"><div className="go__flag">🐾</div><div className="go__word">{T.go}</div></div>
         </div>
     );
 }
@@ -170,7 +189,8 @@ function FinishBanner({ leader, T, secs, total }) {
             <div className="banner__card">
                 <div className="banner__flag">🐾</div>
                 <div className="banner__txt">
-                    <div className="banner__lead">{T.bannerLeader.replace("{name}", leader)}</div>
+                    {/* Лидер финишировал — важное событие, озвучиваем (таймер ниже без live, чтобы не тараторил каждую секунду). */}
+                    <div className="banner__lead" aria-live="polite">{T.bannerLeader.replace("{name}", leader)}</div>
                     <div className="banner__sub">{hurry ? T.hurry : T.bannerTimer.replace("{n}", secs)}</div>
                 </div>
                 <div className="banner__ring">
@@ -279,6 +299,28 @@ export default function RaceScreen({ positions, total, word, feedback, streak, g
         return () => clearTimeout(id);
     }, []);
 
+    // Выход из активной гонки — с подтверждением (второй тап), иначе случайный DNF по одному касанию.
+    const [confirmExit, setConfirmExit] = useState(false);
+    const exitTimer = useRef(null);
+    useEffect(() => () => clearTimeout(exitTimer.current), []);
+    const handleExit = () => {
+        if (confirmExit) { clearTimeout(exitTimer.current); onExit(); return; }
+        setConfirmExit(true);
+        exitTimer.current = setTimeout(() => setConfirmExit(false), 3000);
+    };
+
+    // Live-region: озвучиваем финиш соперников (полите, чтобы не перебивать «Верно/Неверно»).
+    const [announce, setAnnounce] = useState("");
+    const finishedRef = useRef(new Set());
+    useEffect(() => {
+        (positions || []).forEach((p) => {
+            if (p.finished && !p.isYou && !finishedRef.current.has(p.id)) {
+                finishedRef.current.add(p.id);
+                setAnnounce(T.oppFinished.replace("{name}", p.name || ""));
+            }
+        });
+    }, [positions, T]);
+
     const lanes = base.map((p) => ({ ...p, state: p.finished ? "finished" : (disp[p.id] || p.state) }));
     const others = lanes.filter((p) => !p.isYou);
     const you = lanes.find((p) => p.isYou);
@@ -289,13 +331,18 @@ export default function RaceScreen({ positions, total, word, feedback, streak, g
             <div className="race__top">
                 <div className="race__brand">
                     <div className="race__title">
-                        <div className="race__mode"><span className="race__chk">🐾</span>{roomName}</div>
+                        <div className="race__mode"><span className="race__chk">🐾</span><span className="race__modename">{roomName}</span></div>
                         <div className="race__tag">{T.tagline}</div>
                     </div>
                 </div>
                 <div className="race__spacer" />
-                <button className="race__chip race__exit" onClick={onExit}>{T.exit}</button>
+                <button className={"race__chip race__exit" + (confirmExit ? " is-armed" : "")} onClick={handleExit}>
+                    {confirmExit ? T.exitConfirm : T.exit}
+                </button>
             </div>
+
+            {/* визуально скрытая live-region для событий гонки (финиш соперника) */}
+            <div aria-live="polite" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)", clipPath: "inset(50%)", whiteSpace: "nowrap" }}>{announce}</div>
 
             <div className={"race__lanes" + (hasAnswer ? " has-answer" : "")}>
                 {others.map((p) => <Lane key={p.id} player={p} total={total} T={T} />)}

@@ -203,6 +203,7 @@ export const lv = {
             aiGenerating: "MI izvēlas vārdus…", aiIndexing: "Vārdu indeksēšana…", aiError: "Ģenerēšanas kļūda", aiRetry: "Mēģināt ģenerēt vēlreiz",
             dictionary: "Vārdnīca", allDicts: "Visas vārdnīcas", startNow: "Sākt (saimnieks)",
             games: { quiz: "Viktorīna", race: "Vārdu skrējiens" }, genericError: "Kļūda",
+            reconnecting: "Atkārtoti savienojas…", full: "pilns", answerCorrect: "Pareizi", answerWrong: "Nepareizi", noRoomsHint: "Izveido istabu un uzaicini draugus.", connLost: "Savienojums zaudēts", reconnectBtn: "Savienoties atkārtoti",
             chooseRunner: "Izvēlies skrējēju", secWhat: "Ko spēlējam", secWords: "Vārdu avots", secParty: "Spēles iestatījumi", quizDesc: "4 varianti, uz ātrumu", raceDesc: "Dzīvnieku skrējiens", aiHint: "MI izvēlēsies vārdus pēc tēmas", gameType: "Spēles režīms", answerMode: "Atbilde", answerType: "Rakstīšana", answerChoice: "Izvēle",
             room_not_found: "Istaba nav atrasta", room_in_game: "Spēle jau sākusies",
             room_full: "Istaba ir pilna", not_enough_words: "Nepietiek vārdu šiem iestatījumiem",
