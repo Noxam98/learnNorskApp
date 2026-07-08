@@ -7,13 +7,27 @@ import { InputQuestion } from "../gameComponents/InputQuestion.jsx";
 import { hyLang } from "../ui/hyphenate.js";
 import { ENDONYM } from "../../interface/languages.js";
 import { T } from "./PlacementScreen.i18n.js";
+import { langGuard } from "../../interface/i18nGuard.js";
 import { usePlacement, LEVELS } from "./usePlacement.js";
+
+// Локальная i18n сбоя грейда: при сетевой ошибке НЕ фабрикуем уровень, а показываем «повторить».
+// Держим здесь (а не в PlacementScreen.i18n.js), чтобы не расширять общий словарь — 7 языков.
+const ERR_T = langGuard({
+    ru:  { errTitle: "Не удалось сохранить результат", errDesc: "Проверь соединение и попробуй ещё раз — твои ответы сохранены.", retry: "Повторить" },
+    en:  { errTitle: "Couldn't save your result", errDesc: "Check your connection and try again — your answers are saved.", retry: "Retry" },
+    ukr: { errTitle: "Не вдалося зберегти результат", errDesc: "Перевір з'єднання і спробуй ще раз — твої відповіді збережено.", retry: "Повторити" },
+    pl:  { errTitle: "Nie udało się zapisać wyniku", errDesc: "Sprawdź połączenie i spróbuj ponownie — twoje odpowiedzi są zapisane.", retry: "Ponów" },
+    lt:  { errTitle: "Nepavyko išsaugoti rezultato", errDesc: "Patikrink ryšį ir bandyk dar kartą — tavo atsakymai išsaugoti.", retry: "Kartoti" },
+    lv:  { errTitle: "Neizdevās saglabāt rezultātu", errDesc: "Pārbaudi savienojumu un mēģini vēlreiz — tavas atbildes ir saglabātas.", retry: "Atkārtot" },
+    ar:  { errTitle: "تعذّر حفظ نتيجتك", errDesc: "تحقّق من الاتصال وحاول مرة أخرى — إجاباتك محفوظة.", retry: "إعادة المحاولة" },
+}, "PlacementScreen.ERR_T");
 
 export default function PlacementScreen({ lang = "ru", onClose }) {
     const t = T[lang] || T.ru;
+    const et = ERR_T[lang] || ERR_T.ru;
     // Вся логика теста (фазы, вопросы, грейд, самооценка) — в контроллере usePlacement.
-    const { phase, selfOpen, setSelfOpen, selfLevel, setSelfLevel, questions, qi, result, busy,
-        cur, levelsInTest, beginTest, answer, saveSelf } = usePlacement(lang, onClose);
+    const { phase, selfOpen, setSelfOpen, selfLevel, setSelfLevel, questions, qi, result, busy, gradeErr, locked,
+        cur, levelsInTest, beginTest, answer, retryGrade, saveSelf } = usePlacement(lang, onClose);
 
     // ====== INTRO ======
     if (phase === "intro") {
@@ -99,6 +113,7 @@ export default function PlacementScreen({ lang = "ru", onClose }) {
                                 promptLang={hyLang(lang, false)}
                                 lang={lang}
                                 onSubmit={(text) => answer(text)}
+                                disabled={busy || locked}
                                 hint={<><Icon n="globe" sm /> {ENDONYM[lang] || lang}{t.dirIn}</>}
                             >
                                 <button className="plc-skip" onClick={() => answer("")}><Icon n="arrow-right" sm /> {t.dontKnow}</button>
@@ -109,6 +124,7 @@ export default function PlacementScreen({ lang = "ru", onClose }) {
                                 promptLang="no"
                                 options={cur?.options || []}
                                 reveal={false}
+                                disabled={busy || locked}
                                 onPick={(opt) => answer(opt)}
                                 hint={<><Icon n="globe" sm /> {t.dir}{ENDONYM[lang] || lang}</>}
                             >
@@ -117,6 +133,32 @@ export default function PlacementScreen({ lang = "ru", onClose }) {
                         )}
                     </div>
                 </div>
+            </div>
+        );
+    }
+
+    // ====== RESULT: сетевой сбой грейда ======
+    // Уровень НЕ определён (POST не прошёл) — не показываем фейковый «A1», даём повторить отправку.
+    if (gradeErr) {
+        return (
+            <div className="study-root" style={{ position: "fixed", inset: 0, zIndex: 95, overflow: "auto", background: "var(--canvas)" }}>
+                <main className="shell study-main">
+                    <div className="plc-wrap plc-result">
+                        <div className="card" style={{ padding: "var(--sp-5)", textAlign: "center" }}>
+                            <div style={{ display: "flex", justifyContent: "center", marginBottom: "var(--sp-3)", color: "var(--game-incorrect, #e67a52)" }}>
+                                <Icon n="x" lg />
+                            </div>
+                            <strong style={{ display: "block", marginBottom: "var(--sp-2)" }}>{et.errTitle}</strong>
+                            <p className="muted" style={{ fontSize: "var(--fs-14)", lineHeight: 1.5, margin: "0 0 var(--sp-5)" }}>{et.errDesc}</p>
+                            <button className="btn btn--primary btn--lg btn--block" onClick={retryGrade} disabled={busy}>
+                                <Icon n="repeat" sm /> {busy ? "…" : et.retry}
+                            </button>
+                            <button className="plc-hero__ghost" style={{ marginTop: "var(--sp-3)" }} onClick={() => onClose?.(false)}>
+                                <Icon n="clock" sm /> {t.skip}
+                            </button>
+                        </div>
+                    </div>
+                </main>
             </div>
         );
     }

@@ -11,7 +11,7 @@ import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import { playSound } from "../tools/sound.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, foldLight, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots, isGrammar, grammarAnswer, FormPrompt, RampCheer , RampDrop } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, foldLight, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots, isGrammar, grammarAnswer, grammarAccepts, FormPrompt, RampCheer , RampDrop } from "./gameShared.jsx";
 import { GameKeyboard, keysAdjacent } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -77,13 +77,14 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const no = current?.translate?.no?.[0] || "";
     const translations = (current?.translate?.[currentLanguage] || []).filter(Boolean);
-    const grammarAns = grammar ? grammarAnswer(current) : "";   // верный ввод грамм-формы (target.value)
+    const grammarAns = grammar ? grammarAnswer(current) : "";   // канонич. форма (target.value) — для показа/озвучки/шаблона
     const question = isNo2Int ? no : (translations.join(", ") || no);
-    // грамм: единственный принятый ответ = target.value (норв. форма). Обычный ввод — как было.
-    const accepted = grammar ? [grammarAns].filter(Boolean)
+    // грамм: принимаем ВСЕ валидные дублеты формы — target.value + target.accept (напр. boka/boken);
+    // канонич. вид (grammarAns) остаётся для показа/озвучки. Обычный ввод — как было.
+    const accepted = grammar ? grammarAccepts(current)
         : (isNo2Int ? translations : (current?.translate?.no || [])).map((s) => s.trim()).filter(Boolean);
     // при ВВОДе норвежского (int2no) принимаем и словоформы (hunden/snakker/snakket), не только лемму;
-    // для родного (no2int) словоформ нет. Грамм — строго target.value (форм не подмешиваем).
+    // для родного (no2int) словоформ нет. Грамм — набор дублетов из accepted (wordForms не подмешиваем).
     const acceptSet = grammar ? accepted : (isNo2Int ? accepted : [...accepted, ...wordForms(no, current?.forms)]);
     // показ норв. слова — с артиклем/«å» по настройке: вопрос (no2int) и раскрытый ответ (int2no).
     // Озвучка и сверка ввода — по «голой» лемме (артикль не печатают). Грамм — вопрос рисует FormPrompt.
