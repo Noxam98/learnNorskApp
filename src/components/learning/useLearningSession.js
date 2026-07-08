@@ -1,7 +1,7 @@
 // Контроллер сессии «Учёбы»: машина состояний (load → play → summary/empty), сбор системной
 // программы с бэка, прогон по элементам, кормление SRS (/learning/answer), счётчики итога и
 // «ещё сессия». Вся логика — здесь; LearningSession.jsx — только экраны. Вынесено из LearningSession.jsx.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSessionStore } from "../../store/sessionStore.jsx";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
@@ -92,6 +92,7 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     const [acceptedNew, setAcceptedNew] = useState(0);   // принято карточек (тык-в-карточку) за сессию
     const [poolDry, setPoolDry] = useState(false);       // пул новых исчерпан / ворота закрыты → больше не добираем
     const [loadingNext, setLoadingNext] = useState(false); // ждём догрузку следующей карточки (только когда текущая — последняя)
+    const dismissBusyRef = useRef(false);                  // анти-дубль: пока обрабатываем «убрать карточку» (особенно в окне await topUp)
 
     // Подтянуть системную программу с бэка.
     const loadProgram = async () => {
@@ -218,26 +219,35 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     // Общий путь кнопок «убрать» карточку (know/skip/report): действие в фоне, карточка не в зачёт,
     // при дефиците нормы — добор. mark — отметка полосы прогресса ("ok" у «уже знаю», иначе "skip").
     const dismissAndNext = async (doAction, mark) => {
-        const el = elements[idx];
-        const gw = el?.gw;
-        if (!gw) return;
-        doAction(gw.pool_id ?? gw.id).catch(() => { /* офлайн — не критично */ });
-        setHist((h) => [...h, mark]);
-        if (!isSystem) { showSummary(); return; }                 // легаси-путь — как раньше
-        // добор — только в ОБЫЧНОЙ сессии (не в дрилле набора: там очередь = слова набора, чужие
-        // из общего пула подмешивать нельзя) и только для карточек-знакомств (упражнения → deficit=0).
-        const deficit = (!setId && el.step === "card") ? (target - acceptedNew - cardsAfter(elements, idx)) : 0;
-        if (idx + 1 < elements.length) {
-            setIdx((n) => n + 1);                                 // следующий элемент уже готов — мгновенно
-            if (deficit > 0) topUp(deficit);                      // фоном дольёт карточки в конец
-        } else if (deficit > 0 && !poolDry) {
-            setLoadingNext(true);                                 // текущая — последняя: ждём замену
-            const added = await topUp(deficit);
-            setLoadingNext(false);
-            if (added > 0) setIdx((n) => n + 1);
-            else showSummary();
-        } else {
-            showSummary();
+        // Анти-дубль: второй тап по карточке, пока обрабатываем текущий (особенно в окне await topUp
+        // на ПОСЛЕДНЕЙ карточке), иначе дубль know/skip/report + пропуск доложенной карточки (idx+2).
+        // Реф синхронен — не зависит от тайминга ререндера (в отличие от loadingNext).
+        if (dismissBusyRef.current) return;
+        dismissBusyRef.current = true;
+        try {
+            const el = elements[idx];
+            const gw = el?.gw;
+            if (!gw) return;
+            doAction(gw.pool_id ?? gw.id).catch(() => { /* офлайн — не критично */ });
+            setHist((h) => [...h, mark]);
+            if (!isSystem) { showSummary(); return; }                 // легаси-путь — как раньше
+            // добор — только в ОБЫЧНОЙ сессии (не в дрилле набора: там очередь = слова набора, чужие
+            // из общего пула подмешивать нельзя) и только для карточек-знакомств (упражнения → deficit=0).
+            const deficit = (!setId && el.step === "card") ? (target - acceptedNew - cardsAfter(elements, idx)) : 0;
+            if (idx + 1 < elements.length) {
+                setIdx((n) => n + 1);                                 // следующий элемент уже готов — мгновенно
+                if (deficit > 0) topUp(deficit);                      // фоном дольёт карточки в конец
+            } else if (deficit > 0 && !poolDry) {
+                setLoadingNext(true);                                 // текущая — последняя: ждём замену
+                const added = await topUp(deficit);
+                setLoadingNext(false);
+                if (added > 0) setIdx((n) => n + 1);
+                else showSummary();
+            } else {
+                showSummary();
+            }
+        } finally {
+            dismissBusyRef.current = false;
         }
     };
 

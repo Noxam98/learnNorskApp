@@ -438,7 +438,14 @@ export const PlayTopBar = ({ correctCount, wrongCount, onExit, t, centerNode = n
 // Грамматика/формы — по зелёной шкале стадий (карточка серая → ввод насыщенный), как база:
 // form_card/choose/produce — ступени рампы форм; overlay-клетки приравнены к выбору/вводу.
 const RAMP_RANK = { card: 0, study: 0, choice_int2no: 1, choice_no2int: 2, build_int2no: 3, input_int2no: 4, cloze_1: 1, cloze_2: 2, cloze_3: 3, order_int2no: 3, cells_int2no: 4, choice_gender: 2, input_indefpl: 4, input_present: 4, input_past: 4, input_perfect: 4, input_neuter: 4, input_comparative: 4, input_superlative: 4, input_pluraladj: 4, input_objcase: 4, input_possneut: 4, input_posspl: 4, form_card: 0, form_choose: 2, form_produce: 4 };
-export const stageRank = (cell) => RAMP_RANK[cell || "card"] ?? 0;
+// Точного ключа нет (нестандартное направление: cloze_int2no / build_no2int / order_no2int …) →
+// дефолт по РЕЖИМУ (первый сегмент cell), чтобы неизвестная клетка не падала в серый rank 0.
+const MODE_RANK = { card: 0, study: 0, choice: 2, cloze: 3, order: 3, build: 3, cells: 4, input: 4, form: 2 };
+export const stageRank = (cell) => {
+    const key = cell || "card";
+    if (key in RAMP_RANK) return RAMP_RANK[key];
+    return MODE_RANK[String(key).split("_")[0]] ?? 0;
+};
 
 // Транспонировка звуков «вход в задание»/«верно» по стадии рампы (rank 0..4): чем дальше слово
 // по рампе — тем выше тон (та же узнаваемая фраза). Диатоника до-ре-ми-фа-соль (полутоны).

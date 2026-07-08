@@ -47,7 +47,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     const dictList = useWordsStore((s) => s.dictList);
     const aiPlay = useWordsStore((s) => s.aiPlayWords);
     const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
-    const t = interfaceTranslate[currentLanguage];
+    const t = interfaceTranslate[currentLanguage] || interfaceTranslate.ru;   // фолбэк: язык вне 7 поддерживаемых не должен ронять t.xxx
     const h = HINTS[currentLanguage] || HINTS.en;
     const sk = SKIP[currentLanguage] || SKIP.en;
 

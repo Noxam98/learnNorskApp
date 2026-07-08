@@ -53,6 +53,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const [armed, setArmed] = useState(false);     // анти-ghost-click: тап-продолжение активируется не сразу
     const typoRef = useRef(false);                  // тот же флаг для onFinish (без гонок ререндера)
     const inputRef = useRef(/** @type {HTMLInputElement | null} */(null));
+    const mountedRef = useRef(true);                // жив ли компонент — против поздних advance после выхода (Esc/×) в окне озвучки
     const submitArmedRef = useRef(false);           // дебаунс: ~250мс после нового слова submit не принимается
     //                                                 (чтобы фантомный Enter с прошлого задания не сработал)
     // Очистить поле и (для штатного инпута) вернуть фокус — чтобы после ошибки сразу вводить заново.
@@ -175,7 +176,11 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const clearTypoTmr = () => { if (typoTmrRef.current) { clearTimeout(typoTmrRef.current); typoTmrRef.current = null; } };
     const afterTypoAudio = () => {
         clearTypoTmr();
-        const go = () => { clearTypoTmr(); typoTmrRef.current = setTimeout(() => { typoTmrRef.current = null; advance(); }, TYPO_NEXT_MS); };
+        const go = () => {
+            if (!mountedRef.current) return;   // вышли из игры (Esc/×) между confirm/deny и концом озвучки — не трогаем мёртвый стейт
+            clearTypoTmr();
+            typoTmrRef.current = setTimeout(() => { typoTmrRef.current = null; if (mountedRef.current) advance(); }, TYPO_NEXT_MS);
+        };
         typoTmrRef.current = setTimeout(() => {   // пауза 300мс перед озвучкой ответа
             const p = (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null;
             if (!p) { go(); return; }
@@ -188,7 +193,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const confirmTypo = () => { setTypoAsk(null); setResolving(true); setTypoOk(true); typoRef.current = true; playSound("typo"); answer(true, { hold: true, silent: true }); afterTypoAudio(); };
     // «Нет, ошибся» — обычная ошибка (ответ уже показан панелью, поэтому не заставляем перепечатывать — пауза и дальше).
     const denyTypo = () => { setTypoAsk(null); setResolving(true); setTypoOk(false); typoRef.current = false; answer(false); afterTypoAudio(); };
-    useEffect(() => clearTypoTmr, []);   // снять таймер при размонтировании
+    useEffect(() => () => { mountedRef.current = false; clearTypoTmr(); }, []);   // размонтирование: пометить + снять таймер
     const dontKnow = () => { if (status === "ASKING") answer(false); };
     // принято с опечаткой: авто-перехода нет — продолжаем тапом по любому месту сцены.
     // «Взвод» (~400мс): иначе тот же тап, что отправил ответ, долетает «ghost click» по сцене

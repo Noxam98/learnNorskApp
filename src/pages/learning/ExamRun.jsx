@@ -19,7 +19,7 @@ export default function ExamRun({ questions, lang, t, onExit, onGrade }) {
     const answersRef = useRef([]);
     const loop = useGameLoop({
         gmode: "exam", words: questions, reveal: false, autoAdvanceMs: 900,
-        onResult: (w, _ok, _g, choice) => { answersRef.current.push({ pool_id: w.pool_id, answer: choice || "" }); },
+        onResult: (w, _ok, _g, choice) => { answersRef.current.push({ pool_id: w.pool_id, answer: choice || "", type: w.type }); },
         onFinish: () => onGrade(answersRef.current),
         onExit,
     });

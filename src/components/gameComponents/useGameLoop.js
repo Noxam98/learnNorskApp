@@ -57,7 +57,7 @@ export function useGameLoop({
     const aiPlay = useWordsStore((s) => s.aiPlayWords);
     const toggleChooseToGame = useWordsStore((s) => s.ToggleChooseToGame);
     const recordGameResult = useWordsStore((s) => s.recordGameResult);
-    const t = interfaceTranslate[currentLanguage];
+    const t = interfaceTranslate[currentLanguage] || interfaceTranslate.ru;   // фолбэк: язык вне 7 поддерживаемых не должен ронять t.xxx
     const record = (w, ok) => { if (onResult) onResult(w, ok, gmode); else recordGameResult(w.id, ok, gmode); };
 
     const wordsToGame = useMemo(() => wordsProp || aiPlay || filterChosenWords(dictList), []); // eslint-disable-line

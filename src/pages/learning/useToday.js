@@ -69,6 +69,9 @@ export function useToday({ reloadKey, refresh, openSession }) {
     const sessComp = (sess?.composition && sess.composition.total > 0) ? sess.composition : null;
     // Состав показываем ТОЛЬКО когда реальная сессия прогрелась (sessReady) — без оценки из пула.
     const sessReady = !!sessComp;
+    // Сессия СОБРАНА, но пуста (ворота открыты / новые заперты, повторов нет): грузить нечего —
+    // это НЕ «ещё грузим». Отличаем от загрузки, чтобы Hero не крутил вечно «готовим сессию».
+    const sessEmpty = !!sess?.composition && (sess.composition.total || 0) === 0;
     const composition = useMemo(() => sessComp ? {
         review: sessComp.review || 0,
         progress: sessComp.progress || 0,
@@ -89,7 +92,9 @@ export function useToday({ reloadKey, refresh, openSession }) {
         formsCellsLeft: 0,
     }, [sessComp, by.repeat, by.in_progress, by.weak, by.new]);
     // Сколько реально будет в следующей сессии (для крупной цифры на кнопке). До прогрева — оценка из stats.
+    // Собранная-но-пустая сессия → 0 (isEmpty=true → показываем пустое состояние, а не спиннер Hero).
     const learnable = sessComp ? sessComp.total
+        : sessEmpty ? 0
         : (by.repeat || 0) + (by.in_progress || 0) + (by.weak || 0) + (by.new || 0);
 
     // Авто-добор: у юзера ВООБЩЕ нет слов в учёбе (total=0) и ворота не закрыты — система сама
@@ -100,7 +105,9 @@ export function useToday({ reloadKey, refresh, openSession }) {
         if (loading || !stats || autoFillTried.current) return;
         if (total === 0 && !gateOpen && placed) {
             autoFillTried.current = true;
-            api.learningSession(20)
+            // Добор ведём через префетч sessionStore (дедуп: если LearningPage уже греет сессию —
+            // вернётся ТОТ ЖЕ промис, второго запроса нет), а не отдельным api.learningSession.
+            useSessionStore.getState().prefetch(20)
                 .then((r) => { if ((r?.words || []).length) refresh(); })
                 .catch(() => { });
         }

@@ -231,9 +231,12 @@ export default function ProgressTab({ lang, openSession, openWord, openPlacement
                                 {CEFR.map((lvl) => {
                                     const d = byLevel[lvl];
                                     if (!d) return null;
-                                    const mastered = d.mastered || 0;
                                     const target = d.target || 0;
-                                    const pct = target > 0 ? Math.round((100 * mastered) / target) : 0;
+                                    // КУМУЛЯТИВНО: цели уровней — общее число выученных до уровня (LEVEL_TARGETS),
+                                    // поэтому прогресс бара = min(всего выучено, цель)/цель, а НЕ по CEFR-тегу
+                                    // (иначе число не бьётся с целью и с кольцом «Сегодня»).
+                                    const filled = Math.min(masteredTotal, target);
+                                    const pct = target > 0 ? Math.round((100 * filled) / target) : 0;
                                     const isCur = lvl === currentLevel;
                                     const fill = pct >= 80 ? "var(--st-master)"
                                         : pct >= 45 ? "var(--st-review)"
@@ -244,7 +247,7 @@ export default function ProgressTab({ lang, openSession, openWord, openPlacement
                                             <div className="lvl-track">
                                                 <span style={{ width: `${Math.min(100, pct)}%`, background: fill }} />
                                             </div>
-                                            <span className="lvlrow__val">{mastered}/{target}</span>
+                                            <span className="lvlrow__val">{filled}/{target}</span>
                                         </div>
                                     );
                                 })}
