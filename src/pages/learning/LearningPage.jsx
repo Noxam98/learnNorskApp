@@ -25,13 +25,15 @@ import ExamTab from "./ExamTab.jsx";
 import ProgressTab from "./ProgressTab.jsx";
 import SetsTab from "./SetsTab.jsx";
 
+// Сегменты верхней навигации. «Экзамен» здесь НЕТ — это маршрут без своей вкладки: открывается
+// плашками на «Сегодня» (ворота пачки / контрольная проверка), см. ROUTES ниже.
 const TABS = [
     { key: "today", icon: "zap" },
     { key: "words", icon: "list" },
     { key: "sets", icon: "layers" },
-    { key: "exam", icon: "graduation" },
     { key: "progress", icon: "chart" },
 ];
+const ROUTES = new Set([...TABS.map((x) => x.key), "exam"]);   // валидные ?tab= (exam — без сегмента)
 const TAB_LABELS = langGuard({
     ru:  { title: "Учёба", today: "Сегодня", words: "Мои слова", sets: "Наборы", exam: "Экзамен", progress: "Прогресс", hi: "Добрый день" },
     en:  { title: "Study", today: "Today", words: "My words", sets: "Sets", exam: "Exam", progress: "Progress", hi: "Hello" },
@@ -50,7 +52,7 @@ export default function LearningPage() {
     const t = TAB_LABELS[lang] || TAB_LABELS.ru;
     const tg = (interfaceTranslate[lang] || {});
     const [params, setParams] = useSearchParams();
-    const tab = TABS.some((x) => x.key === params.get("tab")) ? params.get("tab") : "today";
+    const tab = ROUTES.has(params.get("tab")) ? params.get("tab") : "today";
     const go = (k) => setParams((p) => { p.set("tab", k); return p; }, { replace: false });
 
     const [level, setLevel] = useState(null);

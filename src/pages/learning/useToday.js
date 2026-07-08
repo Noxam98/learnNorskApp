@@ -114,8 +114,13 @@ export function useToday({ reloadKey, refresh, openSession }) {
     // Прогресс до следующего уровня CEFR — по ВСЕМУ активному словарю (выучено+повтор+архив) против
     // суммарного порога след. уровня (кумулятивны), а не по словам одного CEFR-тега.
     const curLevel = stats?.currentLevel || "A1";
-    const nextLevel = CEFR[CEFR.indexOf(curLevel) + 1] || null;
     const masteredAll = (by.mastered || 0) + (by.repeat || 0) + (by.archived || 0);
+    // Следующая цель — первый уровень ВЫШЕ текущего, чья КУМУЛЯТИВНАЯ цель ещё НЕ достигнута.
+    // Пролистываем уже перекрытые уровни: иначе при выученных > цели (а currentLevel не перещёлкнулся)
+    // кольцо уходило за 100% («1006 из 1000, до B1, осталось 0»). null → все уровни закрыты (максимум).
+    let _ni = CEFR.indexOf(curLevel) + 1;
+    while (_ni < CEFR.length && (stats?.byLevel?.[CEFR[_ni]]?.target || Infinity) <= masteredAll) _ni++;
+    const nextLevel = CEFR[_ni] || null;
     const nextTarget = nextLevel ? (stats?.byLevel?.[nextLevel]?.target || 0) : 0;
     const toNext = nextLevel ? Math.max(0, nextTarget - masteredAll) : 0;
     const masteryFrac = (nextLevel && nextTarget) ? Math.min(1, masteredAll / nextTarget) : 1;
@@ -133,11 +138,17 @@ export function useToday({ reloadKey, refresh, openSession }) {
         setFocusSaving(false);
     };
 
+    // Аудит забывания: сколько сертифицированных слов пора перепроверить. Раньше жил только во вкладке
+    // «Экзамен»; вкладку убрали — surface'им плашкой «Контрольная проверка» прямо на «Сегодня».
+    const auditDue = stats?.audit?.due || 0;
+    const auditShow = !!stats?.audit?.open && auditDue > 0;
+
     return {
         stats, gate, loading, error, lbOpen, setLbOpen, focusSaving, sessionLoading,
         gateOpen, gatePack, gateThreshold, gateLeft, by, total, placed,
         composition, learnable, streak, isEmpty, sessReady,
         listenShow, listenReady, listenPending, listenPack, listenLeft, runListen,
+        auditDue, auditShow,
         curLevel, nextLevel, masteredAll, nextTarget, toNext, masteryFrac, ringNum, ringDen,
         focusTopics, toggleFocus, runReview,
     };

@@ -28,6 +28,7 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
         gateOpen, gatePack, gateThreshold, gateLeft, by, placed,
         composition, learnable, streak, isEmpty, sessReady,
         listenShow, listenReady, listenPending, listenLeft, runListen,
+        auditShow, auditDue,
         nextLevel, toNext, masteryFrac, ringNum, ringDen,
         focusTopics, toggleFocus, runReview,
     } = useToday({ reloadKey, refresh, openSession });
@@ -79,6 +80,25 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
                         <div style={{ height: "100%", borderRadius: 4, background: "var(--ember-600)", width: `${Math.min(100, Math.round((gatePack / gateThreshold) * 100))}%` }} />
                     </div>
                 </div>
+            </div>
+        </div>
+    ) : null;
+
+    // Плашка аудита забывания: пора перепроверить сертифицированные слова. Ведёт на прогон экзамена
+    // (маршрут exam без своей вкладки — открывается только отсюда). Стиль — «в процессе» (не тревожный).
+    const auditBanner = auditShow ? (
+        <div className="spanel" style={{ marginBottom: "var(--sp-5)" }}>
+            <div className="spanel__body" style={{ display: "flex", alignItems: "center", gap: "var(--sp-4)", flexWrap: "wrap" }}>
+                <span className="setrow-link__ic" style={{ background: "color-mix(in srgb,var(--st-learn) 15%,var(--surface))", color: "var(--st-learn)", flex: "none" }}>
+                    <Icon n="rotate" />
+                </span>
+                <div className="col" style={{ gap: 3, flex: 1, minWidth: 180 }}>
+                    <div style={{ fontSize: "var(--fs-16)", fontWeight: 800, letterSpacing: "var(--ls-tight)" }}>{t.auditT}</div>
+                    <div className="muted" style={{ fontSize: "var(--fs-13)", lineHeight: 1.45 }}>{fmt(t.auditD, { n: auditDue })}</div>
+                </div>
+                <button className="btn btn--outline" onClick={() => go("exam")}>
+                    <Icon n="play" sm /> {t.auditBtn}
+                </button>
             </div>
         </div>
     ) : null;
@@ -191,6 +211,7 @@ export default function TodayTab({ lang, go, openSession, openPlacement, reloadK
             )}
 
             {gateBanner}
+            {auditBanner}
 
             <div className="today-grid">
                 {/* LEFT */}
