@@ -10,6 +10,19 @@ import { useSystemStore, VIBE_MS } from "../../store/systemStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
 import api from "../tools/api.js";
+import { langGuard } from "../../interface/i18nGuard.js";
+
+// Локализованные aria-label служебных клавиш (⌫/✓/пробел) на 7 языках. Локально (как CellsGame.L),
+// чтобы не трогать общий словарь. Раньше были хардкод-строки backspace/check/space (англ. для всех).
+const KBD_LBL = langGuard({
+    ru:  { backspace: "Стереть", check: "Проверить", space: "Пробел" },
+    en:  { backspace: "Backspace", check: "Check", space: "Space" },
+    ukr: { backspace: "Стерти", check: "Перевірити", space: "Пробіл" },
+    pl:  { backspace: "Backspace", check: "Sprawdź", space: "Spacja" },
+    lt:  { backspace: "Trinti", check: "Tikrinti", space: "Tarpas" },
+    lv:  { backspace: "Dzēst", check: "Pārbaudīt", space: "Atstarpe" },
+    ar:  { backspace: "مسح", check: "تحقّق", space: "مسافة" },
+}, "GameKeyboard.KBD_LBL");
 
 // Норвежская раскладка QWERTY (нижний регистр).
 export const KBD_ROWS = [
@@ -97,6 +110,7 @@ export function GameKeyboard({
     const [isDesktop] = useState(_isDesktop);
     const uiLang = useSystemStore((s) => s.currentLanguage);   // язык ИНТЕРФЕЙСА (не клавиш) — для текста тоста
     const t = interfaceTranslate[uiLang] || interfaceTranslate.en;
+    const kl = KBD_LBL[uiLang] || KBD_LBL.en;   // локализованные подписи служебных клавиш (⌫/✓/пробел)
     const hintSeenDB = useAuthStore((s) => s.user?.gamePrefs?.kbdHintSeen);   // флаг из БД (между устройствами)
     const seenRef = useRef(undefined);
     if (seenRef.current === undefined) { try { seenRef.current = !!hintSeenDB || !!localStorage.getItem(HINT_KEY); } catch { seenRef.current = !!hintSeenDB; } }
@@ -260,10 +274,12 @@ export function GameKeyboard({
     const goCancel = () => { goPressRef.current = false; setPop((p) => (p === GO ? null : p)); };
 
     // ── Физическая клавиатура (ПК): печать + СИНХРОН с экранной (поп-ап над нажатой клавишей) ──
-    // Раскладка-независимо: мапим по e.code. Буквы НЕ из слова в «сборке» НЕ блокируем — пробрасываем
-    // в onType (игра подсветит их красным). Свежие колбэки/флаги читаем через ref (слушатель — один раз).
+    // Раскладка-независимо: мапим по e.code. В «сборке» (gated) уважаем то же гейтирование, что и
+    // экранные клавиши: буква не из слова / израсходованная (active(c)=false) — ИГНОРИРУЕТСЯ (экранная
+    // такая клавиша disabled; физическая раньше вставляла её всё равно). Свежие колбэки/флаги/active
+    // читаем через ref (слушатель навешиваем один раз).
     const physRef = useRef({});
-    physRef.current = { onType, onBackspace, onSubmit, canBackspace, canSubmit, buzz, persistSeen };
+    physRef.current = { onType, onBackspace, onSubmit, canBackspace, canSubmit, buzz, persistSeen, active };
     useEffect(() => {
         const isField = (el) => el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
         // воспользовались физ-клавиатурой → сноска больше не нужна (скрыть + запомнить навсегда, в т.ч. в БД)
@@ -277,6 +293,7 @@ export function GameKeyboard({
             const c = CODE_MAP[e.code];
             if (!c) return;
             e.preventDefault();
+            if (p.active && !p.active(c)) return;     // gated: off-word/израсходованная буква — как disabled на экране
             p.onType?.(c); p.buzz(); setPop(c); markPhys();   // ВВОД на keydown; поп-ап = синхрон с экранной
         };
         const up = (e) => {
@@ -323,7 +340,7 @@ export function GameKeyboard({
                         {row.map((c) => symKey(c))}
                         {/* ⌫ — в конце последнего буквенного ряда (как в Gboard) */}
                         {last && (
-                            <button className="kbd__key kbd__key--act" disabled={!canBackspace} aria-label="backspace"
+                            <button className="kbd__key kbd__key--act" disabled={!canBackspace} aria-label={kl.backspace}
                                 onPointerDown={bkDown} onPointerLeave={bkStop}
                                 onPointerUp={(e) => e.currentTarget.blur()}>
                                 <Icon n="arrow-left" />
@@ -337,8 +354,8 @@ export function GameKeyboard({
                 {/* спец-символы (дефис и т.п.), кроме пробела — отдельными клавишами */}
                 {extras.filter((c) => c !== " ").map((c) => symKey(c))}
                 {/* пробел — всегда в клавиатуре */}
-                {symKey(" ", " kbd__key--space", "space")}
-                <button className="kbd__key kbd__key--go" disabled={!canSubmit} aria-label="check"
+                {symKey(" ", " kbd__key--space", kl.space)}
+                <button className="kbd__key kbd__key--go" disabled={!canSubmit} aria-label={kl.check}
                     onPointerDown={goDown} onPointerUp={goUp} onPointerLeave={goCancel} onPointerCancel={goCancel}>
                     <Icon n="check" />
                     {pop === GO && <span className="kbd__pop kbd__pop--go" aria-hidden="true"><Icon n="check" /></span>}

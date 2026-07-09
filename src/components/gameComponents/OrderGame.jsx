@@ -10,7 +10,7 @@ import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
-import { DUNNO, PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, shuffle , RampCheer , RampDrop } from "./gameShared.jsx";
+import { DUNNO, PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, shuffle , RampCheer , RampDrop , usePlayDialogRef } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { langGuard } from "../../interface/i18nGuard.js";
 
@@ -37,6 +37,7 @@ export const OrderGame = ({ setGameState, sound = false, words: wordsProp, onRes
     });
     const { t, currentLanguage, total, current, status, missedIds, knownFirstTry, score, qIndex, qTotal, segs, answer, restart, backToSelection } = loop;
 
+    const playRef = usePlayDialogRef();
     const target = current?.translate?.no?.[0] || current?.no || "";
     const tokens = useMemo(() => norm(target).split(/\s+/).filter(Boolean), [current]); // eslint-disable-line
     // плитки: слова фразы + дистракторы (лишние), стабильные id, порядок перемешан
@@ -79,7 +80,7 @@ export const OrderGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const dontKnow = () => { if (status === "ASKING") answer(false); };
 
     return (
-        <div className="play play--order" data-state={status.toLowerCase()} style={PLAY_STYLE}>
+        <div ref={playRef} className="play play--order" data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={baseCorrect + knownFirstTry} wrongCount={baseWrong + missedIds.size} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
@@ -112,14 +113,14 @@ export const OrderGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     )}
 
                     {status === "CORRECT" && (
-                        <div className="feedback" style={{ display: "flex" }}>
+                        <div className="feedback" role="status" aria-live="polite" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(98,192,131,.16)", color: "var(--game-correct)" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-correct)" }}>{t.correctly}</div>
                             <RampCheer word={current} rank={rank} repeat={repeat} gmode="order" />
                         </div>
                     )}
                     {status === "INCORRECT" && (
-                        <div className="feedback" style={{ display: "flex" }}>
+                        <div className="feedback" role="status" aria-live="polite" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(230,122,82,.16)", color: "var(--game-incorrect)" }}><Icon n="x" lg /></div>
                             <RampDrop word={current} rank={rank} />
                             <div className="fb-title" style={{ color: "var(--game-incorrect)" }}>{t.notQuite}</div>

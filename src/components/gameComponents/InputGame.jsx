@@ -11,7 +11,7 @@ import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import { playSound } from "../tools/sound.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, foldLight, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots, isGrammar, grammarAnswer, grammarAccepts, FormPrompt, RampCheer , RampDrop } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, foldLoose, foldLight, withinOneEdit, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, tplSlots, isGrammar, grammarAnswer, grammarAccepts, FormPrompt, RampCheer , RampDrop , usePlayDialogRef } from "./gameShared.jsx";
 import { GameKeyboard, keysAdjacent } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -72,6 +72,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         onWrong: () => { resetInput(); setTypoOk(false); setTypoAsk(null); setLetterHint(null); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
     const { t, currentLanguage, total, current, status, held, missedIds, knownFirstTry, score, qIndex, qTotal, segs, answer, advance, restart, backToSelection } = loop;
+    const playRef = usePlayDialogRef();
 
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
@@ -220,7 +221,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const inputSlots = useKbd ? tplSlots([...input], [...tplTarget], { tpl: status === "INCORRECT" || !!typoAsk, caret: canType && !typoAsk }) : null;
 
     return (
-        <div className={"play" + (useKbd ? " play--kbd" : "")} data-state={status.toLowerCase()} style={PLAY_STYLE}>
+        <div ref={playRef} className={"play" + (useKbd ? " play--kbd" : "")} data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={baseCorrect + knownFirstTry} wrongCount={baseWrong + missedIds.size} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
@@ -255,7 +256,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                     )}
 
                     {status === "CORRECT" && typoOk && (
-                        <div className="feedback" style={{ display: "flex" }}>
+                        <div className="feedback" role="status" aria-live="polite" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(232,170,72,.18)", color: "#d98a2b" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "#d98a2b" }}>{t.typoOk}</div>
                             <RampCheer word={current} rank={rank} repeat={repeat} gmode="input" />
@@ -264,7 +265,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         </div>
                     )}
                     {status === "CORRECT" && !typoOk && (
-                        <div className="feedback" style={{ display: "flex" }}>
+                        <div className="feedback" role="status" aria-live="polite" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(98,192,131,.16)", color: "var(--game-correct)" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-correct)" }}>{t.correctly}</div>
                             <RampCheer word={current} rank={rank} repeat={repeat} gmode="input" />
@@ -274,7 +275,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         </div>
                     )}
                     {status === "INCORRECT" && (
-                        <div className="feedback" style={{ display: "flex" }}>
+                        <div className="feedback" role="status" aria-live="polite" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(230,122,82,.16)", color: "var(--game-incorrect)" }}><Icon n="x" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-incorrect)" }}>{t.notQuite}</div>
                             <RampDrop word={current} rank={rank} />
@@ -287,7 +288,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
 
                     {/* близкая опечатка: показали красным в инпуте, что нашли + верное написание; спрашиваем юзера */}
                     {typoAsk && (
-                        <div className="feedback typo-ask" style={{ display: "flex" }}>
+                        <div className="feedback typo-ask" role="status" aria-live="polite" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(232,170,72,.18)", color: "#d98a2b" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "#d98a2b" }}>{t.typoAsk}</div>
                             <div className="fb-answer" lang={aLang}>{hyphenate(typoAsk.correct, aLang)}</div>

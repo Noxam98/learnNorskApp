@@ -69,7 +69,11 @@ export default function ProgressTab({ lang, openSession, openWord, openPlacement
     const masteredTotal = (byStatus.mastered || 0) + (byStatus.repeat || 0) + (byStatus.archived || 0);
     const retention = stats?.retention;       // % или null
     const accuracy = stats?.accuracy;         // % или null
-    const streak = stats?.streak || 0;
+    // Серию бэкенд пока НЕ отдаёт (см. шапку). НЕ показываем правдоподобный «0» (как ретеншен/точность
+    // → «—»), чтобы не выдавать отсутствие данных за реальный ноль. == null ловит и undefined, и null;
+    // настоящий 0 из бэка (если появится) отрисуется как есть.
+    const streak = stats?.streak;             // число или undefined/null (нет данных)
+    const streakText = streak == null ? "—" : streak;
     const masteredWeek = stats?.masteredWeek || 0;
 
     // --- Донат: conic-gradient из долей byStatus ---
@@ -181,7 +185,7 @@ export default function ProgressTab({ lang, openSession, openWord, openPlacement
                 <Tile icon="award" bg="var(--fjord-50)" color="var(--fjord-600)"
                     n={retention == null ? "—" : retention + "%"} label={t.retention} />
                 <Tile icon="flame" bg="var(--ember-50)" color="var(--ember-600)"
-                    n={streak} label={`${t.streak} · ${t.streakDays}`} />
+                    n={streakText} label={`${t.streak} · ${t.streakDays}`} />
                 <Tile icon="target" bg="var(--pos-adj-bg)" color="var(--pos-adj)"
                     n={accuracy == null ? "—" : accuracy + "%"} label={t.accuracy} />
             </div>
@@ -260,7 +264,7 @@ export default function ProgressTab({ lang, openSession, openWord, openPlacement
                     <div className="spanel">
                         <div className="spanel__head">
                             <span className="spanel__title">{t.activity}</span>
-                            <span className="streak-pill"><Icon n="flame" sm /> {streak} {t.streakDays}</span>
+                            <span className="streak-pill"><Icon n="flame" sm /> {streakText} {t.streakDays}</span>
                         </div>
                         <div className="spanel__body">
                             <div style={{ display: "grid", gridAutoFlow: "column", gridTemplateRows: "repeat(7, 1fr)", gap: 3, overflowX: "auto" }}>

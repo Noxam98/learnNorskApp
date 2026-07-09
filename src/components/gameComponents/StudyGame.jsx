@@ -1,6 +1,6 @@
 // @ts-check
 import { useMemo, useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useWordsStore } from "../../store/wordStore";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
@@ -11,7 +11,7 @@ import { speakText, prefetchTts } from "../ui/tts.js";
 import { posLabel, posMeta, chipPrefix, posFormsLine, posFormsRows } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { playSound } from "../tools/sound.js";
-import { useScrollLock, ProgressSegments, semisOf, filterChosenWords, shuffle, FORM_LABEL, FORM_EXPLAIN } from "./gameShared.jsx";
+import { useScrollLock, ProgressSegments, semisOf, filterChosenWords, shuffle, FORM_LABEL, FORM_EXPLAIN, usePlayDialogRef } from "./gameShared.jsx";
 import { langGuard } from "../../interface/i18nGuard.js";
 const HINTS = langGuard({
     ru: { reveal: "нажми — перевод", revealForm: "нажми — форма", next: "нажми — дальше", studied: "Просмотрено", forms: "Формы" },
@@ -50,6 +50,8 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     const t = interfaceTranslate[currentLanguage] || interfaceTranslate.ru;   // фолбэк: язык вне 7 поддерживаемых не должен ронять t.xxx
     const h = HINTS[currentLanguage] || HINTS.en;
     const sk = SKIP[currentLanguage] || SKIP.en;
+    const reduce = useReducedMotion();   // prefers-reduced-motion → гасим слайд/флип/масштаб карточек
+    const playRef = usePlayDialogRef();
 
     const words = useMemo(() => shuffle(wordsProp || aiPlay || filterChosenWords(dictList)), []);
     const total = words.length;
@@ -123,7 +125,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
 
     if (total === 0) {
         return (
-            <div className="play" data-state="asking" style={playStyle}>
+            <div ref={playRef} className="play" data-state="asking" style={playStyle}>
                 <div className="pstage">
                     <p className="qprompt">{t.noWordsToPlay}</p>
                     <button className="gbtn gbtn--accent" onClick={backToSelection}>
@@ -186,7 +188,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
     const barFrac = useStep ? (stepNo - 1) / stepTotal : (total ? idx / total : 0);
 
     return (
-        <div className="play" data-state={finished ? "finished" : "asking"} style={playStyle}>
+        <div ref={playRef} className="play" data-state={finished ? "finished" : "asking"} style={playStyle}>
             <div className="ptop">
                 <a className="ptop__brand" onClick={backToSelection} style={{ cursor: "pointer" }}>
                     <BrandMark />
@@ -238,10 +240,10 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                                 <>
                                                     <div className="card-skip__backdrop" onClick={() => setWhyOpen(false)} />
                                                     <motion.div className="card-skip__menu" role="menu"
-                                                        initial={{ opacity: 0, y: -6, scale: 0.98 }}
-                                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                        exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                                                        transition={{ duration: 0.16, ease: [0.2, 0.7, 0.2, 1] }}>
+                                                        initial={reduce ? { opacity: 0 } : { opacity: 0, y: -6, scale: 0.98 }}
+                                                        animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                                                        exit={reduce ? { opacity: 0 } : { opacity: 0, y: -6, scale: 0.98 }}
+                                                        transition={reduce ? { duration: 0 } : { duration: 0.16, ease: [0.2, 0.7, 0.2, 1] }}>
                                                         {onSkip && (
                                                             <button type="button" role="menuitem" className="card-skip__item"
                                                                 onClick={() => { setWhyOpen(false); onSkip?.(); }}>
@@ -264,10 +266,10 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                         )}
                         <AnimatePresence mode="wait" initial={false}>
                             <motion.div key={idx} className="qcard flashcard" onClick={advance} style={{ cursor: "pointer" }}
-                                initial={{ opacity: 0, x: 60, rotate: 1 }}
-                                animate={{ opacity: 1, x: 0, rotate: 0 }}
-                                exit={{ opacity: 0, x: -60, rotate: -1 }}
-                                transition={{ duration: 0.22, ease: [0.2, 0.7, 0.2, 1] }}>
+                                initial={reduce ? { opacity: 0 } : { opacity: 0, x: 60, rotate: 1 }}
+                                animate={reduce ? { opacity: 1 } : { opacity: 1, x: 0, rotate: 0 }}
+                                exit={reduce ? { opacity: 0 } : { opacity: 0, x: -60, rotate: -1 }}
+                                transition={reduce ? { duration: 0 } : { duration: 0.22, ease: [0.2, 0.7, 0.2, 1] }}>
                                 <div className="qcount">{t.word} {dispNo} / {dispTotal}</div>
                                 {/* карточка формы: перевод-напоминание — блекло, в потоке НАД норвежским словом */}
                                 {formCard && tr && <div className="fcard-trans" lang={hyLang(currentLanguage, false)}>{tr}</div>}
@@ -295,7 +297,7 @@ export const StudyGame = ({ setGameState, mode = "no2int", sound = false, words:
                                 <div className={`flashcard__back${flipped ? " is-shown" : ""}`}>
                                     <AnimatePresence mode="wait" initial={false}>
                                         {flipped
-                                            ? <motion.span key="a" className="flashcard__answer" lang={backLang} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>{hyphenate(back, backLang)}</motion.span>
+                                            ? <motion.span key="a" className="flashcard__answer" lang={backLang} initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }} animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={reduce ? { duration: 0 } : { duration: 0.18 }}>{hyphenate(back, backLang)}</motion.span>
                                             : <motion.span key="h" className="flashcard__hint" initial={{ opacity: 0 }} animate={{ opacity: 0.9 }} exit={{ opacity: 0 }}>{formCard ? h.revealForm : h.reveal}</motion.span>}
                                     </AnimatePresence>
                                 </div>

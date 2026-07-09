@@ -663,3 +663,18 @@
   .play--cells .cell { width: 26px; height: 36px; font-size: var(--fs-20); }
   .play--cells .cells-line { gap: 12px; }
 }
+
+/* prefers-reduced-motion: гасим декоративные анимации игр «Учёбы» — разлёт частиц «Слово выучено!»
+   (.mburst) и отклики рампы (.rampcheer*: вход/пипсы/золото/падение). Смысл (иконка/текст/пипсы)
+   остаётся видимым — убираем только движение. Framer-motion слайд/флип карточек гасится в JS
+   (StudyGame useReducedMotion). */
+@media (prefers-reduced-motion: reduce) {
+  .mburst,
+  .mburst i,
+  .rampcheer,
+  .rampcheer--gold,
+  .rampcheer__pips i.is-on:last-of-type,
+  .rampcheer--drop .ic { animation: none !important; }
+  /* частицы разлёта не нужны вовсе — они видны только в анимации */
+  .mburst i { display: none; }
+}

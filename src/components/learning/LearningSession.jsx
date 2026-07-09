@@ -6,6 +6,7 @@
 // Каждый ответ кормит SRS (/learning/answer с pool_id + mode + direction). Карточки (study) пассивны.
 // По завершении показываем свой итог «что дальше»: точность + серия + сколько осталось +
 // «ещё сессия» / «в Учёбу». Финиш отдельной игры подавляется через onFinish.
+import { useEffect } from "react";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
 import { useSessionStore } from "../../store/sessionStore.jsx";
@@ -35,19 +36,32 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     const sessionLoading = useSessionStore((s) => s.loading); // следующая сессия ещё грузится фоном
     // Норма новых слов за сессию (профиль): сколько карточек нужно ПРИНЯТЬ; кнопки добирают замену.
     const newPerSession = useAuthStore((s) => s.user?.gamePrefs?.newPerSession) || 6;
+    // Аудио-гейт (gamePrefs.audio, дефолт ВКЛ.): при нём слово мастерится только после отдельной
+    // слуховой партии → «+N выучено»/прибавку CEFR берём из бэк-дельты mastered, а не из graduated.
+    const audioGated = useAuthStore((s) => s.user?.gamePrefs?.audio !== false);
 
     // Вся логика сессии (состояние + SRS + переходы) — в контроллере useLearningSession.
     const {
         isSystem, phase, round, isDesktop, elements, idx, legacyGw,
-        res, cards, hist, graduated, protectedNow, protectedTypo, after, gate, busy, loadingNext,
+        res, cards, hist, graduated, protectedNow, protectedTypo, after, before, gate, busy, loadingNext,
         batchDone,
         onResult, recordIntro, onGameFinish, reportCurrent, skipCurrent, knowCurrent, again,
     } = useLearningSession({ words, system, setId, listen, lang, newPerSession, onClose });
+
+    // Нечего показывать в play (элемент кончился / пустой набор) → закрыть сессию из ЭФФЕКТА,
+    // а не во время рендера (onClose обычно дёргает setState родителя — footgun setState-in-render).
+    const nothingToPlay = phase === "play" && (isSystem ? !elements[idx] : !legacyGw.length);
+    useEffect(() => { if (nothingToPlay) onClose?.(true); }, [nothingToPlay]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // --- Экран загрузки системной программы ---
     if (phase === "load") {
         return (
             <div style={STAGE}>
+                {/* выход с экрана загрузки (× / Esc) — чтобы зависшая /learning/session не заперла пользователя */}
+                <button type="button" aria-label={t.finish} onClick={() => onClose?.(true)}
+                    style={{ position: "absolute", top: "var(--sp-3)", right: "var(--sp-3)", zIndex: 1, background: "transparent", border: "none", color: "var(--game-ink)", cursor: "pointer", padding: 8, opacity: .8 }}>
+                    <Icon n="x" />
+                </button>
                 <div style={{ margin: "auto", textAlign: "center", padding: "var(--sp-5)", display: "flex", flexDirection: "column", alignItems: "center", gap: "var(--sp-3)" }}>
                     <div className="session-orb" style={{ margin: "0 auto" }} />
                     <p style={{ opacity: .8 }}>{t.loading}</p>
@@ -76,16 +90,25 @@ export default function LearningSession({ words = [], mode = "choice", system = 
         const streak = after?.streak || 0;
         const noneLeft = left <= 0 || after?._empty;
         const examGate = isSystem && !!gate?.open;   // ворота экзамена открыты → нужен экзамен, не новые слова
-        // всего выучено (mastered) из всех слов учёбы; «+N за сессию» = слов выпущено за эту сессию
-        // (ввод с штатной клавы с 1-й попытки — они прошли рампу и больше не придут)
-        const learned = graduated;
+        // всего выучено (mastered) из всех слов учёбы; «+N за сессию» = слов выпущено за эту сессию.
+        // При аудио-гейте слово мастерится ТОЛЬКО после отдельной слуховой партии → клиентский
+        // graduated (ввод с 1-й попытки) завышал бы «+N» и зелёную прибавку CEFR. Берём бэк-дельту
+        // mastered (after − before). Аудио выкл ИЛИ снимков нет → прежнее клиентское поведение.
+        const beforeM = before?.byStatus?.mastered;
+        const afterM = after?.byStatus?.mastered;
+        const masteredDelta = (typeof beforeM === "number" && typeof afterM === "number") ? Math.max(0, afterM - beforeM) : null;
+        const learned = (audioGated && masteredDelta != null) ? masteredDelta : graduated;
         // Осязаемая цель вместо «N из total» (total растёт и сбивает): прогресс к след. уровню CEFR —
         // весь активный словарь против кумулятивного порога уровня (как на карточке «Сегодня»).
         const by = after?.byStatus || {};
         const masteredAll = (by.mastered || 0) + (by.repeat || 0) + (by.archived || 0);
         const CEFR = ["A1", "A2", "B1", "B2", "C1", "C2"];
         const curLevel = after?.currentLevel || "A1";
-        const nextLevel = CEFR[CEFR.indexOf(curLevel) + 1] || null;
+        // Следующая цель — первый уровень ВЫШЕ текущего, чья кумулятивная цель ещё НЕ достигнута
+        // (пролистываем перекрытые) — как кольцо на «Сегодня». Иначе «до A2: 0 слов» при перевыполнении.
+        let _ni = CEFR.indexOf(curLevel) + 1;
+        while (_ni < CEFR.length && (after?.byLevel?.[CEFR[_ni]]?.target || Infinity) <= masteredAll) _ni++;
+        const nextLevel = CEFR[_ni] || null;
         const nextTarget = nextLevel ? (after?.byLevel?.[nextLevel]?.target || 0) : 0;
         const toNext = nextLevel ? Math.max(0, nextTarget - masteredAll) : 0;
         // прогресс-бар к уровню: база (было до сессии) + ЗЕЛЁНАЯ прибавка за сессию (+learned)
@@ -174,7 +197,7 @@ export default function LearningSession({ words = [], mode = "choice", system = 
     // --- Игра ---
     if (isSystem) {
         const el = elements[idx];
-        if (!el) { onClose?.(true); return null; }
+        if (!el) return null;   // нечего показывать → закрытие уже запланировано эффектом nothingToPlay
         const Game = COMP[el.mode] || ChoiceGame;
         const isStudy = el.mode === "card" || el.mode === "study";
         // полоса прогресса сессии: сегмент на слово. Пройденные — ЦВЕТ СТАДИИ слова (карточка серая
@@ -219,16 +242,21 @@ export default function LearningSession({ words = [], mode = "choice", system = 
                 />
                 {/* добор следующей карточки (текущая была последней) — короткий лоадер */}
                 {loadingNext && (
-                    <div className="session-topup" aria-live="polite">
-                        <span className="ln-spin" aria-hidden="true" />
-                    </div>
+                    <>
+                        {/* глухой слой поверх карточки: пока ждём замену, физически нельзя тапнуть карту
+                            (иначе onGameFinish в окне await → двойное действие / конфликтные записи SRS) */}
+                        <div aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 200, background: "transparent", cursor: "progress", pointerEvents: "auto" }} />
+                        <div className="session-topup" aria-live="polite">
+                            <span className="ln-spin" aria-hidden="true" />
+                        </div>
+                    </>
                 )}
             </>
         );
     }
 
     // Легаси-путь: готовый набор, один режим/направление на всю сессию.
-    if (!legacyGw.length) { onClose?.(true); return null; }
+    if (!legacyGw.length) return null;   // пустой набор → закрытие уже запланировано эффектом nothingToPlay
     const Game = COMP[mode] || ChoiceGame;
     const isStudy = mode === "card" || mode === "study";
     return (

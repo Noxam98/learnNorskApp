@@ -9,7 +9,7 @@ import { Icon } from "../ui/Icon.jsx";
 import { hyLang, hyphenate } from "../ui/hyphenate.js";
 import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { speakText, speakTextEnd } from "../ui/tts.js";
-import { PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen , RampCheer , RampDrop } from "./gameShared.jsx";
+import { PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen , RampCheer , RampDrop , usePlayDialogRef } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 
 export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
@@ -23,6 +23,7 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
         onAdvance: () => setChosen(null),
     });
     const { t, currentLanguage, total, current, status, results, knownFirstTry, score, qIndex, qTotal, answer, advance, restart, backToSelection } = loop;
+    const playRef = usePlayDialogRef();
 
     const cloze = current?.cloze || {};
     const aLang = hyLang(currentLanguage, true);   // ответ/варианты — норвежские
@@ -75,7 +76,7 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
     });
 
     return (
-        <div className="play" data-state={status.toLowerCase()} style={PLAY_STYLE}>
+        <div ref={playRef} className="play" data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={baseCorrect + correctCount} wrongCount={baseWrong + wrongCount} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
@@ -98,7 +99,7 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     loading={!options.length}
                 >
                     {reveal && (sentTr || (status === "INCORRECT" && descriptionText)) && (
-                        <div className="feedback" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <div className="feedback" role="status" aria-live="polite" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             {sentTr && (
                                 <div className="fb-line">
                                     <span lang={aLang}>{hyphenate(filledSentence, aLang)}</span>
@@ -109,7 +110,7 @@ export const ClozeGame = ({ setGameState, sound = false, words: wordsProp, onRes
                             {status === "INCORRECT" && descriptionText && <div className="fb-line muted">{descriptionText}</div>}
                         </div>
                     )}
-                    <div className="pcta">
+                    <div className="pcta" role="status" aria-live="polite">
                         {status === "CORRECT" && <span className="qhint qhint--ok"><Icon n="check" sm /> {t.correctly}</span>}
                         {status === "CORRECT" && <RampCheer word={current} rank={rank} repeat={repeat} gmode="cloze" />}
                         {status === "INCORRECT" && <RampDrop word={current} rank={rank} />}

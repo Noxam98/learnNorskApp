@@ -9,11 +9,24 @@ import { posLabel } from "../ui/pos.js";
 import { hyphenate, hyLang } from "../ui/hyphenate.js";
 import { SpeakButton } from "../ui/SpeakButton.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
-import { DUNNO, PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, tplSlots , RampCheer , RampDrop } from "./gameShared.jsx";
+import { DUNNO, PLAY_STYLE, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, tplSlots , RampCheer , RampDrop , usePlayDialogRef } from "./gameShared.jsx";
 import { GameKeyboard, KBD_SET } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
+import { langGuard } from "../../interface/i18nGuard.js";
 
 const norm = (s) => (s || "").trim().toLowerCase();
+// Промпт «Собери слово · Norsk» на 7 языках. Локально (как CellsGame.L/OrderGame.L), чтобы не
+// трогать общий словарь и его страж паритета. Раньше тут был отсутствующий ключ t.collectFromLetters
+// → ВСЕ языки проваливались в русский литерал (араб/лит/лат видели кириллицу).
+const L = langGuard({
+    ru:  { build: "Собери слово · Norsk" },
+    en:  { build: "Build the word · Norsk" },
+    ukr: { build: "Склади слово · Norsk" },
+    pl:  { build: "Ułóż słowo · Norsk" },
+    lt:  { build: "Sudėk žodį · Norsk" },
+    lv:  { build: "Saliec vārdu · Norsk" },
+    ar:  { build: "كوّن الكلمة · Norsk" },
+}, "BuildGame.L");
 
 export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
     const [typed, setTyped] = useState(/** @type {string[]} */([]));   // введённые буквы по порядку (с клавиатуры)
@@ -28,6 +41,8 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
         onWrong: () => setTyped([]),     // после ошибки — очистить, собрать заново
     });
     const { t, currentLanguage, total, current, status, missedIds, knownFirstTry, score, qIndex, qTotal, segs, answer, restart, backToSelection } = loop;
+    const lx = L[currentLanguage] || L.ru;
+    const playRef = usePlayDialogRef();
 
     const target = current?.translate?.no?.[0] || "";
     // подсказка — родной перевод; фолбэк на ru/en, но НИКОГДА на норвежский ответ (target)
@@ -82,14 +97,14 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const slots = tplSlots(typed, targetChars, { tpl: status === "INCORRECT", caret: canType });
 
     return (
-        <div className="play play--kbd" data-state={status.toLowerCase()} style={PLAY_STYLE}>
+        <div ref={playRef} className="play play--kbd" data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={baseCorrect + knownFirstTry} wrongCount={baseWrong + missedIds.size} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
             <div className="pstage">
                 <div className="qcard">
                     <div className="qcount">{t.word} {qIndex} / {qTotal}</div>
-                    <div className="qprompt">{t.collectFromLetters || "Собери слово · Norsk"}</div>
+                    <div className="qprompt">{lx.build}</div>
                     <h1 className="qword" lang={qLang}>{hyphenate(prompt, qLang)}
                         {trArr[0] && <SpeakButton text={trArr[0]} lang={qLang} className="qspeak"
                             ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />}
@@ -112,14 +127,14 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                     )}
 
                     {status === "CORRECT" && (
-                        <div className="feedback" style={{ display: "flex" }}>
+                        <div className="feedback" role="status" aria-live="polite" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(98,192,131,.16)", color: "var(--game-correct)" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-correct)" }}>{t.correctly}</div>
                             <RampCheer word={current} rank={rank} repeat={repeat} gmode="build" />
                         </div>
                     )}
                     {status === "INCORRECT" && (
-                        <div className="feedback" style={{ display: "flex" }}>
+                        <div className="feedback" role="status" aria-live="polite" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(230,122,82,.16)", color: "var(--game-incorrect)" }}><Icon n="x" lg /></div>
                             <RampDrop word={current} rank={rank} />
                             <div className="fb-title" style={{ color: "var(--game-incorrect)" }}>{t.notQuite}</div>

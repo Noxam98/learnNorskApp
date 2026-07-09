@@ -22,9 +22,15 @@ const ERR_T = langGuard({
     ar:  { errTitle: "تعذّر حفظ نتيجتك", errDesc: "تحقّق من الاتصال وحاول مرة أخرى — إجاباتك محفوظة.", retry: "إعادة المحاولة" },
 }, "PlacementScreen.ERR_T");
 
+// Локализованный aria-label «Закрыть» (крестик выхода из теста). Локально — не расширяем общий словарь.
+const CLOSE_LBL = langGuard({
+    ru: "Закрыть", en: "Close", ukr: "Закрити", pl: "Zamknij", lt: "Uždaryti", lv: "Aizvērt", ar: "إغلاق",
+}, "PlacementScreen.CLOSE_LBL");
+
 export default function PlacementScreen({ lang = "ru", onClose }) {
     const t = T[lang] || T.ru;
     const et = ERR_T[lang] || ERR_T.ru;
+    const cl = CLOSE_LBL[lang] || CLOSE_LBL.ru;
     // Вся логика теста (фазы, вопросы, грейд, самооценка) — в контроллере usePlacement.
     const { phase, selfOpen, setSelfOpen, selfLevel, setSelfLevel, questions, qi, result, busy, gradeErr, locked,
         cur, levelsInTest, beginTest, answer, retryGrade, saveSelf } = usePlacement(lang, onClose);
@@ -91,7 +97,7 @@ export default function PlacementScreen({ lang = "ru", onClose }) {
             <div className="study-root">
                 <div className="plc-stage">
                     <div className="plc-top">
-                        <button className="plc-top__back" onClick={() => onClose?.(false)} aria-label="close"><Icon n="x" /></button>
+                        <button className="plc-top__back" onClick={() => onClose?.(false)} aria-label={cl}><Icon n="x" /></button>
                         <div className="plc-bar"><span style={{ width: `${pct}%` }} /></div>
                         <span className="plc-count">{qi + 1} / {questions.length}</span>
                     </div>

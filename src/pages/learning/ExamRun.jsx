@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { ChoiceQuestion } from "../../components/gameComponents/ChoiceQuestion.jsx";
 import { GameKeyboard } from "../../components/gameComponents/GameKeyboard.jsx";
-import { PLAY_STYLE, PlayTopBar, ProgressSegments, ENDONYM } from "../../components/gameComponents/gameShared.jsx";
+import { PLAY_STYLE, PlayTopBar, ProgressSegments, ENDONYM, DUNNO, usePlayDialogRef } from "../../components/gameComponents/gameShared.jsx";
 import { useGameLoop } from "../../components/gameComponents/useGameLoop.js";
 import { playSound } from "../../components/tools/sound.js";
 import { speakText } from "../../components/ui/tts.js";
@@ -25,6 +25,10 @@ export default function ExamRun({ questions, lang, t, onExit, onGrade }) {
     });
     const { current, picked, answer, qIndex, qTotal, backToSelection } = loop;
     const [typed, setTyped] = useState("");   // для типа input
+    const playRef = usePlayDialogRef();
+    // «Не знаю» для input-вопроса: сдаём ПУСТОЙ ответ (как пропуск в placement — answer("")),
+    // чтобы не заставлять печатать мусор для продвижения.
+    const skip = () => { if (picked == null) answer(""); };
 
     // свуш + озвучка норв. слова при появлении вопроса (по настройке звука)
     useEffect(() => {
@@ -57,7 +61,7 @@ export default function ExamRun({ questions, lang, t, onExit, onGrade }) {
     const segs = Array.from({ length: qTotal }, (_, i) => (i < qIndex - 1 ? "done" : i === qIndex - 1 ? "now" : ""));
     const count = <span className="stat"><Icon n="layers" sm /> {qIndex} / {qTotal}</span>;
     return (
-        <div className={"play" + (isInput && useKbd ? " play--kbd" : "")} data-state="asking" style={PLAY_STYLE}>
+        <div ref={playRef} className={"play" + (isInput && useKbd ? " play--kbd" : "")} data-state="asking" style={PLAY_STYLE}>
             <PlayTopBar correctCount={0} wrongCount={0} onExit={backToSelection} t={t} centerNode={count} />
             <ProgressSegments segs={segs} />
             <div className="pstage">
@@ -77,12 +81,16 @@ export default function ExamRun({ questions, lang, t, onExit, onGrade }) {
                             <GameKeyboard lang="no" extras={["-"]} leftFiller
                                 canSubmit={typed.length > 0} canBackspace={typed.length > 0}
                                 onType={(c) => setTyped(typed + c)} onBackspace={() => setTyped(typed.slice(0, -1))}
-                                onSubmit={onInputSubmit} />
+                                onSubmit={onInputSubmit}
+                                onDunno={skip} showDunno={picked == null} dunnoLabel={DUNNO[lang] || DUNNO.ru} />
                         )}
                         {!useKbd && (
                             <div className="pcta">
                                 <button className="gbtn gbtn--accent" onClick={onInputSubmit} disabled={picked != null || !typed.trim()}>
                                     <Icon n="check" sm /> {t.inputSubmit}
+                                </button>
+                                <button className="gbtn gbtn--ghost" onClick={skip} disabled={picked != null}>
+                                    <Icon n="arrow-right" sm /> {DUNNO[lang] || DUNNO.ru}
                                 </button>
                             </div>
                         )}

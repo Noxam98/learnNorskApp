@@ -73,8 +73,8 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     const [elements, setElements] = useState([]);
     const [idx, setIdx] = useState(0);
 
-    // Легаси-набор: один режим на весь массив.
-    const [legacyGw] = useState(() => toGameWords(words, lang));
+    // Легаси-набор: один режим на весь массив (stateful — «Ещё сессия» переигрывает свежие due).
+    const [legacyGw, setLegacyGw] = useState(() => toGameWords(words, lang));
 
     // Прогресс сессии: упражнения (ответы) и карточки считаем РАЗДЕЛЬНО.
     const [res, setRes] = useState({ correct: 0, total: 0 }); // только упражнения
@@ -93,9 +93,18 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     const [poolDry, setPoolDry] = useState(false);       // пул новых исчерпан / ворота закрыты → больше не добираем
     const [loadingNext, setLoadingNext] = useState(false); // ждём догрузку следующей карточки (только когда текущая — последняя)
     const dismissBusyRef = useRef(false);                  // анти-дубль: пока обрабатываем «убрать карточку» (особенно в окне await topUp)
+    const topUpInFlightRef = useRef(0);                    // 0 = свободно; >0 = фоновый добор в полёте на N карт (сериализация: анти-дубль/перебор нормы)
+    const pendingTopUpPidsRef = useRef([]);               // pid'ы, уже долитые добором в этой сессии — не запрашивать снова (exclude)
+    const [before, setBefore] = useState(null);           // снимок статистики ДО сессии — «выучено» по бэк-дельте mastered (аудио-гейт)
+    const mountedRef = useRef(true);                       // защита await→setState после размонтирования
+    useEffect(() => () => { mountedRef.current = false; }, []);
 
     // Подтянуть системную программу с бэка.
     const loadProgram = async () => {
+        // снимок mastered ДО сессии — для «+N выучено» по бэк-дельте при аудио-гейте (см. showSummary/итог)
+        setBefore(null);
+        pendingTopUpPidsRef.current = [];
+        api.learningStats().then((s) => { if (mountedRef.current) setBefore(s); }).catch(() => { /* офлайн */ });
         try {
             // слуховая сессия (listen) — тянем партию аудио-узнавания напрямую; дрилл по набору
             // (setId) — сессию набора; иначе берём заранее прогретую общую (мгновенно, если готова),
@@ -105,6 +114,7 @@ export function useLearningSession({ words = [], system = false, setId = null, l
                 : await useSessionStore.getState().take(20);
             const list = Array.isArray(r) ? r : (r?.elements || r?.items || r?.words || []);
             const els = toElements(list, lang);
+            if (!mountedRef.current) return;
             setCyclePhase(r?.composition?.phase || "words");
             setBatchDone(false);
             if (els.length) {
@@ -114,6 +124,7 @@ export function useLearningSession({ words = [], system = false, setId = null, l
                 await Promise.all(els
                     .filter((e) => e.mode === "choice" && !(e.gw?.options?.length || e.gw?.distractors?.length))
                     .map((e) => api.getPoolDistractors(e.gw?.pool_id, { n: 3, mode: e.dir, lang }).catch(() => null)));
+                if (!mountedRef.current) return;
                 setElements(els); setIdx(0); setRes({ correct: 0, total: 0 }); setCards(0); setHist([]); setGraduated(0); setProtectedNow(0); setProtectedTypo(0); setAfter(null);
                 setAcceptedNew(0); setPoolDry(false); setLoadingNext(false);
                 setPhase("play");
@@ -156,8 +167,8 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     // Показать итог + подтянуть статистику.
     const showSummary = async () => {
         setPhase("summary");
-        try { setAfter(await api.learningStats()); } catch { /* */ }
-        if (isSystem) { try { setGate(await api.learningGate()); } catch { /* */ } }
+        try { const s = await api.learningStats(); if (mountedRef.current) setAfter(s); } catch { /* */ }
+        if (isSystem) { try { const g = await api.learningGate(); if (mountedRef.current) setGate(g); } catch { /* */ } }
         // следующую сессию греем ПОСЛЕ статов — к этому моменту ответы записаны, и бэк отдаст
         // свежий состав (со сдвинутыми по рампе словами), а не те же «выборы». В дрилле по набору
         // и в слуховой сессии общую дневную не греем (там «Ещё» перечитывает свой источник напрямую).
@@ -172,6 +183,10 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     // Финиш одной игры. isStudy=true — это была карточка-интро (НЕ ответ): считаем отдельно.
     // Системный путь: переходим к следующему элементу либо к итогу. Легаси: сразу итог.
     const onGameFinish = (stats, isStudy = false, gmode = null) => {
+        // Анти-гонка последней карточки: пока идёт «убрать карточку» / добор замены (loadingNext),
+        // StudyGame ещё смонтирован и его onClick→onGameFinish живой. Тап в это окно НЕ должен
+        // слать ответ / градуировать / листать (иначе конфликтные записи SRS + двойной зачёт).
+        if (dismissBusyRef.current || loadingNext) return;
         const got = stats || { total: 0, correct: 0 };
         // Грамм-упражнение (choice_gender / input_indefpl): mode совпадает с обычными играми
         // ("input"/"choice"), но это ОТДЕЛЬНЫЙ тир — бэк его в «выучено»/CEFR не считает. Поэтому
@@ -207,14 +222,26 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     // Догрузить deficit новых карточек в КОНЕЦ очереди. Возвращает число реально добавленных.
     const topUp = async (deficit) => {
         if (deficit <= 0 || poolDry) return 0;
-        let r;
-        try { r = await api.learningNextCards(deficit, queuedCardPids(elements)); }
-        catch { return 0; }
-        if (r?.blocked) { setPoolDry(true); return 0; }
-        const fresh = toElements(r?.cards || [], lang);
-        if (!fresh.length) { setPoolDry(true); return 0; }   // пул новых исчерпан → больше не дёргаем
-        setElements((els) => [...els, ...fresh]);
-        return fresh.length;
+        if (topUpInFlightRef.current) return 0;                       // добор уже в полёте — не параллелим (дубль/перебор)
+        topUpInFlightRef.current = deficit;                           // синхронно: виден расчёту дефицита и гарду сериализации
+        // исключаем и стоящие в очереди карточки, и pid'ы, уже добранные ранее в этой сессии
+        const exclude = [...new Set([...queuedCardPids(elements), ...pendingTopUpPidsRef.current])];
+        try {
+            let r;
+            try { r = await api.learningNextCards(deficit, exclude); }
+            catch { return 0; }
+            if (r?.blocked) { setPoolDry(true); return 0; }
+            const fresh = toElements(r?.cards || [], lang);
+            if (!fresh.length) { setPoolDry(true); return 0; }   // пул новых исчерпан → больше не дёргаем
+            pendingTopUpPidsRef.current = [
+                ...pendingTopUpPidsRef.current,
+                ...fresh.map((e) => e.gw?.pool_id ?? e.gw?.id).filter((x) => x != null),
+            ];
+            setElements((els) => [...els, ...fresh]);
+            return fresh.length;
+        } finally {
+            topUpInFlightRef.current = 0;
+        }
     };
     // Общий путь кнопок «убрать» карточку (know/skip/report): действие в фоне, карточка не в зачёт,
     // при дефиците нормы — добор. mark — отметка полосы прогресса ("ok" у «уже знаю», иначе "skip").
@@ -233,13 +260,17 @@ export function useLearningSession({ words = [], system = false, setId = null, l
             if (!isSystem) { showSummary(); return; }                 // легаси-путь — как раньше
             // добор — только в ОБЫЧНОЙ сессии (не в дрилле набора: там очередь = слова набора, чужие
             // из общего пула подмешивать нельзя) и только для карточек-знакомств (упражнения → deficit=0).
-            const deficit = (!setId && el.step === "card") ? (target - acceptedNew - cardsAfter(elements, idx)) : 0;
+            // учитываем карты, которые фоновый добор УЖЕ просит (ещё не влиты в elements): иначе
+            // быстрый следующий дисмисс пересчитает дефицит без них → дубль-карта / перебор нормы.
+            const inFlight = topUpInFlightRef.current;
+            const deficit = (!setId && el.step === "card") ? (target - acceptedNew - cardsAfter(elements, idx) - inFlight) : 0;
             if (idx + 1 < elements.length) {
                 setIdx((n) => n + 1);                                 // следующий элемент уже готов — мгновенно
                 if (deficit > 0) topUp(deficit);                      // фоном дольёт карточки в конец
             } else if (deficit > 0 && !poolDry) {
                 setLoadingNext(true);                                 // текущая — последняя: ждём замену
                 const added = await topUp(deficit);
+                if (!mountedRef.current) return;
                 setLoadingNext(false);
                 if (added > 0) setIdx((n) => n + 1);
                 else showSummary();
@@ -267,10 +298,10 @@ export function useLearningSession({ words = [], system = false, setId = null, l
                 setElements([]); setIdx(0); setRes({ correct: 0, total: 0 }); setAfter(null);
                 setPhase("load"); setRound((n) => n + 1);
             } else {
-                // Легаси «ещё» — добираем актуальные «к повторению».
+                // Легаси «ещё» — добираем актуальные «к повторению» и ИГРАЕМ ИМЕННО ИХ (не старый набор).
                 const r = await api.learningDue(20).catch(() => null);
                 const next = toGameWords(r?.words || [], lang);
-                if (next.length) { setRes({ correct: 0, total: 0 }); setAfter(null); setRound((n) => n + 1); setPhase("play"); }
+                if (next.length) { setLegacyGw(next); setRes({ correct: 0, total: 0 }); setAfter(null); setRound((n) => n + 1); setPhase("play"); }
                 else { setAfter((a) => ({ ...(a || {}), _empty: true })); }
             }
         } finally { setBusy(false); }
@@ -288,9 +319,9 @@ export function useLearningSession({ words = [], system = false, setId = null, l
         return () => window.removeEventListener("keydown", onKey);
     }, [phase, after, gate, isSystem]); // eslint-disable-line
 
-    // Esc в любой игре — выйти из учёбы (общий обработчик на сессию)
+    // Esc в игре ИЛИ на экране загрузки — выйти из учёбы (чтобы зависшая /learning/session не заперла)
     useEffect(() => {
-        if (phase !== "play") return;
+        if (phase !== "play" && phase !== "load") return;
         const onKey = (e) => { if (e.code === "Escape") { e.preventDefault(); onClose?.(true); } };
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
@@ -298,7 +329,7 @@ export function useLearningSession({ words = [], system = false, setId = null, l
 
     return {
         isSystem, isListen, phase, round, isDesktop, elements, idx, legacyGw,
-        res, cards, hist, graduated, protectedNow, protectedTypo, after, gate, busy, loadingNext,
+        res, cards, hist, graduated, protectedNow, protectedTypo, after, before, gate, busy, loadingNext,
         batchDone,
         onResult, recordIntro, onGameFinish, reportCurrent, skipCurrent, knowCurrent, again,
     };

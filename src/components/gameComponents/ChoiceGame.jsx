@@ -10,7 +10,7 @@ import { ChoiceQuestion } from "./ChoiceQuestion.jsx";
 import { ListenPrompt } from "./ListenPrompt.jsx";
 import { speakText, speakTextEnd, prefetchTts } from "../ui/tts.js";
 import api from "../tools/api.js";
-import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, isGrammar, grammarAnswer, grammarAccepts, grammarOptions, FormPrompt, RampCheer , RampDrop } from "./gameShared.jsx";
+import { ENDONYM, DUNNO, PLAY_STYLE, shuffle, uniq, PlayTopBar, RepeatBadge, ProgressSegments, NoWords, FinishScreen, noWithPrefix, isGrammar, grammarAnswer, grammarAccepts, grammarOptions, FormPrompt, RampCheer , RampDrop , usePlayDialogRef } from "./gameShared.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
@@ -24,6 +24,11 @@ const CHOICE_HINT = langGuard({
     lv: "Atbildi var izvēlēties ar ciparu taustiņiem",
     ar: "يمكنك اختيار الإجابة بمفاتيح الأرقام",
 }, "ChoiceGame.CHOICE_HINT");
+// Локализованный aria-label «Закрыть» (крестик нуджа «вернуть на слух») — локально, чтобы не
+// трогать общий словарь. Раньше был хардкод aria-label="close" (англ.) для всех языков.
+const CLOSE_LBL = langGuard({
+    ru: "Закрыть", en: "Close", ukr: "Закрити", pl: "Zamknij", lt: "Uždaryti", lv: "Aizvērt", ar: "إغلاق",
+}, "ChoiceGame.CLOSE_LBL");
 const CHOICE_HINT_KEY = "choice_num_hint_seen";
 let _choiceHintShown = false;   // максимум раз за сессию
 let _listenNudgeOff = false;    // нудж «вернуть на слух» закрыт на эту сессию (модульный, переживает ремоунты игр)
@@ -67,6 +72,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
         onAdvance: () => setChosen(null),
     });
     const { t, currentLanguage, total, current, status, words: wordsToGame, results, knownFirstTry, score, qIndex, qTotal, answer, advance, restart, backToSelection } = loop;
+    const playRef = usePlayDialogRef();
 
     // Десктоп-подсказка «можно выбирать цифрами» (системный тост, отдельный флаг). Показываем при
     // выборе МЫШЬЮ; выбор цифрой/«Понял» — помечает «видел» (localStorage + БД), один раз за сессию.
@@ -220,7 +226,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
     });
 
     return (
-        <div className="play" data-state={status.toLowerCase()} style={PLAY_STYLE}>
+        <div ref={playRef} className="play" data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={baseCorrect + correctCount} wrongCount={baseWrong + wrongCount} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
             <ProgressSegments segs={segs} status={status} />
 
@@ -232,7 +238,7 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                         <Icon n="headphones" sm />
                         <span className="listen-nudge__t">{t.listenBack}</span>
                         <button type="button" className="listen-nudge__btn" onClick={enableListen}>{t.listenBackBtn}</button>
-                        <button type="button" className="listen-nudge__x" onClick={dismissNudge} aria-label="close"><Icon n="x" sm /></button>
+                        <button type="button" className="listen-nudge__x" onClick={dismissNudge} aria-label={CLOSE_LBL[currentLanguage] || CLOSE_LBL.en}><Icon n="x" sm /></button>
                     </div>
                 )}
                 <ChoiceQuestion
@@ -262,12 +268,13 @@ export const ChoiceGame = ({ setGameState, mode = "no2int", sound = false, words
                     ) : null)}
                 >
                     {status === "INCORRECT" && descriptionText && (
-                        <div className="feedback" style={{ display: "flex" }}>
+                        <div className="feedback" role="status" aria-live="polite" style={{ display: "flex" }}>
                             <div className="fb-line muted">{descriptionText}</div>
                         </div>
                     )}
 
-                    <div className="pcta">
+                    {/* Вердикт «Верно/Не совсем» + подсказка «дальше» — живой регион для SR (озвучиваем итог). */}
+                    <div className="pcta" role="status" aria-live="polite">
                         {status === "CORRECT" && <span className="qhint qhint--ok"><Icon n="check" sm /> {t.correctly}</span>}
                         {status === "CORRECT" && <RampCheer word={current} rank={rank} repeat={repeat} gmode="choice" />}
                         {status === "CORRECT" && listenMode && <span className="qhint qhint--listen"><Icon n="headphones" sm /> {t.byEar}</span>}

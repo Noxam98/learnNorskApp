@@ -229,8 +229,10 @@ export const isGrammar = (w) => !!(w && (w.grammar || w.target));
 // Верный ответ грамм-упражнения = target.value (НЕ перевод/лемма).
 export const grammarAnswer = (w) => (w?.target?.value ?? "").toString();
 
-// Варианты грамм-выбора (артикли) — берём как есть из el.options и ПЕРЕМЕШИВАЕМ.
-export const grammarOptions = (w) => shuffle(((w?.options) || []).map((o) => o?.w).filter(Boolean));
+// Варианты грамм-выбора (артикли) — берём из el.options, ДЕДУПЛИЦИРУЕМ (как путь слова: uniq) и
+// ПЕРЕМЕШИВАЕМ. Дубль поверхностной формы иначе даёт дублирующийся React-key + дистрактор, равный
+// принятому ответу (grammarAccepts.includes) → он подсветился бы зелёным наравне с верным.
+export const grammarOptions = (w) => shuffle(uniq(((w?.options) || []).map((o) => o?.w).filter(Boolean)));
 
 // FormPrompt — вопрос о форме слова: крупная лемма + локализованная подпись запрашиваемой формы.
 // Используют грамм-ветки ChoiceGame/InputGame вместо обычного перевод-промпта.
@@ -263,6 +265,28 @@ export const grammarAccepts = (w) => [w?.target?.value, ...((w?.target?.accept) 
 
 /** @type {import('react').CSSProperties} */
 export const PLAY_STYLE = { position: "fixed", inset: 0, zIndex: 90, overflow: "hidden" };
+
+// Полноэкранный оверлей игры/карточек = МОДАЛЬНЫЙ диалог: даём SR роль (role=dialog + aria-modal),
+// делаем контейнер фокусируемым (tabindex=-1) и УВОДИМ ФОКУС ВНУТРЬ оверлея при маунте — иначе фокус
+// остаётся на кнопке под наложением и SR не понимает, что контекст сменился. Возвращает ref для корня.
+// Esc-закрытие тут СПЕЦИАЛЬНО не вешаем: фазой play уже управляет контроллер сессии (второй хэндлер
+// = двойной выход). Меняем только семантику/фокус.
+export function usePlayDialogRef() {
+    // any: один ref вешается на корни разных игр (div/section/…); хук трогает только общие
+    // DOM-методы (setAttribute/focus), поэтому конкретный HTMLElement-подтип не нужен и мешал бы tsc.
+    const ref = useRef(/** @type {any} */(null));
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        el.setAttribute("role", "dialog");
+        el.setAttribute("aria-modal", "true");
+        if (el.getAttribute("tabindex") == null) el.setAttribute("tabindex", "-1");
+        if (!el.contains(document.activeElement)) {
+            try { el.focus({ preventScroll: true }); } catch { el.focus(); }
+        }
+    }, []);
+    return ref;
+}
 
 export const filterChosenWords = (dictList) =>
     dictList.flatMap((d) => d.words.filter((w) => w?.gameData?.isChoosedToGame));
