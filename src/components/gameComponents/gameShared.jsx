@@ -174,15 +174,18 @@ export const MASTERY = langGuard({
 //  • финальный ввод на повторе → сдержанное «Защищено»;
 //  • ввод формы (produce трека форм) → «Форма сдана ✓»;
 //  • иначе — пипсы высоты рампы «ступень N/4» (в унисон с ростом тона звука «верно»).
-export const RampCheer = ({ word, rank = 0, repeat = false, gmode = "" }) => {
+export const RampCheer = ({ word, rank = 0, repeat = false, gmode = "", firstTry = true, typo = false }) => {
     const lang = useSystemStore((s) => s.currentLanguage);
     const soundOn = useSystemStore((s) => s.soundOn);
     const m = MASTERY[lang] || MASTERY.en;
     const form = !!word?.form_track;
     const formDone = form && word?.stage === "produce";
     const finalInput = !form && gmode === "input" && word?.step === "input_int2no";
-    const mastered = finalInput && !repeat;
-    const shield = finalInput && repeat;
+    // «выучено»/«Защищено» — ТОЛЬКО за прохождение с ПЕРВОЙ попытки (firstTry): ответ не с первого
+    // раза (ошибка → ретрай) слово не выпускает/не защищает (SRS пишет первую попытку). «Защищено»
+    // ещё и только чисто (не опечатка): опечатка на повторе — отдельный итог «с опечаткой», не щит.
+    const mastered = finalInput && !repeat && firstTry;
+    const shield = finalInput && repeat && firstTry && !typo;
     useEffect(() => {
         if (mastered && soundOn) playSound("mastered");   // фанфара — только за первое «выучено»
     }, []); // eslint-disable-line
@@ -195,6 +198,7 @@ export const RampCheer = ({ word, rank = 0, repeat = false, gmode = "" }) => {
             </div>
         );
     }
+    if (finalInput) return null;   // финальный ввод БЕЗ выучено/защищено (опечатка / не с первой попытки) — без пипсов
     if (rank < 1 || rank > 4) return null;
     return (
         <div className="rampcheer" aria-hidden="true">
@@ -480,9 +484,9 @@ export const semisOf = (rank) => RANK_SEMIS[rank] ?? 0;
 // "card") ИЛИ объект { state, rank }: пройденные слова красятся ЦВЕТОМ СТАДИИ (rank 0 серый …
 // 4 насыщенный зелёный), текущее — акцент «ты здесь», предстоящие — пустые (появляются по мере прохождения).
 /**
- * @param {{ segs: import('../../types.js').ProgressSeg[], status?: import('../../types.js').GameStatus }} props
+ * @param {{ segs: import('../../types.js').ProgressSeg[], status?: import('../../types.js').GameStatus, nowMst?: boolean }} props
  */
-export const ProgressSegments = ({ segs, status }) => {
+export const ProgressSegments = ({ segs, status, nowMst = false }) => {
     // Лайфцикл ТЕКУЩЕГО сегмента: пока вопрос не отвечен (ASKING) — мигает «будущим» зелёным
     // (цвет следующей стадии); сразу после ответа ~1с — нейтральный (ждём итог); затем верно →
     // зелёный своей стадии, неверно → оранжевый (как было). resolved = прошла ли секунда ожидания.
@@ -505,7 +509,8 @@ export const ProgressSegments = ({ segs, status }) => {
                 let cls = "pseg";
                 if (isObj) {
                     if (state === "now") {
-                        if (status === "CORRECT" || status === "INCORRECT") {
+                        if (status === "CORRECT" && nowMst) cls += " pseg--mst";    // слово ВЫУЧЕНО сейчас → кэп СРАЗУ (не ждём переход)
+                        else if (status === "CORRECT" || status === "INCORRECT") {
                             if (!resolved) cls += " is-pending";                    // ждём итог — нейтральный
                             else if (status === "CORRECT") cls += " pseg--st" + r;  // верно → зелёный стадии
                             else cls += " is-wrong";                                // неверно → оранжевый

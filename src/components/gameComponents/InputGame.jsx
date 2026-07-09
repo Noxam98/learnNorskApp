@@ -220,10 +220,12 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const tplTarget = (typoAsk ? typoAsk.correct : (grammar ? grammarAns : no) || "").trim().toLowerCase();
     const inputSlots = useKbd ? tplSlots([...input], [...tplTarget], { tpl: status === "INCORRECT" || !!typoAsk, caret: canType && !typoAsk }) : null;
 
+    const firstTryOk = !missedIds.has(current?.id);   // прошёл с ПЕРВОЙ попытки (по ней SRS/выучено/защищено)
+    const graduatedNow = status === "CORRECT" && !repeat && firstTryOk && current?.step === "input_int2no";
     return (
         <div ref={playRef} className={"play" + (useKbd ? " play--kbd" : "")} data-state={status.toLowerCase()} style={PLAY_STYLE}>
             <PlayTopBar correctCount={baseCorrect + knownFirstTry} wrongCount={baseWrong + missedIds.size} onExit={backToSelection} t={t} tag={repeat ? <RepeatBadge /> : null} />
-            <ProgressSegments segs={segs} status={status} />
+            <ProgressSegments segs={segs} status={status} nowMst={graduatedNow} />
 
             <div className="pstage" onClick={onStageClick}
                 style={status === "CORRECT" && typoOk ? { cursor: "pointer" } : undefined}>
@@ -259,7 +261,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         <div className="feedback" role="status" aria-live="polite" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(232,170,72,.18)", color: "#d98a2b" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "#d98a2b" }}>{t.typoOk}</div>
-                            <RampCheer word={current} rank={rank} repeat={repeat} gmode="input" />
+                            <RampCheer word={current} rank={rank} repeat={repeat} gmode="input" firstTry={firstTryOk} typo={typoOk} />
                             <div className="fb-answer" lang={aLang}>{hyphenate(correctPrimary, aLang)}</div>
                             {!resolving && <div className="pcta"><span className="qhint">{t.tapNext} <Icon n="arrow-right" sm /></span></div>}
                         </div>
@@ -268,7 +270,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
                         <div className="feedback" role="status" aria-live="polite" style={{ display: "flex" }}>
                             <div className="fb-icon" style={{ background: "rgba(98,192,131,.16)", color: "var(--game-correct)" }}><Icon n="check" lg /></div>
                             <div className="fb-title" style={{ color: "var(--game-correct)" }}>{t.correctly}</div>
-                            <RampCheer word={current} rank={rank} repeat={repeat} gmode="input" />
+                            <RampCheer word={current} rank={rank} repeat={repeat} gmode="input" firstTry={firstTryOk} typo={typoOk} />
                             {/* тихая подсказка: ввели базовую букву вместо å/ø/æ — показать правильное написание (å/ø/æ подсвечены) */}
                             {letterHint && <div className="fb-line">{t.letterHint} <b className="lh-word" lang={aLang}>{[...letterHint].map((ch, i) => /[åøæ]/i.test(ch) ? <span key={i} className="lh-spec">{ch}</span> : ch)}</b></div>}
                             {otherAccepted.length > 0 && <div className="fb-line">{t.alsoAccepted} <b lang={aLang}>{hyphenate(otherAccepted.join(", "), aLang)}</b></div>}
