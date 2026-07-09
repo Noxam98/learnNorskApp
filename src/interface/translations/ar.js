@@ -1,6 +1,7 @@
 // Языковой блок интерфейсных переводов: ar. Часть реестра interfaceTranslate.
 // Паритет ключей по языкам проверяет i18n.test.js + dev-страж checkInterfaceTranslate.
 export const ar = {
+        analyzeCompound: "تحليل الكلمة المركبة", notCompound: "هذه كلمة بسيطة، وليست مركبة",
         guessedStats: ["تم تخمين", "من"],
         mistakesMade: "الأخطاء المرتكبة:",
         yes: "نعم",

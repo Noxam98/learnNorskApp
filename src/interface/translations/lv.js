@@ -1,6 +1,7 @@
 // Языковой блок интерфейсных переводов: lv. Часть реестра interfaceTranslate.
 // Паритет ключей по языкам проверяет i18n.test.js + dev-страж checkInterfaceTranslate.
 export const lv = {
+        analyzeCompound: "Sadalīt vārdu", notCompound: "Šis ir vienkāršs vārds, nevis salikts",
         guessedStats: ["uzminēts", "no"],
         mistakesMade: "Pieļautās kļūdas:",
         yes: "Jā",

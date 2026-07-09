@@ -66,6 +66,24 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
         }).catch(() => upd({ loading: false }));
     };
 
+    const [compoundBusy, setCompoundBusy] = useState(false);
+    // Ручной разбор составного слова (для слов вне ordbank): LLM-разбор → показываем кликабельные
+    // части. «Не составное» — тихо помечаем проверенным (пункт меню исчезает) + короткий тост.
+    const analyzeCompound = async () => {
+        if (!view || compoundBusy) return;
+        setCompoundBusy(true);
+        try {
+            const r = await api.analyzeCompound(view.no, view.pool_id);
+            if (r?.compound) {
+                setView((v) => (v && v.no === view.no ? { ...v, compound: r.compound, compoundChecked: true } : v));
+            } else {
+                setView((v) => (v && v.no === view.no ? { ...v, compoundChecked: true } : v));
+                useSystemStore.getState().showToast(t.notCompound || "Это простое слово, не составное", "info");
+            }
+        } catch { /* тост уже показан в api */ }
+        setCompoundBusy(false);
+    };
+
     const [revoiceBusy, setRevoiceBusy] = useState(false);
     const revoice = async () => {
         if (!view || revoiceBusy) return;
@@ -118,7 +136,7 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
         api.getPoolMeta(no, poolId).then((m) => {
-            setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, compound: m?.compound || null, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null } : v);
+            setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, compound: m?.compound || null, compoundChecked: !!m?.compoundChecked, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null } : v);
             // карточки нет в базе (напр. часть композита) → генерируем слово и перезагружаем.
             // triedGen страхует от петли, если генерация так и не создала запись.
             if (!m?.pool_id && !triedGen) {
@@ -252,6 +270,9 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
               icon: inDict ? "trash" : "plus", danger: inDict, disabled: dictBusy, busy: dictBusy, onClick: toggleDict },
             { key: "edit", label: t.editWord || "Изменить слово", icon: "edit", onClick: () => setEditOpen(true) },
             { key: "ask", label: t.askWord || "Спросить о слове", icon: "info", onClick: () => { setAskOpen(true); setFixOpen(false); } },
+            (view.pool_id && !view.compound && !view.compoundChecked
+              ? { key: "compound", label: t.analyzeCompound || "Разобрать состав", icon: "layers", busy: compoundBusy, disabled: compoundBusy, onClick: analyzeCompound }
+              : null),
             { key: "revoice", label: t.revoice || "Переозвучить", icon: "volume", busy: revoiceBusy, disabled: revoiceBusy, onClick: revoice },
             (!view.descLoading ? { key: "fix", label: t.fixDesc, icon: "edit", onClick: () => { setFixOpen(true); setAskOpen(false); } } : null),
             (isAdmin ? { key: "del", label: t.deleteFromBase || "Удалить из базы", icon: "trash", danger: true, onClick: () => setDelConfirm(true) } : null),

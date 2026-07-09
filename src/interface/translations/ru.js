@@ -1,6 +1,7 @@
 // Языковой блок интерфейсных переводов: ru. Часть реестра interfaceTranslate.
 // Паритет ключей по языкам проверяет i18n.test.js + dev-страж checkInterfaceTranslate.
 export const ru = {
+        analyzeCompound: "Разобрать состав", notCompound: "Это простое слово, не составное",
         enterTranslationBelow: "Впиши ниже перевод для:",
         russian: "Русский",
         ukrainian: "Украинский",

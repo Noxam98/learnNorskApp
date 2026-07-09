@@ -1,6 +1,7 @@
 // Языковой блок интерфейсных переводов: en. Часть реестра interfaceTranslate.
 // Паритет ключей по языкам проверяет i18n.test.js + dev-страж checkInterfaceTranslate.
 export const en = {
+        analyzeCompound: "Break down compound", notCompound: "This is a simple word, not a compound",
         guessedStats: ["guessed", "of"],
         mistakesMade: "Mistakes made:",
         yes: "Yes",

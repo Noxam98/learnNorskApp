@@ -1,6 +1,7 @@
 // Языковой блок интерфейсных переводов: pl. Часть реестра interfaceTranslate.
 // Паритет ключей по языкам проверяет i18n.test.js + dev-страж checkInterfaceTranslate.
 export const pl = {
+        analyzeCompound: "Rozłóż na części", notCompound: "To słowo proste, nie złożone",
         guessedStats: ["odgadnięto", "z"],
         mistakesMade: "Popełniono błędów:",
         passwordLengthError: "Hasło musi zawierać co najmniej 6 znaków",

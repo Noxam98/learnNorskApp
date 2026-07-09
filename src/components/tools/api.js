@@ -288,6 +288,7 @@ class ApiService {
     getPoolMeta(word, poolId) { return this._send('GET', `/pool/${encodeURIComponent(word)}/meta${poolId ? `?pool_id=${poolId}` : ''}`); }
     askWord(word, question, lang = "ru") { return this._send('POST', `/pool/${encodeURIComponent(word)}/ask`, { question, lang }); }
     revoiceWord(word) { return this._send('POST', `/pool/${encodeURIComponent(word)}/revoice`); }
+    analyzeCompound(word, poolId) { return this._send('POST', `/pool/${encodeURIComponent(word)}/compound${poolId ? `?pool_id=${poolId}` : ''}`); }
 
     // --- «Учёба» (интервальные повторения) ---
     learningList({ status, level, topic, q, sort = "strength", order = "asc", limit = 500, offset = 0 } = {}) {
