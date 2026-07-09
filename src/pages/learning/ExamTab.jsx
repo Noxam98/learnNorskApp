@@ -51,8 +51,8 @@ export default function ExamTab({ lang, go, refresh }) {
                             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                                 transition={{ type: "spring", stiffness: 280, damping: 16 }}
                                 style={{ fontSize: "2.6rem", fontWeight: 800, color, lineHeight: 1 }}>
-                                {Math.max(0, questions.length - (result.demoted || 0))}
-                                <span style={{ opacity: .45, fontSize: "1.6rem" }}> / {questions.length}</span>
+                                {result.correct ?? Math.max(0, questions.length - (result.demoted || 0))}
+                                <span style={{ opacity: .45, fontSize: "1.6rem" }}> / {result.total ?? questions.length}</span>
                             </motion.div>
                             <motion.span className="grade-cefr" style={{ background: color }}
                                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>

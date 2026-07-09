@@ -64,7 +64,7 @@ export function useExam(lang, refresh) {
         try {
             if (kind === "gate") {
                 const r = await api.learningGateGrade({ lang, answers: all });
-                setResult({ kind: "gate", passed: !!r?.passed, demoted: r?.demoted ?? 0 });
+                setResult({ kind: "gate", passed: !!r?.passed, demoted: r?.demoted ?? 0, correct: r?.correct, total: r?.total });
             } else {
                 const r = await api.learningAuditGrade({ lang, answers: all });
                 setResult({ kind: "audit", refreshed: r?.refreshed ?? 0, forgot: r?.forgot ?? 0, checked: r?.checked ?? all.length });
