@@ -160,13 +160,13 @@ export const FORM_EXPLAIN = langGuard({
 
 // Подписи откликов прохождения рампы (RampCheer): ступень/выучено/защищено/форма сдана.
 export const MASTERY = langGuard({
-    ru:  { step: "ступень", stepDown: "ступень ниже", mastered: "Слово выучено!", protectedW: "Защищено", formDone: "Форма сдана" },
-    en:  { step: "step", stepDown: "step down", mastered: "Word mastered!", protectedW: "Protected", formDone: "Form done" },
-    ukr: { step: "сходинка", stepDown: "сходинка нижче", mastered: "Слово вивчено!", protectedW: "Захищено", formDone: "Форму складено" },
-    pl:  { step: "etap", stepDown: "etap niżej", mastered: "Słowo opanowane!", protectedW: "Ochronione", formDone: "Forma zaliczona" },
-    lt:  { step: "pakopa", stepDown: "pakopa žemyn", mastered: "Žodis išmoktas!", protectedW: "Apsaugota", formDone: "Forma įveikta" },
-    lv:  { step: "pakāpe", stepDown: "pakāpe zemāk", mastered: "Vārds apgūts!", protectedW: "Aizsargāts", formDone: "Forma nokārtota" },
-    ar:  { step: "درجة", stepDown: "درجة أدنى", mastered: "أُتقنت الكلمة!", protectedW: "محمي", formDone: "أُنجزت الصيغة" },
+    ru:  { step: "ступень", stepDown: "ступень ниже", mastered: "Слово выучено!", masteredPhrase: "Фраза выучена!", protectedW: "Защищено", formDone: "Форма сдана" },
+    en:  { step: "step", stepDown: "step down", mastered: "Word mastered!", masteredPhrase: "Phrase mastered!", protectedW: "Protected", formDone: "Form done" },
+    ukr: { step: "сходинка", stepDown: "сходинка нижче", mastered: "Слово вивчено!", masteredPhrase: "Фразу вивчено!", protectedW: "Захищено", formDone: "Форму складено" },
+    pl:  { step: "etap", stepDown: "etap niżej", mastered: "Słowo opanowane!", masteredPhrase: "Wyrażenie opanowane!", protectedW: "Ochronione", formDone: "Forma zaliczona" },
+    lt:  { step: "pakopa", stepDown: "pakopa žemyn", mastered: "Žodis išmoktas!", masteredPhrase: "Frazė išmokta!", protectedW: "Apsaugota", formDone: "Forma įveikta" },
+    lv:  { step: "pakāpe", stepDown: "pakāpe zemāk", mastered: "Vārds apgūts!", masteredPhrase: "Frāze apgūta!", protectedW: "Aizsargāts", formDone: "Forma nokārtota" },
+    ar:  { step: "درجة", stepDown: "درجة أدنى", mastered: "أُتقنت الكلمة!", masteredPhrase: "أُتقنت العبارة!", protectedW: "محمي", formDone: "أُنجزت الصيغة" },
 }, "gameShared.MASTERY");
 
 // Отклик прохождения ступени рампы при ВЕРНОМ ответе (рендерится в состоянии CORRECT):
@@ -194,7 +194,7 @@ export const RampCheer = ({ word, rank = 0, repeat = false, gmode = "", firstTry
             <div className={`rampcheer rampcheer--big${mastered ? " rampcheer--gold" : ""}`}>
                 {mastered && <span className="mburst" aria-hidden="true">{Array.from({ length: 10 }).map((_, i) => <i key={i} />)}</span>}
                 <Icon n={mastered ? "trophy" : formDone ? "check-circle" : "lock"} sm />
-                <span>{mastered ? m.mastered : formDone ? m.formDone : m.protectedW}</span>
+                <span>{mastered ? (word?.part_of_speech === "phrase" ? m.masteredPhrase : m.mastered) : formDone ? m.formDone : m.protectedW}</span>
             </div>
         );
     }
