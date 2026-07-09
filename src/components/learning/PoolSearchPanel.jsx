@@ -197,7 +197,7 @@ export default function PoolSearchPanel({ lang, setId, inSet, onPick, onRemove, 
         <WordCard key={w.pool_id} word={w} lang={lang} t={t}
             added={isIn(w.pool_id)} busy={busyId === w.pool_id}
             onToggle={() => toggle(w)} onHover={onHover}
-            onInfo={openWord ? (() => openWord(w.word)) : undefined} />
+            onInfo={openWord ? (() => openWord(w.word, null, w.pool_id)) : undefined} />
     );
 
     // строка поиска + выезжающая кнопка «Создать» (одна и та же в полном и компактном виде)

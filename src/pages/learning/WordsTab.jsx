@@ -211,7 +211,7 @@ export default function WordsTab({ lang, openSession, openWord, reloadKey, refre
                         <WordRow key={w.pool_id} w={w} lang={lang} tt={tt} t={ig}
                             selected={sel.has(w.pool_id)}
                             onToggle={() => toggleSel(w.pool_id)}
-                            onOpen={() => openWord?.(w.no, null)}
+                            onOpen={() => openWord?.(w.no, null, w.pool_id)}
                             onKnow={() => mutate(w.pool_id, "known")}
                             onArchive={() => mutate(w.pool_id, "know")}
                             onReset={() => mutate(w.pool_id, "reset")}

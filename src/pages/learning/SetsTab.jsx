@@ -179,8 +179,8 @@ export default function SetsTab({ lang, openSession, openWord }) {
                             added highlight={hoverPid != null && w.pool_id === hoverPid}
                             removeBtn removeLabel={ll.remove}
                             onToggle={() => removeWord(w.pool_id)}
-                            onCardClick={openWord ? (() => openWord(w.norwegian)) : undefined}
-                            onInfo={openWord ? (() => openWord(w.norwegian)) : undefined} />
+                            onCardClick={openWord ? (() => openWord(w.norwegian, null, w.pool_id)) : undefined}
+                            onInfo={openWord ? (() => openWord(w.norwegian, null, w.pool_id)) : undefined} />
                     ))}
                 </div>
             )}

@@ -131,7 +131,7 @@ export default function ProgressTab({ lang, openSession, openWord, openPlacement
                     <div className="shelf">
                         {words.map((w) => (
                             <a key={w.pool_id ?? w.no} className="shelf-row"
-                                onClick={(e) => { e.preventDefault(); openWord(w.no, null); }} href="#">
+                                onClick={(e) => { e.preventDefault(); openWord(w.no, null, w.pool_id); }} href="#">
                                 <StrengthBar value={w.strength || 0} status={w.status} sm />
                                 <span className="shelf-row__w">{w.no}</span>
                                 <span className="shelf-row__tr">{tr(w, lang)}</span>

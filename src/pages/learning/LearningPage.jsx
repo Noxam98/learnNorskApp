@@ -119,7 +119,7 @@ export default function LearningPage() {
     // openSession(null, "choice", { listen: true }) — слуховая сессия (источник /learning/listen).
     const openSession = (words = null, mode = "choice", opts = {}) =>
         setSession({ words, mode, system: !words?.length || !!opts.setId || !!opts.listen, setId: opts.setId || null, listen: !!opts.listen });
-    const openWord = (no, wordId) => setInfo({ no, wordId });
+    const openWord = (no, wordId, poolId) => setInfo({ no, wordId, poolId });   // poolId — дизамбигуация ОМОНИМА (сущ./глаг.)
     const closeSession = (didPractice) => {
         setSession(null);
         if (didPractice) setReloadKey((k) => k + 1);
@@ -167,7 +167,7 @@ export default function LearningPage() {
             {session && (
                 <LearningSession words={session.words} mode={session.mode} system={session.system} setId={session.setId} listen={session.listen} lang={lang} onClose={closeSession} />
             )}
-            <WordInfoModal open={!!info} word={info?.no} wordId={info?.wordId}
+            <WordInfoModal open={!!info} word={info?.no} wordId={info?.wordId} poolId={info?.poolId}
                 lang={lang} t={tg} onClose={() => { setInfo(null); }} />
             {placement && <PlacementScreen lang={lang} onClose={closePlacement} />}
             {intro && <LearningIntro lang={lang} onDone={closeIntro} />}
