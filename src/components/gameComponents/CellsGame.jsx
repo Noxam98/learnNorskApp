@@ -145,11 +145,7 @@ export const CellsGame = ({ setGameState, sound = false, words: wordsProp, onRes
                         </div>
                     )}
 
-                    <div className="pcta">
-                        {canType && (
-                            <button className="gbtn gbtn--accent" onClick={submit}><Icon n="check" sm /> {t.check}</button>
-                        )}
-                    </div>
+                    {/* проверка — клавишей ✓ в клавиатуре (дубль-кнопку «Проверить» снизу убрали, как в BuildGame/InputGame) */}
                 </div>
 
                 {status === "FINISHED" && !onFinish && (
