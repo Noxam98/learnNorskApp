@@ -420,7 +420,9 @@
 .study-root .review-cta__big { font-size: var(--fs-34); }
 .study-root .study-head { gap: var(--sp-4); }
 .study-root .study-head__l { flex: 1 1 100%; }
-.study-root .seg { width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+/* значки — на всю ширину экрана: по колонке 1fr на КАЖДУЮ вкладку (grid-auto), сколько бы их ни было
+   (репет(5) залипал на 4 вкладках → справа пустая колонка, значки жались влево). */
+.study-root .seg { width: 100%; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; }
 .study-root .seg--scroll { overflow: visible; }
 .study-root .seg__item {
     flex-direction: column; gap: 4px; padding: 9px 1px;
@@ -552,7 +554,7 @@
      схлопывает место) — гасим border/shadow, иначе остаётся еле видная полоска у начала чипов */
   .study-root .study-navbar.is-hidden { box-shadow: none; border-color: transparent; pointer-events: none; }   /* transform/margin — inline из JS */
   .study-root .study-navbar .seg {
-    width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px;
+    width: 100%; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px;
     background: transparent; border: none; border-radius: 0; padding: 0;
   }
 }
