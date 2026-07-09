@@ -20,7 +20,9 @@ export function usePopup(ref, open, setOpen) {
             setPop({ left: r.left, top: up ? r.top - 6 : r.bottom + 6, width: r.width, maxH: Math.min(280, Math.max(160, up ? above : below)), up });
         };
         place();
-        const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target) && !e.target.closest(".dd__pop")) setOpen(false); };
+        // .actionsmenu — портальный поповер ActionMenu (вне ref.current): тоже считаем «внутри»,
+        // иначе mousedown по пункту закрыл бы меню ДО его click (пункты не срабатывали бы).
+        const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target) && !e.target.closest(".dd__pop, .actionsmenu")) setOpen(false); };
         const onScroll = (e) => { if (e.target?.closest?.(".dd__pop")) return; place(); };
         const onResize = () => setOpen(false);
         document.addEventListener("mousedown", onDoc);
@@ -116,22 +118,20 @@ export function ActionMenu({ label, icon = "dots", items = [], align = "left", i
                 {iconRight ? <>{label} {ic}</> : <>{ic} {label}</>}
             </button>
             {open && pop && createPortal(
-                <>
-                    <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 9599 }} />
-                    <div ref={popRef} className="card actionsmenu"
-                        style={{
-                            position: "fixed", left: pop.left, top: pop.top, right: "auto", zIndex: 9600,
-                            maxHeight: pop.maxH, overflowY: "auto",
-                            transform: pop.up ? "translateY(-100%)" : "none",
-                        }}>
-                        {items.filter(Boolean).map((it) => (
-                            <button key={it.key || it.label} className={`actionsmenu__item${it.danger ? " is-danger" : ""}`}
-                                disabled={it.disabled} onClick={() => { setOpen(false); it.onClick?.(); }}>
-                                {it.busy ? <BtnSpinner /> : <Icon n={it.icon} sm />} <span>{it.label}</span>
-                            </button>
-                        ))}
-                    </div>
-                </>,
+                // Закрытие по клику вне — на usePopup (mousedown/touchstart), оверлей-перехватчик не нужен.
+                <div ref={popRef} className="card actionsmenu"
+                    style={{
+                        position: "fixed", left: pop.left, top: pop.top, right: "auto", zIndex: 9600,
+                        maxHeight: pop.maxH, overflowY: "auto",
+                        transform: pop.up ? "translateY(-100%)" : "none",
+                    }}>
+                    {items.filter(Boolean).map((it) => (
+                        <button key={it.key || it.label} className={`actionsmenu__item${it.danger ? " is-danger" : ""}`}
+                            disabled={it.disabled} onClick={() => { setOpen(false); it.onClick?.(); }}>
+                            {it.busy ? <BtnSpinner /> : <Icon n={it.icon} sm />} <span>{it.label}</span>
+                        </button>
+                    ))}
+                </div>,
                 document.body
             )}
         </div>
