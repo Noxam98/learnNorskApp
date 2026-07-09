@@ -3,6 +3,7 @@
 //   <Dropdown value options onChange placeholder />   — выбор значения
 //   <ActionMenu label icon items />                    — меню действий
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Icon } from "./Icon.jsx";
 import { BtnSpinner } from "./Spinner.jsx";
 
@@ -87,20 +88,42 @@ export function Dropdown({ value, options, onChange, placeholder, disabled = fal
     );
 }
 
-// Меню действий — тот же поповер, что в списках слов (.tool + .actionsmenu).
+// Меню действий — тот же анкер-поповер, что и Dropdown (usePopup: fixed у триггера).
 // items = [{ key, label, icon, onClick, danger, disabled, busy }]. align: "left" | "right".
+// Рендерим ПОРТАЛОМ в body: карточка списка (.sword) имеет content-visibility:auto (= contain:paint),
+// которая клипует даже position:fixed потомков — раньше меню обрезалось на границе карточки. Портал
+// выносит его из-под containment. z-index выше модалок (боттом-шит 9500), т.к. в стек-контексте body.
 export function ActionMenu({ label, icon = "dots", items = [], align = "left", iconRight = false, iconLg = false }) {
     const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+    const popRef = useRef(null);
+    const pop = usePopup(ref, open, setOpen);
     const ic = <Icon n={icon} sm={!iconLg} lg={iconLg} />;
+    // Горизонталь: align="right" — правый край меню к правому краю триггера; "left" — левые края.
+    // Затем зажимаем в вьюпорт (перенос за край экрана не даём).
+    useLayoutEffect(() => {
+        const el = popRef.current;
+        if (!open || !pop || !el) return;
+        const w = el.offsetWidth, vw = window.innerWidth, m = 8;
+        let left = align === "right" ? pop.left + pop.width - w : pop.left;
+        if (left + w > vw - m) left = vw - m - w;
+        if (left < m) left = m;
+        el.style.left = Math.round(left) + "px";
+    }, [open, pop, align]);
     return (
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative" }} ref={ref}>
             <button type="button" className="tool" onClick={() => setOpen((p) => !p)} aria-haspopup="menu" aria-expanded={open}>
                 {iconRight ? <>{label} {ic}</> : <>{ic} {label}</>}
             </button>
-            {open && (
+            {open && pop && createPortal(
                 <>
-                    <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 30 }} />
-                    <div className="card actionsmenu" style={align === "left" ? { right: "auto", left: 0 } : undefined}>
+                    <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 9599 }} />
+                    <div ref={popRef} className="card actionsmenu"
+                        style={{
+                            position: "fixed", left: pop.left, top: pop.top, right: "auto", zIndex: 9600,
+                            maxHeight: pop.maxH, overflowY: "auto",
+                            transform: pop.up ? "translateY(-100%)" : "none",
+                        }}>
                         {items.filter(Boolean).map((it) => (
                             <button key={it.key || it.label} className={`actionsmenu__item${it.danger ? " is-danger" : ""}`}
                                 disabled={it.disabled} onClick={() => { setOpen(false); it.onClick?.(); }}>
@@ -108,7 +131,8 @@ export function ActionMenu({ label, icon = "dots", items = [], align = "left", i
                             </button>
                         ))}
                     </div>
-                </>
+                </>,
+                document.body
             )}
         </div>
     );
