@@ -12,6 +12,8 @@ const Error = ({ text, setText, type = "error", url = "", action = null, persist
     const icon = success ? "check" : (warning || info) ? "info" : "x";
     // клик по телу ведёт по url ТОЛЬКО если нет кнопки-действия (иначе тело не кликабельно)
     const onClick = (url && !action) ? () => { setText(""); try { window.location.hash = url; } catch { /* */ } } : undefined;
+    // закрыть по крестику: плавно уводим вниз, затем чистим стор (не ждём авто-таймер)
+    const close = (e) => { e?.stopPropagation?.(); setIsVisible(false); setTimeout(() => setText(""), 350); };
     useEffect(() => {
         if (!text) { setIsVisible(false); return; }
         setIsVisible(true);
@@ -47,6 +49,14 @@ const Error = ({ text, setText, type = "error", url = "", action = null, persist
                     {action.label}
                 </button>
             )}
+            <button type="button" aria-label="Закрыть" onClick={close}
+                style={{
+                    background: "transparent", border: "none", cursor: "pointer", color: "inherit",
+                    opacity: .55, display: "inline-flex", alignItems: "center", padding: 2,
+                    margin: "-4px -6px -4px 0", flex: "0 0 auto",
+                }}>
+                <Icon n="x" sm />
+            </button>
         </div>
     );
 };

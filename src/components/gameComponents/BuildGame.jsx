@@ -145,12 +145,8 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
                         </div>
                     )}
 
-                    <div className="pcta">
-                        {/* стирание — клавишей ⌫; «Не знаю» — клавишей слева в клавиатуре */}
-                        {canType && (
-                            <button className="gbtn gbtn--accent" onClick={() => submit()}><Icon n="check" sm /> {t.check}</button>
-                        )}
-                    </div>
+                    {/* проверка — клавишей ✓ в самой клавиатуре (как в обычном вводе); стирание — ⌫; «Не знаю» — слева.
+                        Нижнюю дубль-кнопку «Проверить» убрали: она дублировала клавиатурный ✓. */}
                 </div>
 
                 {status === "FINISHED" && !onFinish && (
