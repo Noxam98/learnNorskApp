@@ -14,7 +14,8 @@ const t = {
     reviewApproved: "Одобрено", reviewRejected: "Отклонено",
     russian: "Рус", ukrainian: "Укр", english: "Англ", polish: "Пол", lithuanian: "Лит",
 };
-const view = { no: "hund", translate: { no: ["hund"], ru: ["собака"] } };
+// pool_id обязателен в правке: без него бэк правит старшую по id запись омонима (порча общей Базы)
+const view = { no: "hund", pool_id: 42, translate: { no: ["hund"], ru: ["собака"] } };
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
 describe("EditWordModal", () => {
@@ -30,10 +31,11 @@ describe("EditWordModal", () => {
         expect(screen.getByDisplayValue("собака")).toBeInTheDocument();   // поле ru заполнено из view
         fireEvent.click(screen.getByRole("button", { name: "Сохранить" }));
         await waitFor(() => expect(api.editPoolWord).toHaveBeenCalled());
-        const [no, translate, lang] = api.editPoolWord.mock.calls[0];
+        const [no, translate, lang, , poolId] = api.editPoolWord.mock.calls[0];
         expect(no).toBe("hund");
         expect(lang).toBe("ru");
         expect(translate.ru).toEqual(["собака"]);
+        expect(poolId).toBe(42);    // правится ИМЕННО показанный омоним
         expect(onSaved).toHaveBeenCalledWith(expect.objectContaining({ no: "hund" }));
         expect(await screen.findByText(/Одобрено/)).toBeInTheDocument();
     });

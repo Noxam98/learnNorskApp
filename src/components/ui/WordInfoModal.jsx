@@ -109,7 +109,7 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
         if (!view || delBusy) return;
         setDelBusy(true);
         try {
-            await api.adminDeletePoolWord(view.no);
+            await api.adminDeletePoolWord(view.no, view.pool_id);   // только показанный омоним
             loadData?.(true);
             onClose?.();
         } catch { /* не вышло — оставляем окно */ }
@@ -420,12 +420,12 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
         </Modal>
 
         {/* Отдельный модал «Исправить описание» (самодостаточный) */}
-        <FixDescriptionModal open={fixOpen} no={view?.no} lang={lang} t={t} header={wordRefNode}
+        <FixDescriptionModal open={fixOpen} no={view?.no} poolId={view?.pool_id} lang={lang} t={t} header={wordRefNode}
             onClose={() => setFixOpen(false)}
             onFixed={(no, nd) => setView((v) => (v && v.no === no ? { ...v, desc: nd } : v))} />
 
         {/* Отдельный модал «Спросить о слове» (самодостаточный, view-независимый) */}
-        <AskWordModal open={askOpen} no={view?.no} lang={lang} t={t} header={wordRefNode}
+        <AskWordModal open={askOpen} no={view?.no} poolId={view?.pool_id} lang={lang} t={t} header={wordRefNode}
             onClose={() => setAskOpen(false)} />
 
         {/* Отдельный модал правки слова и переводов (самодостаточный, AI-ревью внутри) */}

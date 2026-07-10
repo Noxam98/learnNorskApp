@@ -7,7 +7,7 @@ import { Icon } from "./Icon.jsx";
 import { BtnSpinner } from "./Spinner.jsx";
 import api from "../tools/api.js";
 
-export default function FixDescriptionModal({ open, no, lang, t, header, onClose, onFixed }) {
+export default function FixDescriptionModal({ open, no, poolId, lang, t, header, onClose, onFixed }) {
     const [hint, setHint] = useState("");
     const [busy, setBusy] = useState(false);
     useEffect(() => { if (!open) { setHint(""); setBusy(false); } }, [open]);
@@ -16,7 +16,8 @@ export default function FixDescriptionModal({ open, no, lang, t, header, onClose
         if (busy || !no) return;
         setBusy(true);
         try {
-            const r = await api.redescribe(no, hint.trim());
+            // poolId — точная запись омонима: без него описание пишется в старшую по id
+            const r = await api.redescribe(no, hint.trim(), poolId);
             const nd = r.description?.[lang] || r.description?.en || "";
             onFixed?.(no, nd);
             onClose?.();

@@ -8,7 +8,7 @@ import { Icon } from "./Icon.jsx";
 import { BtnSpinner } from "./Spinner.jsx";
 import api from "../tools/api.js";
 
-export default function AskWordModal({ open, no, lang, t, header, onClose }) {
+export default function AskWordModal({ open, no, poolId, lang, t, header, onClose }) {
     const [q, setQ] = useState("");
     const [a, setA] = useState("");
     const [busy, setBusy] = useState(false);
@@ -19,7 +19,8 @@ export default function AskWordModal({ open, no, lang, t, header, onClose }) {
         if (!query || busy || !no) return;
         setBusy(true); setA("");
         try {
-            const r = await api.askWord(no, query, lang);
+            // poolId — точная запись омонима: иначе контекст для нейросети берётся у старшей по id
+            const r = await api.askWord(no, query, lang, poolId);
             setA(r?.answer || t.descUnavailable || "—");
         } catch { setA(t.unexpectedError || "—"); }
         setBusy(false);

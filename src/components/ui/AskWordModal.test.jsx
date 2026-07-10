@@ -21,12 +21,14 @@ describe("AskWordModal", () => {
         expect(container).toBeEmptyDOMElement();
     });
 
-    it("задаёт вопрос и показывает ответ нейросети", async () => {
+    // poolId прокидывается ОБЯЗАТЕЛЬНО: без него бэк берёт старшего омонима и отвечает про
+    // другое значение слова (карточка сущ. `mot` → ответ про предлог `mot`).
+    it("задаёт вопрос и показывает ответ нейросети (с pool_id омонима)", async () => {
         api.askWord.mockResolvedValue({ answer: "Это домашнее животное." });
-        render(<AskWordModal open no="hund" lang="ru" t={t} onClose={() => {}} />);
+        render(<AskWordModal open no="hund" poolId={42} lang="ru" t={t} onClose={() => {}} />);
         fireEvent.change(screen.getByPlaceholderText("Вопрос?"), { target: { value: "Что это?" } });
         fireEvent.click(screen.getByRole("button", { name: "Отправить" }));
-        await waitFor(() => expect(api.askWord).toHaveBeenCalledWith("hund", "Что это?", "ru"));
+        await waitFor(() => expect(api.askWord).toHaveBeenCalledWith("hund", "Что это?", "ru", 42));
         expect(await screen.findByText("Это домашнее животное.")).toBeInTheDocument();
     });
 });

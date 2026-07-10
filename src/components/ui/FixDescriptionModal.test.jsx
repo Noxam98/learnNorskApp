@@ -16,13 +16,15 @@ describe("FixDescriptionModal", () => {
         expect(container).toBeEmptyDOMElement();
     });
 
-    it("перегенерирует описание и отдаёт новое наружу", async () => {
+    // poolId прокидывается ОБЯЗАТЕЛЬНО: без него описание пишется в старшую по id запись омонима
+    // (правка карточки сущ. `mot` затирала описание предлога `mot` в общей Базе).
+    it("перегенерирует описание и отдаёт новое наружу (с pool_id омонима)", async () => {
         api.redescribe.mockResolvedValue({ description: { ru: "Новое описание" } });
         const onFixed = vi.fn(), onClose = vi.fn();
-        render(<FixDescriptionModal open no="hund" lang="ru" t={t} onClose={onClose} onFixed={onFixed} />);
+        render(<FixDescriptionModal open no="hund" poolId={42} lang="ru" t={t} onClose={onClose} onFixed={onFixed} />);
         fireEvent.change(screen.getByPlaceholderText("Подсказка"), { target: { value: "уточнение" } });
         fireEvent.click(screen.getByRole("button", { name: /Перегенерировать/ }));
-        await waitFor(() => expect(api.redescribe).toHaveBeenCalledWith("hund", "уточнение"));
+        await waitFor(() => expect(api.redescribe).toHaveBeenCalledWith("hund", "уточнение", 42));
         expect(onFixed).toHaveBeenCalledWith("hund", "Новое описание");
         expect(onClose).toHaveBeenCalled();
     });

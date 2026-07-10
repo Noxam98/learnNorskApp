@@ -39,7 +39,9 @@ export default function EditWordModal({ open, view, lang, t, header, onClose, on
         for (const k of FIELDS) { const v = parse(edit[k]); if (v.length) translate[k] = v; }
         setBusy(true); setReview(null);
         try {
-            const r = await api.editPoolWord(view.no, translate, lang, hint);   // ревью + правка общего пула
+            // view.pool_id ОБЯЗАТЕЛЕН: без него бэк правит старшую по id запись омонима — правка
+            // карточки сущ. `mot` («мужество») переписала бы предлог `mot` в общей Базе для всех.
+            const r = await api.editPoolWord(view.no, translate, lang, hint, view.pool_id);   // ревью + правка общего пула
             setReview({ approved: !!r.approved, reason: r.reason || "" });
             if (r.approved) {  // одобрено: нейросеть вернула стандартизованное слово/переводы
                 const newNo = r.no || translate.no?.[0] || view.no;
