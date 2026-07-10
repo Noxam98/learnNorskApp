@@ -386,9 +386,51 @@
 .az__opt.is-wrong { border-color: var(--r-danger); background: color-mix(in srgb, var(--r-danger) 12%, var(--r-surface-2)); color: var(--r-danger); animation: shakeX .42s; }
 .az__opt.is-right { border-color: var(--r-correct); background: color-mix(in srgb, var(--r-correct) 12%, var(--r-surface-2)); color: var(--r-correct); }
 
+/* «Зверёк упал»: зона ответа превращается в шаг подъёма — показываем ВЕРНОЕ слово,
+   игрок его воспроизводит. Подсветка янтарная (не красная): это обучение, а не провал. */
+.answerzone--fallen .answerzone__inner { border-color: color-mix(in srgb, var(--r-accent) 55%, var(--r-border)); }
+.az__prompt--fell { color: var(--r-accent); font-weight: 800; }
+.az__fellcap { font-size: var(--fs-12); font-weight: 700; color: var(--r-ink-3); text-transform: uppercase; letter-spacing: .04em; margin-right: 8px; }
+.answerzone--fallen .az__no { color: var(--r-accent); }
+.answerzone--fallen .az__fb { color: var(--r-ink-3); font-weight: 600; }
+
 @media (max-width: 560px) {
   .az__choices { grid-template-columns: 1fr; }
   .az__no { font-size: var(--fs-28); }
+
+  /* Дорога — во ВСЮ ширину экрана: карточка дорожки теряет рамку/поля, имя игрока уезжает
+     НА полотно (абсолютно, сверху), а не в отдельную колонку слева. Зверёк — чуть меньше. */
+  .race__lanes { padding-left: 0; padding-right: 0; gap: 8px; }
+  .lane, .lane--own {
+    grid-template-columns: 1fr; gap: 0;
+    padding: 0; border-radius: 0; border-left: 0; border-right: 0;
+    background: transparent; box-shadow: none;
+  }
+  .lane__track, .lane--own .lane__track { border-radius: 0; border-left: 0; border-right: 0; }
+  .lane__track { height: 58px; }
+  .lane--own .lane__track { height: 84px; }
+
+  /* имя вдоль дороги, поверх полотна: полупрозрачная плашка у верхнего края */
+  .lane { position: relative; }
+  .lane__label {
+    position: absolute; left: 8px; top: 3px; z-index: 2; max-width: calc(100% - 90px);
+    pointer-events: none;
+  }
+  .ptag { gap: 6px; padding: 2px 8px 2px 2px; border-radius: var(--r-full);
+    background: color-mix(in srgb, var(--r-surface) 72%, transparent); backdrop-filter: blur(2px); }
+  .ptag__av { width: 20px; height: 20px; border-radius: 7px; font-size: 11px; }
+  .ptag__meta { flex-direction: row; align-items: center; gap: 6px; }
+  .ptag__name, .ptag--compact .ptag__name { font-size: var(--fs-12); }
+  .lane--own .ptag__name { font-size: var(--fs-13); }
+  .sbadge { font-size: 10px; padding: 1px 6px; }
+
+  .track__progress { top: 3px; right: 34px; font-size: var(--fs-12); padding: 1px 6px; }
+
+  /* зверёк чуть меньше — дороге нужно место, а не он */
+  .runner { width: 56px; height: 32px; }
+  .lane--own .runner { width: 76px; height: 44px; }
+  .runner__emoji { font-size: 24px; }
+  .lane--own .runner--emoji .runner__emoji { font-size: 34px; }
 }
 
 /* ============================================================

@@ -12,36 +12,43 @@ const RACE_I18N = {
         go: "Поехали!", toNo: "Переведите на норвежский", toLang: "Переведите на", placeholder: "Введите перевод…", check: "Проверить",
         correctRow: "верно подряд", bannerLeader: "{name} на финише!", bannerTimer: "У вас {n} сек", hurry: "Время поджимает!",
         podium: "Подиум", yourPlace: "Твоё место", reached: "доехал {a}/{b}", playAgain: "Играть снова", toLobby: "В лобби", word: "слово", of: "из",
+        fell: "Зверёк упал!", fellHint: "Верное слово:", getUp: "Поднять", typeIt: "Впиши это слово, чтобы зверёк встал", pickIt: "Выбери это слово, чтобы зверёк встал",
         listen: "Прослушать", correct: "Верно!", wrong: "Неверно", exitConfirm: "Точно выйти?", oppFinished: "{name} финишировал" },
     en: { tagline: "First to answer every word correctly wins", you: "You", exit: "Exit", ready: "idling", moving: "boost!", stalled: "stalled", restarting: "restarting", finished: "finish", dnf: "left",
         go: "Go!", toNo: "Translate to Norwegian", toLang: "Translate to", placeholder: "Type the translation…", check: "Check",
         correctRow: "in a row", bannerLeader: "{name} hit the finish!", bannerTimer: "You have {n}s", hurry: "Time is running out!",
         podium: "Podium", yourPlace: "Your place", reached: "reached {a}/{b}", playAgain: "Play again", toLobby: "To lobby", word: "word", of: "of",
+        fell: "Your animal fell!", fellHint: "Correct word:", getUp: "Get up", typeIt: "Type this word to get your animal back up", pickIt: "Pick this word to get your animal back up",
         listen: "Listen", correct: "Correct!", wrong: "Wrong", exitConfirm: "Leave for real?", oppFinished: "{name} finished" },
     ukr: { tagline: "Хто першим правильно відповість усі слова", you: "Ти", exit: "Вийти", ready: "на старті", moving: "ривок!", stalled: "заглух", restarting: "завівся", finished: "фініш", dnf: "вийшов",
         go: "Поїхали!", toNo: "Перекладіть норвезькою", toLang: "Перекладіть на", placeholder: "Введіть переклад…", check: "Перевірити",
         correctRow: "правильно поспіль", bannerLeader: "{name} на фініші!", bannerTimer: "У вас {n} с", hurry: "Час спливає!",
         podium: "Подіум", yourPlace: "Твоє місце", reached: "доїхав {a}/{b}", playAgain: "Грати знову", toLobby: "До лобі", word: "слово", of: "з",
+        fell: "Звірятко впало!", fellHint: "Правильне слово:", getUp: "Підняти", typeIt: "Впиши це слово, щоб звірятко встало", pickIt: "Обери це слово, щоб звірятко встало",
         listen: "Прослухати", correct: "Правильно!", wrong: "Неправильно", exitConfirm: "Точно вийти?", oppFinished: "{name} фінішував" },
     pl: { tagline: "Wygrywa pierwszy, kto poprawnie odpowie wszystkie słowa", you: "Ty", exit: "Wyjdź", ready: "na luzie", moving: "przyspieszenie!", stalled: "zgasł", restarting: "odpala", finished: "meta", dnf: "rozłączony",
         go: "Jedziemy!", toNo: "Przetłumacz na norweski", toLang: "Przetłumacz na", placeholder: "Wpisz tłumaczenie…", check: "Sprawdź",
         correctRow: "pod rząd", bannerLeader: "{name} na mecie!", bannerTimer: "Masz {n} s", hurry: "Czas ucieka!",
         podium: "Podium", yourPlace: "Twoje miejsce", reached: "dojechał {a}/{b}", playAgain: "Zagraj ponownie", toLobby: "Do poczekalni", word: "słowo", of: "z",
+        fell: "Zwierzak się przewrócił!", fellHint: "Poprawne słowo:", getUp: "Podnieś", typeIt: "Wpisz to słowo, aby zwierzak wstał", pickIt: "Wybierz to słowo, aby zwierzak wstał",
         listen: "Odsłuchaj", correct: "Dobrze!", wrong: "Źle", exitConfirm: "Na pewno wyjść?", oppFinished: "{name} na mecie" },
     lt: { tagline: "Laimi pirmas teisingai atsakęs visus žodžius", you: "Tu", exit: "Išeiti", ready: "tuščia eiga", moving: "startas!", stalled: "užgeso", restarting: "užvedama", finished: "finišas", dnf: "atsijungė",
         go: "Pirmyn!", toNo: "Išverskite į norvegų", toLang: "Išverskite į", placeholder: "Įveskite vertimą…", check: "Tikrinti",
         correctRow: "iš eilės", bannerLeader: "{name} finiše!", bannerTimer: "Turite {n} s", hurry: "Laikas baigiasi!",
         podium: "Podiumas", yourPlace: "Tavo vieta", reached: "pasiekė {a}/{b}", playAgain: "Žaisti dar kartą", toLobby: "Į laukiamąjį", word: "žodis", of: "iš",
+        fell: "Žvėrelis parkrito!", fellHint: "Teisingas žodis:", getUp: "Pakelti", typeIt: "Įvesk šį žodį, kad žvėrelis atsistotų", pickIt: "Pasirink šį žodį, kad žvėrelis atsistotų",
         listen: "Klausyti", correct: "Teisingai!", wrong: "Neteisingai", exitConfirm: "Tikrai išeiti?", oppFinished: "{name} finišavo" },
     lv: { tagline: "Uzvar pirmais, kurš pareizi atbild visus vārdus", you: "Tu", exit: "Iziet", ready: "tukšgaitā", moving: "rāviens!", stalled: "noslāpis", restarting: "iedarbina", finished: "finišs", dnf: "atvienojies",
         go: "Brauc!", toNo: "Iztulko uz norvēģu", toLang: "Iztulko uz", placeholder: "Ievadi tulkojumu…", check: "Pārbaudīt",
         correctRow: "pēc kārtas", bannerLeader: "{name} finišā!", bannerTimer: "Tev ir {n} s", hurry: "Laiks beidzas!",
         podium: "Pjedestāls", yourPlace: "Tava vieta", reached: "sasniedza {a}/{b}", playAgain: "Spēlēt vēlreiz", toLobby: "Uz vestibilu", word: "vārds", of: "no",
+        fell: "Zvēriņš nokrita!", fellHint: "Pareizais vārds:", getUp: "Piecelt", typeIt: "Ieraksti šo vārdu, lai zvēriņš pieceltos", pickIt: "Izvēlies šo vārdu, lai zvēriņš pieceltos",
         listen: "Klausīties", correct: "Pareizi!", wrong: "Nepareizi", exitConfirm: "Tiešām iziet?", oppFinished: "{name} finišēja" },
     ar: { tagline: "يفوز أول من يجيب عن كل الكلمات بشكل صحيح", you: "أنت", exit: "خروج", ready: "في وضع الخمول", moving: "اندفاع!", stalled: "متوقّف", restarting: "إعادة التشغيل", finished: "خط النهاية", dnf: "غادر",
         go: "انطلق!", toNo: "ترجم إلى النرويجية", toLang: "ترجم إلى", placeholder: "اكتب الترجمة…", check: "تحقق",
         correctRow: "على التوالي", bannerLeader: "{name} بلغ خط النهاية!", bannerTimer: "أمامك {n} ث", hurry: "الوقت ينفد!",
         podium: "منصة التتويج", yourPlace: "مركزك", reached: "بلغ {a}/{b}", playAgain: "العب مرة أخرى", toLobby: "إلى الردهة", word: "كلمة", of: "من",
+        fell: "سقط حيوانك!", fellHint: "الكلمة الصحيحة:", getUp: "انهض", typeIt: "اكتب هذه الكلمة لينهض حيوانك", pickIt: "اختر هذه الكلمة لينهض حيوانك",
         listen: "استماع", correct: "صحيح!", wrong: "خطأ", exitConfirm: "الخروج فعلاً؟", oppFinished: "{name} أنهى السباق" },
 };
 
@@ -100,7 +107,10 @@ function Lane({ player, total, T }) {
     );
 }
 
-function AnswerZone({ word, lang, T, feedback, streak, onAnswer }) {
+// recover != null → зверь ЛЕЖИТ: показываем ВЕРНЫЙ ответ, и игрок обязан его воспроизвести
+// (впечатать / выбрать), чтобы зверь встал. Пробовать можно сколько угодно — это обучающий шаг,
+// а не наказание. Судит СЕРВЕР: onRecover шлёт ответ, поднимает только его «ok» (см. _race_recover).
+function AnswerZone({ word, lang, T, feedback, streak, onAnswer, recover, onRecover }) {
     const [val, setVal] = useState("");
     const [picked, setPicked] = useState(null);
     const [sent, setSent] = useState(false);    // анти-дабл-сабмит (печать): ждём ответ сервера
@@ -108,48 +118,61 @@ function AnswerZone({ word, lang, T, feedback, streak, onAnswer }) {
     const isType = word.mode !== "choice";
     const isNoPrompt = word.dir === "no2int";   // показываем норвежское слово
     const promptLabel = isNoPrompt ? `${T.toLang} ${ENDONYM[lang] || lang}` : T.toNo;
+    const fallen = !!recover;
+    const answerIsNo = word.dir === "int2no";   // верный ответ — норвежское слово (его можно озвучить)
 
-    useEffect(() => { setVal(""); setPicked(null); setSent(false); }, [word.token]);
-    useEffect(() => { if (isType && inputRef.current && !feedback) inputRef.current.focus(); }, [word.token, feedback, isType]);
-    // Сервер ответил (right/wrong) → снимаем блокировку: при ошибке можно повторить это же слово.
-    useEffect(() => { if (feedback) setSent(false); }, [feedback]);
+    useEffect(() => { setVal(""); setPicked(null); setSent(false); }, [word.token, fallen]);
+    useEffect(() => { if (isType && inputRef.current && !feedback) inputRef.current.focus(); }, [word.token, feedback, isType, fallen]);
+    // Сервер ответил → снимаем блокировку. В падении ещё и сбрасываем выбор: пробуем снова.
+    useEffect(() => { if (feedback) { setSent(false); if (fallen) setPicked(null); } }, [feedback, fallen]);
 
     const submit = () => {
-        if (sent || feedback) return;   // одно слово — один сабмит, пока не пришёл ответ
+        if (sent || (!fallen && feedback)) return;   // одно слово — один сабмит, пока не пришёл ответ
         const v = val.trim(); if (!v) return;
-        setSent(true); onAnswer({ token: word.token, text: v });
+        setSent(true);
+        if (fallen) onRecover({ token: recover.token, text: v });
+        else onAnswer({ token: word.token, text: v });
     };
-    const pick = (i) => { if (picked != null || feedback) return; setPicked(i); onAnswer({ token: word.token, choice: i }); };
-    const lock = !!feedback || sent;
+    const pick = (i) => {
+        if (sent || (!fallen && (picked != null || feedback))) return;
+        setPicked(i);
+        if (fallen) { setSent(true); onRecover({ token: recover.token, choice: i }); }
+        else onAnswer({ token: word.token, choice: i });
+    };
+    const lock = fallen ? sent : (!!feedback || sent);
+    const shown = fallen ? recover.answer : word.prompt;   // упал → на месте вопроса стоит ВЕРНЫЙ ответ
+    const canSpeak = fallen ? answerIsNo : isNoPrompt;
 
     return (
-        <div className={"answerzone" + (feedback === "right" ? " is-right" : "") + (feedback === "wrong" ? " is-wrong" : "")}>
+        <div className={"answerzone" + (fallen ? " answerzone--fallen" : "") + (feedback === "right" ? " is-right" : "") + (feedback === "wrong" ? " is-wrong" : "")}>
             <div className="answerzone__inner">
                 <div className="az__head">
-                    <span className="az__prompt">{promptLabel}</span>
-                    {streak > 1 && <span className="az__streak">🔥 {streak} {T.correctRow}</span>}
+                    <span className={"az__prompt" + (fallen ? " az__prompt--fell" : "")}>{fallen ? `🐾 ${T.fell}` : promptLabel}</span>
+                    {!fallen && streak > 1 && <span className="az__streak">🔥 {streak} {T.correctRow}</span>}
                 </div>
                 <div className="az__word">
-                    <span className="az__no">{word.prompt}</span>
-                    {isNoPrompt && (
-                        <button className="az__speak" onClick={() => speak(word.prompt)} aria-label={T.listen} title={T.listen}>
+                    {fallen && <span className="az__fellcap">{T.fellHint}</span>}
+                    <span className="az__no" lang={canSpeak ? "no" : undefined}>{shown}</span>
+                    {canSpeak && (
+                        <button className="az__speak" onClick={() => speak(shown)} aria-label={T.listen} title={T.listen}>
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" /></svg>
                         </button>
                     )}
-                    <span className="az__pos">{T.word} {(word.i ?? 0) + 1} {T.of} {word.total}</span>
+                    {!fallen && <span className="az__pos">{T.word} {(word.i ?? 0) + 1} {T.of} {word.total}</span>}
                 </div>
                 {/* Результат словом (не только цветом) + live-region для скринридера. */}
                 <div className="az__fb" role="status" aria-live="assertive" aria-atomic="true">
-                    {feedback === "right" ? T.correct : feedback === "wrong" ? T.wrong : " "}
+                    {fallen ? (isType ? T.typeIt : T.pickIt)
+                        : feedback === "right" ? T.correct : feedback === "wrong" ? T.wrong : " "}
                 </div>
                 {isType ? (
                     <div className="az__type">
-                        <input ref={inputRef} className="az__input" value={val} placeholder={T.placeholder}
+                        <input ref={inputRef} className="az__input" value={val} placeholder={fallen ? recover.answer : T.placeholder}
                             onChange={(e) => setVal(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
                             disabled={lock} spellCheck="false" autoComplete="off" autoCapitalize="off" />
                         <button className="az__check" onClick={submit} disabled={lock}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                            {T.check}
+                            {fallen ? T.getUp : T.check}
                         </button>
                     </div>
                 ) : (
@@ -159,7 +182,7 @@ function AnswerZone({ word, lang, T, feedback, streak, onAnswer }) {
                             const isRight = picked === i && feedback === "right";
                             return (
                                 <button key={i} className={"az__opt" + (isRight ? " is-right" : "") + (isWrong ? " is-wrong" : "")}
-                                    onClick={() => pick(i)} disabled={picked != null || !!feedback}>
+                                    onClick={() => pick(i)} disabled={fallen ? sent : (picked != null || !!feedback)}>
                                     <span className="az__key">{["A", "B", "C", "D"][i]}</span>{o}
                                 </button>
                             );
@@ -252,17 +275,18 @@ export function RacePodium({ podium, lang, theme, meName, onLobby }) {
     );
 }
 
-export default function RaceScreen({ positions, total, word, feedback, streak, grace, goFlash, lang, theme, roomName, onAnswer, onExit }) {
+export default function RaceScreen({ positions, total, word, feedback, streak, grace, goFlash, lang, theme, roomName, onAnswer, onExit, recover, onRecover }) {
     const T = RACE_I18N[lang] || RACE_I18N.ru;
     const base = useMemo(() => decorate(positions || []), [positions]);
 
-    // Состояния зверя живут на клиенте: сервер шлёт moving/stalled как событие и не
-    // возвращает в neutral. Мы делаем рывок/падение кратким, затем возвращаем в neutral —
-    // тогда возобновляются холостые анимации (кувырки/прыжки) и каждый новый рывок
-    // (рост progress) перезапускает галоп с пылью, а ошибка — падение → подъём.
+    // Состояния зверя живут на клиенте: сервер шлёт moving как событие и не возвращает в neutral.
+    // Рывок делаем кратким, затем neutral — возобновляются холостые анимации (кувырки/прыжки).
+    // ПАДЕНИЕ таймером НЕ гасим: зверь лежит, пока сервер держит fallen=true (игрок должен
+    // воспроизвести верное слово). Снялся fallen → короткий подъём (restarting) → neutral.
     const [disp, setDisp] = useState({});       // id -> отображаемое состояние
     const dispRef = useRef({});
     const prevProg = useRef({});
+    const prevFallen = useRef({});
     const timers = useRef({});
     useEffect(() => { dispRef.current = disp; }, [disp]);
     useEffect(() => {
@@ -278,13 +302,15 @@ export default function RaceScreen({ positions, total, word, feedback, streak, g
         };
         (positions || []).forEach((p) => {
             const pp = prevProg.current[p.id];
+            const wasFallen = prevFallen.current[p.id];
             if (p.finished) { cur[p.id] = "finished"; clearTimeout(timers.current[p.id]); }
             else if (p.state === "dnf") { cur[p.id] = "dnf"; clearTimeout(timers.current[p.id]); }
+            else if (p.fallen) { cur[p.id] = "stalled"; clearTimeout(timers.current[p.id]); }   // лежит, пока не подняли
+            else if (wasFallen) arm(p.id, "restarting", 520);                          // встал → подъём → neutral
             else if (pp != null && p.progress > pp) arm(p.id, "moving", 620);          // доехал на слово → рывок
-            else if (p.state === "stalled" && cur[p.id] !== "stalled" && cur[p.id] !== "restarting" && (pp == null || p.progress === pp))
-                arm(p.id, "stalled", 720, { state: "restarting", hold: 460 });          // ошибка → падение → подъём
             else if (cur[p.id] == null) cur[p.id] = "neutral";
             prevProg.current[p.id] = p.progress;
+            prevFallen.current[p.id] = !!p.fallen;
         });
         setDisp(cur);
         return undefined;
@@ -349,7 +375,8 @@ export default function RaceScreen({ positions, total, word, feedback, streak, g
                 {you && <Lane key="you" player={you} total={total} T={T} />}
             </div>
 
-            {hasAnswer && <AnswerZone word={word} lang={lang} T={T} feedback={feedback} streak={streak} onAnswer={onAnswer} />}
+            {hasAnswer && <AnswerZone word={word} lang={lang} T={T} feedback={feedback} streak={streak}
+                onAnswer={onAnswer} recover={recover} onRecover={onRecover} />}
 
             {goFlash && <GoFlash T={T} />}
             {grace && <FinishBanner leader={grace.leader} T={T} secs={grace.sec} total={grace.total || 25} />}

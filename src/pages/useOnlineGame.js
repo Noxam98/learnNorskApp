@@ -33,6 +33,9 @@ export function useOnlineGame(lang, to) {
     const [raceStreak, setRaceStreak] = useState(0);
     const [raceGrace, setRaceGrace] = useState(null); // {sec, leader} — окно добивания
     const [raceGo, setRaceGo] = useState(false);    // вспышка «Поехали!»
+    // Зверь упал (ошибка): {answer, token}. Пока не null — игрок обязан воспроизвести верный
+    // ответ, чтобы зверь встал; сервер сам не выдаст следующее слово. Судья — сервер.
+    const [raceRecover, setRaceRecover] = useState(null);
     const fbTimer = useRef(null);
     const raceGoTimer = useRef(null);
 
@@ -53,7 +56,7 @@ export function useOnlineGame(lang, to) {
     const resetGameState = useCallback(() => {
         setQuestion(null); setReveal(null); setCountdown(null); setPreparing(false);
         setRaceWord(null); setRacePos([]); setRaceGrace(null); setRaceGo(false);
-        setRaceFeedback(null); setRaceStreak(0);
+        setRaceFeedback(null); setRaceStreak(0); setRaceRecover(null);
         stopRaceMusic();
     }, []);
 
@@ -121,13 +124,24 @@ export function useOnlineGame(lang, to) {
                     clearTimeout(raceGoTimer.current);
                     raceGoTimer.current = setTimeout(() => setRaceGo(false), 1100);
                     break;
-                case "race_word": setRaceWord(m); break;
+                case "race_word": setRaceWord(m); setRaceRecover(null); break;   // встали и поехали
                 case "race_result": {
                     setRaceFeedback(m.correct ? "right" : "wrong");
                     setRaceStreak((s) => (m.correct ? s + 1 : 0));
                     if (m.correct) playGallop(); else playFall();   // топот / падение
+                    // ошибка → зверь лежит: сервер прислал верный ответ, его надо воспроизвести
+                    if (!m.correct) setRaceRecover({ answer: m.answer || "", token: m.token });
                     clearTimeout(fbTimer.current);
                     fbTimer.current = setTimeout(() => setRaceFeedback(null), 600);
+                    break;
+                }
+                case "race_recover": {
+                    if (m.ok) { playGallop(); setRaceRecover(null); }   // встал (race_word придёт следом)
+                    else {                                             // не то слово — лежим дальше
+                        setRaceFeedback("wrong");
+                        clearTimeout(fbTimer.current);
+                        fbTimer.current = setTimeout(() => setRaceFeedback(null), 600);
+                    }
                     break;
                 }
                 case "race_pos": setRacePos(m.positions || []); break;
@@ -138,7 +152,7 @@ export function useOnlineGame(lang, to) {
                     // остаётся stale racePos и RaceScreen рендерится пустым.
                     setQuestion(null); setReveal(null); setCountdown(null); setPreparing(false);
                     setRaceWord(null); setRacePos([]); setRaceGrace(null); setRaceGo(false);
-                    setRaceFeedback(null); setRaceStreak(0);
+                    setRaceFeedback(null); setRaceStreak(0); setRaceRecover(null);
                     stopRaceMusic();
                     break;
                 case "left":
@@ -198,10 +212,14 @@ export function useOnlineGame(lang, to) {
 
     // Ответ в гонке: payload {token, text} (печать) или {token, choice} (выбор)
     const answerRace = useCallback((payload) => { send({ type: "answer", ...payload }); }, [send]);
+    // Подъём зверя: воспроизведённый ответ проверяет СЕРВЕР (клиенту верить нельзя — иначе
+    // «встать» можно было бы, не глядя на слово).
+    const recoverRace = useCallback((payload) => { send({ type: "race_recover", ...payload }); }, [send]);
 
     return {
         status, connected, rooms, room, countdown, question, chosen, reveal, podium, podiumGame,
         preparing, answered, racePos, raceWord, raceTotal, raceFeedback, raceStreak, raceGrace, raceGo,
-        send, answer, answerRace, setPodium, reconnect,
+        raceRecover,
+        send, answer, answerRace, recoverRace, setPodium, reconnect,
     };
 }

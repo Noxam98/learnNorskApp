@@ -81,7 +81,8 @@ export const OnlinePage = () => {
     const {
         status, rooms, room, countdown, question, chosen, reveal, podium, podiumGame,
         preparing, answered, racePos, raceWord, raceTotal, raceFeedback, raceStreak, raceGrace, raceGo,
-        send, answer, answerRace, setPodium, reconnect,
+        raceRecover,
+        send, answer, answerRace, recoverRace, setPodium, reconnect,
     } = useOnlineGame(lang, to);
     const reduce = useReducedMotion();   // prefers-reduced-motion → гасим салют/крупные анимации
     const [createOpen, setCreateOpen] = useState(false);
@@ -178,6 +179,7 @@ export const OnlinePage = () => {
         if (room?.settings?.game === "race" && (raceWord || racePos.length || raceGo)) {
             return <RaceScreen positions={racePos} total={raceTotal} word={raceWord}
                 feedback={raceFeedback} streak={raceStreak} grace={raceGrace} goFlash={raceGo}
+                recover={raceRecover} onRecover={recoverRace}
                 lang={lang} theme={theme} roomName={room.name}
                 onAnswer={answerRace} onExit={() => send({ type: "leave" })} />;
         }

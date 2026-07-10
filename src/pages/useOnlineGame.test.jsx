@@ -50,4 +50,31 @@ describe("useOnlineGame", () => {
         act(() => result.current.send({ type: "join", roomId: "a" }));
         expect(lastWS.sent).toContain(JSON.stringify({ type: "join", roomId: "a" }));
     });
+
+    // Гонка: ошибка → зверь лежит и ждёт, пока игрок воспроизведёт показанный верный ответ.
+    it("ошибка в гонке кладёт зверя и отдаёт верное слово; подъём его снимает", async () => {
+        const { result } = renderHook(() => useOnlineGame("ru", {}));
+        act(() => lastWS._open());
+
+        act(() => lastWS._msg({ type: "race_result", correct: false, token: 7, answer: "hund" }));
+        await waitFor(() => expect(result.current.raceRecover).toEqual({ answer: "hund", token: 7 }));
+
+        act(() => lastWS._msg({ type: "race_recover", ok: false }));   // не то слово — лежим дальше
+        expect(result.current.raceRecover).toEqual({ answer: "hund", token: 7 });
+
+        act(() => result.current.recoverRace({ token: 7, text: "hund" }));
+        expect(lastWS.sent).toContain(JSON.stringify({ type: "race_recover", token: 7, text: "hund" }));
+
+        act(() => lastWS._msg({ type: "race_recover", ok: true }));    // сервер поднял
+        await waitFor(() => expect(result.current.raceRecover).toBe(null));
+    });
+
+    it("новое слово гонки снимает состояние падения", async () => {
+        const { result } = renderHook(() => useOnlineGame("ru", {}));
+        act(() => lastWS._open());
+        act(() => lastWS._msg({ type: "race_result", correct: false, token: 1, answer: "katt" }));
+        await waitFor(() => expect(result.current.raceRecover).not.toBe(null));
+        act(() => lastWS._msg({ type: "race_word", token: 2, mode: "type", prompt: "кошка" }));
+        await waitFor(() => expect(result.current.raceRecover).toBe(null));
+    });
 });
