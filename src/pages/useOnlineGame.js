@@ -120,9 +120,14 @@ export function useOnlineGame(lang, to) {
                 // --- гонка ---
                 case "race_go":
                     setRaceTotal(m.total); setPreparing(false); setCountdown(null);
-                    setRaceGo(true); startRaceMusic();   // звук старта уже сыграл отсчёт на «1»
-                    clearTimeout(raceGoTimer.current);
-                    raceGoTimer.current = setTimeout(() => setRaceGo(false), 1100);
+                    startRaceMusic();
+                    // m.resync — возврат в ИДУЩУЮ гонку после обрыва: вспышкой «Поехали!» не мигаем,
+                    // гонка давно идёт (звук старта уже сыграл отсчёт на «1» при обычном старте).
+                    if (!m.resync) {
+                        setRaceGo(true);
+                        clearTimeout(raceGoTimer.current);
+                        raceGoTimer.current = setTimeout(() => setRaceGo(false), 1100);
+                    }
                     break;
                 case "race_word": setRaceWord(m); setRaceRecover(null); break;   // встали и поехали
                 case "race_result": {

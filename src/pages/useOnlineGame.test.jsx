@@ -69,6 +69,25 @@ describe("useOnlineGame", () => {
         await waitFor(() => expect(result.current.raceRecover).toBe(null));
     });
 
+    // Реконнект: после обрыва клиент сам просит вернуть его в комнату, а ресинк идущей
+    // гонки не мигает вспышкой «Поехали!» (она для старта).
+    it("после обрыва просит rejoin в свою комнату и молча ресинкает гонку", async () => {
+        const { result } = renderHook(() => useOnlineGame("ru", {}));
+        act(() => lastWS._open());
+        act(() => lastWS._msg({ type: "room", room: { id: "r7", settings: { game: "race" } } }));
+        await waitFor(() => expect(result.current.room?.id).toBe("r7"));
+
+        const first = lastWS;
+        act(() => first.close());                       // обрыв
+        await waitFor(() => expect(lastWS).not.toBe(first), { timeout: 3000 });
+        act(() => lastWS._open());                      // новый сокет
+        expect(lastWS.sent).toContain(JSON.stringify({ type: "rejoin", roomId: "r7" }));
+
+        act(() => lastWS._msg({ type: "race_go", total: 5, resync: true }));
+        await waitFor(() => expect(result.current.raceTotal).toBe(5));
+        expect(result.current.raceGo).toBe(false);      // без вспышки старта
+    });
+
     it("новое слово гонки снимает состояние падения", async () => {
         const { result } = renderHook(() => useOnlineGame("ru", {}));
         act(() => lastWS._open());
