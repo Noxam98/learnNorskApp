@@ -40,6 +40,7 @@ export function usePoolSearch(currentLanguage, t) {
     const [facets, setFacets] = useState({ topics: [], levels: [] });
     const [facetCounts, setFacetCounts] = useState(null); // динамические счётчики под текущий фильтр: { topics:{key:n} }
     const firstRun = useRef(true);
+    const pendingShowRef = useRef("");   // слово, к которому надо проскроллить после сброса фильтров («Показать»)
     const prevHadQ = useRef(false);
 
     // При начале поиска — сортировка по релевантности (по умолчанию); при очистке — назад в А-Я.
@@ -143,7 +144,7 @@ export function usePoolSearch(currentLanguage, t) {
     // «Показать» — проскроллить к карточке слова и подсветить. Для омонимов (несколько карточек
     // одного слова): если они идут подряд — одна общая обводка вокруг группы; иначе — подсветка
     // каждой по отдельности. Координаты рамки считаем относительно контейнера (стабильны при скролле).
-    const onShow = (word) => {
+    const onShow = (word, retried = false) => {
         if (!word) return;
         setHighlightBox(null);
         setHighlightWord("");
@@ -151,7 +152,16 @@ export function usePoolSearch(currentLanguage, t) {
             const sel = (typeof CSS !== "undefined" && CSS.escape) ? CSS.escape(word) : word;
             const wrap = listWrapRef.current;
             const cards = wrap ? [...wrap.querySelectorAll(`.wcard[data-word="${sel}"]`)] : [];
-            if (cards[0]) cards[0].scrollIntoView({ behavior: "smooth", block: "center" });
+            // Карточки нет: слово в Базе есть (иначе была бы «Создать»), но его прячут активные
+            // фильтры или страница. Раньше клик молча ничего не делал. Снимаем фильтры, уходим на
+            // 1-ю страницу и повторяем ОДИН раз, когда список перезагрузится (pendingShow).
+            if (!cards.length) {
+                const hidden = topics.length > 0 || !!level || !!missing || !!pos || page !== 1;
+                if (!retried && hidden) { pendingShowRef.current = word; clearFilters(); return; }
+                useSystemStore.getState().showToast(t.notInCurrentList || "Слова нет в текущем списке", "warning");
+                return;
+            }
+            cards[0].scrollIntoView({ behavior: "smooth", block: "center" });
             if (wrap && cards.length > 1) {
                 const all = [...wrap.querySelectorAll(".wcard")];
                 const idx = cards.map((c) => all.indexOf(c));
@@ -172,6 +182,16 @@ export function usePoolSearch(currentLanguage, t) {
         setHighlightWord(word);
         setTimeout(() => setHighlightWord((cur) => (cur === word ? "" : cur)), 1800);
     };
+
+    // Фильтры сняты и список перезагрузился → доводим отложенный «Показать» до конца (один повтор,
+    // retried=true: если карточки нет и теперь — честный тост вместо молчания).
+    useEffect(() => {
+        const w = pendingShowRef.current;
+        if (!w || loading) return;
+        pendingShowRef.current = "";
+        const id = requestAnimationFrame(() => onShow(w, true));
+        return () => cancelAnimationFrame(id);
+    }, [items, loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // «Нет в базе» → сгенерировать слово через ИИ (положить в пул) и добавить себе.
     const onGenerateAdd = async (word) => {

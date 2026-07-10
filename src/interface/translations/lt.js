@@ -2,6 +2,7 @@
 // Паритет ключей по языкам проверяет i18n.test.js + dev-страж checkInterfaceTranslate.
 export const lt = {
         analyzeCompound: "Išskaidyti žodį", notCompound: "Tai paprastas žodis, ne sudurtinis",
+        notInCurrentList: "Šio žodžio nėra dabartiniame sąraše",
         login: "Prisijungti",
         logout: "Atsijungti",
         noAccount: "Neturite paskyros?",

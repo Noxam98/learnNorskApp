@@ -2,6 +2,7 @@
 // Паритет ключей по языкам проверяет i18n.test.js + dev-страж checkInterfaceTranslate.
 export const ar = {
         analyzeCompound: "تحليل الكلمة المركبة", notCompound: "هذه كلمة بسيطة، وليست مركبة",
+        notInCurrentList: "الكلمة غير موجودة في القائمة الحالية",
         guessedStats: ["تم تخمين", "من"],
         mistakesMade: "الأخطاء المرتكبة:",
         yes: "نعم",

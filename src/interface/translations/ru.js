@@ -2,6 +2,7 @@
 // Паритет ключей по языкам проверяет i18n.test.js + dev-страж checkInterfaceTranslate.
 export const ru = {
         analyzeCompound: "Разобрать состав", notCompound: "Это простое слово, не составное",
+        notInCurrentList: "Слова нет в текущем списке",
         enterTranslationBelow: "Впиши ниже перевод для:",
         russian: "Русский",
         ukrainian: "Украинский",
