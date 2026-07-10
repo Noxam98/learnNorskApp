@@ -18,14 +18,16 @@ const norm = (s) => (s || "").trim().toLowerCase();
 // Промпт «Собери слово · Norsk» на 7 языках. Локально (как CellsGame.L/OrderGame.L), чтобы не
 // трогать общий словарь и его страж паритета. Раньше тут был отсутствующий ключ t.collectFromLetters
 // → ВСЕ языки проваливались в русский литерал (араб/лит/лат видели кириллицу).
+// Фразы проходят ТУ ЖЕ ступень «собери из букв» (ступень рампы build_int2no): клавиатура сама
+// даёт клавишу пробела ровно столько раз, сколько его во фразе. Меняются только подписи.
 const L = langGuard({
-    ru:  { build: "Собери слово · Norsk" },
-    en:  { build: "Build the word · Norsk" },
-    ukr: { build: "Склади слово · Norsk" },
-    pl:  { build: "Ułóż słowo · Norsk" },
-    lt:  { build: "Sudėk žodį · Norsk" },
-    lv:  { build: "Saliec vārdu · Norsk" },
-    ar:  { build: "كوّن الكلمة · Norsk" },
+    ru:  { build: "Собери слово · Norsk", buildPhrase: "Собери фразу · Norsk", phrase: "Фраза" },
+    en:  { build: "Build the word · Norsk", buildPhrase: "Build the phrase · Norsk", phrase: "Phrase" },
+    ukr: { build: "Склади слово · Norsk", buildPhrase: "Склади фразу · Norsk", phrase: "Фраза" },
+    pl:  { build: "Ułóż słowo · Norsk", buildPhrase: "Ułóż frazę · Norsk", phrase: "Fraza" },
+    lt:  { build: "Sudėk žodį · Norsk", buildPhrase: "Sudėk frazę · Norsk", phrase: "Frazė" },
+    lv:  { build: "Saliec vārdu · Norsk", buildPhrase: "Saliec frāzi · Norsk", phrase: "Frāze" },
+    ar:  { build: "كوّن الكلمة · Norsk", buildPhrase: "كوّن العبارة · Norsk", phrase: "عبارة" },
 }, "BuildGame.L");
 
 export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
@@ -44,7 +46,8 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
     const lx = L[currentLanguage] || L.ru;
     const playRef = usePlayDialogRef();
 
-    const target = current?.translate?.no?.[0] || "";
+    const target = current?.translate?.no?.[0] || current?.no || "";
+    const isPhrase = current?.part_of_speech === "phrase";   // подписи «фраза» вместо «слово»
     // подсказка — родной перевод; фолбэк на ru/en, но НИКОГДА на норвежский ответ (target)
     const trArr = (current?.translate?.[currentLanguage]?.length ? current.translate[currentLanguage]
         : (current?.translate?.ru?.length ? current.translate.ru : (current?.translate?.en || []))).filter(Boolean);
@@ -103,8 +106,8 @@ export const BuildGame = ({ setGameState, sound = false, words: wordsProp, onRes
 
             <div className="pstage">
                 <div className="qcard">
-                    <div className="qcount">{t.word} {qIndex} / {qTotal}</div>
-                    <div className="qprompt">{lx.build}</div>
+                    <div className="qcount">{isPhrase ? lx.phrase : t.word} {qIndex} / {qTotal}</div>
+                    <div className="qprompt">{isPhrase ? lx.buildPhrase : lx.build}</div>
                     <h1 className="qword" lang={qLang}>{hyphenate(prompt, qLang)}
                         {trArr[0] && <SpeakButton text={trArr[0]} lang={qLang} className="qspeak"
                             ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />}
