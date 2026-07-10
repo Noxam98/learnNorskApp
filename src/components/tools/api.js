@@ -285,7 +285,11 @@ class ApiService {
     getPoolSynonyms(word, { lang = "ru", poolId } = {}) { return this._send('GET', `/pool/${encodeURIComponent(word)}/synonyms?lang=${encodeURIComponent(lang)}${poolId ? `&pool_id=${poolId}` : ''}`); }
     getWordDiff(a, b, lang = "ru") { return this._send('GET', `/pool/diff?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}&lang=${encodeURIComponent(lang)}`); }
     redescribe(word, hint) { return this._send('POST', `/pool/${encodeURIComponent(word)}/redescribe`, { hint }); }
-    getPoolMeta(word, poolId) { return this._send('GET', `/pool/${encodeURIComponent(word)}/meta${poolId ? `?pool_id=${poolId}` : ''}`); }
+    // lang — язык переводов в дереве разбора составного слова (compound.children)
+    getPoolMeta(word, poolId, lang) {
+        const q = [poolId ? `pool_id=${poolId}` : '', lang ? `lang=${encodeURIComponent(lang)}` : ''].filter(Boolean).join('&');
+        return this._send('GET', `/pool/${encodeURIComponent(word)}/meta${q ? `?${q}` : ''}`);
+    }
     askWord(word, question, lang = "ru") { return this._send('POST', `/pool/${encodeURIComponent(word)}/ask`, { question, lang }); }
     revoiceWord(word) { return this._send('POST', `/pool/${encodeURIComponent(word)}/revoice`); }
     analyzeCompound(word, poolId) { return this._send('POST', `/pool/${encodeURIComponent(word)}/compound${poolId ? `?pool_id=${poolId}` : ''}`); }

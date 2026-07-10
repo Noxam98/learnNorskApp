@@ -199,6 +199,34 @@
     pointer-events: none;
 }
 .cw-part:hover { background: color-mix(in srgb, var(--ember-600) 14%, transparent); }
+
+/* Дерево разбора составного слова (CompoundTree, в попапе части). Направляющие ├─ / └─ рисуем
+   псевдоэлементами: вертикаль ::before (на последнем ребёнке обрывается у засечки → «└»),
+   горизонтальная засечка ::after. Вложенность рекурсивная, глубина 3-4 уровня. */
+.cwt { list-style: none; margin: 0; padding: 0; }
+.cwt--root { margin-top: var(--sp-2); }
+.cwt:not(.cwt--root) { margin-left: 5px; }
+.cwt:not(.cwt--root) > .cwt__li { position: relative; padding-left: 13px; }
+.cwt:not(.cwt--root) > .cwt__li::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--border-2);
+}
+.cwt:not(.cwt--root) > .cwt__li:last-child::before { bottom: auto; height: 0.85em; }
+.cwt:not(.cwt--root) > .cwt__li::after {
+    content: ""; position: absolute; left: 0; top: 0.85em; width: 9px; height: 1px; background: var(--border-2);
+}
+.cwt__li { padding: 1px 0; }
+.cwt__row { display: flex; align-items: baseline; gap: 5px; min-width: 0; }
+.cwt__word {
+    border: 0; background: transparent; padding: 1px 3px; margin: 0 -3px; border-radius: 4px;
+    font: inherit; font-size: var(--fs-14); font-weight: 700; color: var(--ink);
+    cursor: pointer; flex: none; transition: background .12s ease;
+}
+.cwt__word:hover { background: color-mix(in srgb, var(--ember-600) 14%, transparent); }
+.cwt__fuge { font-size: var(--fs-12); color: var(--ink-3); opacity: .65; flex: none; }
+.cwt__tr {
+    font-size: var(--fs-12); color: var(--ink-3);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
 .syn__diff { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
     flex: none; padding: 0; border: none; background: transparent; cursor: pointer;
     border-radius: var(--r-xs); color: inherit; opacity: .5; margin: -2px -5px -2px 0;

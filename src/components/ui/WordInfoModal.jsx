@@ -11,6 +11,7 @@ import AskWordModal from "./AskWordModal.jsx";
 import FixDescriptionModal from "./FixDescriptionModal.jsx";
 import EditWordModal from "./EditWordModal.jsx";
 import WordDiff from "./WordDiff.jsx";
+import CompoundTree from "./CompoundTree.jsx";
 import { useWordsStore } from "../../store/wordStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -21,6 +22,8 @@ import api from "../tools/api.js";
 // wordId — dict_word id (карточка из Учёбы): описание/синонимы по нему (/words/{id}/…).
 // poolId — id записи ПУЛА (карточка из Базы, dict_word нет): им дизамбигуируем ОМОНИМЫ
 // в /pool/…-эндпоинтах (напр. `ro` сущ./глаг.). Передаётся ровно один из двух.
+const CW_POP_W = 300;   // макс. ширина попапа части (в нём дерево разбора) — им же зажимаем left
+
 export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) => {
     const addToLearning = useWordsStore((s) => s.addToLearning);
     const removeFromLearning = useWordsStore((s) => s.removeFromLearning);
@@ -47,13 +50,18 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
     const depthRef = useRef(0);                        // наша глубина в истории (1 = корень)
     const onCloseRef = useRef(onClose); onCloseRef.current = onClose;
 
-    // Мини-попап части составного слова: клик по части в заголовке → перевод + «открыть карточку».
-    const [partPop, setPartPop] = useState(null);   // { lemma, left, translate, loading, generating }
+    // Мини-попап части составного слова: клик по части в заголовке → перевод, ДЕРЕВО дальнейшего
+    // разбора (если часть сама составная: barnehage → barn + hage) и «открыть карточку».
+    // Дерево приходит целиком в meta.compound.children — отдельных запросов на подслова не делаем.
+    const [partPop, setPartPop] = useState(null);   // { lemma, left, node, translate, loading, generating }
     const openPart = (lemma, e) => {
         const el = e?.currentTarget;
         const parentW = el?.offsetParent?.clientWidth || 0;
-        const left = Math.max(0, Math.min(el?.offsetLeft ?? 0, Math.max(0, parentW - 224)));
-        setPartPop({ lemma, left, translate: null, loading: true, generating: false });
+        const left = Math.max(0, Math.min(el?.offsetLeft ?? 0, Math.max(0, parentW - CW_POP_W)));
+        const node = (view?.compound?.children || []).find((c) => c.word === lemma) || null;
+        const treeTr = node?.tr?.length ? node.tr.join(", ") : "";
+        setPartPop({ lemma, left, node, translate: treeTr, loading: !treeTr, generating: false });
+        if (treeTr) return;   // перевод уже пришёл в дереве — лишний запрос не нужен
         const upd = (patch) => setPartPop((p) => (p && p.lemma === lemma ? { ...p, ...patch } : p));
         const trOf = (m) => (m?.translate?.[lang] || []).slice(0, 3).join(", ");
         api.getPoolMeta(lemma).then((m) => {
@@ -135,7 +143,7 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
             .catch(() => setView((v) => fresh(v) ? { ...v, descLoading: false } : v));
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
-        api.getPoolMeta(no, poolId).then((m) => {
+        api.getPoolMeta(no, poolId, lang).then((m) => {
             setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, compound: m?.compound || null, compoundChecked: !!m?.compoundChecked, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null } : v);
             // карточки нет в базе (напр. часть композита) → генерируем слово и перезагружаем.
             // triedGen страхует от петли, если генерация так и не создала запись.
@@ -300,7 +308,7 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
                     ariaLabel={t.tts} title={t.tts} titlePreparing={t.ttsPreparing} />
                 {partPop && (
                     <div className="cw-pop card" style={{ position: "absolute", top: "calc(100% + 4px)", left: partPop.left, zIndex: 20,
-                        padding: "var(--sp-3)", boxShadow: "var(--shadow-lg)", borderRadius: "var(--r-md)", minWidth: 150, maxWidth: 224 }}>
+                        padding: "var(--sp-3)", boxShadow: "var(--shadow-lg)", borderRadius: "var(--r-md)", minWidth: 150, maxWidth: CW_POP_W }}>
                         <div className="row" style={{ gap: "var(--sp-2)", alignItems: "baseline", justifyContent: "space-between" }}>
                             <b style={{ fontSize: "var(--fs-15)" }}>{partPop.lemma}</b>
                             <span className="muted" style={{ fontSize: "var(--fs-13)", textAlign: "right", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
@@ -309,6 +317,10 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
                                     : (partPop.translate || "—")}
                             </span>
                         </div>
+                        {/* часть сама составная → показываем её дальнейшее ветвление (3-4 уровня).
+                            Клик по узлу закрывает попап и открывает карточку этого подслова. */}
+                        <CompoundTree nodes={partPop.node?.children} openTitle={t.openCard || "Открыть карточку"}
+                            onOpen={(w) => { setPartPop(null); navTo(w); }} />
                         <button className="btn btn--outline btn--sm" style={{ marginTop: "var(--sp-2)", width: "100%" }}
                             onClick={() => navTo(partPop.lemma)}>
                             <Icon n="arrow-right" sm /> {t.openCard || "Открыть карточку"}
