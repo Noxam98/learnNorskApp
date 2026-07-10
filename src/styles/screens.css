@@ -388,12 +388,37 @@
   /* ── RampCheer: отклик прохождения ступени рампы при верном ответе ──
      пипсы «ступень N/4» (в унисон с ростом тона) / золотое «Слово выучено!» с разлётом частиц */
   .rampcheer { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px; animation: rcIn .22s var(--ease) backwards; }
+  .rampcheer:not(.rampcheer--big) { margin-top: 20px; }   /* место над пипсами под дугу перехода */
   @keyframes rcIn { from { opacity: 0; transform: translateY(4px) scale(.96); } }
-  .rampcheer__pips { display: inline-flex; gap: 4px; }
-  .rampcheer__pips i { width: 8px; height: 8px; border-radius: 50%; background: var(--game-border); }
+  /* --pip-w/--pip-gap — единственное место правды о геометрии пипсов: ими же считается
+     горизонталь стрелки перехода (.rampcheer__arrow), поэтому размеры не разъезжаются. */
+  .rampcheer__pips { display: inline-flex; gap: var(--pip-gap); position: relative; --pip-w: 8px; --pip-gap: 4px; }
+  .rampcheer__pips i { width: var(--pip-w); height: var(--pip-w); border-radius: 50%; background: var(--game-border); }
   .rampcheer__pips i.is-on { background: var(--game-correct, #62C083); }
   .rampcheer__pips i.is-on:last-of-type { animation: rcPip .4s var(--ease); }
   @keyframes rcPip { 50% { transform: scale(1.6); } }
+
+  /* Дуга-«прыжок» НАД парой пипсов, между которыми произошёл переход, в его направлении.
+     left = центр между пипсами lo..hi: (lo+hi-2)/2 шагов от центра первого пипса. */
+  .rampcheer__arrow {
+    position: absolute; bottom: calc(100% + 3px); pointer-events: none;
+    left: calc((var(--lo) + var(--hi) - 2) / 2 * (var(--pip-w) + var(--pip-gap)) + var(--pip-w) / 2);
+    /* 20px ≈ шаг между центрами пипсов (--pip-w + --pip-gap = 12px) + вылет наконечника */
+    width: 20px; height: 13px; color: var(--game-correct, #62C083);
+    transform: translateX(-50%);
+    animation: rcArrow .38s var(--ease) backwards;
+  }
+  .rampcheer__arrow svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .rampcheer__arrow.is-back { transform: translateX(-50%) scaleX(-1); animation-name: rcArrowBack; }
+  .rampcheer--drop .rampcheer__arrow { color: var(--game-incorrect, #E67A52); }
+  @keyframes rcArrow {
+    from { opacity: 0; transform: translateX(-50%) translateY(5px); }
+    to   { opacity: 1; transform: translateX(-50%); }
+  }
+  @keyframes rcArrowBack {
+    from { opacity: 0; transform: translateX(-50%) scaleX(-1) translateY(5px); }
+    to   { opacity: 1; transform: translateX(-50%) scaleX(-1); }
+  }
   .rampcheer__n { font-size: var(--fs-12); font-weight: 700; color: var(--game-ink-2); }
   .rampcheer--big { position: relative; padding: 7px 14px; border-radius: var(--r-full); font-size: var(--fs-14); font-weight: 800;
     background: color-mix(in srgb, var(--game-correct, #62C083) 15%, transparent); color: var(--game-correct, #62C083); }
@@ -683,6 +708,8 @@
   .rampcheer,
   .rampcheer--gold,
   .rampcheer__pips i.is-on:last-of-type,
+  /* стрелка перехода остаётся видимой (её transform задан в базовом правиле) — гасим только въезд */
+  .rampcheer__arrow,
   .rampcheer--drop .ic { animation: none !important; }
   /* частицы разлёта не нужны вовсе — они видны только в анимации */
   .mburst i { display: none; }

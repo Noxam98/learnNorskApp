@@ -169,6 +169,26 @@ export const MASTERY = langGuard({
     ar:  { step: "درجة", stepDown: "درجة أدنى", mastered: "أُتقنت الكلمة!", masteredPhrase: "أُتقنت العبارة!", protectedW: "محمي", formDone: "أُنجزت الصيغة" },
 }, "gameShared.MASTERY");
 
+// Стрелка ПЕРЕХОДА между ступенями: дуга-«прыжок» над той парой пипсов, между которыми переход
+// произошёл, и в его направлении (вперёд — вправо, откат — влево, зеркалим scaleX). Прямые стрелки
+// спрайта тут не годятся: дуга читается именно как перескок с точки на точку, а не как «вниз/вправо».
+// lo/hi — индексы пипсов (1..4); горизонталь считает CSS из ширины пипса и зазора, чтобы геометрия
+// жила в одном месте (см. .rampcheer__arrow).
+const RampArrow = ({ lo, hi, back = false }) => {
+    const a = Math.min(4, Math.max(1, lo));
+    const b = Math.min(4, Math.max(1, hi));
+    return (
+        <span className={"rampcheer__arrow" + (back ? " is-back" : "")} aria-hidden="true"
+            style={/** @type {any} */ ({ "--lo": Math.min(a, b), "--hi": Math.max(a, b) })}>
+            <svg viewBox="0 0 24 15" fill="none" stroke="currentColor" strokeWidth="2"
+                strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3.2 12.4C5.4 3.6 18.6 3.6 20.8 12.4" />
+                <path d="M18.4 9.8 L20.8 13 L23.2 10.4" />
+            </svg>
+        </span>
+    );
+};
+
 // Отклик прохождения ступени рампы при ВЕРНОМ ответе (рендерится в состоянии CORRECT):
 //  • финальный ввод слова впервые → праздник «Слово выучено!» (золото, разлёт частиц, фанфара);
 //  • финальный ввод на повторе → сдержанное «Защищено»;
@@ -202,7 +222,11 @@ export const RampCheer = ({ word, rank = 0, repeat = false, gmode = "", firstTry
     if (rank < 1 || rank > 4) return null;
     return (
         <div className="rampcheer" aria-hidden="true">
-            <span className="rampcheer__pips">{[1, 2, 3, 4].map((i) => <i key={i} className={i <= rank ? "is-on" : ""} />)}</span>
+            <span className="rampcheer__pips">
+                {/* переход rank-1 → rank: дуга вправо над этой парой точек (с 1-й ступени — над ней самой) */}
+                <RampArrow lo={rank - 1} hi={rank} />
+                {[1, 2, 3, 4].map((i) => <i key={i} className={i <= rank ? "is-on" : ""} />)}
+            </span>
             <span className="rampcheer__n">{m.step} {rank}/4</span>
         </div>
     );
@@ -221,7 +245,11 @@ export const RampDrop = ({ word, rank = 0 }) => {
     return (
         <div className="rampcheer rampcheer--drop" aria-hidden="true">
             <Icon n="arrow-down" sm />
-            <span className="rampcheer__pips">{[1, 2, 3, 4].map((i) => <i key={i} className={i <= newRank ? "is-on is-down" : ""} />)}</span>
+            <span className="rampcheer__pips">
+                {/* откат rank → newRank: та же дуга, но зеркальная — влево, к ступени, куда съехали */}
+                <RampArrow lo={newRank} hi={rank} back />
+                {[1, 2, 3, 4].map((i) => <i key={i} className={i <= newRank ? "is-on is-down" : ""} />)}
+            </span>
             <span className="rampcheer__n">{m.stepDown}</span>
         </div>
     );
