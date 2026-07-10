@@ -218,16 +218,20 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
 
     // Разбор составного слова для ЗАГОЛОВКА: режем само слово на части по forledd/fuge/etterledd
     // (только если они реально складываются в слово — иначе санди/несовпадение, показываем целиком).
-    // Части кликабельны (пунктир снизу), соединитель (fuge) приглушён — читается как одно слово.
+    // Часть кликабельна, ТОЛЬКО если она самостоятельное слово (children[i].lemma с бэка): банк
+    // режет и деривацию, а по аффиксу ('u', '-het', '-messig') клик генерил бы мусорную карточку
+    // через LLM. Соединитель (fuge) приглушён — слово читается как одно.
     const cwSegs = (() => {
         const cw = view?.compound;
         const w = view?.no || "";
         if (!cw || !w) return null;
         if ((cw.forledd + (cw.fuge || "") + cw.etterledd).toLowerCase() !== w.toLowerCase()) return null;
+        const kid = (i) => (cw.children || [])[i];               // children[0]=forledd, [1]=etterledd
+        const clickable = (i) => kid(i)?.lemma !== false;        // нет дерева (флешкарта) → как раньше
         const cut1 = cw.forledd.length, cut2 = cut1 + (cw.fuge || "").length;
-        const segs = [{ text: w.slice(0, cut1), lemma: cw.forledd }];
+        const segs = [{ text: w.slice(0, cut1), lemma: clickable(0) ? cw.forledd : null }];
         if (cut2 > cut1) segs.push({ text: w.slice(cut1, cut2) });   // соединитель (fuge) — не кликабельный
-        segs.push({ text: w.slice(cut2), lemma: cw.etterledd });
+        segs.push({ text: w.slice(cut2), lemma: clickable(1) ? cw.etterledd : null });
         return segs;
     })();
 

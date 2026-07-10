@@ -15,8 +15,13 @@ export const CompoundTree = ({ nodes, onOpen, openTitle, depth = 0 }) => {
             {nodes.map((n) => (
                 <li key={`${n.word}-${depth}`} className="cwt__li">
                     <div className="cwt__row">
-                        <button type="button" className="cwt__word" lang="no" title={openTitle}
-                            onClick={() => onOpen?.(n.word)}>{n.word}</button>
+                        {/* n.lemma=false — это аффикс (u-, -het, -messig), а не слово: банк режет
+                            деривацию наравне с композицией. Такой узел не кликаем и карточку по нему
+                            не генерим (иначе каждый дериват жёг бы LLM-квоту и плодил мусор). */}
+                        {n.lemma === false
+                            ? <span className="cwt__word cwt__word--affix" lang="no">{n.word}</span>
+                            : <button type="button" className="cwt__word" lang="no" title={openTitle}
+                                onClick={() => onOpen?.(n.word)}>{n.word}</button>}
                         {n.fuge ? <span className="cwt__fuge">-{n.fuge}-</span> : null}
                         {n.tr?.length > 0 && <span className="cwt__tr">{n.tr.join(", ")}</span>}
                     </div>

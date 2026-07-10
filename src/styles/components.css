@@ -222,6 +222,9 @@
     cursor: pointer; flex: none; transition: background .12s ease;
 }
 .cwt__word:hover { background: color-mix(in srgb, var(--ember-600) 14%, transparent); }
+/* аффикс (не самостоятельное слово): не кликается, приглушён — карточки у него нет и не будет */
+.cwt__word--affix { color: var(--ink-3); font-weight: 600; cursor: default; opacity: .75; }
+.cwt__word--affix:hover { background: transparent; }
 .cwt__fuge { font-size: var(--fs-12); color: var(--ink-3); opacity: .65; flex: none; }
 .cwt__tr {
     font-size: var(--fs-12); color: var(--ink-3);
