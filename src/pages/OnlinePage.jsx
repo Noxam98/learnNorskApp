@@ -24,9 +24,11 @@ const sourceMeta = (s, to, t) => {
 
 // Точный ручной список относится к одной комнате: не подставляем его молча в следующую.
 const saveOnlinePrefs = (settings) => {
-    const prefs = settings.source === "selected"
-        ? { ...settings, source: "pool", poolIds: [], count: 7 }
-        : { ...settings, poolIds: [] };
+    let prefs = { ...settings, poolIds: [], dictPoolIds: [] };
+    if (settings.source === "selected") prefs = { ...prefs, source: "pool", count: 7 };
+    if (settings.source === "dict" && settings.dictMode === "selected") {
+        prefs = { ...prefs, dictMode: "random", count: 7 };
+    }
     api.setOnlinePrefs(prefs).catch(() => {});
 };
 

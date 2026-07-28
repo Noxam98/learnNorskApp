@@ -11,9 +11,9 @@ import { WordCard } from "../ui/WordCard.jsx";
 const LEVELS = ["", "A1", "A2", "B1", "B2", "C1", "C2"];
 const PAGE_SIZE = 30;
 const SEARCH_DEBOUNCE_MS = 450;
-const MAX_WORDS = 20;
+const MAX_WORDS = 40;
 
-export function OnlineWordPicker({ open, onClose, theme, lang, t, to, selected = [], known = {}, onConfirm }) {
+export function OnlineWordPicker({ open, onClose, theme, lang, t, to, setId = null, title, selected = [], known = {}, onConfirm }) {
     const [draft, setDraft] = useState(() => new Set(selected));
     const [wordById, setWordById] = useState(known);
     const [q, setQ] = useState("");
@@ -25,6 +25,7 @@ export function OnlineWordPicker({ open, onClose, theme, lang, t, to, selected =
     const [items, setItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [setWords, setSetWords] = useState(null);
 
     useEffect(() => {
         if (!open) return;
@@ -35,6 +36,7 @@ export function OnlineWordPicker({ open, onClose, theme, lang, t, to, selected =
         setTopic("");
         setLevel("");
         setPage(1);
+        setSetWords(null);
     }, [open]); // eslint-disable-line
 
     useEffect(() => {
@@ -49,6 +51,46 @@ export function OnlineWordPicker({ open, onClose, theme, lang, t, to, selected =
 
     useEffect(() => {
         if (!open) return undefined;
+        if (!setId) return undefined;
+        let cancelled = false;
+        setLoading(true);
+        setPhase("searching");
+        api.setWords(setId).then((res) => {
+            if (cancelled) return;
+            const words = res?.words || [];
+            setSetWords(words);
+            setWordById((cur) => ({
+                ...cur,
+                ...Object.fromEntries(words.filter((word) => selected.includes(word.pool_id)).map((word) => [word.pool_id, word])),
+            }));
+        }).catch(() => {
+            if (!cancelled) setSetWords([]);
+        }).finally(() => {
+            if (!cancelled) {
+                setLoading(false);
+                setPhase("idle");
+            }
+        });
+        return () => { cancelled = true; };
+    }, [open, setId]); // eslint-disable-line
+
+    useEffect(() => {
+        if (!open) return undefined;
+        if (setId) {
+            if (setWords == null) return undefined;
+            const query = appliedQ.toLocaleLowerCase();
+            const filtered = setWords.filter((word) => {
+                if (level && word.level !== level) return false;
+                if (!query) return true;
+                const translations = Object.values(word.translate || {}).flat();
+                return [word.word, word.norwegian, ...translations].filter(Boolean)
+                    .some((value) => String(value).toLocaleLowerCase().includes(query));
+            });
+            setTotal(filtered.length);
+            setItems(filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE));
+            setPhase("idle");
+            return undefined;
+        }
         let cancelled = false;
         setLoading(true);
         setPhase("searching");
@@ -77,7 +119,7 @@ export function OnlineWordPicker({ open, onClose, theme, lang, t, to, selected =
             }
         });
         return () => { cancelled = true; };
-    }, [open, appliedQ, page, topic, level, lang]);
+    }, [open, appliedQ, page, topic, level, lang, setId, setWords]);
 
     if (!open) return null;
 
@@ -111,9 +153,9 @@ export function OnlineWordPicker({ open, onClose, theme, lang, t, to, selected =
             <div className="modal wordpick__modal" role="dialog" aria-modal="true" aria-label={to.chooseWords || "Выбрать слова"}>
                 <div className="modal__head">
                     <div>
-                        <h2 className="modal__title">{to.chooseWords || "Выбрать слова"}</h2>
+                        <h2 className="modal__title">{title || to.chooseWords || "Выбрать слова"}</h2>
                         <div className="wordpick__count">
-                            {(to.selectedCount || "Выбрано: {n} из 20").replace("{n}", String(draft.size))}
+                            {(to.selectedCount || "Выбрано: {n} из 40").replace("{n}", String(draft.size))}
                         </div>
                     </div>
                     <button className="modal__x" aria-label={t.cancel} onClick={onClose}>✕</button>
@@ -123,7 +165,7 @@ export function OnlineWordPicker({ open, onClose, theme, lang, t, to, selected =
                     <SearchBox value={q} onChange={setQ} placeholder={to.wordSearch || "Слово на любом языке…"}
                         phase={phase} debounceMs={SEARCH_DEBOUNCE_MS} count={total} style={{ margin: 0 }} />
                     <div className="wordpick__filters">
-                        <Dropdown value={topic} options={topicOpts} onChange={(value) => { setTopic(value); setPage(1); }} />
+                        {!setId && <Dropdown value={topic} options={topicOpts} onChange={(value) => { setTopic(value); setPage(1); }} />}
                         <Dropdown value={level} options={levelOpts} onChange={(value) => { setLevel(value); setPage(1); }} />
                     </div>
                     {selectedKnown.length > 0 && (

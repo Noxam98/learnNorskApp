@@ -10,7 +10,8 @@ import OnlineWordPicker from "./OnlineWordPicker.jsx";
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const DEFAULT_SETTINGS = {
     game: "quiz", answer: "type", dir: "no2int",
-    source: "pool", dictId: null, dictName: "", poolIds: [], level: "", topic: "",
+    source: "pool", dictId: null, dictName: "", dictMode: "random",
+    poolIds: [], dictPoolIds: [], level: "", topic: "",
     count: 7, qtime: 15, maxPlayers: 4, private: false,
 };
 
@@ -88,6 +89,7 @@ export const RoomForm = ({ open, onClose, theme, lang = "ru", t, to, initial, in
     const [sets, setSets] = useState([]);
     const [setsLoading, setSetsLoading] = useState(false);
     const [pickerOpen, setPickerOpen] = useState(false);
+    const [dictPickerOpen, setDictPickerOpen] = useState(false);
     const [selectedWords, setSelectedWords] = useState({});
     const topics = t.topics || {};
     useEffect(() => {
@@ -95,7 +97,10 @@ export const RoomForm = ({ open, onClose, theme, lang = "ru", t, to, initial, in
             const init = { ...DEFAULT_SETTINGS, ...(initial || {}) };
             if (!["pool", "dict", "selected"].includes(init.source)) init.source = "pool";
             init.poolIds = Array.isArray(init.poolIds) ? init.poolIds : [];
+            init.dictPoolIds = Array.isArray(init.dictPoolIds) ? init.dictPoolIds : [];
+            init.dictMode = init.dictMode === "selected" ? "selected" : "random";
             if (init.source === "selected") init.count = init.poolIds.length;
+            if (init.source === "dict" && init.dictMode === "selected") init.count = init.dictPoolIds.length;
             setS(init);
             setName(initialName);
             setSelectedWords({});
@@ -106,7 +111,7 @@ export const RoomForm = ({ open, onClose, theme, lang = "ru", t, to, initial, in
                 setS((prev) => {
                     if (prev.source !== "dict") return prev;
                     const item = next.find((x) => x.id === prev.dictId);
-                    const max = Math.min(20, item?.count || 0);
+                    const max = Math.min(40, item?.count || 0);
                     if (!item || max < 3) return prev;
                     return { ...prev, dictName: item.name, count: Math.min(Math.max(prev.count, 3), max) };
                 });
@@ -118,21 +123,25 @@ export const RoomForm = ({ open, onClose, theme, lang = "ru", t, to, initial, in
         const onKey = (e) => {
             if (e.key !== "Escape") return;
             if (pickerOpen) setPickerOpen(false);
+            else if (dictPickerOpen) setDictPickerOpen(false);
             else onClose();
         };
         document.addEventListener("keydown", onKey);
         return () => document.removeEventListener("keydown", onKey);
-    }, [open, pickerOpen]); // eslint-disable-line
+    }, [open, pickerOpen, dictPickerOpen]); // eslint-disable-line
     useHistoryClose(open, onClose); // системная «Назад»/свайп закрывает окно комнаты, а не уводит со страницы
     if (!open) return null;
     const set = (k, v) => setS((p) => ({ ...p, [k]: v }));
     const setSource = (source) => setS((p) => ({ ...p, source }));
     const topicVal = s.topic || "";   // бэкенд может вернуть null
     const activeSet = sets.find((item) => item.id === s.dictId) || null;
-    const setCapacity = activeSet ? Math.min(20, activeSet.count || 0) : 0;
+    const setCapacity = activeSet ? Math.min(40, activeSet.count || 0) : 0;
     const sourceInvalid = s.source === "selected"
         ? (s.poolIds?.length || 0) < 3
-        : s.source === "dict" && (!activeSet || setCapacity < 3);
+        : s.source === "dict" && (
+            !activeSet || setCapacity < 3
+            || (s.dictMode === "selected" && (s.dictPoolIds?.length || 0) < 3)
+        );
     const invalid = sourceInvalid;
 
     const levelOpts = [{ value: "", label: to.anyLevel || "Любой" }, ...LEVELS.map((l) => ({ value: l, label: l }))];
@@ -145,11 +154,13 @@ export const RoomForm = ({ open, onClose, theme, lang = "ru", t, to, initial, in
     }));
     const selectSet = (id) => {
         const item = sets.find((x) => x.id === id);
-        const max = Math.min(20, item?.count || 0);
+        const max = Math.min(40, item?.count || 0);
         setS((prev) => ({
             ...prev,
             dictId: id,
             dictName: item?.name || "",
+            dictMode: prev.dictId === id ? prev.dictMode : "random",
+            dictPoolIds: prev.dictId === id ? prev.dictPoolIds : [],
             count: max >= 3 ? Math.min(Math.max(prev.count, 3), max) : prev.count,
         }));
     };
@@ -223,6 +234,33 @@ export const RoomForm = ({ open, onClose, theme, lang = "ru", t, to, initial, in
                                         <>
                                             <Dropdown value={s.dictId} options={setOpts} onChange={selectSet} placeholder={to.selectSet || "Выберите набор"} />
                                             {activeSet && setCapacity < 3 && <div className="rf__error">{to.setTooSmall || "В наборе нужно минимум 3 слова"}</div>}
+                                            {activeSet && (activeSet.count > 20 || s.dictMode === "selected") && (
+                                                <div className="dictmode">
+                                                    <div className="rf__lbltxt">{to.setWordMode || "Слова из набора"}</div>
+                                                    <Seg value={s.dictMode} onChange={(dictMode) => setS((prev) => ({
+                                                        ...prev,
+                                                        dictMode,
+                                                        count: dictMode === "selected" ? (prev.dictPoolIds?.length || 0) : Math.min(Math.max(prev.count || 7, 3), setCapacity),
+                                                    }))} options={[
+                                                        { value: "random", label: to.randomWords || "Случайные", icon: "↻" },
+                                                        { value: "selected", label: to.pickFromSet || "Выбрать", icon: "☑" },
+                                                    ]} />
+                                                    {s.dictMode === "selected" && (
+                                                        <>
+                                                            <div className="selectionbox">
+                                                                <span className="selectionbox__count">
+                                                                    {(to.selectedCount || "Выбрано: {n} из 40").replace("{n}", String(s.dictPoolIds?.length || 0))}
+                                                                </span>
+                                                                <button type="button" className="rmbtn rmbtn--outline" onClick={() => setDictPickerOpen(true)}>
+                                                                    <Icon n={s.dictPoolIds?.length ? "edit" : "plus"} sm />
+                                                                    {s.dictPoolIds?.length ? (to.editSelection || "Изменить") : (to.chooseWords || "Выбрать слова")}
+                                                                </button>
+                                                            </div>
+                                                            {(s.dictPoolIds?.length || 0) < 3 && <div className="rf__error">{to.selectionMin || "Выберите минимум 3 слова"}</div>}
+                                                        </>
+                                                    )}
+                                                </div>
+                                            )}
                                         </>
                                     ) : (
                                         <div className="rf__empty">{to.noSets || "У вас пока нет личных наборов"}</div>
@@ -233,7 +271,7 @@ export const RoomForm = ({ open, onClose, theme, lang = "ru", t, to, initial, in
                                 <div className="rf rf--dep">
                                     <div className="selectionbox">
                                         <span className="selectionbox__count">
-                                            {(to.selectedCount || "Выбрано: {n} из 20").replace("{n}", String(s.poolIds?.length || 0))}
+                                            {(to.selectedCount || "Выбрано: {n} из 40").replace("{n}", String(s.poolIds?.length || 0))}
                                         </span>
                                         <button type="button" className="rmbtn rmbtn--outline" onClick={() => setPickerOpen(true)}>
                                             <Icon n={s.poolIds?.length ? "edit" : "plus"} sm />
@@ -250,9 +288,9 @@ export const RoomForm = ({ open, onClose, theme, lang = "ru", t, to, initial, in
                     <section className="grpwrap">
                         <div className="grp__h">{to.secParty || "Параметры партии"}</div>
                         <div className="grp">
-                            <Reveal open={s.source !== "selected"}>
+                            <Reveal open={s.source !== "selected" && !(s.source === "dict" && s.dictMode === "selected")}>
                                 <Field label={to.words || "Слов"}>
-                                    <RSlider value={s.count} min={3} max={s.source === "dict" && setCapacity >= 3 ? setCapacity : 20}
+                                    <RSlider value={s.count} min={3} max={s.source === "dict" && setCapacity >= 3 ? setCapacity : 40}
                                         onChange={(v) => set("count", v)} />
                                 </Field>
                             </Reveal>
@@ -266,7 +304,8 @@ export const RoomForm = ({ open, onClose, theme, lang = "ru", t, to, initial, in
                 </div>
                 <div className="modal__foot">
                     <button className="rmbtn rmbtn--ghost" onClick={onClose}>{t.cancel}</button>
-                    <button className="rmbtn rmbtn--primary" disabled={invalid} onClick={() => !invalid && onConfirm(name, s)}>{confirmLabel || to.create || "Создать"}</button>
+                    <button className="rmbtn rmbtn--primary" disabled={invalid}
+                        onClick={() => !invalid && onConfirm(name, s)}>{confirmLabel || to.create || "Создать"}</button>
                 </div>
             </div>
             <OnlineWordPicker open={pickerOpen} onClose={() => setPickerOpen(false)}
@@ -276,6 +315,15 @@ export const RoomForm = ({ open, onClose, theme, lang = "ru", t, to, initial, in
                     setS((prev) => ({ ...prev, poolIds, count: poolIds.length }));
                     setSelectedWords(words);
                     setPickerOpen(false);
+                }} />
+            <OnlineWordPicker open={dictPickerOpen} onClose={() => setDictPickerOpen(false)}
+                theme={theme} lang={lang} t={t} to={to} setId={s.dictId}
+                title={activeSet ? `${to.chooseWords || "Выбрать слова"} · ${activeSet.name}` : undefined}
+                selected={s.dictPoolIds || []} known={selectedWords}
+                onConfirm={(dictPoolIds, words) => {
+                    setS((prev) => ({ ...prev, dictPoolIds, count: dictPoolIds.length }));
+                    setSelectedWords(words);
+                    setDictPickerOpen(false);
                 }} />
         </div>
     );

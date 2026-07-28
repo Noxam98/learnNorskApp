@@ -10,6 +10,7 @@ const apiMock = vi.hoisted(() => ({
     setsList: vi.fn(() => Promise.resolve([
         { id: 12, name: "Работа", count: 14, studying: false },
         { id: 13, name: "Короткий", count: 2, studying: false },
+        { id: 14, name: "Большой набор", count: 50, studying: false },
     ])),
     getPool: vi.fn(() => Promise.resolve({
         total: 3,
@@ -17,6 +18,13 @@ const apiMock = vi.hoisted(() => ({
             { pool_id: 101, word: "arbeid", translate: { ru: ["работа"] }, part_of_speech: "noun", level: "A1" },
             { pool_id: 102, word: "møte", translate: { ru: ["встреча"] }, part_of_speech: "noun", level: "A2" },
             { pool_id: 103, word: "avtale", translate: { ru: ["договорённость"] }, part_of_speech: "noun", level: "A2" },
+        ],
+    })),
+    setWords: vi.fn(() => Promise.resolve({
+        words: [
+            { pool_id: 201, norwegian: "reise", translate: { ru: ["путешествовать"] }, part_of_speech: "verb", level: "A1" },
+            { pool_id: 202, norwegian: "fly", translate: { ru: ["самолёт"] }, part_of_speech: "noun", level: "A1" },
+            { pool_id: 203, norwegian: "billett", translate: { ru: ["билет"] }, part_of_speech: "noun", level: "A2" },
         ],
     })),
 }));
@@ -96,11 +104,59 @@ describe("RoomForm", () => {
         await waitFor(() => expect(screen.getAllByLabelText("Выбрать слово")).toHaveLength(3));
         for (const button of screen.getAllByLabelText("Выбрать слово")) fireEvent.click(button);
         fireEvent.click(screen.getByText("Готово"));
+        await waitFor(() => expect(screen.getByText("Создать")).toBeEnabled());
         fireEvent.click(screen.getByText("Создать"));
 
         const settings = onConfirm.mock.calls[0][1];
         expect(settings.source).toBe("selected");
         expect(settings.poolIds).toEqual([101, 102, 103]);
         expect(settings.count).toBe(3);
+    });
+
+    it("большой личный набор позволяет выбрать точный состав", async () => {
+        const onConfirm = vi.fn();
+        renderForm({ onConfirm });
+        fireEvent.click(screen.getByRole("radio", { name: /Мой набор/ }));
+        await screen.findByText("Выберите набор");
+        fireEvent.click(screen.getByText("Выберите набор"));
+        fireEvent.click(await screen.findByRole("option", { name: /Большой набор/ }));
+        fireEvent.click(screen.getByRole("radio", { name: "Выбрать" }));
+        fireEvent.click(screen.getByRole("button", { name: "Выбрать слова" }));
+
+        await waitFor(() => expect(screen.getAllByLabelText("Выбрать слово")).toHaveLength(3));
+        for (const button of screen.getAllByLabelText("Выбрать слово")) fireEvent.click(button);
+        await waitFor(() => expect(screen.getByText("Выбрано: 3 из 40")).toBeInTheDocument());
+        const done = await screen.findByRole("button", { name: "Готово" });
+        await waitFor(() => expect(done).toBeEnabled());
+        fireEvent.click(done);
+        await screen.findByText("Выбрано: 3 из 40");
+        expect(screen.getByRole("radio", { name: "Выбрать" })).toHaveAttribute("aria-checked", "true");
+        await waitFor(() => expect(screen.getByText("Создать")).toBeEnabled());
+        fireEvent.click(screen.getByText("Создать"));
+
+        const settings = onConfirm.mock.calls[0][1];
+        expect(settings.source).toBe("dict");
+        expect(settings.dictMode).toBe("selected");
+        expect(settings.dictPoolIds).toEqual([201, 202, 203]);
+        expect(settings.count).toBe(3);
+    });
+
+    it("из большого личного набора можно взять случайные N слов до 40", async () => {
+        const onConfirm = vi.fn();
+        renderForm({ onConfirm });
+        fireEvent.click(screen.getByRole("radio", { name: /Мой набор/ }));
+        await screen.findByText("Выберите набор");
+        fireEvent.click(screen.getByText("Выберите набор"));
+        fireEvent.click(await screen.findByRole("option", { name: /Большой набор/ }));
+
+        expect(screen.getByRole("radio", { name: "Случайные" })).toHaveAttribute("aria-checked", "true");
+        const wordsSlider = screen.getAllByRole("slider")[0];
+        expect(wordsSlider).toHaveAttribute("max", "40");
+        fireEvent.change(wordsSlider, { target: { value: "37" } });
+        fireEvent.click(screen.getByText("Создать"));
+
+        const settings = onConfirm.mock.calls[0][1];
+        expect(settings.dictMode).toBe("random");
+        expect(settings.count).toBe(37);
     });
 });

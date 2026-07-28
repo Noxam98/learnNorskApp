@@ -132,6 +132,7 @@
 .roomwrap .rcustom__hint { font-size: var(--fs-12); color: var(--m-ink-3); margin-top: 2px; }
 .roomwrap .rf__empty { padding: 12px; border-radius: var(--r-md); background: var(--m-surface-2); color: var(--m-ink-3); font-size: var(--fs-13); text-align: center; }
 .roomwrap .rf__error { color: var(--danger); font-size: var(--fs-12); font-weight: 600; }
+.roomwrap .dictmode { display: flex; flex-direction: column; gap: 9px; padding-top: 10px; border-top: 1px dashed var(--m-border-2); }
 .roomwrap .selectionbox { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border-radius: var(--r-md); background: var(--m-surface-2); border: 1px solid var(--m-border); }
 .roomwrap .selectionbox__count { font-size: var(--fs-14); font-weight: 700; color: var(--m-ink); }
 .roomwrap .rmbtn { padding: 12px 22px; border-radius: var(--r-md); font-family: inherit; font-size: var(--fs-15); font-weight: 800; cursor: pointer; border: 1px solid transparent; }
