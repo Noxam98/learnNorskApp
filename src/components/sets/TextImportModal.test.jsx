@@ -17,7 +17,7 @@ const ll = {
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
 describe("TextImportModal", () => {
-    it("сохраняет явный перевод, показывает итог и закрывается по «Готово»", async () => {
+    it("сохраняет явный перевод без лишнего поля, показывает итог и закрывается по «Готово»", async () => {
         api.setParseText.mockResolvedValue({
             items: [{ word: "hund", translation: "собака" }],
         });
@@ -38,7 +38,8 @@ describe("TextImportModal", () => {
         });
         fireEvent.click(screen.getByRole("button", { name: /Обработать/ }));
         await screen.findByDisplayValue("hund");
-        expect(screen.getByDisplayValue("собака")).toBeInTheDocument();
+        expect(screen.queryByDisplayValue("собака")).not.toBeInTheDocument();
+        expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
 
         fireEvent.click(screen.getByRole("button", { name: /Добавить 1/ }));
         await waitFor(() => expect(api.setImportWords).toHaveBeenCalledWith(3, {

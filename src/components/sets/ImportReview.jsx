@@ -1,15 +1,17 @@
 import { Icon } from "../ui/Icon.jsx";
 import { BtnSpinner } from "../ui/Spinner.jsx";
 
-const MAX_WORD = 80, MAX_TRANSLATION = 240;
+const MAX_WORD = 80;
 
 export default function ImportReview({ items, setItems, max, ll, busy, busyText, error, onBack, onImport }) {
-    const selected = items.filter((item) => item.enabled !== false && item.word.trim());
-    const update = (i, patch) => setItems((prev) => prev.map((item, j) => j === i ? { ...item, ...patch } : item));
+    const selected = items.filter((item) => item.word.trim());
+    const setWord = (i, word) => setItems((prev) => prev.map((item, j) => j === i
+        ? { ...item, word, translation: word === item.word ? item.translation : "" }
+        : item));
     const remove = (i) => setItems((prev) => prev.filter((_, j) => j !== i));
     const add = () => setItems((prev) => prev.length >= max
         ? prev
-        : [...prev, { word: "", translation: "", enabled: true }]);
+        : [...prev, { word: "", translation: "" }]);
 
     return (
         <>
@@ -17,21 +19,15 @@ export default function ImportReview({ items, setItems, max, ll, busy, busyText,
                 {ll.imgReview}
             </div>
             <div className="import-count">
-                {ll.importSelected.replace("{n}", String(selected.length)).replace("{total}", String(items.length))}
+                {ll.importCount.replace("{n}", String(selected.length))}
             </div>
             <div className="ocr-list">
                 {items.map((item, i) => (
-                    <div className={"import-row" + (item.enabled === false ? " is-off" : "")} key={i}>
-                        <input type="checkbox" checked={item.enabled !== false}
-                            aria-label={ll.importSelectWord.replace("{word}", item.word || String(i + 1))}
-                            onChange={(e) => update(i, { enabled: e.target.checked })} />
+                    <div className="import-row" key={i}>
                         <div className="import-fields">
                             <input className="input" value={item.word} maxLength={MAX_WORD}
                                 aria-label={ll.importWordLabel} placeholder={ll.importWordLabel}
-                                onChange={(e) => update(i, { word: e.target.value })} />
-                            <input className="input" value={item.translation || ""} maxLength={MAX_TRANSLATION}
-                                aria-label={ll.importTranslationLabel} placeholder={ll.importTranslationLabel}
-                                onChange={(e) => update(i, { translation: e.target.value })} />
+                                onChange={(e) => setWord(i, e.target.value)} />
                         </div>
                         <button className="ocr-del" aria-label={ll.importRemoveWord.replace("{word}", item.word || String(i + 1))}
                             onClick={() => remove(i)}><Icon n="x" sm /></button>

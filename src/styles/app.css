@@ -802,9 +802,7 @@
     border: 1px solid var(--surface-3); background: var(--surface); color: var(--ink-3); border-radius: var(--r-md); cursor: pointer; }
 .ocr-del:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-bg); }
 .import-row { display: flex; align-items: center; gap: var(--sp-2); }
-.import-row > input[type="checkbox"] { flex: none; width: 18px; height: 18px; accent-color: var(--fjord-600); }
-.import-row.is-off { opacity: .52; }
-.import-fields { min-width: 0; flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-2); }
+.import-fields { min-width: 0; flex: 1; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
 .import-fields .input { min-width: 0; unicode-bidi: plaintext; }
 .import-count { margin-bottom: var(--sp-2); font-size: var(--fs-12); font-weight: 700; color: var(--ink-2); }
 .import-limit { margin-top: 3px; text-align: end; font-size: var(--fs-11); color: var(--ink-3); }
@@ -825,7 +823,6 @@
 .import-failed > div { margin-top: 4px; overflow-wrap: anywhere; }
 
 @media (max-width: 560px) {
-    .import-fields { grid-template-columns: 1fr; }
     .import-actions { flex-wrap: wrap; }
     .import-actions .btn { flex: 1 1 auto; }
 }
