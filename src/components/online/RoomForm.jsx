@@ -1,11 +1,18 @@
 // Окно создания/редактирования онлайн-комнаты (RoomForm) и его презентационные контролы
 // (Field/Seg/ModeSeg/RSlider/RToggle/Reveal). Без сокетов — вынесено из OnlinePage.jsx.
 import { useState, useEffect } from "react";
+import api from "../tools/api.js";
 import { Dropdown } from "../ui/Dropdown.jsx";
+import { Icon } from "../ui/Icon.jsx";
 import { useHistoryClose } from "../../hooks/useHistoryClose.js";
+import OnlineWordPicker from "./OnlineWordPicker.jsx";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
-const DEFAULT_SETTINGS = { game: "quiz", answer: "type", dir: "no2int", source: "pool", level: "", topic: "", count: 7, qtime: 15, maxPlayers: 4, private: false };
+const DEFAULT_SETTINGS = {
+    game: "quiz", answer: "type", dir: "no2int",
+    source: "pool", dictId: null, dictName: "", poolIds: [], level: "", topic: "",
+    count: 7, qtime: 15, maxPlayers: 4, private: false,
+};
 
 // ---------- Контролы окна создания комнаты (адаптация дизайн-макета room-modal) ----------
 const Field = ({ label, hint, dep, children }) => (
@@ -39,8 +46,22 @@ const ModeSeg = ({ value, onChange, cards }) => (
     </div>
 );
 
+const SourceCards = ({ value, onChange, cards }) => (
+    <div className="rmsource" role="radiogroup">
+        {cards.map((card) => (
+            <button key={card.value} type="button" role="radio" aria-checked={card.value === value}
+                className={"rmsource__card" + (card.value === value ? " is-on" : "")}
+                onClick={() => onChange(card.value)}>
+                <span className="rmsource__icon"><Icon n={card.icon} /></span>
+                <span className="rmsource__body"><b>{card.label}</b><span>{card.desc}</span></span>
+                <span className="rmsource__tick" aria-hidden="true"><Icon n="check" sm /></span>
+            </button>
+        ))}
+    </div>
+);
+
 const RSlider = ({ value, min, max, step = 1, unit, onChange }) => {
-    const pct = ((value - min) / (max - min)) * 100;
+    const pct = max === min ? 100 : ((value - min) / (max - min)) * 100;
     return (
         <div className="rslider">
             <input type="range" min={min} max={max} step={step} value={value} style={{ "--pct": pct + "%" }} onChange={(e) => onChange(Number(e.target.value))} />
@@ -61,42 +82,77 @@ const Reveal = ({ open, children }) => (
 );
 
 
-export const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "", title, confirmLabel, onConfirm }) => {
+export const RoomForm = ({ open, onClose, theme, lang = "ru", t, to, initial, initialName = "", title, confirmLabel, onConfirm }) => {
     const [name, setName] = useState(initialName);
     const [s, setS] = useState({ ...DEFAULT_SETTINGS, ...(initial || {}) });
+    const [sets, setSets] = useState([]);
+    const [setsLoading, setSetsLoading] = useState(false);
+    const [pickerOpen, setPickerOpen] = useState(false);
+    const [selectedWords, setSelectedWords] = useState({});
     const topics = t.topics || {};
-    // своя тема: s.topic держит финальное значение (свободный текст), customMode — только UI
-    const [customMode, setCustomMode] = useState(false);
     useEffect(() => {
         if (open) {
             const init = { ...DEFAULT_SETTINGS, ...(initial || {}) };
-            setS(init); setName(initialName);
-            setCustomMode(!!init.topic && !topics[init.topic]);
+            if (!["pool", "dict", "selected"].includes(init.source)) init.source = "pool";
+            init.poolIds = Array.isArray(init.poolIds) ? init.poolIds : [];
+            if (init.source === "selected") init.count = init.poolIds.length;
+            setS(init);
+            setName(initialName);
+            setSelectedWords({});
+            setSetsLoading(true);
+            api.setsList().then((list) => {
+                const next = list || [];
+                setSets(next);
+                setS((prev) => {
+                    if (prev.source !== "dict") return prev;
+                    const item = next.find((x) => x.id === prev.dictId);
+                    const max = Math.min(20, item?.count || 0);
+                    if (!item || max < 3) return prev;
+                    return { ...prev, dictName: item.name, count: Math.min(Math.max(prev.count, 3), max) };
+                });
+            }).catch(() => setSets([])).finally(() => setSetsLoading(false));
         }
     }, [open]); // eslint-disable-line
     useEffect(() => {
         if (!open) return;
-        const onKey = (e) => { if (e.key === "Escape") onClose(); };
+        const onKey = (e) => {
+            if (e.key !== "Escape") return;
+            if (pickerOpen) setPickerOpen(false);
+            else onClose();
+        };
         document.addEventListener("keydown", onKey);
         return () => document.removeEventListener("keydown", onKey);
-    }, [open]); // eslint-disable-line
+    }, [open, pickerOpen]); // eslint-disable-line
     useHistoryClose(open, onClose); // системная «Назад»/свайп закрывает окно комнаты, а не уводит со страницы
     if (!open) return null;
     const set = (k, v) => setS((p) => ({ ...p, [k]: v }));
-    const setSource = (v) => setS((p) => {
-        const next = { ...p, source: v };
-        if (v !== "ai" && customMode) { setCustomMode(false); next.topic = ""; }
-        return next;
-    });
-
-    const isAI = s.source === "ai";
+    const setSource = (source) => setS((p) => ({ ...p, source }));
     const topicVal = s.topic || "";   // бэкенд может вернуть null
-    const invalid = customMode && isAI && !topicVal.trim();
+    const activeSet = sets.find((item) => item.id === s.dictId) || null;
+    const setCapacity = activeSet ? Math.min(20, activeSet.count || 0) : 0;
+    const sourceInvalid = s.source === "selected"
+        ? (s.poolIds?.length || 0) < 3
+        : s.source === "dict" && (!activeSet || setCapacity < 3);
+    const invalid = sourceInvalid;
 
     const levelOpts = [{ value: "", label: to.anyLevel || "Любой" }, ...LEVELS.map((l) => ({ value: l, label: l }))];
     const themeOpts = [{ value: "", label: to.anyTopic || "Любая" },
-        ...Object.keys(topics).map((k) => ({ value: k, label: topics[k] })),
-        ...(isAI ? [{ value: "__custom__", label: (to.customTopic || "Своя тема").replace("✏️ ", ""), emoji: "✏️" }] : [])];
+        ...Object.keys(topics).map((k) => ({ value: k, label: topics[k] }))];
+    const setOpts = sets.map((item) => ({
+        value: item.id,
+        label: item.name,
+        sub: `${item.count} ${to.wordsShort || "сл."}`,
+    }));
+    const selectSet = (id) => {
+        const item = sets.find((x) => x.id === id);
+        const max = Math.min(20, item?.count || 0);
+        setS((prev) => ({
+            ...prev,
+            dictId: id,
+            dictName: item?.name || "",
+            count: max >= 3 ? Math.min(Math.max(prev.count, 3), max) : prev.count,
+        }));
+    };
 
     return (
         <div className="roomwrap" data-theme={theme} style={{ zIndex: 100 }}>
@@ -143,29 +199,48 @@ export const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "
                         <div className="grp__h">{to.secWords || "Откуда слова"}</div>
                         <div className="grp">
                             <Field label={to.wordSource || "Источник слов"}>
-                                <Seg value={s.source} onChange={setSource} options={[
-                                    { value: "pool", label: to.sourcePool || "Пул", icon: "🌐" },
-                                    { value: "ai", label: to.sourceAi || "AI", icon: "✨" },
+                                <SourceCards value={s.source} onChange={setSource} cards={[
+                                    { value: "pool", icon: "grid", label: to.sourcePool || "По теме", desc: to.sourcePoolDesc || "Случайные слова из Базы" },
+                                    { value: "dict", icon: "layers", label: to.sourceDict || "Мой набор", desc: to.sourceDictDesc || "Из личной коллекции" },
+                                    { value: "selected", icon: "check-square", label: to.sourceSelected || "Выбрать слова", desc: to.sourceSelectedDesc || "Точный состав партии" },
                                 ]} />
                             </Field>
-                            <Reveal open>
+                            <Reveal open={s.source === "pool"}>
                                 <div className="rf rf--dep">
                                     <div className="rf__lbl"><span className="rf__link" aria-hidden="true">↳</span><span className="rf__lbltxt">{to.level || "Уровень"} · {to.topic || "Тема"}</span></div>
                                     <div className="rcols">
                                         <Dropdown value={s.level || ""} options={levelOpts} onChange={(v) => set("level", v)} />
-                                        <Dropdown value={customMode ? "__custom__" : topicVal} options={themeOpts} onChange={(v) => {
-                                            if (v === "__custom__") { setCustomMode(true); set("topic", ""); }
-                                            else { setCustomMode(false); set("topic", v); }
-                                        }} />
+                                        <Dropdown value={topicVal} options={themeOpts} onChange={(v) => set("topic", v)} />
                                     </div>
-                                    <Reveal open={customMode && isAI}>
-                                        <div className="rcustom">
-                                            <input className={"rtext" + (invalid ? " is-invalid" : "")} maxLength={60} placeholder={to.customTopicPh || ""}
-                                                value={topicVal} onChange={(e) => set("topic", e.target.value)} />
-                                            <span className="rtext__count">{topicVal.length}/60</span>
-                                            <div className="rcustom__hint">✨ {to.aiHint || ""}</div>
-                                        </div>
-                                    </Reveal>
+                                </div>
+                            </Reveal>
+                            <Reveal open={s.source === "dict"}>
+                                <div className="rf rf--dep">
+                                    <div className="rf__lbl"><span className="rf__link" aria-hidden="true">↳</span><span className="rf__lbltxt">{to.personalSet || "Личный набор"}</span></div>
+                                    {setsLoading ? (
+                                        <div className="rf__empty">{to.loadingSets || "Загружаем наборы…"}</div>
+                                    ) : setOpts.length ? (
+                                        <>
+                                            <Dropdown value={s.dictId} options={setOpts} onChange={selectSet} placeholder={to.selectSet || "Выберите набор"} />
+                                            {activeSet && setCapacity < 3 && <div className="rf__error">{to.setTooSmall || "В наборе нужно минимум 3 слова"}</div>}
+                                        </>
+                                    ) : (
+                                        <div className="rf__empty">{to.noSets || "У вас пока нет личных наборов"}</div>
+                                    )}
+                                </div>
+                            </Reveal>
+                            <Reveal open={s.source === "selected"}>
+                                <div className="rf rf--dep">
+                                    <div className="selectionbox">
+                                        <span className="selectionbox__count">
+                                            {(to.selectedCount || "Выбрано: {n} из 20").replace("{n}", String(s.poolIds?.length || 0))}
+                                        </span>
+                                        <button type="button" className="rmbtn rmbtn--outline" onClick={() => setPickerOpen(true)}>
+                                            <Icon n={s.poolIds?.length ? "edit" : "plus"} sm />
+                                            {s.poolIds?.length ? (to.editSelection || "Изменить") : (to.chooseWords || "Выбрать слова")}
+                                        </button>
+                                    </div>
+                                    {(s.poolIds?.length || 0) < 3 && <div className="rf__error">{to.selectionMin || "Выберите минимум 3 слова"}</div>}
                                 </div>
                             </Reveal>
                         </div>
@@ -175,7 +250,12 @@ export const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "
                     <section className="grpwrap">
                         <div className="grp__h">{to.secParty || "Параметры партии"}</div>
                         <div className="grp">
-                            <Field label={to.words || "Слов"}><RSlider value={s.count} min={3} max={20} onChange={(v) => set("count", v)} /></Field>
+                            <Reveal open={s.source !== "selected"}>
+                                <Field label={to.words || "Слов"}>
+                                    <RSlider value={s.count} min={3} max={s.source === "dict" && setCapacity >= 3 ? setCapacity : 20}
+                                        onChange={(v) => set("count", v)} />
+                                </Field>
+                            </Reveal>
                             <Reveal open={s.game !== "race"}>
                                 <Field label={to.questionTime || "Время на вопрос"} dep><RSlider value={s.qtime} min={5} max={30} unit={to.secUnit || "с"} onChange={(v) => set("qtime", v)} /></Field>
                             </Reveal>
@@ -189,6 +269,14 @@ export const RoomForm = ({ open, onClose, theme, t, to, initial, initialName = "
                     <button className="rmbtn rmbtn--primary" disabled={invalid} onClick={() => !invalid && onConfirm(name, s)}>{confirmLabel || to.create || "Создать"}</button>
                 </div>
             </div>
+            <OnlineWordPicker open={pickerOpen} onClose={() => setPickerOpen(false)}
+                theme={theme} lang={lang} t={t} to={to}
+                selected={s.poolIds || []} known={selectedWords}
+                onConfirm={(poolIds, words) => {
+                    setS((prev) => ({ ...prev, poolIds, count: poolIds.length }));
+                    setSelectedWords(words);
+                    setPickerOpen(false);
+                }} />
         </div>
     );
 };

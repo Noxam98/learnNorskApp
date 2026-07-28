@@ -2,14 +2,33 @@
 // Smoke-сеть под вынос RoomForm из OnlinePage: модалка рендерится, закрывается по open=false,
 // и кнопка подтверждения отдаёт введённое имя + дефолтные настройки наружу (onConfirm).
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
 import { afterEach } from "vitest";
 import { RoomForm } from "./RoomForm.jsx";
+
+const apiMock = vi.hoisted(() => ({
+    setsList: vi.fn(() => Promise.resolve([
+        { id: 12, name: "Работа", count: 14, studying: false },
+        { id: 13, name: "Короткий", count: 2, studying: false },
+    ])),
+    getPool: vi.fn(() => Promise.resolve({
+        total: 3,
+        words: [
+            { pool_id: 101, word: "arbeid", translate: { ru: ["работа"] }, part_of_speech: "noun", level: "A1" },
+            { pool_id: 102, word: "møte", translate: { ru: ["встреча"] }, part_of_speech: "noun", level: "A2" },
+            { pool_id: 103, word: "avtale", translate: { ru: ["договорённость"] }, part_of_speech: "noun", level: "A2" },
+        ],
+    })),
+}));
+vi.mock("../tools/api.js", () => ({ default: apiMock }));
 
 afterEach(cleanup);
 
 // Минимальные словари: RoomForm всюду подставляет дефолты через `|| "…"`, тема — t.topics.
-const t = { cancel: "Отмена", topics: {} };
+const t = {
+    cancel: "Отмена", topics: {}, description: "Описание",
+    tts: "Озвучить", ttsPreparing: "Готовим", addToDict: "Добавить", removeFromDict: "Убрать",
+};
 const to = {};
 
 function renderForm(props = {}) {
@@ -50,5 +69,38 @@ describe("RoomForm", () => {
         renderForm({ onClose });
         fireEvent.click(screen.getByText("Отмена"));
         expect(onClose).toHaveBeenCalled();
+    });
+
+    it("выбирает личный набор и передаёт его id/название", async () => {
+        const onConfirm = vi.fn();
+        renderForm({ onConfirm });
+        fireEvent.click(screen.getByRole("radio", { name: /Мой набор/ }));
+        await screen.findByText("Выберите набор");
+        fireEvent.click(screen.getByText("Выберите набор"));
+        fireEvent.click(await screen.findByRole("option", { name: /Работа/ }));
+        fireEvent.click(screen.getByText("Создать"));
+
+        const settings = onConfirm.mock.calls[0][1];
+        expect(settings.source).toBe("dict");
+        expect(settings.dictId).toBe(12);
+        expect(settings.dictName).toBe("Работа");
+    });
+
+    it("ручной выбор требует 3 слова и отдаёт точные pool_id", async () => {
+        const onConfirm = vi.fn();
+        renderForm({ onConfirm });
+        fireEvent.click(screen.getByRole("radio", { name: /Выбрать слова/ }));
+        expect(screen.getByText("Создать")).toBeDisabled();
+
+        fireEvent.click(screen.getAllByText("Выбрать слова").at(-1));
+        await waitFor(() => expect(screen.getAllByLabelText("Выбрать слово")).toHaveLength(3));
+        for (const button of screen.getAllByLabelText("Выбрать слово")) fireEvent.click(button);
+        fireEvent.click(screen.getByText("Готово"));
+        fireEvent.click(screen.getByText("Создать"));
+
+        const settings = onConfirm.mock.calls[0][1];
+        expect(settings.source).toBe("selected");
+        expect(settings.poolIds).toEqual([101, 102, 103]);
+        expect(settings.count).toBe(3);
     });
 });

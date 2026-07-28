@@ -20,7 +20,7 @@ export function useOnlineGame(lang, to) {
     const [chosen, setChosen] = useState(null);
     const [reveal, setReveal] = useState(null);
     const [podium, setPodium] = useState(null);
-    const [preparing, setPreparing] = useState(false);  // сервер готовит набор слов (AI-подбор)
+    const [preparing, setPreparing] = useState(false);  // сервер собирает вопросы из выбранных слов
     const [answered, setAnswered] = useState([]);  // имена ответивших на текущий вопрос
     const answeredRef = useRef([]);
     const roomRef = useRef(null);                   // актуальная комната для колбэков WS

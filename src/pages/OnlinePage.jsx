@@ -15,6 +15,21 @@ import { playWin, preloadSounds } from "../components/tools/sound.js";
 import { hyphenate, hyLang } from "../components/ui/hyphenate.js";
 import { useOnlineGame } from "./useOnlineGame.js";
 
+const sourceMeta = (s, to, t) => {
+    if (s.source === "dict") return s.dictName || s.sourceName || to.sourceDict || "Мой набор";
+    if (s.source === "selected") return to.sourceSelected || "Выбрано вручную";
+    return [s.level, s.topic ? (t.topics?.[s.topic] || s.topic) : null].filter(Boolean).join(" · ")
+        || to.anyTopic || "Любая тема";
+};
+
+// Точный ручной список относится к одной комнате: не подставляем его молча в следующую.
+const saveOnlinePrefs = (settings) => {
+    const prefs = settings.source === "selected"
+        ? { ...settings, source: "pool", poolIds: [], count: 7 }
+        : { ...settings, poolIds: [] };
+    api.setOnlinePrefs(prefs).catch(() => {});
+};
+
 
 // Полноэкранный игровой контейнер в теме приложения (а не в тёмной теме обычных игр).
 const SCREEN = {
@@ -183,7 +198,7 @@ export const OnlinePage = () => {
                 lang={lang} theme={theme} roomName={room.name}
                 onAnswer={answerRace} onExit={() => send({ type: "leave" })} />;
         }
-        // Готовим набор слов (особенно AI-подбор)
+        // Сервер собирает вопросы и дистракторы из выбранных слов Базы.
         if (preparing && !question) {
             return <main style={SCREEN}>
                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.1, repeat: Infinity, ease: "linear" }}
@@ -281,32 +296,25 @@ export const OnlinePage = () => {
         const roster = room.players || [];
         const amHost = !!roster.find((p) => p.isYou)?.isHost;
         const enoughPlayers = roster.length >= 2;   // «Готов»/старт бессмысленны в одиночку
-        // AI-набор готовится → «Готов»/старт заблокированы, на кнопке статус + лоадер
-        const aiBusy = s.source === "ai" && room.aiStatus && room.aiStatus !== "ready";
-        const aiStatusLabel = room.aiStatus === "indexing" ? (to.aiIndexing || "Индексация слов…")
-            : room.aiStatus === "error" ? (to.aiError || "Ошибка генерации")
-                : (to.aiGenerating || "Нейросеть подбирает слова…");
-        const spinner = <motion.span animate={{ rotate: 360 }} transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
-            style={{ width: 16, height: 16, borderRadius: "50%", border: "2px solid rgba(255,255,255,.4)", borderTopColor: "#fff", display: "inline-block", verticalAlign: "-3px" }} />;
         return <main className="shell prof-main">
             <div className="phead">
                 <div className="phead__meta">
                     <div className="phead__name">{room.name}</div>
                     <div className="phead__sub">
                         {(to.games?.[s.game]) || s.game} · {s.dir === "int2no" ? (to.dirInt2No || "перевод → норв.") : (to.dirNo2Int || "норв. → перевод")} · {s.count} {to.wordsShort || "сл."}
-                        {s.source === "dict" ? ` · ${to.sourceDict || "мои словари"}` : `${s.source === "ai" ? ` · ${to.sourceAi || "AI"}` : ""}${s.level ? ` · ${s.level}` : ""}${s.topic ? ` · ${t.topics?.[s.topic] || s.topic}` : ""}`}
+                        {` · ${sourceMeta(s, to, t)}`}
                     </div>
                 </div>
                 {amHost && <button className="btn btn--ghost" onClick={() => setEditOpen(true)} title={to.roomSettings || "Настройки комнаты"}><Icon n="settings" sm /></button>}
                 <button className="btn btn--outline" onClick={() => send({ type: "leave" })}><Icon n="arrow-left" sm /> {to.leave || "Выйти"}</button>
             </div>
 
-            <RoomForm open={editOpen} onClose={() => setEditOpen(false)} theme={theme} t={t} to={to}
+            <RoomForm open={editOpen} onClose={() => setEditOpen(false)} theme={theme} lang={lang} t={t} to={to}
                 title={to.roomSettings || "Настройки комнаты"} confirmLabel={t.save}
                 initial={s} initialName={room.name}
                 onConfirm={(name, settings) => {
                     send({ type: "update_settings", name, settings });
-                    api.setOnlinePrefs(settings).catch(() => {});
+                    saveOnlinePrefs(settings);
                     setEditOpen(false);
                 }} />
             <div className="panel">
@@ -359,26 +367,16 @@ export const OnlinePage = () => {
                     </div>
                 );
             })()}
-            {room.aiStatus === "error" && amHost ? (
-                // ошибка генерации → хост может повторить
-                <button className="btn btn--accent btn--block btn--lg" style={{ marginTop: "var(--sp-4)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}
-                    onClick={() => send({ type: "retry_ai" })}>
-                    <Icon n="play" sm /> {to.aiRetry || "Повторить генерацию"}
-                </button>
-            ) : (
-                <button className={`btn btn--block btn--lg ${aiBusy ? "btn--accent" : myReady ? "btn--ghost" : "btn--accent"}`}
-                    style={{ marginTop: "var(--sp-4)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}
-                    disabled={aiBusy || !enoughPlayers}
-                    onClick={() => !aiBusy && enoughPlayers && send({ type: "ready", ready: !myReady })}>
-                    {aiBusy
-                        ? <>{room.aiStatus !== "error" && spinner} {aiStatusLabel}</>
-                        : (myReady ? (to.cancelReady || "Не готов") : (to.imReady || "Я готов"))}
-                </button>
-            )}
+            <button className={`btn btn--block btn--lg ${myReady ? "btn--ghost" : "btn--accent"}`}
+                style={{ marginTop: "var(--sp-4)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                disabled={!enoughPlayers}
+                onClick={() => enoughPlayers && send({ type: "ready", ready: !myReady })}>
+                {myReady ? (to.cancelReady || "Не готов") : (to.imReady || "Я готов")}
+            </button>
             {amHost && (
                 <button className="btn btn--primary btn--block" style={{ marginTop: "var(--sp-3)" }}
-                    disabled={aiBusy || !enoughPlayers}
-                    onClick={() => !aiBusy && enoughPlayers && send({ type: "force_start" })}>
+                    disabled={!enoughPlayers}
+                    onClick={() => enoughPlayers && send({ type: "force_start" })}>
                     <Icon n="play" sm /> {to.startNow || "Старт (хост)"}
                 </button>
             )}
@@ -410,7 +408,7 @@ export const OnlinePage = () => {
                             <span className="setrow__meta">
                                 <span className="setrow__t">{r.name}</span>
                                 <span className="setrow__d">
-                                    {(to.games?.[r.game]) || r.game} · {r.count} {to.wordsShort || "сл."}{r.source === "dict" ? ` · ${to.sourceDict || "мои словари"}` : `${r.source === "ai" ? ` · ${to.sourceAi || "AI"}` : ""}${r.level ? ` · ${r.level}` : ""}${r.topic ? ` · ${t.topics?.[r.topic] || r.topic}` : ""}`}
+                                    {(to.games?.[r.game]) || r.game} · {r.count} {to.wordsShort || "сл."} · {sourceMeta(r, to, t)}
                                 </span>
                             </span>
                             {badge && <span style={{ fontSize: "var(--fs-11)", fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: "var(--surface-3)", color: "var(--ink-3)", whiteSpace: "nowrap", marginRight: 6 }}>{badge}</span>}
@@ -431,10 +429,10 @@ export const OnlinePage = () => {
             </div>
         )}
 
-        <RoomForm open={createOpen} onClose={() => setCreateOpen(false)} theme={theme} t={t} to={to}
+        <RoomForm open={createOpen} onClose={() => setCreateOpen(false)} theme={theme} lang={lang} t={t} to={to}
             initial={savedPrefs} onConfirm={(name, settings) => {
                 send({ type: "create", name, settings });
-                api.setOnlinePrefs(settings).catch(() => {});
+                saveOnlinePrefs(settings);
                 setCreateOpen(false);
             }} />
     </main>;

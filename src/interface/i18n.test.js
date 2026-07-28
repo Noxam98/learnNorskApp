@@ -34,4 +34,14 @@ describe("i18n: interfaceTranslate", () => {
         }
         expect(gaps, `пропущены ключи по языкам:\n${gaps.join("\n")}`).toEqual([]);
     });
+
+    it("онлайн: вложенные ключи синхронны во всех языках", () => {
+        const allKeys = new Set(LANG_CODES.flatMap((c) => Object.keys(interfaceTranslate[c]?.online || {})));
+        const gaps = [];
+        for (const c of LANG_CODES) {
+            const online = interfaceTranslate[c]?.online || {};
+            for (const key of allKeys) if (!(key in online)) gaps.push(`${c}.online.${key}`);
+        }
+        expect(gaps).toEqual([]);
+    });
 });
