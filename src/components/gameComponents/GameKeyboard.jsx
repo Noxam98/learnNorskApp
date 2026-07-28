@@ -142,7 +142,7 @@ export function GameKeyboard({
     useEffect(() => {
         const el = kbdRef.current;
         if (!el) return;
-        const onTouchStart = (e) => { if (!e.target.closest(".kbd__key--dunno")) e.preventDefault(); };
+        const onTouchStart = (e) => { if (!e.target.closest(".kbd-dunno")) e.preventDefault(); };
         el.addEventListener("touchstart", onTouchStart, { passive: false });
         return () => el.removeEventListener("touchstart", onTouchStart);
     }, []);
