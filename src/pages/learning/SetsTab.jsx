@@ -101,7 +101,10 @@ export default function SetsTab({ lang, openSession, openWord }) {
         await api.setReset(activeId).catch(() => {});
         await loadWords(activeId); await loadSets(activeId);
     };
-    const reloadActive = () => { loadWords(activeId); loadSets(activeId); };  // после генерации/импорта
+    const reloadActive = (result) => {
+        if (result?.words) setWords(result.words); else loadWords(activeId);
+        loadSets(activeId);
+    };  // импорт уже возвращает слова; после генерации остаётся обычная перезагрузка
 
     // ---- готовые куски: используются и в десктоп-двухколонке, и в мобильной раскладке ----
 

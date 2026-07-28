@@ -19,3 +19,48 @@ export function downscaleImage(file) {
         im.src = url;
     });
 }
+
+// Повернуть уже ужатое изображение на четверть оборота без отправки исходного тяжёлого файла.
+export function rotateImage(dataUrl, quarterTurns = 0) {
+    const turns = ((quarterTurns % 4) + 4) % 4;
+    if (!turns) return Promise.resolve(dataUrl);
+    return new Promise((resolve, reject) => {
+        const im = new Image();
+        im.onload = () => {
+            const swap = turns % 2 === 1;
+            const c = document.createElement("canvas");
+            c.width = swap ? im.naturalHeight : im.naturalWidth;
+            c.height = swap ? im.naturalWidth : im.naturalHeight;
+            const ctx = c.getContext("2d");
+            if (!ctx) { reject(new Error("Canvas unavailable")); return; }
+            ctx.translate(c.width / 2, c.height / 2);
+            ctx.rotate(turns * Math.PI / 2);
+            ctx.drawImage(im, -im.naturalWidth / 2, -im.naturalHeight / 2);
+            try { resolve(c.toDataURL("image/jpeg", IMG_QUALITY)); } catch (e) { reject(e); }
+        };
+        im.onerror = reject;
+        im.src = dataUrl;
+    });
+}
+
+// Вырезать нормализованную область {x,y,w,h} из уже повёрнутого изображения.
+export function cropImage(dataUrl, crop) {
+    const box = crop || { x: 0, y: 0, w: 1, h: 1 };
+    return new Promise((resolve, reject) => {
+        const im = new Image();
+        im.onload = () => {
+            const sx = Math.max(0, Math.round(im.naturalWidth * box.x));
+            const sy = Math.max(0, Math.round(im.naturalHeight * box.y));
+            const sw = Math.max(1, Math.min(im.naturalWidth - sx, Math.round(im.naturalWidth * box.w)));
+            const sh = Math.max(1, Math.min(im.naturalHeight - sy, Math.round(im.naturalHeight * box.h)));
+            const c = document.createElement("canvas");
+            c.width = sw; c.height = sh;
+            const ctx = c.getContext("2d");
+            if (!ctx) { reject(new Error("Canvas unavailable")); return; }
+            ctx.drawImage(im, sx, sy, sw, sh, 0, 0, sw, sh);
+            try { resolve(c.toDataURL("image/jpeg", IMG_QUALITY)); } catch (e) { reject(e); }
+        };
+        im.onerror = reject;
+        im.src = dataUrl;
+    });
+}

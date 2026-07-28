@@ -780,12 +780,55 @@
 /* импорт слов с фото: превью + редактируемый список распознанных слов */
 .ocr-preview { display: block; width: 100%; max-height: 200px; object-fit: contain;
     border-radius: var(--r-md); background: var(--surface-3); }
+.ocr-previewbox { height: min(240px, 32dvh); display: grid; place-items: center; overflow: hidden;
+    border-radius: var(--r-md); background: var(--surface-3); }
+.ocr-previewbox .ocr-preview { width: auto; max-width: 100%; height: auto; max-height: 100%;
+    border-radius: 0; background: transparent; transition: transform .18s var(--ease); }
+.ocr-pagebar { display: flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-2); min-height: 34px; }
+.ocr-pagebar > b { font-size: var(--fs-12); color: var(--ink-2); }
+.ocr-pagebar__spacer { flex: 1; }
+.crop-stage { position: relative; height: min(440px, 52dvh); display: grid; place-items: center; overflow: hidden;
+    border-radius: var(--r-md); background: #101817; cursor: crosshair; touch-action: none; user-select: none; }
+.crop-stage > img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
+.crop-selection { position: absolute; border: 2px solid #fff; box-shadow: 0 0 0 9999px rgba(0,0,0,.52);
+    pointer-events: none; min-width: 2px; min-height: 2px; }
+.crop-selection::before, .crop-selection::after { content: ""; position: absolute; background: rgba(255,255,255,.55); }
+.crop-selection::before { left: 50%; top: 0; bottom: 0; width: 1px; }
+.crop-selection::after { top: 50%; left: 0; right: 0; height: 1px; }
 .ocr-list { display: flex; flex-direction: column; gap: var(--sp-2); max-height: 46vh; overflow-y: auto; }
 .ocr-row { display: flex; align-items: center; gap: var(--sp-2); }
 .ocr-row .input { flex: 1; min-width: 0; unicode-bidi: plaintext; }
 .ocr-del { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;
     border: 1px solid var(--surface-3); background: var(--surface); color: var(--ink-3); border-radius: var(--r-md); cursor: pointer; }
 .ocr-del:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-bg); }
+.import-row { display: flex; align-items: center; gap: var(--sp-2); }
+.import-row > input[type="checkbox"] { flex: none; width: 18px; height: 18px; accent-color: var(--fjord-600); }
+.import-row.is-off { opacity: .52; }
+.import-fields { min-width: 0; flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-2); }
+.import-fields .input { min-width: 0; unicode-bidi: plaintext; }
+.import-count { margin-bottom: var(--sp-2); font-size: var(--fs-12); font-weight: 700; color: var(--ink-2); }
+.import-limit { margin-top: 3px; text-align: end; font-size: var(--fs-11); color: var(--ink-3); }
+.import-actions { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-2); margin-top: var(--sp-4); }
+.import-preparing { min-height: 150px; display: flex; align-items: center; justify-content: center; gap: var(--sp-3); color: var(--ink-2); }
+.import-stage { display: grid; grid-template-columns: 1fr; gap: 5px; margin-top: var(--sp-3);
+    font-size: var(--fs-12); font-weight: 700; color: var(--ink-2); }
+.import-stage progress { width: 100%; height: 7px; accent-color: var(--fjord-600); }
+.import-result { display: flex; flex-direction: column; align-items: center; gap: var(--sp-3); }
+.import-result__icon { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--success-bg); color: var(--success); }
+.import-result__icon.is-partial { background: var(--warning-bg); color: var(--warning); }
+.import-result__title { font-size: var(--fs-18); text-align: center; }
+.import-result__stats { width: 100%; border: 1px solid var(--surface-3); border-radius: var(--r-md); overflow: hidden; }
+.import-result__stats > div { display: flex; justify-content: space-between; gap: var(--sp-3); padding: var(--sp-2) var(--sp-3); }
+.import-result__stats > div + div { border-top: 1px solid var(--surface-3); }
+.import-failed { width: 100%; padding: var(--sp-3); border-radius: var(--r-md); background: var(--danger-bg); color: var(--danger); }
+.import-failed > div { margin-top: 4px; overflow-wrap: anywhere; }
+
+@media (max-width: 560px) {
+    .import-fields { grid-template-columns: 1fr; }
+    .import-actions { flex-wrap: wrap; }
+    .import-actions .btn { flex: 1 1 auto; }
+}
 
 /* Левая панель поиска заполняет .sets-pane: строка поиска фиксирована, результаты скроллятся. */
 .searchpane { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }

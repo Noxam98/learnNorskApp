@@ -353,7 +353,9 @@ class ApiService {
     setReset(id) { return this._send('POST', `/sets/${id}/reset`); }   // сброс рампы выученных слов набора
     setOcr(id, { image, hint = "" } = {}) { return this._send('POST', `/sets/${id}/ocr`, { image, hint }); }   // фото → список слов (vision)
     setParseText(id, { text, hint = "" } = {}) { return this._send('POST', `/sets/${id}/parse-text`, { text, hint }); } // произвольный текст → список слов (LLM)
-    setImportWords(id, { words, lang = 'ru' } = {}) { return this._send('POST', `/sets/${id}/import-words`, { words, lang }); } // отредактированный список → в набор
+    setImportWords(id, { words, items, lang = 'ru' } = {}) {
+        return this._send('POST', `/sets/${id}/import-words`, items ? { items, lang } : { words, lang });
+    } // отредактированный список/пары с переводом → в набор
 
     // Веб-пуши (напоминания о бездействии)
     pushVapidKey() { return this._send('GET', '/push/vapid'); }
