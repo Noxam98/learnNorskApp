@@ -54,7 +54,7 @@
  * Элемент системной сессии с бэка: одно слово + назначенная ступень рампы.
  * @typedef {{
  *   pool_id?: number, id?: number, no?: string, translate?: Translate, forms?: Forms | null,
- *   mode?: string, direction?: string | null, step?: RampCell | string | null,
+ *   mode?: string, direction?: string | null, step?: RampCell | string | null, audit?: boolean,
  * } & Record<string, any>} SessionElement
  */
 

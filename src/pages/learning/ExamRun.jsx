@@ -1,7 +1,7 @@
-// Прогон экзамена/аудита поверх ОБЩЕГО игрового цикла (useGameLoop) в нейтральном режиме
+// Прогон экзамена поверх ОБЩЕГО игрового цикла (useGameLoop) в нейтральном режиме
 // (reveal=false): без раскрытия правильного, нейтральная подсветка выбора, пауза и переход —
 // всё из цикла. Стратегия: копим выборы и грейдим пачкой на сервере (онлайн-авторитетно).
-// Общий для ворот и аудита (kind). Вынесено из ExamTab.jsx.
+// Вынесено из ExamTab.jsx.
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { ChoiceQuestion } from "../../components/gameComponents/ChoiceQuestion.jsx";

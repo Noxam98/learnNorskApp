@@ -23,24 +23,15 @@ export const T = langGuard({
         qCount: (i, n) => `${i} / ${n}`,
         // результат ворот
         passedTitle: "Пачка сертифицирована",
-        passedDesc: "Новые слова снова открыты — копится следующая пачка. Старое теперь проверит аудит.",
+        passedDesc: "Новые слова снова открыты — копится следующая пачка. Старые слова будут понемногу повторяться в обычных сессиях.",
         failedTitle: "Пока не сдано",
         failedDesc: (n) => `${n} слов вернулись в повторение — доучи их и пересдай. Пересдача откроется, когда пачка снова наберётся.`,
         toRetake: (n) => `Доучить ${n} до пересдачи`,
         backStudy: "Вернуться к учёбе",
-        // аудит
-        auditTitle: "Контрольная проверка",
-        auditDesc: (n) => `${n} давно выученных слов на свежесть. Вспомнил — срок проверки растёт; забыл — слово вернётся в изучение.`,
-        startAudit: "Пройти проверку",
-        auditDoneTitle: "Проверка пройдена",
-        auditDoneDesc: (refreshed, forgot) =>
-            forgot > 0
-                ? `Освежено ${refreshed}, вернулось в изучение ${forgot}.`
-                : `Освежено ${refreshed} — всё на месте, отличная память!`,
         done: "Готово",
         // пусто
         allClearTitle: "Всё под контролем",
-        allClearDesc: "Сейчас ни ворот, ни аудита. Продолжай ежедневные сессии — экзамен откроется сам, когда наберётся пачка.",
+        allClearDesc: "Сейчас экзамен не требуется. Продолжай ежедневные сессии — он откроется сам, когда наберётся пачка.",
     },
     en: {
         eyebrow: "Exam · gate to new words",
@@ -59,22 +50,14 @@ export const T = langGuard({
         hintInput: "Type in Norwegian", inputSubmit: "Check",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Pack certified",
-        passedDesc: "New words are open again — the next pack starts filling. The audit now watches the old ones.",
+        passedDesc: "New words are open again — the next pack starts filling. Older words will be reviewed gradually in regular sessions.",
         failedTitle: "Not passed yet",
         failedDesc: (n) => `${n} words went back to review — re-learn them and retake. The retake opens once the pack fills up again.`,
         toRetake: (n) => `Re-learn ${n} to retake`,
         backStudy: "Back to study",
-        auditTitle: "Maintenance check",
-        auditDesc: (n) => `${n} long-learned words checked for freshness. Recall it — its check pushes further; forget it — it returns to study.`,
-        startAudit: "Run check",
-        auditDoneTitle: "Check complete",
-        auditDoneDesc: (refreshed, forgot) =>
-            forgot > 0
-                ? `Refreshed ${refreshed}, returned to study ${forgot}.`
-                : `Refreshed ${refreshed} — all kept, great memory!`,
         done: "Done",
         allClearTitle: "All under control",
-        allClearDesc: "No gate or audit right now. Keep your daily sessions — the exam opens itself once a pack fills up.",
+        allClearDesc: "No exam is needed right now. Keep your daily sessions — it opens itself once a pack fills up.",
     },
     ukr: {
         eyebrow: "Екзамен · ворота до нових слів",
@@ -93,22 +76,14 @@ export const T = langGuard({
         hintInput: "Напиши норвезькою", inputSubmit: "Перевірити",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Пачку сертифіковано",
-        passedDesc: "Нові слова знову відкриті — накопичується наступна пачка. Старе тепер перевірить аудит.",
+        passedDesc: "Нові слова знову відкриті — накопичується наступна пачка. Старі слова потроху повторюватимуться у звичайних сесіях.",
         failedTitle: "Поки не складено",
         failedDesc: (n) => `${n} слів повернулися на повторення — доучи їх і перездай. Перездача відкриється, коли пачка набереться знову.`,
         toRetake: (n) => `Доучити ${n} до перездачі`,
         backStudy: "Повернутися до навчання",
-        auditTitle: "Контрольна перевірка",
-        auditDesc: (n) => `${n} давно вивчених слів на свіжість. Згадав — термін перевірки росте; забув — слово повернеться в навчання.`,
-        startAudit: "Пройти перевірку",
-        auditDoneTitle: "Перевірку пройдено",
-        auditDoneDesc: (refreshed, forgot) =>
-            forgot > 0
-                ? `Освіжено ${refreshed}, повернулося в навчання ${forgot}.`
-                : `Освіжено ${refreshed} — усе на місці, чудова памʼять!`,
         done: "Готово",
         allClearTitle: "Усе під контролем",
-        allClearDesc: "Зараз ні воріт, ні аудиту. Продовжуй щоденні сесії — екзамен відкриється сам, коли набереться пачка.",
+        allClearDesc: "Зараз екзамен не потрібен. Продовжуй щоденні сесії — він відкриється сам, коли набереться пачка.",
     },
     pl: {
         eyebrow: "Egzamin · brama do nowych słów",
@@ -127,22 +102,14 @@ export const T = langGuard({
         hintInput: "Napisz po norwesku", inputSubmit: "Sprawdź",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Paczka certyfikowana",
-        passedDesc: "Nowe słowa znów otwarte — zbiera się kolejna paczka. Stare pilnuje teraz audyt.",
+        passedDesc: "Nowe słowa znów otwarte — zbiera się kolejna paczka. Starsze słowa będą stopniowo powtarzane w zwykłych sesjach.",
         failedTitle: "Jeszcze niezdane",
         failedDesc: (n) => `${n} słów wróciło do powtórki — doucz je i podejdź ponownie. Poprawka otworzy się, gdy paczka znów się zapełni.`,
         toRetake: (n) => `Doucz ${n} do poprawki`,
         backStudy: "Wróć do nauki",
-        auditTitle: "Kontrola utrwalenia",
-        auditDesc: (n) => `${n} dawno nauczonych słów na świeżość. Pamiętasz — termin kontroli rośnie; zapomniałeś — słowo wraca do nauki.`,
-        startAudit: "Przeprowadź kontrolę",
-        auditDoneTitle: "Kontrola ukończona",
-        auditDoneDesc: (refreshed, forgot) =>
-            forgot > 0
-                ? `Odświeżono ${refreshed}, wróciło do nauki ${forgot}.`
-                : `Odświeżono ${refreshed} — wszystko zostało, świetna pamięć!`,
         done: "Gotowe",
         allClearTitle: "Wszystko pod kontrolą",
-        allClearDesc: "Teraz ani bramy, ani audytu. Kontynuuj codzienne sesje — egzamin otworzy się sam, gdy zbierze się paczka.",
+        allClearDesc: "Egzamin nie jest teraz potrzebny. Kontynuuj codzienne sesje — otworzy się sam, gdy zbierze się paczka.",
     },
     lt: {
         eyebrow: "Egzaminas · vartai į naujus žodžius",
@@ -161,22 +128,14 @@ export const T = langGuard({
         hintInput: "Parašyk norvegiškai", inputSubmit: "Tikrinti",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Rinkinys sertifikuotas",
-        passedDesc: "Nauji žodžiai vėl atverti — kaupiasi kitas rinkinys. Senus dabar tikrins auditas.",
+        passedDesc: "Nauji žodžiai vėl atverti — kaupiasi kitas rinkinys. Senesni žodžiai bus po truputį kartojami įprastose sesijose.",
         failedTitle: "Dar neišlaikyta",
         failedDesc: (n) => `${n} žodžių grįžo kartoti — pramokyk juos ir perlaikyk. Perlaikymas atsivers, kai rinkinys vėl susikaups.`,
         toRetake: (n) => `Pramokyti ${n} iki perlaikymo`,
         backStudy: "Grįžti į mokymąsi",
-        auditTitle: "Kontrolinis patikrinimas",
-        auditDesc: (n) => `${n} seniai išmoktų žodžių šviežumui. Prisiminei — tikrinimo terminas auga; pamiršai — žodis grįš mokytis.`,
-        startAudit: "Atlikti patikrinimą",
-        auditDoneTitle: "Patikrinimas baigtas",
-        auditDoneDesc: (refreshed, forgot) =>
-            forgot > 0
-                ? `Atnaujinta ${refreshed}, grįžo mokytis ${forgot}.`
-                : `Atnaujinta ${refreshed} — viskas vietoje, puiki atmintis!`,
         done: "Atlikta",
         allClearTitle: "Viskas po kontrole",
-        allClearDesc: "Dabar nei vartų, nei audito. Tęsk kasdienes sesijas — egzaminas atsivers pats, kai susikaups rinkinys.",
+        allClearDesc: "Dabar egzamino nereikia. Tęsk kasdienes sesijas — jis atsivers pats, kai susikaups rinkinys.",
     },
     lv: {
         eyebrow: "Eksāmens · vārti uz jauniem vārdiem",
@@ -195,22 +154,14 @@ export const T = langGuard({
         hintInput: "Uzraksti norvēģiski", inputSubmit: "Pārbaudīt",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "Paka sertificēta",
-        passedDesc: "Jaunie vārdi atkal ir atvērti — sāk krāties nākamā paka. Vecos tagad pārrauga audits.",
+        passedDesc: "Jaunie vārdi atkal ir atvērti — sāk krāties nākamā paka. Vecākie vārdi pamazām atkārtosies parastajās sesijās.",
         failedTitle: "Vēl nav nokārtots",
         failedDesc: (n) => `${n} vārdi atgriezās atkārtošanā — apgūsti tos no jauna un kārto vēlreiz. Pārkārtošana atvērsies, kad paka atkal sakrāsies.`,
         toRetake: (n) => `Apgūt ${n} līdz pārkārtošanai`,
         backStudy: "Atpakaļ uz mācībām",
-        auditTitle: "Uzturēšanas pārbaude",
-        auditDesc: (n) => `${n} sen apgūti vārdi tiek pārbaudīti svaigumam. Atceries — pārbaudes termiņš pagarinās; aizmirsti — vārds atgriežas mācībās.`,
-        startAudit: "Veikt pārbaudi",
-        auditDoneTitle: "Pārbaude pabeigta",
-        auditDoneDesc: (refreshed, forgot) =>
-            forgot > 0
-                ? `Atsvaidzināti ${refreshed}, atgriezti mācībās ${forgot}.`
-                : `Atsvaidzināti ${refreshed} — viss saglabājies, lieliska atmiņa!`,
         done: "Gatavs",
         allClearTitle: "Viss zem kontroles",
-        allClearDesc: "Šobrīd nav ne vārtu, ne audita. Turpini ikdienas sesijas — eksāmens atvērsies pats, kad sakrāsies paka.",
+        allClearDesc: "Šobrīd eksāmens nav vajadzīgs. Turpini ikdienas sesijas — tas atvērsies pats, kad sakrāsies paka.",
     },
     ar: {
         eyebrow: "الاختبار · بوابة الكلمات الجديدة",
@@ -229,21 +180,13 @@ export const T = langGuard({
         hintInput: "اكتب بالنرويجية", inputSubmit: "تحقق",
         qCount: (i, n) => `${i} / ${n}`,
         passedTitle: "تمت المصادقة على الحزمة",
-        passedDesc: "الكلمات الجديدة مفتوحة مجددًا — تبدأ الحزمة التالية بالامتلاء. يراقب التدقيق القديمة الآن.",
+        passedDesc: "الكلمات الجديدة مفتوحة مجددًا — تبدأ الحزمة التالية بالامتلاء. ستتكرر الكلمات الأقدم تدريجيًا في الجلسات العادية.",
         failedTitle: "لم تنجح بعد",
         failedDesc: (n) => `عادت ${n} كلمة إلى المراجعة — أعد تعلّمها وأعد المحاولة. تُفتح إعادة المحاولة عندما تمتلئ الحزمة مجددًا.`,
         toRetake: (n) => `أعد تعلّم ${n} لإعادة المحاولة`,
         backStudy: "العودة إلى الدراسة",
-        auditTitle: "فحص الصيانة",
-        auditDesc: (n) => `يُفحص ${n} من الكلمات المتعلَّمة منذ زمن للتأكد من نضارتها. استحضرها — يُمدَّد موعد فحصها؛ انسها — تعود إلى الدراسة.`,
-        startAudit: "أجرِ الفحص",
-        auditDoneTitle: "اكتمل الفحص",
-        auditDoneDesc: (refreshed, forgot) =>
-            forgot > 0
-                ? `جرى تنشيط ${refreshed}، وعادت إلى الدراسة ${forgot}.`
-                : `جرى تنشيط ${refreshed} — كلها محفوظة، ذاكرة ممتازة!`,
         done: "تم",
         allClearTitle: "كل شيء تحت السيطرة",
-        allClearDesc: "لا بوابة ولا تدقيق الآن. واصل جلساتك اليومية — يُفتح الاختبار تلقائيًا عندما تمتلئ حزمة.",
+        allClearDesc: "لا حاجة إلى اختبار الآن. واصل جلساتك اليومية — سيُفتح تلقائيًا عندما تمتلئ حزمة.",
     },
 }, "ExamTab.T");

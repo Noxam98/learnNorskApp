@@ -18,6 +18,7 @@ vi.mock("../tools/api.js", () => ({
         learningReport: vi.fn(() => Promise.resolve({ ok: true })),
         learningStatus: vi.fn(() => Promise.resolve({ ok: true })),
         learningNextCards: vi.fn(() => Promise.resolve({ cards: [] })),
+        learningSessionAuditGrade: vi.fn(() => Promise.resolve({ checked: 0, refreshed: 0, forgot: 0 })),
         getListenSession: vi.fn(() => Promise.resolve({ words: [], composition: { listen: 0, total: 0 } })),
     },
 }));
@@ -63,6 +64,33 @@ describe("useLearningSession", () => {
         await waitFor(() => expect(result.current.phase).toBe("play"));
         expect(result.current.elements).toHaveLength(1);
         expect(take).toHaveBeenCalled();
+    });
+
+    it("контрольные слова не пишутся в base-SRS и грейдятся пакетом перед итогом", async () => {
+        take.mockResolvedValue({
+            elements: [{
+                pool_id: 12, mode: "input", direction: "int2no", step: "input_int2no",
+                repeat: true, audit: true, no: "hus", translate: { ru: ["дом"] },
+            }],
+        });
+        api.learningSessionAuditGrade.mockResolvedValue({ checked: 1, refreshed: 0, forgot: 1 });
+        const { result } = renderHook(() => useLearningSession({
+            words: [], system: true, lang: "ru", onClose: () => {},
+        }));
+        await waitFor(() => expect(result.current.phase).toBe("play"));
+
+        const gw = result.current.elements[0].gw;
+        act(() => {
+            result.current.onResult(gw, false, "input", "int2no");
+            result.current.onResult(gw, true, "input", "int2no");
+        });
+        expect(api.learningAnswer).not.toHaveBeenCalled();
+
+        act(() => { result.current.onGameFinish({ total: 1, correct: 0 }, false, "input"); });
+        await waitFor(() => expect(api.learningSessionAuditGrade).toHaveBeenCalledWith([
+            { pool_id: 12, correct: false },
+        ]));
+        await waitFor(() => expect(result.current.phase).toBe("summary"));
     });
 
     it("финиш легаси-игры ведёт к summary", async () => {

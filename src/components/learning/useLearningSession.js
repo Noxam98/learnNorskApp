@@ -95,6 +95,7 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     const dismissBusyRef = useRef(false);                  // анти-дубль: пока обрабатываем «убрать карточку» (особенно в окне await topUp)
     const topUpInFlightRef = useRef(0);                    // 0 = свободно; >0 = фоновый добор в полёте на N карт (сериализация: анти-дубль/перебор нормы)
     const pendingTopUpPidsRef = useRef([]);               // pid'ы, уже долитые добором в этой сессии — не запрашивать снова (exclude)
+    const auditResultsRef = useRef([]);                    // контрольные ответы пишем одним пакетом на финише
     const [before, setBefore] = useState(null);           // снимок статистики ДО сессии — «выучено» по бэк-дельте mastered (аудио-гейт)
     const mountedRef = useRef(true);                       // защита await→setState после размонтирования
     useEffect(() => () => { mountedRef.current = false; }, []);
@@ -104,6 +105,7 @@ export function useLearningSession({ words = [], system = false, setId = null, l
         // снимок mastered ДО сессии — для «+N выучено» по бэк-дельте при аудио-гейте (см. showSummary/итог)
         setBefore(null);
         pendingTopUpPidsRef.current = [];
+        auditResultsRef.current = [];
         api.learningStats().then((s) => { if (mountedRef.current) setBefore(s); }).catch(() => { /* офлайн */ });
         try {
             // слуховая сессия (listen) — тянем партию аудио-узнавания напрямую; дрилл по набору
@@ -143,6 +145,14 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     // Трек ФОРМ (form_track): ответ уходит с form/cell/stage → бэк пишет в form_srs (отдельный
     // SRS-слой рампы форм card→choose→produce), base-рампу слова не трогает.
     const onResult = (w, ok, gmode, direction) => {
+        if (w?.audit) {
+            const pid = w?.pool_id ?? w?.id;
+            const prev = auditResultsRef.current.find((item) => item.pool_id === pid);
+            // Любой промах означает «забыл»: последующий верный ввод не должен стереть его.
+            if (prev) prev.correct = prev.correct && !!ok;
+            else auditResultsRef.current.push({ pool_id: pid, correct: !!ok });
+            return;
+        }
         api.learningAnswer({
             pool_id: w?.pool_id ?? w?.id,
             correct: ok,
@@ -167,6 +177,11 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     // Показать итог + подтянуть статистику.
     const showSummary = async () => {
         setPhase("summary");
+        const auditResults = auditResultsRef.current;
+        auditResultsRef.current = [];
+        if (auditResults.length) {
+            try { await api.learningSessionAuditGrade(auditResults); } catch { /* останутся due и придут снова */ }
+        }
         try { const s = await api.learningStats(); if (mountedRef.current) setAfter(s); } catch { /* */ }
         if (isSystem) { try { const g = await api.learningGate(); if (mountedRef.current) setGate(g); } catch { /* */ } }
         // следующую сессию греем ПОСЛЕ статов — к этому моменту ответы записаны, и бэк отдаст

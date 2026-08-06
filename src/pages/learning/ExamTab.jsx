@@ -1,9 +1,7 @@
-// Вкладка «Экзамен» раздела «Учёба» — зачётные ВОРОТА к новым словам (§2.4-A)
-// и АУДИТ забывания (§2.4-B). Один экран, разные поводы:
+// Вкладка «Экзамен» раздела «Учёба» — зачётные ВОРОТА к новым словам (§2.4-A):
 //   • Ворота закрыты → «Учи ещё N» (прогресс pack/threshold) + кнопка «Учить».
 //   • Ворота открыты → прогон экзамена пачки (выбор перевода, стиль placement) → сертификат/провал.
-//   • Аудит доступен → карточка «Контрольная проверка» (тот же прогон) → итог «освежено/вернулось».
-// Прогон вопросов общий для ворот и аудита (kind: 'gate' | 'audit'). Локальная 5-язычная i18n.
+// Контроль забывания теперь идёт малыми порциями внутри обычных учебных сессий.
 import { motion } from "framer-motion";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { T } from "./ExamTab.i18n.js";
@@ -14,15 +12,15 @@ export default function ExamTab({ lang, go, refresh }) {
     const t = T[lang] || T.ru;
 
     // Вся логика обзора/прогона/грейда — в контроллере useExam; здесь только экраны.
-    const { phase, loading, gate, audit, kind, questions, busy, result,
-        startGate, startAudit, grade, backToOverview } = useExam(lang, refresh);
+    const { phase, loading, gate, questions, busy, result,
+        startGate, grade, backToOverview } = useExam(lang, refresh);
 
     // ====================================================================
     // RUN (прогон вопросов — выбор перевода, стиль placement)
     // ====================================================================
     if (phase === "run") {
         return (
-            <ExamRun questions={questions} kind={kind} lang={lang} t={t}
+            <ExamRun questions={questions} lang={lang} t={t}
                 onExit={backToOverview} onGrade={grade} />
         );
     }
@@ -41,73 +39,40 @@ export default function ExamTab({ lang, go, refresh }) {
             );
         }
 
-        if (result.kind === "gate") {
-            const passed = result.passed;
-            const color = passed ? "var(--success)" : "var(--st-weak)";
-            return (
-                <div className="exam-grid">
-                    <div className="spanel" style={{ gridColumn: "1 / -1" }}>
-                        <div className="spanel__body" style={resBody}>
-                            <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                                transition={{ type: "spring", stiffness: 280, damping: 16 }}
-                                style={{ fontSize: "2.6rem", fontWeight: 800, color, lineHeight: 1 }}>
-                                {result.correct ?? Math.max(0, questions.length - (result.demoted || 0))}
-                                <span style={{ opacity: .45, fontSize: "1.6rem" }}> / {result.total ?? questions.length}</span>
-                            </motion.div>
-                            <motion.span className="grade-cefr" style={{ background: color }}
-                                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
-                                <Icon n={passed ? "check" : "x-circle"} sm style={{ marginRight: 7 }} />
-                                {passed ? t.passedTitle : t.failedTitle}
-                            </motion.span>
-                            <p className="muted" style={resDesc}>
-                                {passed ? t.passedDesc : t.failedDesc(result.demoted)}
-                            </p>
-                            {!passed && result.demoted > 0 && (
-                                <div className="exam-sumrow" style={{ maxWidth: 360, width: "100%" }}>
-                                    <span className="exam-sumrow__l"><Icon n="rotate" sm /> {t.toRetake(result.demoted)}</span>
-                                </div>
-                            )}
-                            <div style={resActions}>
-                                {passed ? (
-                                    <button className="btn btn--accent btn--lg btn--block" onClick={backToOverview}>
-                                        <Icon n="check" sm /> {t.done}
-                                    </button>
-                                ) : (
-                                    <button className="btn btn--accent btn--lg btn--block"
-                                        onClick={() => { go("today"); refresh?.(); }}>
-                                        <Icon n="graduation" sm /> {t.goStudy}
-                                    </button>
-                                )}
-                                <button className="btn btn--ghost btn--block" onClick={backToOverview}>
-                                    <Icon n="arrow-left" sm /> {t.backStudy}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // аудит
+        const passed = result.passed;
+        const color = passed ? "var(--success)" : "var(--st-weak)";
         return (
             <div className="exam-grid">
                 <div className="spanel" style={{ gridColumn: "1 / -1" }}>
                     <div className="spanel__body" style={resBody}>
-                        <span className="grade-cefr" style={{ background: "var(--st-learn)" }}>
-                            <Icon n="check" sm style={{ marginRight: 7 }} /> {t.auditDoneTitle}
-                        </span>
+                        <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                            transition={{ type: "spring", stiffness: 280, damping: 16 }}
+                            style={{ fontSize: "2.6rem", fontWeight: 800, color, lineHeight: 1 }}>
+                            {result.correct ?? Math.max(0, questions.length - (result.demoted || 0))}
+                            <span style={{ opacity: .45, fontSize: "1.6rem" }}> / {result.total ?? questions.length}</span>
+                        </motion.div>
+                        <motion.span className="grade-cefr" style={{ background: color }}
+                            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
+                            <Icon n={passed ? "check" : "x-circle"} sm style={{ marginRight: 7 }} />
+                            {passed ? t.passedTitle : t.failedTitle}
+                        </motion.span>
                         <p className="muted" style={resDesc}>
-                            {t.auditDoneDesc(result.refreshed, result.forgot)}
+                            {passed ? t.passedDesc : t.failedDesc(result.demoted)}
                         </p>
+                        {!passed && result.demoted > 0 && (
+                            <div className="exam-sumrow" style={{ maxWidth: 360, width: "100%" }}>
+                                <span className="exam-sumrow__l"><Icon n="rotate" sm /> {t.toRetake(result.demoted)}</span>
+                            </div>
+                        )}
                         <div style={resActions}>
-                            {result.forgot > 0 ? (
+                            {passed ? (
+                                <button className="btn btn--accent btn--lg btn--block" onClick={backToOverview}>
+                                    <Icon n="check" sm /> {t.done}
+                                </button>
+                            ) : (
                                 <button className="btn btn--accent btn--lg btn--block"
                                     onClick={() => { go("today"); refresh?.(); }}>
                                     <Icon n="graduation" sm /> {t.goStudy}
-                                </button>
-                            ) : (
-                                <button className="btn btn--accent btn--lg btn--block" onClick={backToOverview}>
-                                    <Icon n="check" sm /> {t.done}
                                 </button>
                             )}
                             <button className="btn btn--ghost btn--block" onClick={backToOverview}>
@@ -121,7 +86,7 @@ export default function ExamTab({ lang, go, refresh }) {
     }
 
     // ====================================================================
-    // OVERVIEW (ворота + аудит)
+    // OVERVIEW (ворота)
     // ====================================================================
     if (loading) {
         return (
@@ -138,11 +103,7 @@ export default function ExamTab({ lang, go, refresh }) {
     const open = !!gate?.open;
     const remaining = Math.max(0, threshold - pack);
     const gatePct = threshold ? Math.min(100, Math.round((pack / threshold) * 100)) : 0;
-    const hasAudit = !!audit && (audit.questions || []).length > 0;
-    const auditN = hasAudit ? audit.questions.length : 0;
-
-    // нет ни ворот (закрыто, но порог 0), ни аудита — «всё под контролем»
-    const nothing = !open && threshold === 0 && !hasAudit;
+    const nothing = !open && threshold === 0;
 
     return (
         <div className="exam-grid">
@@ -191,23 +152,6 @@ export default function ExamTab({ lang, go, refresh }) {
                     )}
                 </div>
             </div>
-
-            {/* ----- Аудит ----- */}
-            {hasAudit && (
-                <div className="spanel">
-                    <div className="spanel__head">
-                        <span className="spanel__title"><Icon n="rotate" sm /> {t.auditTitle}</span>
-                    </div>
-                    <div className="spanel__body" style={{ display: "flex", flexDirection: "column", gap: "var(--sp-5)" }}>
-                        <p className="muted" style={{ fontSize: "var(--fs-15)", lineHeight: 1.5, margin: 0 }}>
-                            {t.auditDesc(auditN)}
-                        </p>
-                        <button className="btn btn--outline btn--lg btn--block" onClick={startAudit} disabled={busy}>
-                            <Icon n="play" sm /> {t.startAudit} · {auditN}
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

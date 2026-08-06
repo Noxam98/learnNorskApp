@@ -1,4 +1,4 @@
-// Контроллер вкладки «Экзамен»: обзор (ворота к новым словам / аудит забывания), запуск прогона,
+// Контроллер вкладки «Экзамен»: обзор ворот к новым словам, запуск прогона,
 // грейд пачкой на сервере, возврат в обзор + звук итога (фанфара/грусть). Вынесено из ExamTab.jsx.
 import { useEffect, useState } from "react";
 import api from "../../components/tools/api.js";
@@ -8,8 +8,6 @@ export function useExam(lang, refresh) {
     const [phase, setPhase] = useState("overview"); // overview | run | result
     const [loading, setLoading] = useState(true);
     const [gate, setGate] = useState(null);      // {pack, threshold, open}
-    const [audit, setAudit] = useState(null);    // {questions:[...], cap}
-    const [kind, setKind] = useState(null);      // 'gate' | 'audit'
     const [questions, setQuestions] = useState([]);
     const [busy, setBusy] = useState(false);
     const [result, setResult] = useState(null);
@@ -18,12 +16,8 @@ export function useExam(lang, refresh) {
     const loadOverview = async () => {
         setLoading(true);
         try {
-            const [g, a] = await Promise.all([
-                api.learningGate().catch(() => null),
-                api.learningAudit(lang).catch(() => null),
-            ]);
+            const g = await api.learningGate().catch(() => null);
             setGate(g || { pack: 0, threshold: 0, open: false });
-            setAudit(a && (a.questions || []).length ? a : null);
         } finally {
             setLoading(false);
         }
@@ -31,14 +25,12 @@ export function useExam(lang, refresh) {
 
     useEffect(() => {
         loadOverview();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lang]);
 
     // звук итога: фанфара при успехе, грустный — иначе
     useEffect(() => {
         if (phase !== "result" || !result) return;
-        const good = result.kind === "gate" ? result.passed : result.forgot === 0;
-        if (good) playWin(); else playSound("wrong");
+        if (result.passed) playWin(); else playSound("wrong");
     }, [result]); // eslint-disable-line
 
     // ---------- запуск прогона ----------
@@ -48,27 +40,16 @@ export function useExam(lang, refresh) {
             const r = await api.learningGateExam(lang);
             const qs = r?.questions || [];
             if (!qs.length) { await loadOverview(); return; }
-            setKind("gate"); setQuestions(qs); setResult(null); setPhase("run");
+            setQuestions(qs); setResult(null); setPhase("run");
         } catch { /* тост уже показан в api */ }
         finally { setBusy(false); }
-    };
-
-    const startAudit = () => {
-        const qs = audit?.questions || [];
-        if (!qs.length) return;
-        setKind("audit"); setQuestions(qs); setResult(null); setPhase("run");
     };
 
     const grade = async (all) => {
         setBusy(true); setPhase("result");
         try {
-            if (kind === "gate") {
-                const r = await api.learningGateGrade({ lang, answers: all });
-                setResult({ kind: "gate", passed: !!r?.passed, demoted: r?.demoted ?? 0, correct: r?.correct, total: r?.total });
-            } else {
-                const r = await api.learningAuditGrade({ lang, answers: all });
-                setResult({ kind: "audit", refreshed: r?.refreshed ?? 0, forgot: r?.forgot ?? 0, checked: r?.checked ?? all.length });
-            }
+            const r = await api.learningGateGrade({ lang, answers: all });
+            setResult({ passed: !!r?.passed, demoted: r?.demoted ?? 0, correct: r?.correct, total: r?.total });
             refresh?.();
         } catch {
             // при сбое возвращаем в обзор
@@ -79,10 +60,10 @@ export function useExam(lang, refresh) {
     };
 
     const backToOverview = async () => {
-        setKind(null); setQuestions([]); setResult(null);
+        setQuestions([]); setResult(null);
         setPhase("overview");
         await loadOverview();
     };
 
-    return { phase, loading, gate, audit, kind, questions, busy, result, startGate, startAudit, grade, backToOverview };
+    return { phase, loading, gate, questions, busy, result, startGate, grade, backToOverview };
 }

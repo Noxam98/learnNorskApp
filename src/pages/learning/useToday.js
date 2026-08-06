@@ -145,17 +145,11 @@ export function useToday({ reloadKey, refresh, openSession }) {
         setFocusSaving(false);
     };
 
-    // Аудит забывания: сколько сертифицированных слов пора перепроверить. Раньше жил только во вкладке
-    // «Экзамен»; вкладку убрали — surface'им плашкой «Контрольная проверка» прямо на «Сегодня».
-    const auditDue = stats?.audit?.due || 0;
-    const auditShow = !!stats?.audit?.open && auditDue > 0;
-
     return {
         stats, gate, loading, error, lbOpen, setLbOpen, focusSaving, sessionLoading,
         gateOpen, gatePack, gateThreshold, gateLeft, by, total, placed,
         composition, learnable, streak, isEmpty, sessReady,
         listenShow, listenReady, listenPending, listenPack, listenLeft, runListen,
-        auditDue, auditShow,
         curLevel, nextLevel, masteredAll, nextTarget, toNext, masteryFrac, ringNum, ringDen,
         focusTopics, toggleFocus, runReview,
     };
