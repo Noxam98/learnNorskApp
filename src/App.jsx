@@ -7,6 +7,7 @@ import { useWordsStore } from "./store/wordStore.jsx";
 import { useAuthStore } from "./store/AuthStore.jsx";
 import { useSystemStore } from "./store/systemStore.jsx";
 import { resyncPush } from "./components/tools/push.js";
+import { applySystemBarsTheme } from "./native/systemBars.js";
 import api from "./components/tools/api.js";
 import { interfaceTranslate } from "./interface/interfaceTranslation.jsx";
 
@@ -14,6 +15,7 @@ import { BrandLoader } from "./components/ui/Spinner.jsx";
 import Toast from "./components/tools/error.jsx";
 import { UpdateBanner } from "./components/ui/UpdateBanner.jsx";
 import WhatsNew from "./components/ui/WhatsNew.jsx";
+import NativeIntro from "./components/ui/NativeIntro.jsx";
 // Роуты — code-splitting: каждая страница в своём чанке (грузится по переходу). Тяжёлое
 // (framer-motion в «Учёбе», графики/StatsPage, OnlinePage с играми) уезжает из стартового бандла.
 const PoolPage = lazy(() => import("./pages/PoolPage.jsx").then((m) => ({ default: m.PoolPage })));
@@ -53,8 +55,11 @@ function App() {
     useEffect(() => { useAuthStore.getState().checkAuth(); }, []);
 
     // Тема оформления → атрибут на <html>, остальное делают CSS-токены.
+    // На Android заодно согласуем значки системных панелей: под жестовой полосой рисует само
+    // приложение, и при светлой теме белая «пилюля» на светлом таб-баре просто исчезает.
     useEffect(() => {
         document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+        applySystemBarsTheme(theme);
     }, [theme]);
 
     // Данные полностью серверные: грузим при наличии сессии, чистим при выходе.
@@ -133,6 +138,8 @@ function App() {
             <Toast text={toast} setText={showToast} type={toastType} url={toastUrl} action={toastAction} persist={toastPersist} />
             <UpdateBanner />
             <WhatsNew />
+            {/* Онбординг нативных фич (A3/A4) — один раз на первом запуске APK; в вебе null */}
+            <NativeIntro />
         </div>
     );
 }

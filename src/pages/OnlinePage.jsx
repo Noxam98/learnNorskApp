@@ -38,7 +38,8 @@ const SCREEN = {
     position: "fixed", inset: 0, zIndex: 90, overflow: "auto",
     background: "var(--surface-2)", color: "var(--ink)",
     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-    padding: "var(--sp-5)",
+    // клиренс под статус-бар/жестовую полосу (на вебе инсеты нулевые — те же var(--sp-5))
+    padding: "calc(var(--safe-area-inset-top) + var(--sp-5)) var(--sp-5) calc(var(--safe-area-inset-bottom) + var(--sp-5))",
 };
 
 function choiceStyle(kind) {
@@ -77,7 +78,7 @@ const OPT_ITEM = { hidden: { opacity: 0, y: 28, scale: 0.9 }, show: { opacity: 1
 // Не заменяет весь UI (стейт игры/лобби сохранён), лишь сообщает о переподключении.
 function ReconnectingOverlay({ label }) {
     return (
-        <div role="status" aria-live="polite" style={{ position: "fixed", left: 0, right: 0, top: "calc(env(safe-area-inset-top, 0px) + 10px)", display: "flex", justifyContent: "center", zIndex: 9999, pointerEvents: "none" }}>
+        <div role="status" aria-live="polite" style={{ position: "fixed", left: 0, right: 0, top: "calc(var(--safe-area-inset-top, 0px) + 10px)", display: "flex", justifyContent: "center", zIndex: 9999, pointerEvents: "none" }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 16px", borderRadius: 999, background: "var(--surface)", color: "var(--ink)", border: "1px solid var(--border)", boxShadow: "var(--shadow-md)", fontSize: "var(--fs-13)", fontWeight: 700 }}>
                 <motion.span animate={{ rotate: 360 }} transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
                     style={{ width: 14, height: 14, borderRadius: "50%", border: "2px solid var(--border)", borderTopColor: "var(--ember-600)", display: "inline-block" }} />

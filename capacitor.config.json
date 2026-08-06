@@ -1,0 +1,30 @@
+{
+  "appId": "space.learnnorsk.app",
+  "appName": "Norsk",
+  "webDir": "dist",
+  "android": {
+    "backgroundColor": "#15414A"
+  },
+  "plugins": {
+    "SystemBars": {
+      "style": "DARK"
+    },
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 2000,
+      "launchFadeOutDuration": 220,
+      "backgroundColor": "#15414A",
+      "androidScaleType": "CENTER_CROP",
+      "androidSplashResourceName": "splash",
+      "showSpinner": false
+    },
+    "SocialLogin": {
+      "providers": {
+        "google": true,
+        "facebook": false,
+        "apple": false,
+        "twitter": false
+      }
+    }
+  }
+}

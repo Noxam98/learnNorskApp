@@ -586,7 +586,7 @@
   .dunno-corner:hover { opacity: 1; color: var(--game-ink); }
   /* в режиме экранной клавиатуры низ занят клавишами — ставим «Не знаю» прямо НАД клавиатурой справа
      (клавиатура фиксирована внизу, резерв ~268px; кнопка чуть выше) */
-  .dunno-corner--kbd { right: 12px; bottom: calc(268px + env(safe-area-inset-bottom, 0px) + 8px); opacity: .55; }
+  .dunno-corner--kbd { right: 12px; bottom: calc(268px + var(--safe-area-inset-bottom) + 8px); opacity: .55; }
 
   /* feedback banner */
   /* фидбэк — компактно, в один ряд (переносится только при нехватке места) */

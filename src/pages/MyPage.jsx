@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { AH, NPS, LPK, GRM, GRM_POS, FRM, SRC } from "./MyPage.i18n.js";
 import { WN, openWhatsNew } from "../components/ui/WhatsNew.jsx";
+import { NI, openNativeIntro } from "../components/ui/NativeIntro.jsx";
+import { isNative } from "../native/platform.js";
 import { LANGUAGES } from "../interface/languages.js";
 import { useIsMobile } from "../hooks/useMediaQuery.js";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
@@ -70,6 +72,7 @@ const MyPage = () => {
     const grmPos = GRM_POS[currentLanguage] || GRM_POS.en;
     const frm = FRM[currentLanguage] || FRM.en;
     const wn = WN[currentLanguage] || WN.en;
+    const ni = NI[currentLanguage] || NI.en;
     // Порция новых слов за сессию (gamePrefs.newPerSession, дефолт 6; слайдер 4–10).
     const newPerSession = Math.min(10, Math.max(4, user?.gamePrefs?.newPerSession || 6));
     const setNewPerSession = (v) => {
@@ -407,6 +410,16 @@ const MyPage = () => {
                             <span className="setrow__meta"><span className="setrow__t">{t.kbdAssist}</span><span className="setrow__d">{t.kbdAssistDesc}</span></span>
                             <span className={`toggle${kbdAssist ? " is-on" : ""}`} onClick={() => useSystemStore.getState().setKbdAssist(!kbdAssist)} />
                         </div>
+                        {/* Только в APK: как добавлять слова из других приложений (A3/A4).
+                            Показывается один раз сам, отсюда — вернуться к нему в любой момент. */}
+                        {isNative() && (
+                            <div className="setrow setrow--link" role="button" tabIndex={0} onClick={openNativeIntro}
+                                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openNativeIntro(); } }}>
+                                <span className="setrow__ic"><Icon n="type" sm /></span>
+                                <span className="setrow__meta"><span className="setrow__t">{ni.title}</span><span className="setrow__d">{ni.rowSub}</span></span>
+                                <span className="setrow__chev"><Icon n="chevron-right" sm /></span>
+                            </div>
+                        )}
                         {/* «Что нового» — таймлайн обновлений приложения (WhatsNew, module-опенер) */}
                         <div className="setrow setrow--link" role="button" tabIndex={0} onClick={openWhatsNew}
                             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openWhatsNew(); } }}>

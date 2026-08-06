@@ -40,7 +40,7 @@
 .roomwrap .modal__x { width: 34px; height: 34px; border-radius: var(--r-full); border: 1px solid var(--m-border); background: var(--m-surface); color: var(--m-ink-2); cursor: pointer; font-size: 14px; flex: none; }
 .roomwrap .modal__x:hover { background: var(--m-surface-2); color: var(--m-ink); }
 .roomwrap .modal__body { padding: 16px 18px; overflow-y: auto; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: var(--sp-5); background: var(--m-bg); -webkit-overflow-scrolling: touch; }
-.roomwrap .modal__foot { display: flex; gap: 10px; justify-content: flex-end; padding: 14px 20px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid var(--m-border); flex: none; background: var(--m-surface); position: relative; z-index: 2; }
+.roomwrap .modal__foot { display: flex; gap: 10px; justify-content: flex-end; padding: 14px 20px calc(16px + var(--safe-area-inset-bottom)); border-top: 1px solid var(--m-border); flex: none; background: var(--m-surface); position: relative; z-index: 2; }
 .roomwrap .grpwrap { display: flex; flex-direction: column; gap: 8px; }
 .roomwrap .grp__h { font-size: var(--fs-12); font-weight: 800; letter-spacing: var(--ls-wider); text-transform: uppercase; color: var(--m-ink-3); padding-left: 4px; }
 .roomwrap .grp { display: flex; flex-direction: column; background: var(--m-surface); border: 1px solid var(--m-border); border-radius: var(--r-xl); box-shadow: var(--shadow-xs); overflow: hidden; }

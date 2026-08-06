@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="norsk_add">Додати</string>
+    <string name="norsk_generate">Згенерувати</string>
+    <string name="norsk_cancel">Скасувати</string>
+    <string name="norsk_open_app">Відкрити застосунок</string>
+    <string name="norsk_other_word">Інше слово</string>
+    <string name="norsk_choose_word">Оберіть слово</string>
+
+    <string name="norsk_searching">Шукаємо…</string>
+    <string name="norsk_adding">Додаємо…</string>
+    <string name="norsk_generating">Генеруємо…</string>
+
+    <string name="norsk_need_login">Увійдіть у застосунку, щоб додавати слова</string>
+    <string name="norsk_no_sets">Немає наборів — створіть набір у застосунку</string>
+    <string name="norsk_not_found">Такого слова немає у словнику</string>
+    <string name="norsk_not_in_pool">Слова ще немає в базі — згенерувати?</string>
+    <string name="norsk_rate_limited">Забагато запитів, спробуйте пізніше</string>
+    <string name="norsk_failed">Не вдалося додати слово</string>
+    <string name="norsk_generate_failed">Не вдалося згенерувати слово</string>
+    <string name="norsk_offline_hint">Немає мережі — додамо при відкритті застосунку</string>
+
+    <string name="norsk_added">%1$s → %2$s</string>
+    <string name="norsk_queued">%1$s збережено, додамо пізніше</string>
+    <string name="norsk_synced">Надіслано відкладені слова: %1$d</string>
+</resources>

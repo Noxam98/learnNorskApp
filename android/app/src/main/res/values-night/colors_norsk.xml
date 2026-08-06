@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Тёмная тема: шит открывается поверх чужого приложения, светлая простыня ночью слепит. -->
+<resources>
+    <color name="norsk_scrim">#B3000000</color>
+    <color name="norsk_sheet">#FF15242A</color>
+    <color name="norsk_grabber">#33FFFFFF</color>
+    <color name="norsk_text">#FFEAF3F4</color>
+    <color name="norsk_text_muted">#FF9FB6BA</color>
+    <color name="norsk_accent">#FF3FA9BC</color>
+    <color name="norsk_on_accent">#FF06222A</color>
+    <color name="norsk_ghost_stroke">#FF3F5A61</color>
+    <color name="norsk_error">#FFF2B8B5</color>
+    <color name="norsk_field">#1FFFFFFF</color>
+</resources>

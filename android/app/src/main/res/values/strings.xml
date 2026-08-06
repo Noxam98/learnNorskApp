@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Norsk</string>
+    <string name="title_activity_main">Norsk</string>
+    <string name="package_name">space.learnnorsk.app</string>
+    <string name="custom_url_scheme">space.learnnorsk.app</string>
+</resources>

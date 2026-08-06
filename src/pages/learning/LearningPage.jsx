@@ -26,7 +26,7 @@ import ProgressTab from "./ProgressTab.jsx";
 import SetsTab from "./SetsTab.jsx";
 
 // Сегменты верхней навигации. «Экзамен» здесь НЕТ — это маршрут без своей вкладки: открывается
-// плашками на «Сегодня» (ворота пачки / контрольная проверка), см. ROUTES ниже.
+// плашкой ворот пачки на «Сегодня», см. ROUTES ниже.
 const TABS = [
     { key: "today", icon: "zap" },
     { key: "words", icon: "list" },

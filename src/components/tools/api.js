@@ -1,6 +1,12 @@
 import ky from 'ky';
 import { useSystemStore } from '../../store/systemStore.jsx';
 import { interfaceTranslate } from '../../interface/interfaceTranslation';
+import { tokenStore } from '../../native/tokenStore.js';
+import { onAppResume } from '../../native/appResume.js';
+
+// Потолок ожидания хранилища токенов перед первым рендером. Больше — юзер смотрит в пустой
+// экран; меньше — на медленном холодном старте успеем показать логин залогиненному.
+const HYDRATE_TIMEOUT_MS = 3000;
 
 // Глобальный тост при сбоях запроса. Показываем только то, в чём пользователь не виноват:
 // сеть недоступна (status 0) либо перегрузка/сбой AI-провайдера (429/5xx). Прочие 4xx
@@ -17,31 +23,123 @@ function toastForError(status) {
     useSystemStore.getState().showToast(status === 0 ? t.connectionError : t.providerError);
 }
 
-class ApiService {
-    constructor(baseUrl) {
+export class ApiService {
+    /**
+     * @param {string} baseUrl
+     * @param {typeof tokenStore} [store] хранилище токенов (подменяется в тестах)
+     */
+    constructor(baseUrl, store = tokenStore) {
         this.baseUrl = baseUrl.replace(/\/+$/, ''); // без хвостового слэша
         this.accessToken = null;
         this.refreshToken = null;
-        this._initTokens();
+        this._store = store;
+        /** @type {Set<(access: string|null) => void>} слушатели гидрации/регидрации */
+        this._tokenListeners = new Set();
+        // Веб отдаёт снимок синхронно (localStorage) — поведение при старте не изменилось.
+        // Натив синхронного ответа не имеет: Preferences асинхронный, ждём _hydrate() через ready().
+        const snapshot = store.readSync();
+        if (snapshot) {
+            this._applyStored(snapshot);
+            this._ready = Promise.resolve();
+        } else {
+            this._ready = this._hydrate();
+        }
     }
 
     // --- Хранилище токенов (единственный источник правды) ---
-    // Токены лежат в localStorage как есть. Шифровать их на клиенте смысла нет (ключ всё равно в
-    // бандле = публичен) — это давало лишь ЛОЖНОЕ чувство защиты. Реальная защита от кражи токена —
-    // против XSS: нет innerHTML/eval (React экранирует). CSP на edge (Vercel) пока НЕ настроен —
-    // стоит добавить как defense-in-depth; при XSS токен и так читается из памяти.
-    _initTokens() {
-        const access = localStorage.getItem('access_token');
-        const refresh = localStorage.getItem('refresh_token');
-        // принимаем только похожее на JWT (xxx.yyy.zzz); старые AES-блобы прежних версий — игнорируем
-        // и чистим (юзер один раз перелогинится), а не тащим битый токен в запросы
+    // В памяти токены синхронные (this.accessToken), персистенс — в native/tokenStore.js
+    // (веб: localStorage, натив: Preferences = SharedPreferences, оттуда их читает активити A3).
+    // Шифровать их на клиенте смысла нет (ключ всё равно в бандле = публичен) — это давало лишь
+    // ЛОЖНОЕ чувство защиты. Реальная защита от кражи токена — против XSS: нет innerHTML/eval
+    // (React экранирует). CSP на edge (Vercel) пока НЕ настроен — стоит добавить как
+    // defense-in-depth; при XSS токен и так читается из памяти.
+
+    /**
+     * Положить прочитанную из хранилища пару в память.
+     * Принимаем только похожее на JWT (xxx.yyy.zzz); старые AES-блобы прежних версий —
+     * игнорируем и чистим (юзер один раз перелогинится), а не тащим битый токен в запросы.
+     * @param {{access: string|null, refresh: string|null}} pair
+     * @returns {boolean} применена ли пара
+     */
+    _applyStored({ access = null, refresh = null } = { access: null, refresh: null }) {
         if (this._looksLikeJwt(access) && this._looksLikeJwt(refresh)) {
             this.accessToken = access;
             this.refreshToken = refresh;
-        } else if (access || refresh) {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
+            return true;
         }
+        if (access || refresh) this._store.clear();
+        return false;
+    }
+
+    /**
+     * Асинхронная гидрация (натив). Никогда не реджектится: иначе не отрисуется приложение.
+     * И никогда не висит дольше HYDRATE_TIMEOUT_MS — зависание не ловится try/catch, а на
+     * нативе это уже стоило нам белого экрана (прокси Capacitor выглядит как thenable, и
+     * промис не разрешался никогда). Если хранилище ответит позже, токены применятся и
+     * подписчики (AuthStore) обновятся — приложение просто дорисуется уже залогиненным.
+     */
+    async _hydrate() {
+        const done = (async () => {
+            try {
+                this._applyStored(await this._store.read());
+            } catch { /* хранилище недоступно — стартуем как неавторизованные */ }
+            this._emitTokens();
+        })();
+        let timer;
+        await Promise.race([
+            done.finally(() => clearTimeout(timer)),
+            new Promise((resolve) => { timer = setTimeout(resolve, HYDRATE_TIMEOUT_MS); }),
+        ]);
+    }
+
+    /**
+     * Промис готовности токенов. Ждать ДО первого рендера (см. main.jsx), иначе на нативе
+     * приложение решит, что юзер не залогинен, и покажет экран входа при каждом старте.
+     * @returns {Promise<void>}
+     */
+    ready() {
+        return this._ready;
+    }
+
+    /**
+     * Подписка на смену токенов из хранилища (гидрация/регидрация на возврате в приложение).
+     * Нужна AuthStore: он зеркалит accessToken для реактивности UI.
+     * @param {(access: string|null) => void} fn
+     * @returns {() => void} отписка
+     */
+    onTokens(fn) {
+        this._tokenListeners.add(fn);
+        return () => this._tokenListeners.delete(fn);
+    }
+
+    _emitTokens() {
+        for (const fn of this._tokenListeners) {
+            try { fn(this.accessToken); } catch { /* слушатель не должен ломать гидрацию */ }
+        }
+    }
+
+    /**
+     * Перечитать токены из хранилища в память (вызывается на возврате приложения из фона).
+     * Нативная активити (A3) тоже умеет рефрешить, а /refresh РОТИРУЕТ refresh-токен: без этого
+     * WebView остался бы со старым refresh и разлогинил бы юзера на первом же 401.
+     * Пустое/битое хранилище память НЕ трогает — читать не удалось ≠ разлогин.
+     * @returns {Promise<boolean>} подхватили ли новую пару
+     */
+    async rehydrateTokens() {
+        let stored;
+        try {
+            stored = await this._store.read();
+        } catch {
+            return false;
+        }
+        const access = stored?.access ?? null;
+        const refresh = stored?.refresh ?? null;
+        if (!this._looksLikeJwt(access) || !this._looksLikeJwt(refresh)) return false;
+        if (access === this.accessToken && refresh === this.refreshToken) return false;
+        this.accessToken = access;
+        this.refreshToken = refresh;
+        this._emitTokens();
+        return true;
     }
 
     _looksLikeJwt(t) {
@@ -51,8 +149,8 @@ class ApiService {
     _setTokens(accessToken, refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        localStorage.setItem('access_token', accessToken);
-        localStorage.setItem('refresh_token', refreshToken);
+        // В вебе запись синхронная (localStorage внутри), на нативе — промис Preferences.
+        Promise.resolve(this._store.write(accessToken, refreshToken)).catch(() => {});
     }
 
     isAuthenticated() {
@@ -328,8 +426,7 @@ class ApiService {
     learningGate() { return this._send('GET', '/learning/gate'); }
     learningGateExam(lang = "ru") { return this._send('GET', `/learning/gate/exam?lang=${encodeURIComponent(lang)}`); }
     learningGateGrade({ lang = "ru", answers = [] }) { return this._send('POST', '/learning/gate/exam', { lang, answers }); }
-    learningAudit(lang = "ru") { return this._send('GET', `/learning/audit?lang=${encodeURIComponent(lang)}`); }
-    learningAuditGrade({ lang = "ru", answers = [] }) { return this._send('POST', '/learning/audit', { lang, answers }); }
+    learningSessionAuditGrade(results = []) { return this._send('POST', '/learning/audit/session', { results }); }
     learningStatus(poolId, action) { return this._send('POST', `/learning/${poolId}/status`, { action }); }
     learningSuggest({ count = 10, level = "" } = {}) { return this._send('POST', '/learning/suggest', { count, level }); }
     placementGet(lang = "ru", per = 4) { return this._send('GET', `/learning/placement?lang=${encodeURIComponent(lang)}&per=${per}`); }
@@ -365,11 +462,15 @@ class ApiService {
     logout() {
         this.accessToken = null;
         this.refreshToken = null;
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+        Promise.resolve(this._store.clear()).catch(() => {});
     }
 }
 
 // URL бэкенда задаётся через переменные окружения.
 const api = new ApiService(import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000');
+
+// Натив: на возврате в приложение перечитываем хранилище — пара могла быть обновлена нативной
+// активити (A3), а /refresh ротирует refresh-токен. В вебе подписка — no-op.
+onAppResume(() => { api.rehydrateTokens().catch(() => {}); }).catch(() => {});
+
 export default api;

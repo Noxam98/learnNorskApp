@@ -29,6 +29,17 @@ dist-ssr
 # Playwright MCP test artifacts
 .playwright-mcp/
 
+# Android (Capacitor). Сам каталог android/ КОММИТИМ — это Gradle-проект, в него руками
+# кладутся нативные активити; пересоздавать его нельзя. Игнорируем только сборочный мусор,
+# локальные пути к SDK и подписные ключи.
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+android/app/release/
+*.keystore
+*.jks
+
 # Личные настройки Claude Code (не для команды)
 .claude/settings.local.json
 

@@ -165,3 +165,13 @@ export const useAuthStore = create((set, get) => ({
         set({ user: null, accessToken: null });
     },
 }));
+
+// Стор создаётся на импорте модуля, а на нативе токены приезжают из Preferences асинхронно
+// (и ещё раз — на возврате в приложение, если их обновила нативная активити). Поэтому зеркало
+// accessToken досинхронизируем по событию от ApiService. В вебе первое событие приходит уже
+// с готовыми токенами и ничего не меняет.
+api.onTokens((accessToken) => {
+    if ((useAuthStore.getState().accessToken || null) !== (accessToken || null)) {
+        useAuthStore.setState({ accessToken: accessToken || null });
+    }
+});

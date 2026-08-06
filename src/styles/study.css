@@ -368,7 +368,7 @@
 .study-root .session-pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: var(--r-full); background: var(--game-surface); border: 1px solid var(--game-border); color: var(--game-ink); font-weight: 700; font-size: var(--fs-13); }
 .study-root .session-pill .dot { width: 8px; height: 8px; border-radius: 50%; }
 /* добор следующей карточки в «живой» сессии — короткий спиннер поверх игрового слоя (z=90) */
-.session-topup { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 24px); transform: translateX(-50%);
+.session-topup { position: fixed; left: 50%; bottom: calc(var(--safe-area-inset-bottom) + 24px); transform: translateX(-50%);
     z-index: 95; display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-full);
     background: var(--game-surface); border: 1px solid var(--game-border); color: var(--game-ink-2); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
 .session-topup .ln-spin { width: 18px; height: 18px; }
@@ -395,7 +395,7 @@
   background: color-mix(in srgb, var(--surface) 92%, transparent);
   backdrop-filter: saturate(1.4) blur(14px);
   border-top: 1px solid var(--border);
-  padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+  padding: 6px 4px calc(6px + var(--safe-area-inset-bottom));
 }
 .study-root .tabbar__row { display: flex; align-items: stretch; justify-content: space-around; }
 .study-root .tabbar__item {
@@ -534,9 +534,9 @@
      — именно из-за этого верхний отступ скрытой панели не появлялся (контент липнул к верху). */
   .study-root.study-main { padding-top: 0; transition: padding-top .28s var(--ease), padding-bottom .28s var(--ease); }
   /* Панель скрыта → её flow-место отбираем (marginBottom:-navH в JS), контент уезжает вверх и
-     ИСПОЛЬЗУЕТ освобождённое место. Верхний отступ = клиренс под статус-бар/чёлку (env, работает
-     благодаря viewport-fit=cover) + комфортный зазор контента до края (как от панели, когда показана). */
-  html[data-studynav-off] .study-root.study-main { padding-top: calc(env(safe-area-inset-top) + var(--sp-3)); }
+     ИСПОЛЬЗУЕТ освобождённое место. Верхний отступ = клиренс под статус-бар/чёлку (см. --safe-area-*
+     в app.css) + комфортный зазор контента до края (как от панели, когда показана). */
+  html[data-studynav-off] .study-root.study-main { padding-top: calc(var(--safe-area-inset-top) + var(--sp-3)); }
   /* На мобилке приветствие («Добрый день…») и строка «Учёба · A1» съедают место — прячем весь
      заголовок раздела; навигация по вкладкам и так в липком хедере .study-navbar. */
   .study-root .study-head { display: none; }
@@ -546,7 +546,7 @@
     width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw);
     margin-bottom: var(--sp-2);   /* единый отступ под навигацией для ВСЕХ вкладок «Учёбы» (бывший отступ чипов «Наборов») */
     background: var(--canvas); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-xs);
-    padding: max(env(safe-area-inset-top), var(--sp-2)) var(--sp-3) var(--sp-2);
+    padding: max(var(--safe-area-inset-top), var(--sp-2)) var(--sp-3) var(--sp-2);
     will-change: transform;
     transition: transform .28s var(--ease), margin-bottom .28s var(--ease);   /* авто-скрытие: слайд + ужатие места */
   }
@@ -592,8 +592,8 @@
 .study-root.intro-full .intro-full__body {
   position: relative; z-index: 1; margin: auto; width: 100%; max-width: 520px;
   display: flex; flex-direction: column; gap: var(--sp-5);
-  padding: max(env(safe-area-inset-top), var(--sp-7, 28px)) var(--sp-5)
-           max(env(safe-area-inset-bottom), var(--sp-6)) var(--sp-5);
+  padding: max(var(--safe-area-inset-top), var(--sp-7, 28px)) var(--sp-5)
+           max(var(--safe-area-inset-bottom), var(--sp-6)) var(--sp-5);
 }
 .study-root.intro-full .plc-hero__btn { align-self: stretch; justify-content: center; }
 .study-root.intro-full { overflow-x: hidden; }   /* страховка: онбординг никогда не скроллит вбок */

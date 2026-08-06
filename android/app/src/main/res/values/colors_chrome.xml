@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Цвет системного «обрамления» окна (A10): полоса под статус-баром/вырезом, которую освобождает
+     паддинг WebView (см. SystemInsets.java). Тот же фирменный тон, что у сплэша и фона приложения
+     в capacitor.config.json, — переход со сплэша на приложение получается бесшовным.
+     Тон тёмный, поэтому иконки статус-бара держим светлыми (SystemBars style=DARK). -->
+<resources>
+    <color name="norsk_system_chrome">#FF15414A</color>
+</resources>

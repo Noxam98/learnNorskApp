@@ -17,10 +17,16 @@ function safeAreaBottom() {
     if (_sab != null) return _sab;
     try {
         const p = document.createElement("div");
-        p.style.cssText = "position:fixed;left:0;bottom:0;width:0;height:env(safe-area-inset-bottom);visibility:hidden;pointer-events:none";
+        // var(--safe-area-inset-bottom), а не env(...): в Android-обёртке реальные отступы
+        // приходят из плагина в переменную, env() там нулевой (см. app.css).
+        p.style.cssText = "position:fixed;left:0;bottom:0;width:0;height:var(--safe-area-inset-bottom);visibility:hidden;pointer-events:none";
         document.body.appendChild(p);
-        _sab = Math.round(p.getBoundingClientRect().height) || 0;
+        const h = Math.round(p.getBoundingClientRect().height) || 0;
         p.remove();
+        // Ноль не кешируем: на нативе переменную выставляет плагин, и первый замер может
+        // случиться до инъекции — иначе «нет safe-area» залипнет навсегда.
+        if (h) _sab = h;
+        return h;
     } catch { _sab = 0; }
     return _sab;
 }

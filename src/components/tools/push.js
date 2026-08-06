@@ -1,6 +1,7 @@
 // Веб-пуши на фронте: подписка/отписка через service worker + бэкенд.
 // Всё в try/catch — если браузер не поддерживает или юзер отказал, приложение работает как обычно.
 import api from "./api.js";
+import { isNative } from "../../native/platform.js";
 
 // applicationServerKey должен быть Uint8Array из base64url-VAPID-публичного ключа.
 const urlBase64ToUint8Array = (base64String) => {
@@ -12,7 +13,11 @@ const urlBase64ToUint8Array = (base64String) => {
     return arr;
 };
 
+// Внутри APK Web Push нет (Capacitor WebView не даёт Service Worker Push), поэтому VAPID-путь
+// на нативе отключён целиком — иначе подписка молча падает или виснет на serviceWorker.ready.
+// Нативные уведомления пойдут через FCM (задача A6).
 export const pushSupported = () =>
+    !isNative() &&
     typeof navigator !== "undefined" && "serviceWorker" in navigator &&
     typeof window !== "undefined" && "PushManager" in window && "Notification" in window;
 
@@ -49,6 +54,7 @@ export async function enablePush() {
 
 // Выключить: отписать бэк + отписаться в браузере.
 export async function disablePush() {
+    if (!pushSupported()) return true;   // на нативе serviceWorker.ready никогда не резолвится
     try {
         const reg = await navigator.serviceWorker.ready;
         const sub = await reg.pushManager.getSubscription();

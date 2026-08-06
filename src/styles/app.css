@@ -1,5 +1,45 @@
 /* Доводки приложения поверх дизайн-системы */
 
+/* ── Безопасные зоны экрана (вырез/статус-бар/жестовая полоса) ─────────────────
+   В вебе значения даёт сам браузер через env(safe-area-inset-*) (в index.html стоит
+   viewport-fit=cover). В Android-обёртке (Capacitor) WebView под edge-to-edge отдаёт
+   в env() нули, а реальные отступы приходят инлайном на <html> в те же имена переменных —
+   инлайн-стиль перебивает это правило. Поэтому по всему приложению используем
+   var(--safe-area-inset-*), а не env(...) напрямую.
+
+   ВАЖНО (A10): на Android сверху и по бокам эти переменные приходят НУЛЯМИ — там WebView
+   физически отодвинут от системных панелей паддингом контейнера (SystemInsets.java), иначе
+   любой проскролленный контент уезжает под часы. Ненулевым остаётся только низ: фон нижних
+   панелей приложения красиво уходит под жестовую полосу и ничему не мешает. Верхние формулы
+   ниже — для веба и iOS-PWA с вырезом; трогать их не нужно, они просто вырождаются в нули. */
+:root {
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+}
+
+/* Клиренсы под системные панели. Все формулы вырождаются в текущую вёрстку при нулевых
+   инсетах, поэтому в обычном вебе (десктоп/браузер на телефоне) ничего не меняется —
+   отрабатывают только в Android-обёртке и в iOS-PWA с вырезом. */
+/* Мобильная раскладка: верхней панели нет (см. таб-бар ниже) — клиренс держит сама страница.
+   Берём именно оболочки прокручиваемых страниц (База/Модерация/Статистика/Профиль/лобби Онлайна).
+   «Учёбу» не трогаем: у неё липкий .study-navbar со своим max(safe-area-top, …) в study.css,
+   полноэкранные слои Онлайна и игр — ниже отдельно. */
+@media (max-width: 760px) {
+    .words-main, .prof-main, .sel-main { margin-top: var(--safe-area-inset-top); }
+}
+/* Экран входа/регистрации живёт вне .app (полноэкранный), свой брейкпоинт — 880. */
+@media (max-width: 880px) {
+    .auth__form { padding-top: calc(var(--sp-16) + var(--safe-area-inset-top)); }
+}
+/* Полноэкранный оверлей игры (fixed inset:0): шапка .ptop уезжала бы под статус-бар.
+   Низ у варианта с клавиатурой держит сама .kbd — там инсет уже учтён. */
+.play { padding-top: var(--safe-area-inset-top); }
+.play:not(.play--kbd) { padding-bottom: var(--safe-area-inset-bottom); }
+/* Липкая нижняя панель старта игры */
+.startbar__row { padding-bottom: calc(var(--sp-4) + var(--safe-area-inset-bottom)); }
+
 /* Подстраховка от горизонтального скролла */
 .app { overflow-x: clip; }
 
@@ -404,7 +444,7 @@
     .play--kbd .kbd, .study-root--kbd .kbd {
         position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; margin: 0; width: 100%; max-width: none;
         background: var(--game-bg-2); border-radius: var(--r-lg) var(--r-lg) 0 0;
-        padding: 8px 5px calc(env(safe-area-inset-bottom, 0px) + 16px);
+        padding: 8px 5px calc(var(--safe-area-inset-bottom) + 16px);
         box-shadow: 0 -4px 22px rgba(0, 0, 0, .34); gap: 6px; align-items: stretch;
     }
     .kbd__key { max-width: none; height: 50px; font-size: var(--fs-20); border-radius: var(--r-sm); }
@@ -534,17 +574,17 @@
     .nav__links { display: none; }            /* верхние ссылки прячем — они в таб-баре */
     .nav .nav__avatar { display: none; }       /* профиль — в таб-баре */
     main, .prof-main, .words-main, .study-main {
-        padding-bottom: calc(64px + env(safe-area-inset-bottom)); transition: padding-bottom .28s var(--ease);
+        padding-bottom: calc(64px + var(--safe-area-inset-bottom)); transition: padding-bottom .28s var(--ease);
     }
     /* авто-скрытие нижнего таб-бара: уехал вниз → ужимаем нижний отступ контента (даём место) */
     html[data-tabbar-off] main, html[data-tabbar-off] .prof-main,
     html[data-tabbar-off] .words-main, html[data-tabbar-off] .study-main {
-        padding-bottom: env(safe-area-inset-bottom);
+        padding-bottom: var(--safe-area-inset-bottom);
     }
     .tabbar {
         display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
         background: var(--surface); border-top: 1px solid var(--border);
-        padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+        padding: 6px 4px calc(6px + var(--safe-area-inset-bottom));
         box-shadow: 0 -4px 16px rgba(0,0,0,.06);
         transition: transform .28s var(--ease);
     }
@@ -562,9 +602,9 @@
     .navgrip .ic { width: 18px; height: 18px; }
     .navgrip__dots { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; align-content: center; }
     .navgrip__dots i { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .85; }
-    .navgrip--bottom { bottom: 0; padding-bottom: calc(2px + env(safe-area-inset-bottom));
+    .navgrip--bottom { bottom: 0; padding-bottom: calc(2px + var(--safe-area-inset-bottom));
         border-radius: var(--r-md) var(--r-md) 0 0; }
-    .navgrip--top { top: 0; padding-top: calc(2px + env(safe-area-inset-top));
+    .navgrip--top { top: 0; padding-top: calc(2px + var(--safe-area-inset-top));
         border-radius: 0 0 var(--r-md) var(--r-md); }
     .tabbar__item {
         flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
@@ -578,7 +618,7 @@
 
 /* Баннер «доступна новая версия» */
 .update-banner {
-    position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+    position: fixed; left: 50%; bottom: calc(var(--safe-area-inset-bottom) + 16px);
     transform: translateX(-50%); z-index: 9000;
     display: inline-flex; align-items: center; gap: 10px;
     max-width: calc(100vw - 24px); padding: 10px 10px 10px 16px;
@@ -618,7 +658,7 @@
     width: min(480px, 100%); max-height: min(78vh, 640px);
     background: var(--surface); color: var(--ink);
     border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow-lg);
-    padding: 18px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+    padding: 18px 18px calc(14px + var(--safe-area-inset-bottom));
     animation: wnUp .24s var(--ease);
 }
 @keyframes wnUp { from { opacity: 0; transform: translateY(28px) scale(0.98); } }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Строки нативного шита PROCESS_TEXT. Язык интерфейса веб-приложения лежит в localStorage
+     WebView и из Kotlin недоступен, поэтому шит говорит на языке устройства: default = en,
+     плюс ru/uk (values-ru, values-uk). -->
+<resources>
+    <string name="norsk_add_word_label">Norsk</string>
+    <string name="norsk_add">Add</string>
+    <string name="norsk_generate">Generate</string>
+    <string name="norsk_cancel">Cancel</string>
+    <string name="norsk_open_app">Open app</string>
+    <string name="norsk_other_word">Another word</string>
+    <string name="norsk_choose_word">Choose a word</string>
+
+    <string name="norsk_searching">Looking up…</string>
+    <string name="norsk_adding">Adding…</string>
+    <string name="norsk_generating">Generating…</string>
+
+    <string name="norsk_need_login">Sign in to the app to add words</string>
+    <string name="norsk_no_sets">No study sets yet — create one in the app</string>
+    <string name="norsk_not_found">No such word in the dictionary</string>
+    <string name="norsk_not_in_pool">Not in the database yet — generate it?</string>
+    <string name="norsk_rate_limited">Too many requests, try again later</string>
+    <string name="norsk_failed">Could not add the word</string>
+    <string name="norsk_generate_failed">Could not generate the word</string>
+    <string name="norsk_offline_hint">No connection — the word will be added when the app opens</string>
+
+    <string name="norsk_added">%1$s → %2$s</string>
+    <string name="norsk_queued">%1$s saved, will sync later</string>
+    <string name="norsk_synced">Synced %1$d saved word(s)</string>
+</resources>
