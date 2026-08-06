@@ -93,6 +93,21 @@ describe("PhotoImportModal", () => {
         expect(rotateImage).toHaveBeenNthCalledWith(2, "data:image/jpeg;base64,TWO", 0);
     });
 
+    it("initialImages: готовые data-URL'ы засеваются страницами, выбор источника пропускается", async () => {
+        rotateImage.mockImplementation(async (image) => image);
+        api.setOcr.mockResolvedValue({ words: ["skilt"] });
+        const images = ["data:image/jpeg;base64,SHARED"];
+        render(<PhotoImportModal open setId={9} lang="ru" ll={ll} initialImages={images}
+            onClose={() => {}} onImported={() => {}} />);
+
+        expect(screen.queryByRole("button", { name: /Камера/ })).toBeNull();
+        fireEvent.click(await screen.findByRole("button", { name: /Распознать/ }));
+        await waitFor(() => expect(api.setOcr).toHaveBeenCalledWith(9, {
+            image: "data:image/jpeg;base64,SHARED", hint: "",
+        }));
+        expect(downscaleImage).not.toHaveBeenCalled();
+    });
+
     it("обрезает текущую страницу и отправляет в OCR обновлённое изображение", async () => {
         downscaleImage.mockResolvedValue("data:image/jpeg;base64,SOURCE");
         rotateImage.mockImplementation(async (image) => image);

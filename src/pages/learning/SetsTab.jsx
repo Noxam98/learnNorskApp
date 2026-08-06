@@ -17,6 +17,8 @@ import PoolSearchPanel from "../../components/learning/PoolSearchPanel.jsx";
 import GenerateSetModal from "../../components/sets/GenerateSetModal.jsx";
 import PhotoImportModal from "../../components/sets/PhotoImportModal.jsx";
 import TextImportModal from "../../components/sets/TextImportModal.jsx";
+import SharedImageImport from "../../components/sets/SharedImageImport.jsx";
+import { onSharedImages } from "../../native/sharedImages.js";
 import { useMobileSetsLayout } from "./useMobileSetsLayout.js";
 
 
@@ -34,6 +36,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
     const [genOpen, setGenOpen] = useState(false); // открыта модалка AI-генерации слов (см. GenerateSetModal)
     const [photoOpen, setPhotoOpen] = useState(false); // открыт импорт слов с фото/камеры (см. PhotoImportModal)
     const [textOpen, setTextOpen] = useState(false); // открыт импорт слов из произвольного текста (см. TextImportModal)
+    const [shared, setShared] = useState(null); // { images } — картинка из системного «Поделиться» (Android, см. native/sharedImages.js)
     const [confirmDel, setConfirmDel] = useState(null); // набор, ожидающий подтверждения удаления
     const [confirmReset, setConfirmReset] = useState(false); // подтверждение сброса прогресса набора
     const [busy, setBusy] = useState(false);
@@ -66,6 +69,9 @@ export default function SetsTab({ lang, openSession, openWord }) {
 
     useEffect(() => { loadSets(); }, [loadSets]);
     useEffect(() => { loadWords(activeId); }, [activeId, loadWords]);
+    // «Поделиться» картинкой в приложение (Android): сюда её уже привёл роутинг, забираем
+    // накопленное и открываем импорт. В вебе подписка тихо простаивает.
+    useEffect(() => onSharedImages((images) => setShared({ images })), []);
 
     const submitPrompt = async () => {
         const name = (prompt?.value || "").trim();
@@ -315,6 +321,14 @@ export default function SetsTab({ lang, openSession, openWord }) {
             {/* импорт слов с фото/камеры — самодостаточный поток (выбор источника → OCR → правка) */}
             <PhotoImportModal open={photoOpen} setId={activeId} lang={lang} ll={ll}
                 onClose={() => setPhotoOpen(false)} onImported={reloadActive} />
+
+            {/* картинка из системного «Поделиться»: выбор набора → тот же импорт с фото */}
+            {shared && (
+                <SharedImageImport images={shared.images} sets={sets} lang={lang} ll={ll}
+                    onClose={() => setShared(null)}
+                    onSetCreated={(id) => { if (id != null) loadSets(id); }}
+                    onImported={(_result, id) => { loadSets(id); loadWords(id); }} />
+            )}
 
             {/* импорт слов из произвольного текста — самодостаточный поток (вставка → LLM-разбор → правка) */}
             <TextImportModal open={textOpen} setId={activeId} lang={lang} ll={ll}

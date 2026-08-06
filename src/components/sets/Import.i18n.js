@@ -19,6 +19,8 @@ export const IMPORT_I18N = langGuard({
         imgRemovePage: "Удалить страницу", imgPage: "Страница {n} из {total}", imgOcrProgress: "Распознаю {done} из {total}…",
         cropTitle: "Обрезать фото", cropHint: "Проведи по фото, чтобы выделить область с нужными словами.",
         cropReset: "Всё фото", cropApply: "Обрезать", cropApplying: "Обрезаю…",
+        sharedTitle: "Слова с картинки", sharedPickSet: "В какой набор добавить слова?",
+        sharedNewSet: "Новый набор", sharedNewSetPh: "Название набора", sharedCreate: "Создать",
     },
     en: {
         textEmpty: "No words to import were found", textFail: "Couldn't process the text",
@@ -38,6 +40,8 @@ export const IMPORT_I18N = langGuard({
         imgRemovePage: "Remove page", imgPage: "Page {n} of {total}", imgOcrProgress: "Recognizing {done} of {total}…",
         cropTitle: "Crop photo", cropHint: "Drag across the photo to select the area containing the words.",
         cropReset: "Full photo", cropApply: "Crop", cropApplying: "Cropping…",
+        sharedTitle: "Words from the image", sharedPickSet: "Which set should the words go to?",
+        sharedNewSet: "New set", sharedNewSetPh: "Set name", sharedCreate: "Create",
     },
     ukr: {
         textEmpty: "У тексті не знайдено слів для імпорту", textFail: "Не вдалося обробити текст",
@@ -57,6 +61,8 @@ export const IMPORT_I18N = langGuard({
         imgRemovePage: "Видалити сторінку", imgPage: "Сторінка {n} із {total}", imgOcrProgress: "Розпізнаю {done} із {total}…",
         cropTitle: "Обрізати фото", cropHint: "Проведи по фото, щоб вибрати область із потрібними словами.",
         cropReset: "Усе фото", cropApply: "Обрізати", cropApplying: "Обрізаю…",
+        sharedTitle: "Слова з картинки", sharedPickSet: "До якого набору додати слова?",
+        sharedNewSet: "Новий набір", sharedNewSetPh: "Назва набору", sharedCreate: "Створити",
     },
     pl: {
         textEmpty: "Nie znaleziono słów do importu", textFail: "Nie udało się przetworzyć tekstu",
@@ -76,6 +82,8 @@ export const IMPORT_I18N = langGuard({
         imgRemovePage: "Usuń stronę", imgPage: "Strona {n} z {total}", imgOcrProgress: "Rozpoznaję {done} z {total}…",
         cropTitle: "Przytnij zdjęcie", cropHint: "Przeciągnij po zdjęciu, aby zaznaczyć obszar ze słowami.",
         cropReset: "Całe zdjęcie", cropApply: "Przytnij", cropApplying: "Przycinam…",
+        sharedTitle: "Słowa z obrazu", sharedPickSet: "Do którego zestawu dodać słowa?",
+        sharedNewSet: "Nowy zestaw", sharedNewSetPh: "Nazwa zestawu", sharedCreate: "Utwórz",
     },
     lt: {
         textEmpty: "Nerasta importuotinų žodžių", textFail: "Nepavyko apdoroti teksto",
@@ -95,6 +103,8 @@ export const IMPORT_I18N = langGuard({
         imgRemovePage: "Pašalinti puslapį", imgPage: "Puslapis {n} iš {total}", imgOcrProgress: "Atpažįstu {done} iš {total}…",
         cropTitle: "Apkirpti nuotrauką", cropHint: "Brauk per nuotrauką ir pažymėk sritį su žodžiais.",
         cropReset: "Visa nuotrauka", cropApply: "Apkirpti", cropApplying: "Kerpu…",
+        sharedTitle: "Žodžiai iš paveikslėlio", sharedPickSet: "Į kurį rinkinį pridėti žodžius?",
+        sharedNewSet: "Naujas rinkinys", sharedNewSetPh: "Rinkinio pavadinimas", sharedCreate: "Sukurti",
     },
     lv: {
         textEmpty: "Nav atrasti importējami vārdi", textFail: "Neizdevās apstrādāt tekstu",
@@ -114,6 +124,8 @@ export const IMPORT_I18N = langGuard({
         imgRemovePage: "Dzēst lapu", imgPage: "Lapa {n} no {total}", imgOcrProgress: "Atpazīstu {done} no {total}…",
         cropTitle: "Apgriezt foto", cropHint: "Velc pāri foto, lai atlasītu apgabalu ar vajadzīgajiem vārdiem.",
         cropReset: "Viss foto", cropApply: "Apgriezt", cropApplying: "Apgriežu…",
+        sharedTitle: "Vārdi no attēla", sharedPickSet: "Kurā kopā pievienot vārdus?",
+        sharedNewSet: "Jauna kopa", sharedNewSetPh: "Kopas nosaukums", sharedCreate: "Izveidot",
     },
     ar: {
         textEmpty: "لم يتم العثور على كلمات للاستيراد", textFail: "تعذّرت معالجة النص",
@@ -133,5 +145,7 @@ export const IMPORT_I18N = langGuard({
         imgRemovePage: "حذف الصفحة", imgPage: "الصفحة {n} من {total}", imgOcrProgress: "جارٍ التعرّف على {done} من {total}…",
         cropTitle: "اقتصاص الصورة", cropHint: "اسحب فوق الصورة لتحديد المنطقة التي تحتوي على الكلمات.",
         cropReset: "الصورة كاملة", cropApply: "اقتصاص", cropApplying: "جارٍ الاقتصاص…",
+        sharedTitle: "كلمات من الصورة", sharedPickSet: "إلى أي مجموعة تُضاف الكلمات؟",
+        sharedNewSet: "مجموعة جديدة", sharedNewSetPh: "اسم المجموعة", sharedCreate: "إنشاء",
     },
 }, "SetImport");

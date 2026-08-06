@@ -1,5 +1,5 @@
 // Импорт с фото: до пяти страниц → поворот → OCR с прогрессом → проверка → пакетный импорт.
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal } from "../ui/Modal.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { BtnSpinner } from "../ui/Spinner.jsx";
@@ -14,13 +14,27 @@ import { importWordsInBatches } from "./importBatches.js";
 
 const MAX = 50, MAX_PAGES = 5, MAX_HINT = 500;
 
-export default function PhotoImportModal({ open, setId, lang, ll, onClose, onImported }) {
+export default function PhotoImportModal({ open, setId, lang, ll, onClose, onImported, initialImages = null }) {
     const ui = { ...ll, ...(IMPORT_I18N[lang] || IMPORT_I18N.en) };
     // null | {pages,page,hint,items,result,busy,preparing,ocrProgress,importProgress,error}
     const [photo, setPhoto] = useState(null);
     const [cropEditor, setCropEditor] = useState(null);
     const camRef = useRef(null);
     const galRef = useRef(null);
+    // Картинки, пришедшие снаружи готовыми data-URL'ами (системное «Поделиться» на Android, A4):
+    // выбор источника пропускаем — страницы уже есть, юзеру сразу превью и «Распознать».
+    // Сравниваем по ссылке на массив: одна пачка засевается ровно один раз, и кнопка
+    // «Другое фото» после этого работает как обычно (вернёт выбор источника).
+    const [seeded, setSeeded] = useState(null);
+    useEffect(() => {
+        if (!open || !initialImages?.length || seeded === initialImages) return;
+        setSeeded(initialImages);
+        setPhoto({
+            pages: initialImages.map((dataUrl, i) => ({ dataUrl, rotation: 0, name: `shared-${i + 1}` })),
+            page: 0, hint: "", items: null, result: null, busy: false,
+            preparing: null, ocrProgress: null, importProgress: null, error: "",
+        });
+    }, [open, initialImages, seeded]);
 
     const closeAll = () => {
         if (photo?.busy || photo?.preparing || cropEditor?.busy) return;
@@ -175,7 +189,7 @@ export default function PhotoImportModal({ open, setId, lang, ll, onClose, onImp
         <>
             <input ref={camRef} type="file" accept="image/*" capture="environment" onChange={onPickFiles} style={{ display: "none" }} />
             <input ref={galRef} type="file" accept="image/*" multiple onChange={onPickFiles} style={{ display: "none" }} />
-            <Modal open={open && !photo} onClose={closeAll} title={ui.imgSource} maxWidth={340}>
+            <Modal open={open && !photo && seeded === initialImages} onClose={closeAll} title={ui.imgSource} maxWidth={340}>
                 <div className="row" style={{ gap: "var(--sp-3)" }}>
                     <button className="btn btn--accent btn--block" onClick={() => pickFrom(camRef)}>
                         <Icon n="camera" sm /> {ui.imgCamera}
