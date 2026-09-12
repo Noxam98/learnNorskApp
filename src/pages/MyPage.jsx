@@ -1,3 +1,4 @@
+/* global __BUILD_ID__ */
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
@@ -31,6 +32,9 @@ const STATUS_LBL = {
     repeat: { ru: "Повторение", ukr: "Повторення", en: "Review", pl: "Powtórka", lt: "Kartojimas", lv: "Atkārtojums", ar: "مراجعة" },
     mastered: { ru: "Выучено", ukr: "Вивчено", en: "Mastered", pl: "Opanowane", lt: "Išmokta", lv: "Apgūts", ar: "متقَنة" },
 };
+
+// Идентификатор сборки (vite define __BUILD_ID__; в dev его нет — тогда «dev»).
+const BUILD = typeof __BUILD_ID__ !== "undefined" ? __BUILD_ID__ : "dev";
 
 const MyPage = () => {
     const currentLanguage = useSystemStore((state) => state.currentLanguage);
@@ -465,6 +469,13 @@ const MyPage = () => {
             {/* Атрибуция открытых данных (CC BY): требование лицензий источников */}
             <p className="muted" style={{ fontSize: 12, lineHeight: 1.5, margin: "10px 4px 0", opacity: .75 }}>
                 <b>{(SRC[currentLanguage] || SRC.en).t}.</b> {(SRC[currentLanguage] || SRC.en).d}
+            </p>
+
+            {/* Метка сборки (без перевода — идентификатор). Нужна, чтобы понять, какая версия
+                реально запущена: в вебе обновление прилетает само, а в Android-приложении веб
+                вшит в APK, и «обновил, а нового нет» иначе не отличить от «APK не заменился». */}
+            <p className="muted" style={{ fontSize: 11, margin: "6px 4px 0", opacity: .55, fontFamily: "var(--mono, ui-monospace, monospace)" }}>
+                build {BUILD}
             </p>
 
             <NameEditModal open={nameOpen} initial={user?.name} t={t}
