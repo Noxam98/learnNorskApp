@@ -5,7 +5,7 @@
 import { useAuthStore } from "../../store/AuthStore.jsx";
 import { useSessionStore } from "../../store/sessionStore.jsx";
 import { interfaceTranslate } from "../../interface/interfaceTranslation.jsx";
-import { NPS, GRM, GRM_POS } from "../../pages/MyPage.i18n.js";
+import { NPS, CHS, GRM, GRM_POS } from "../../pages/MyPage.i18n.js";
 import api from "../tools/api.js";
 import { Icon } from "../ui/Icon.jsx";
 import { langGuard } from "../../interface/i18nGuard.js";
@@ -24,6 +24,7 @@ export default function SessionSettings({ open, onClose, lang = "ru" }) {
     const t = interfaceTranslate[lang] || interfaceTranslate.ru;
     const s = T[lang] || T.en;
     const nps = NPS[lang] || NPS.en;
+    const chs = CHS[lang] || CHS.en;
     const grm = GRM[lang] || GRM.en;
     const grmPos = GRM_POS[lang] || GRM_POS.en;
     const prefs = useAuthStore((st) => st.user?.gamePrefs) || {};
@@ -39,6 +40,7 @@ export default function SessionSettings({ open, onClose, lang = "ru" }) {
     if (!open) return null;
     const newPer = Math.min(10, Math.max(4, prefs.newPerSession || 6));
     const audioOn = prefs.audio !== false;
+    const choiceOn = prefs.choiceStage !== false;
     const grammarOn = prefs.grammar !== false;
     const gpos = prefs.grammarPos || {};
     const posOn = (k) => gpos[k] !== false;
@@ -80,6 +82,17 @@ export default function SessionSettings({ open, onClose, lang = "ru" }) {
                                 aria-checked={audioOn} onClick={() => patch({ audio: !audioOn })} />
                         </div>
                         <div className="intro-set__d">{t.listenTasksDesc}</div>
+                    </div>
+                    {/* ступень «выбор из вариантов» в рампе слова (выкл — сразу сборка/ввод) */}
+                    <div className="intro-set__row">
+                        <div className="intro-set__head">
+                            <span className="intro-set__ic"><Icon n="list" sm /></span>
+                            <span className="intro-set__t">{chs.t}</span>
+                            <button type="button" className={`toggle${choiceOn ? " is-on" : ""}`} role="switch"
+                                aria-checked={choiceOn} aria-label={chs.t}
+                                onClick={() => patch({ choiceStage: !choiceOn })} />
+                        </div>
+                        <div className="intro-set__d">{chs.d}</div>
                     </div>
                     {/* грамматика/формы + тонкая настройка по частям речи */}
                     <div className="intro-set__row">

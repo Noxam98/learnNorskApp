@@ -45,6 +45,8 @@
 /**
  * Клетка рампы SRS (имя ступени). Обычные слова: card → choice_int2no → choice_no2int (на слух) →
  * build_int2no → input_int2no. Служебные: card → cloze_1 → cloze_2 → cloze_3.
+ * Ступени выбора можно выключить в настройках (gamePrefs.choiceStage) — тогда бэк их не выдаёт
+ * и слово идёт сразу на продукцию; на набор имён ступеней это не влияет.
  * Грамматика (overlay поверх выученных): choice_gender / input_indefpl — отдельный тир.
  * @typedef {'card' | 'choice_no2int' | 'choice_int2no' | 'build_int2no' | 'input_int2no'
  *          | 'cloze_1' | 'cloze_2' | 'cloze_3' | 'choice_gender' | 'input_indefpl'} RampCell

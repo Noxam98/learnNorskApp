@@ -34,6 +34,19 @@ export const LPK = langGuard({
     ar:  { t: "حجم دفعة الاستماع: {n} كلمة", d: "تُتعلَّم الكلمات بالنص، ثم تُؤكَّد سماعيًا في دفعة منفصلة من {n}." },
 }, "MyPage.LPK");
 
+// Ступень «выбор из вариантов» в рампе слова (gamePrefs.choiceStage, дефолт вкл.) — тумблер.
+// Выкл → слово идёт сразу на продукцию (сборка из букв → ввод), а ступень узнавания
+// засчитывается автоматически: «выучено» по-прежнему считается по полной рампе.
+export const CHS = langGuard({
+    ru:  { t: "Выбор из вариантов", d: "Ступень «узнай перевод из 4 вариантов». Выкл — слово сразу идёт на сборку из букв и ввод. Задания на слух и грамматика настраиваются отдельно." },
+    en:  { t: "Multiple choice", d: "The “pick the translation out of 4” stage. Off — the word goes straight to letter building and typing. Listening and grammar have their own settings." },
+    ukr: { t: "Вибір із варіантів", d: "Щабель «обери переклад із 4». Вимк — слово одразу йде на складання з літер і ввід. Завдання на слух і граматика налаштовуються окремо." },
+    pl:  { t: "Wybór wariantu", d: "Etap „wybierz tłumaczenie z 4”. Wył. — słowo od razu idzie do układania z liter i wpisywania. Słuchanie i gramatyka mają własne ustawienia." },
+    lt:  { t: "Pasirinkimas iš variantų", d: "Pakopa „pasirink vertimą iš 4“. Išjungta — žodis iškart eina į dėliojimą iš raidžių ir rašymą. Klausymas ir gramatika nustatomi atskirai." },
+    lv:  { t: "Izvēle no variantiem", d: "Pakāpe “izvēlies tulkojumu no 4”. Izslēgts — vārds uzreiz iet uz salikšanu no burtiem un ievadi. Klausīšanās un gramatika tiek iestatītas atsevišķi." },
+    ar:  { t: "الاختيار من متعدد", d: "مرحلة «اختر الترجمة من 4». عند الإيقاف تنتقل الكلمة مباشرة إلى التركيب من الحروف والكتابة. الاستماع والقواعد لهما إعدادات منفصلة." },
+}, "MyPage.CHS");
+
 // Грамматические упражнения в сессии (gamePrefs.grammar, дефолт вкл.) — тумблер.
 export const GRM = langGuard({
     ru:  { t: "Грамматика (род, формы)", d: "Добавлять упражнения на грамматику к выученным словам: род существительного и множественное число." },

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
-import { AH, NPS, LPK, GRM, GRM_POS, FRM, SRC } from "./MyPage.i18n.js";
+import { AH, NPS, LPK, CHS, GRM, GRM_POS, FRM, SRC } from "./MyPage.i18n.js";
 import { WN, openWhatsNew } from "../components/ui/WhatsNew.jsx";
 import { NI, openNativeIntro } from "../components/ui/NativeIntro.jsx";
 import { isNative } from "../native/platform.js";
@@ -10,6 +10,7 @@ import { useIsMobile } from "../hooks/useMediaQuery.js";
 import { useSystemStore, VIBE_MS } from "../store/systemStore.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { useAuthStore } from "../store/AuthStore.jsx";
+import { useSessionStore } from "../store/sessionStore.jsx";
 import { Icon } from "../components/ui/Icon.jsx";
 import { Dropdown } from "../components/ui/Dropdown.jsx";
 import GoogleSignInButton from "../components/ui/GoogleSignInButton.jsx";
@@ -68,6 +69,7 @@ const MyPage = () => {
     const ah = AH[currentLanguage] || AH.en;
     const nps = NPS[currentLanguage] || NPS.en;
     const lpk = LPK[currentLanguage] || LPK.en;
+    const chs = CHS[currentLanguage] || CHS.en;
     const grm = GRM[currentLanguage] || GRM.en;
     const grmPos = GRM_POS[currentLanguage] || GRM_POS.en;
     const frm = FRM[currentLanguage] || FRM.en;
@@ -92,6 +94,19 @@ const MyPage = () => {
     const setListenPack = (v) => {
         useAuthStore.setState((s) => (s.user ? { user: { ...s.user, gamePrefs: { ...(s.user.gamePrefs || {}), listenPack: v } } } : s));
         api.setGamePrefs({ listenPack: v }).catch(() => { /* офлайн — не критично */ });
+    };
+    // Ступень «выбор из вариантов» (gamePrefs.choiceStage, дефолт ВКЛ.). Выкл → бэк не выдаёт клетки
+    // выбора: слово идёт сразу на сборку/ввод, а узнавание засчитывается сдачей продукции («выучено»
+    // считается по полной рампе, поэтому возврат тумблера ничего не разучивает).
+    const choiceOn = user?.gamePrefs?.choiceStage !== false;
+    const toggleChoice = () => {
+        const next = !choiceOn;
+        useAuthStore.setState((s) => (s.user ? { user: { ...s.user, gamePrefs: { ...(s.user.gamePrefs || {}), choiceStage: next } } } : s));
+        api.setGamePrefs({ choiceStage: next }).catch(() => { /* офлайн — не критично */ });
+        // Прогретая сессия живёт до 10 минут — без пересборки первая же учёба после переключения
+        // шла бы ступенями СТАРОЙ рампы, и тумблер выглядел бы сломанным (в SessionSettings та же
+        // пересборка делается при закрытии попапа).
+        useSessionStore.getState().refreshIfStale(0);
     };
     // Грамм-упражнения в сессии (gamePrefs.grammar, дефолт ВКЛ.). Сохраняем тем же путём (set_user_game_prefs).
     const grammarOn = user?.gamePrefs?.grammar !== false;
@@ -343,6 +358,14 @@ const MyPage = () => {
                                 </span>
                             </div>
                         )}
+                        {/* Ступень «выбор из вариантов» в рампе слова. Выкл — слово идёт сразу на продукцию
+                            (сборка из букв → ввод); узнавание засчитывается сдачей более сложной ступени. */}
+                        <div className="setrow">
+                            <span className="setrow__ic"><Icon n="list" sm /></span>
+                            <span className="setrow__meta" id="chs-label"><span className="setrow__t">{chs.t}</span><span className="setrow__d">{chs.d}</span></span>
+                            <button type="button" className={`toggle${choiceOn ? " is-on" : ""}`} role="switch"
+                                aria-checked={choiceOn} aria-labelledby="chs-label" onClick={toggleChoice} />
+                        </div>
                         <div className="setrow">
                             <span className="setrow__ic"><Icon n="zap" sm /></span>
                             <span className="setrow__meta"><span className="setrow__t">{t.vibration}</span><span className="setrow__d">{t.vibrationDesc}</span></span>
