@@ -13,6 +13,7 @@ const MODULES = {
     TodayTab: () => import("./TodayTab.jsx"),
     MyPage: () => import("../MyPage.jsx"),
     LearningSession: () => import("../../components/learning/LearningSession.jsx"),
+    CramSession: () => import("../../components/learning/CramSession.jsx"),
     GenerateSetModal: () => import("../../components/sets/GenerateSetModal.jsx"),
     PhotoImportModal: () => import("../../components/sets/PhotoImportModal.jsx"),
     PhotoCropper: () => import("../../components/sets/PhotoCropper.jsx"),

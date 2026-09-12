@@ -13,10 +13,11 @@ import * as WordsTab from "../pages/learning/WordsTab.i18n.js";
 import * as ProgressTab from "../pages/learning/ProgressTab.i18n.js";
 import * as MyPage from "../pages/MyPage.i18n.js";
 import * as LearningSession from "../components/learning/LearningSession.i18n.js";
+import * as CramSession from "../components/learning/CramSession.i18n.js";
 import * as PlacementScreen from "../components/learning/PlacementScreen.i18n.js";
 import * as SetImport from "../components/sets/Import.i18n.js";
 
-const MODULES = { ExamTab, TodayTab, SetsTab, WordsTab, ProgressTab, MyPage, LearningSession, PlacementScreen, SetImport };
+const MODULES = { ExamTab, TodayTab, SetsTab, WordsTab, ProgressTab, MyPage, LearningSession, CramSession, PlacementScreen, SetImport };
 
 // Каждый экспорт-объект с языковым ключом `ru` считаем langGuard-картой переводов.
 const MAPS = [];

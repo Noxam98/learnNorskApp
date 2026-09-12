@@ -16,6 +16,7 @@ import { RampBar } from "../learning/StatusBits.jsx";
  *   added?:boolean, busy?:boolean, highlight?:boolean, flat?:boolean, isAdmin?:boolean,
  *   onToggle?:Function, onCardClick?:Function, removeBtn?:boolean, removeLabel?:string,
  *   onInfo?:Function, onAdminDelete?:Function, onHover?:(word:object|null)=>void,
+ *   selectable?:boolean, selected?:boolean, onSelect?:Function,
  * }} p  word: {word|norwegian, part_of_speech, level, translate, forms?, hasTts?, hasDescription?, hasEmbedding?, pool_id}
  *   flat — НЕ заливать карточку зелёным при added (состояние видно по кнопке-галочке). Нужно
  *   в «Наборах», где обе колонки должны выглядеть одинаково (иначе правая вся зелёная).
@@ -23,8 +24,10 @@ import { RampBar } from "../learning/StatusBits.jsx";
  *     добавить/убрать). В «коллекции набора» сюда передают «открыть инфо», чтобы клик не удалял слово.
  *   removeBtn — действие-кнопка рисуется явным «удалить» (корзина) вместо тоггла ＋/✓ (для коллекции).
  *   onHover — наведение/уход (для подсветки того же слова в другой колонке).
+ *   selectable — слева рисуется чекбокс выбора (выделение слов набора под «Заучить»); клик по нему
+ *     не задевает тело карточки (открытие/удаление), клик по телу выделение не меняет.
  */
-export function WordCard({ word, lang, t, added = false, busy = false, highlight = false, flat = false, isAdmin = false, status = null, ramp = null, onToggle, onCardClick, removeBtn = false, removeLabel, onInfo, onAdminDelete, onHover }) {
+export function WordCard({ word, lang, t, added = false, busy = false, highlight = false, flat = false, isAdmin = false, status = null, ramp = null, onToggle, onCardClick, removeBtn = false, removeLabel, onInfo, onAdminDelete, onHover, selectable = false, selected = false, onSelect }) {
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
     const no = word.word ?? word.norwegian;
@@ -32,10 +35,18 @@ export function WordCard({ word, lang, t, added = false, busy = false, highlight
     const { cls, key } = posMeta(word.part_of_speech);
     const prefix = chipPrefix(key, word.forms, { articles: showArticles, verbAa: showVerbAa });
     return (
-        <div className={`wcard${added && !flat ? " is-added" : ""}${highlight ? " is-highlight" : ""}`}
+        <div className={`wcard${selectable ? " wcard--sel" : ""}${selected ? " is-selected" : ""}${added && !flat ? " is-added" : ""}${highlight ? " is-highlight" : ""}`}
             data-word={no} onClick={onCardClick || onToggle}
             onMouseEnter={onHover ? () => onHover(word) : undefined}
             onMouseLeave={onHover ? () => onHover(null) : undefined}>
+            {selectable && (
+                <span className={"check" + (selected ? " is-on" : "")} role="checkbox" aria-checked={selected}
+                    aria-label={no} tabIndex={0}
+                    onClick={(e) => { e.stopPropagation(); onSelect?.(word); }}
+                    onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); e.stopPropagation(); onSelect?.(word); } }}>
+                    <Icon n="check" />
+                </span>
+            )}
             <div className="wcard__body">
                 <span className="wcard__word">
                     {prefix && <span className="muted" style={{ fontWeight: 400 }}>{prefix} </span>}

@@ -412,6 +412,8 @@ export class ApiService {
     leaderboard(period = 'week', limit = 50) { return this._send('GET', `/learning/leaderboard?period=${period}&limit=${limit}`); }
     learningDue(limit = 20) { return this._send('GET', `/learning/due?limit=${limit}`); }
     learningActivity(days = 119) { return this._send('GET', `/learning/activity?days=${days}`); }
+    // Режим ЗАУЧИВАНИЯ: итог дрилла в дневной журнал (цель/стрик/точность) — SRS не трогаем.
+    learningNoteActivity(answers, correct) { return this._send('POST', '/learning/activity', { answers, correct }); }
     // form/cell/stage — трек ФОРМ (form_srs): без form-флага бэк намеренно игнорит такие ответы (гард).
     learningAnswer({ pool_id, correct, elapsed = null, mode = null, direction = null, form = false, cell = null, stage = null }) { return this._send('POST', '/learning/answer', { pool_id, correct, elapsed, mode, direction, ...(form ? { form, cell, stage } : {}) }); }
     learningAdd(poolId) { return this._send('POST', '/learning/add', { pool_id: poolId }); }       // добавить слово (по pool_id) в Учёбу

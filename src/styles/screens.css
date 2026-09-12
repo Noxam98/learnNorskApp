@@ -65,6 +65,10 @@
   }
   .wcard:hover { border-color: var(--border-2); box-shadow: var(--shadow-sm); }
   .wcard.is-selected { border-color: var(--fjord-500); box-shadow: var(--shadow-focus); background: var(--fjord-50); }
+  /* выбор слов набора (под «Заучить»): чекбокс — отдельная колонка грида слева */
+  .wcard--sel { grid-template-columns: auto 1fr auto; }
+  .wcard .check { width: 20px; height: 20px; border-radius: 6px; }
+  .wcard .check .ic { width: 12px; height: 12px; }
   /* добавлено в словарь — зелёная подсветка; тап по карточке убирает */
   .wcard.is-added { border-color: var(--success); background: var(--success-bg); }
 

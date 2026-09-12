@@ -12,6 +12,7 @@ import { useAutoHideNav } from "../../hooks/useAutoHideNav.js";
 import { useWindowResize } from "../../hooks/useWindowResize.js";
 import { WordInfoModal } from "../../components/ui/WordInfoModal.jsx";
 import LearningSession from "../../components/learning/LearningSession.jsx";
+import CramSession from "../../components/learning/CramSession.jsx";
 import PlacementScreen from "../../components/learning/PlacementScreen.jsx";
 import LearningIntro from "../../components/learning/LearningIntro.jsx";
 import LevelUpToast from "../../components/learning/LevelUpToast.jsx";
@@ -117,8 +118,12 @@ export default function LearningPage() {
     // openSession(words, mode) — легаси-путь с готовым набором (полки/«Слабые» из других вкладок).
     // openSession(null, mode, { setId }) — дрилл по личному набору (сессия только из его слов).
     // openSession(null, "choice", { listen: true }) — слуховая сессия (источник /learning/listen).
+    // openSession(null, "input", { setId, cram: true, poolIds }) — ЗАУЧИВАНИЕ: другой алгоритм сессии
+    // (очередь до чистого прогона, SRS не трогаем) → отдельный экран CramSession, не LearningSession.
+    // poolIds — выделенные слова набора (null = весь набор).
     const openSession = (words = null, mode = "choice", opts = {}) =>
-        setSession({ words, mode, system: !words?.length || !!opts.setId || !!opts.listen, setId: opts.setId || null, listen: !!opts.listen });
+        setSession({ words, mode, system: !words?.length || !!opts.setId || !!opts.listen, setId: opts.setId || null,
+            listen: !!opts.listen, cram: !!opts.cram, setName: opts.setName || "", poolIds: opts.poolIds || null });
     const openWord = (no, wordId, poolId) => setInfo({ no, wordId, poolId });   // poolId — дизамбигуация ОМОНИМА (сущ./глаг.)
     const closeSession = (didPractice) => {
         setSession(null);
@@ -164,9 +169,11 @@ export default function LearningPage() {
 
             {Active && <Active {...tabProps} />}
 
-            {session && (
+            {session && (session.cram ? (
+                <CramSession setId={session.setId} setName={session.setName} poolIds={session.poolIds} lang={lang} onClose={closeSession} />
+            ) : (
                 <LearningSession words={session.words} mode={session.mode} system={session.system} setId={session.setId} listen={session.listen} lang={lang} onClose={closeSession} />
-            )}
+            ))}
             <WordInfoModal open={!!info} word={info?.no} wordId={info?.wordId} poolId={info?.poolId}
                 lang={lang} t={tg} onClose={() => { setInfo(null); }} />
             {placement && <PlacementScreen lang={lang} onClose={closePlacement} />}

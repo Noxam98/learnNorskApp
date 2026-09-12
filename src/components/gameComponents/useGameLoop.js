@@ -36,6 +36,7 @@ const ANSWER_MAX_MS = 6000;    // страховка: если аудио не �
  *   onAdvance?: (() => void) | null,
  *   onWrong?: (() => void) | null,
  *   reveal?: boolean,
+ *   requeue?: boolean,
  * }} opts
  */
 export function useGameLoop({
@@ -50,6 +51,11 @@ export function useGameLoop({
     onWrong,             // () => очистить локальный ввод после неверного (для повтора)
     reveal = true,       // false (экзамен): нейтральный режим — без CORRECT/INCORRECT, без ретрая,
                          // подсветка выбора нейтральная, ответ копится наружу (грейд снаружи/на сервере).
+    requeue = false,     // true (режим ЗАУЧИВАНИЯ): слово, сданное НЕ с первой попытки (ошибка или
+                         // «не знаю»/пустой Enter = подсказка), дописывается в КОНЕЦ очереди и придёт
+                         // снова в ЭТОЙ же сессии. Финиш — когда очередь дошла до конца, т.е. каждое
+                         // слово сдано начисто. Прогресс при этом считаем по ЗАКРЫТЫМ словам, а не по
+                         // позиции: очередь растёт, «слово 7/5» выглядело бы поломкой.
 }) {
     const currentLanguage = useSystemStore((s) => s.currentLanguage);
     const autoAdvance = useSystemStore((s) => s.autoAdvance);   // false → после верного ждём тап (ручное листание)
@@ -78,11 +84,12 @@ export function useGameLoop({
     const knownFirstTry = results.filter((r) => r.ok).length;
     const score = total ? Math.round((knownFirstTry / total) * 100) : 0;
 
-    // Перейти к следующему слову (или к финишу).
+    // Перейти к следующему слову (или к финишу). Длина ОЧЕРЕДИ, а не total: в режиме заучивания
+    // очередь длиннее набора на промахи (без requeue order.length === total — поведение прежнее).
     const advance = () => {
         if (held) setHeld(false);
         if (picked != null) setPicked(null);
-        if (pos + 1 >= total) { setStatus("FINISHED"); if (reveal) playWin(); return; }
+        if (pos + 1 >= order.length) { setStatus("FINISHED"); if (reveal) playWin(); return; }
         setPos(pos + 1); setStatus("ASKING"); onAdvance?.();
     };
 
@@ -115,6 +122,10 @@ export function useGameLoop({
             // hold: верно, но без авто-перехода — ждём тап (принято с опечаткой: дать прочитать верное)
             setStatus("CORRECT"); if (opts?.hold) setHeld(true);
         } else {
+            // Заучивание: промах не выбрасывает слово из сессии — оно встаёт в КОНЕЦ очереди и придёт
+            // снова. Перепечатать верно всё равно придётся здесь и сейчас (статус INCORRECT), просто
+            // одним чистым разом слово не закрылось.
+            if (requeue) setOrder((o) => [...o, current]);
             setStatus("INCORRECT"); onWrong?.();
         }
     };
@@ -177,15 +188,21 @@ export function useGameLoop({
         setGameState?.("chooseWords");
     };
 
-    // Счётчик «слово N / M»: в системной сессии — прогресс всей сессии (stepNo/stepTotal).
-    const qIndex = stepTotal ? stepNo : Math.min(pos + 1, total);
+    // Счётчик «слово N / M»: в системной сессии — прогресс всей сессии (stepNo/stepTotal);
+    // в заучивании — сколько слов ЗАКРЫТО (сдано начисто) из набора, позиция в очереди тут врёт.
+    const qIndex = stepTotal ? stepNo : Math.min((requeue ? knownFirstTry : pos) + 1, total);
     const qTotal = stepTotal || total;
     // Полоса прогресса по умолчанию (стиль Сборка/Ввод: по завершённым/ошибкам). Выбор строит свою.
-    const autoSegs = segsOverride || Array.from({ length: total }, (_, i) => {
-        if (i < doneCount) return missedIds.has(order[i]?.id) ? "err" : "ok";
-        if (i === doneCount && status !== "FINISHED") return "now";
-        return "";
-    });
+    // В заучивании сегмент = слово набора: закрытые зелёные, остальные ждут (промах не «сгорает» —
+    // слово вернётся, поэтому красных сегментов тут нет).
+    const autoSegs = segsOverride || (requeue
+        ? Array.from({ length: total }, (_, i) => (i < knownFirstTry ? "ok"
+            : (i === knownFirstTry && status !== "FINISHED") ? "now" : ""))
+        : Array.from({ length: total }, (_, i) => {
+            if (i < doneCount) return missedIds.has(order[i]?.id) ? "err" : "ok";
+            if (i === doneCount && status !== "FINISHED") return "now";
+            return "";
+        }));
 
     return {
         t, currentLanguage, total, current, status, words: wordsToGame, picked, held,

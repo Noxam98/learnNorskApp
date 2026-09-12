@@ -260,6 +260,9 @@
 }
 .study-root .bulk-btn:hover { background: rgba(255,255,255,.28); }
 .study-root .bulk-btn .ic { width: 15px; height: 15px; }
+/* главное действие панели выделения (напр. «Заучить N») — белая кнопка на синем */
+.study-root .bulk-btn--accent { background: #fff; color: var(--fjord-700, var(--fjord-600)); }
+.study-root .bulk-btn--accent:hover { background: rgba(255,255,255,.88); }
 .study-root .exam-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: var(--sp-5); align-items: start; }
 @media (max-width: 880px) {
 .study-root .exam-grid { grid-template-columns: 1fr; } }

@@ -48,6 +48,14 @@ export default function SetsTab({ lang, openSession, openWord }) {
 
     const active = sets.find((s) => s.id === activeId) || null;
     const inSet = useMemo(() => new Set(words.map((w) => w.pool_id)), [words]);
+    // Выделение слов набора (под «Заучить» частью набора). Держим множество pool_id, но наружу
+    // отдаём ПЕРЕСЕЧЕНИЕ со списком: слово могли удалить из набора, пока оно было выделено.
+    const [sel, setSel] = useState(() => new Set());
+    const selIds = useMemo(() => words.filter((w) => sel.has(w.pool_id)).map((w) => w.pool_id), [words, sel]);
+    const toggleSel = (id) => setSel((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+    const selectAll = () => setSel(new Set(words.map((w) => w.pool_id)));
+    const invertSel = () => setSel((s) => new Set(words.filter((w) => !s.has(w.pool_id)).map((w) => w.pool_id)));
+    const clearSel = () => setSel(new Set());
 
     const loadSets = useCallback(async (selectId) => {
         const list = await api.setsList().catch(() => []);
@@ -69,6 +77,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
 
     useEffect(() => { loadSets(); }, [loadSets]);
     useEffect(() => { loadWords(activeId); }, [activeId, loadWords]);
+    useEffect(() => { setSel(new Set()); }, [activeId]);   // сменили набор — выделение чужого набора не тащим
     // «Поделиться» картинкой в приложение (Android): сюда её уже привёл роутинг, забираем
     // накопленное и открываем импорт. В вебе подписка тихо простаивает.
     useEffect(() => onSharedImages((images) => setShared({ images })), []);
@@ -101,6 +110,18 @@ export default function SetsTab({ lang, openSession, openWord }) {
     const allLearned = words.length > 0 && unlearned === 0;
     const canStudy = unlearned >= MIN_UNLEARNED;
     const studySet = () => { if (canStudy) openSession?.(null, "choice", { setId: active.id }); };
+    // Заучивание («зубрёжка»): свой алгоритм сессии — слова финальным вводом по кругу, промах
+    // возвращает слово в конец очереди, SRS не трогается (см. CramSession). Доступно на любом наборе
+    // со словами, в т.ч. полностью выученном — это тренировка «перед контрольной», не рампа.
+    // Берём ВЫДЕЛЕННЫЕ слова; ничего не выделено — весь набор (50 слов за раз мало кто осилит,
+    // но и заставлять выделять, когда набор маленький, незачем).
+    const cramSet = () => {
+        if (!words.length) return;
+        openSession?.(null, "input", {
+            setId: active.id, cram: true, setName: active.name,
+            poolIds: selIds.length ? selIds : null,
+        });
+    };
     const doReset = async () => {
         if (!activeId) return;
         setConfirmReset(false);
@@ -148,6 +169,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     )}
                     {/* остальные действия набора — под троеточием */}
                     <ActionMenu icon="more" align="right" items={[
+                        { key: "cram", label: selIds.length ? `${ll.cram} ${selIds.length}` : ll.cram, icon: "target", disabled: !words.length, onClick: cramSet },
                         { key: "gen", label: ll.generate, icon: "sparkles", onClick: () => setGenOpen(true) },
                         { key: "text", label: ll.importText, icon: "list", onClick: () => setTextOpen(true) },
                         { key: "photo", label: ll.importPhoto, icon: "camera", onClick: () => setPhotoOpen(true) },
@@ -182,16 +204,33 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     </button>
                 </div>
             ) : (
-                <div className="wordlist" style={wLoading ? { opacity: .5 } : undefined}>
-                    {words.map((w) => (
-                        <WordCard key={w.pool_id} word={w} lang={lang} t={t} flat status={w.status} ramp={w.ramp}
-                            added highlight={hoverPid != null && w.pool_id === hoverPid}
-                            removeBtn removeLabel={ll.remove}
-                            onToggle={() => removeWord(w.pool_id)}
-                            onCardClick={openWord ? (() => openWord(w.norwegian, null, w.pool_id)) : undefined}
-                            onInfo={openWord ? (() => openWord(w.norwegian, null, w.pool_id)) : undefined} />
-                    ))}
-                </div>
+                <>
+                    {/* Панель выделения — появляется с первым отмеченным словом. «Заучить N» тут же:
+                        после выбора логичнее стартовать отсюда, чем лезть в троеточие. */}
+                    {selIds.length > 0 && (
+                        <div className="bulkbar">
+                            <span className="bulkbar__count">{ll.selected} {selIds.length}</span>
+                            <button className="bulk-btn bulk-btn--accent" onClick={cramSet}>
+                                <Icon n="target" /> {ll.cram} {selIds.length}
+                            </button>
+                            <button className="bulk-btn" onClick={selectAll}><Icon n="check-square" /> {ll.selAll}</button>
+                            <button className="bulk-btn" onClick={invertSel}><Icon n="repeat" /> {ll.selInvert}</button>
+                            <div className="grow" />
+                            <button className="bulk-btn" onClick={clearSel}><Icon n="x" /> {ll.selClear}</button>
+                        </div>
+                    )}
+                    <div className="wordlist" style={wLoading ? { opacity: .5 } : undefined}>
+                        {words.map((w) => (
+                            <WordCard key={w.pool_id} word={w} lang={lang} t={t} flat status={w.status} ramp={w.ramp}
+                                added highlight={hoverPid != null && w.pool_id === hoverPid}
+                                removeBtn removeLabel={ll.remove}
+                                selectable selected={sel.has(w.pool_id)} onSelect={() => toggleSel(w.pool_id)}
+                                onToggle={() => removeWord(w.pool_id)}
+                                onCardClick={openWord ? (() => openWord(w.norwegian, null, w.pool_id)) : undefined}
+                                onInfo={openWord ? (() => openWord(w.norwegian, null, w.pool_id)) : undefined} />
+                        ))}
+                    </div>
+                </>
             )}
         </div>
     );

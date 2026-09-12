@@ -240,6 +240,10 @@ export const RampDrop = ({ word, rank = 0 }) => {
     const m = MASTERY[lang] || MASTERY.en;
     const form = !!word?.form_track;
     if (!form && word?.grammar) return null;              // overlay-клетка: отката рампы нет
+    // Ступень неизвестна (rank=0): режим ЗАУЧИВАНИЯ и легаси-наборы идут ВНЕ рампы — обещать
+    // «ступень ниже» там нечестно (в заучивании SRS вообще не трогается). Симметрично RampCheer,
+    // который при rank<1 тоже молчит.
+    if (!form && rank < 1) return null;
     // новый уровень после отката: формы produce→choose(2)/choose→card(0); база — на ступень ниже (min 1)
     const newRank = form ? (word?.stage === "produce" ? 2 : 0) : Math.max(1, rank - 1);
     return (

@@ -35,7 +35,9 @@ const nextAssistKey = (targets, input) => {
     return null;
 };
 
-export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0 }) => {
+// requeue — режим ЗАУЧИВАНИЯ (см. CramSession): слово, сданное не с первой попытки, возвращается
+// в конец очереди этой же сессии. Механика целиком в useGameLoop, игра только прокидывает флаг.
+export const InputGame = ({ setGameState, mode = "no2int", sound = false, words: wordsProp, onResult, onExit, onFinish, stepNo = 0, stepTotal = 0, segs: segsOverride = null, repeat = false, baseCorrect = 0, baseWrong = 0, rank = 0, requeue = false }) => {
     const isNo2Int = mode !== "int2no";
     // грамм-упражнение (ввод формы): печатаем норвежскую форму (target.value), всегда экранной клавой.
     const grammar = isGrammar(wordsProp?.[0]);
@@ -64,7 +66,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         // в onFinish прокидываем флаг «принято с опечаткой» — для пункта «Защищено с опечаткой» в итоге
         onFinish: onFinish ? (s) => onFinish({ ...s, typo: typoRef.current }) : null,
         onExit,
-        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, rank,
+        stepNo, stepTotal, segs: segsOverride, autoAdvanceMs: 1100, rank, requeue,
         // со звуком пауза перед переходом = длина озвучки ответа + хвост (correctPrimary/aLang ниже).
         // При опечатке (held) переход по тапу — там озвучивает сама игра, см. эффект ниже.
         speakAnswer: () => (sound && correctPrimary && (!grammar || formWord)) ? speakTextEnd(correctPrimary, aLang) : null,
