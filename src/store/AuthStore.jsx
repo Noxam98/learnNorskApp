@@ -163,6 +163,8 @@ export const useAuthStore = create((set, get) => ({
     logout: () => {
         api.logout();
         set({ user: null, accessToken: null });
+        // уведомления адресные — на чужом входе в этом же браузере их показывать нельзя
+        import("./notifyStore.jsx").then((m) => m.useNotifyStore.getState().reset()).catch(() => {});
     },
 }));
 

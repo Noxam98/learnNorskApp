@@ -79,6 +79,16 @@
 .nav__theme:hover { background: var(--surface-3); color: var(--ink); }
 .nav__spacer { flex: 1; }
 
+/* Колокольчик уведомлений: та же кнопка шапки, но ВИДНА и на телефоне (в отличие от темы/языка,
+   которые уезжают в Профиль) — иначе предложение набора негде заметить. Бейдж — число непрочитанных. */
+.nav__bell { position: relative; }
+.nav__bell-dot {
+  position: absolute; top: -3px; right: -3px; min-width: 17px; height: 17px; padding: 0 4px;
+  border-radius: var(--r-full); background: var(--ember-600); color: #fff;
+  font-size: 10px; font-weight: 800; line-height: 17px; text-align: center;
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);

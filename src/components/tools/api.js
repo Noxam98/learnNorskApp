@@ -451,6 +451,13 @@ export class ApiService {
     setAddWords(id, poolIds) { return this._send('POST', `/sets/${id}/words`, { pool_ids: poolIds }); }
     setRemoveWord(id, poolId) { return this._send('DELETE', `/sets/${id}/words/${poolId}`); }
     setsMembership(poolIds) { return this._send('POST', '/sets/membership', { pool_ids: poolIds }); } // pool_id → [set_id]
+    setShare(id, userId) { return this._send('POST', `/sets/${id}/share`, { user_id: userId }); }   // предложить набор другому юзеру
+    // Люди и уведомления: поиск отдаёт только {id, name}; центр уведомлений — общий, на вырост.
+    searchUsers(q) { return this._send('GET', `/users/search?q=${encodeURIComponent(q)}`); }
+    getNotifications(limit = 50) { return this._send('GET', `/notifications?limit=${limit}`); }
+    readNotifications() { return this._send('POST', '/notifications/read'); }
+    acceptNotification(id) { return this._send('POST', `/notifications/${id}/accept`); }
+    declineNotification(id) { return this._send('POST', `/notifications/${id}/decline`); }
     setSession(id, size = 20, lang = 'ru') { return this._send('GET', `/sets/${id}/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
     setGenerate(id, { topic = "", level = "", count = 10, lang = 'ru' } = {}) { return this._send('POST', `/sets/${id}/generate`, { topic, level, count, lang }); } // ИИ-генерация слов в набор
     setReset(id) { return this._send('POST', `/sets/${id}/reset`); }   // сброс рампы выученных слов набора

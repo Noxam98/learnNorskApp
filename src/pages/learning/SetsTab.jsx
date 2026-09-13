@@ -16,6 +16,7 @@ import { useIsMobile } from "../../hooks/useMediaQuery.js";
 import PoolSearchPanel from "../../components/learning/PoolSearchPanel.jsx";
 import GenerateSetModal from "../../components/sets/GenerateSetModal.jsx";
 import SetPoolPicker from "../../components/sets/SetPoolPicker.jsx";
+import ShareSetModal from "../../components/sets/ShareSetModal.jsx";
 import PhotoImportModal from "../../components/sets/PhotoImportModal.jsx";
 import TextImportModal from "../../components/sets/TextImportModal.jsx";
 import SharedImageImport from "../../components/sets/SharedImageImport.jsx";
@@ -36,6 +37,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
     const [prompt, setPrompt] = useState(null);   // { mode:'create'|'rename', value, id }
     const [genOpen, setGenOpen] = useState(false); // открыта модалка AI-генерации слов (см. GenerateSetModal)
     const [pickerOpen, setPickerOpen] = useState(false); // открыт экран добора слов из Базы (SetPoolPicker)
+    const [shareOpen, setShareOpen] = useState(false); // открыта модалка «Поделиться набором»
     const [photoOpen, setPhotoOpen] = useState(false); // открыт импорт слов с фото/камеры (см. PhotoImportModal)
     const [textOpen, setTextOpen] = useState(false); // открыт импорт слов из произвольного текста (см. TextImportModal)
     const [shared, setShared] = useState(null); // { images } — картинка из системного «Поделиться» (Android, см. native/sharedImages.js)
@@ -176,6 +178,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     {/* остальные действия набора — под троеточием */}
                     <ActionMenu icon="more" align="right" items={[
                         { key: "cram", label: selIds.length ? `${ll.cram} ${selIds.length}` : ll.cram, icon: "target", disabled: !words.length, onClick: cramSet },
+                        { key: "share", label: ll.share, icon: "share", disabled: !words.length, onClick: () => setShareOpen(true) },
                         { key: "gen", label: ll.generate, icon: "sparkles", onClick: () => setGenOpen(true) },
                         { key: "text", label: ll.importText, icon: "list", onClick: () => setTextOpen(true) },
                         { key: "photo", label: ll.importPhoto, icon: "camera", onClick: () => setPhotoOpen(true) },
@@ -346,6 +349,10 @@ export default function SetsTab({ lang, openSession, openWord }) {
                         if (changed) { loadWords(activeId); loadSets(activeId); }   // перечитать слова и счётчики
                     }} />
             )}
+
+            {/* поделиться набором: поиск человека → предложение (у него появится своя копия) */}
+            <ShareSetModal open={shareOpen} setId={activeId} setName={active?.name || ""} lang={lang}
+                onClose={() => setShareOpen(false)} />
 
             {/* генерация слов в набор: тема + уровень + количество (5–20) */}
             <GenerateSetModal open={genOpen} setId={activeId} lang={lang} ll={ll} defaultTopic={active?.name}

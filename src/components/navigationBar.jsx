@@ -6,6 +6,7 @@ import LanguageChooser from "./languageChooser.jsx";
 import { BrandMark, BrandName } from "./ui/BrandMark.jsx";
 import { Icon } from "./ui/Icon.jsx";
 import { NavGrip } from "./ui/NavGrip.jsx";
+import NotificationsBell from "./notifications/NotificationsBell.jsx";
 import { useAutoHideNav } from "../hooks/useAutoHideNav.js";
 
 export const NavigationBar = () => {
@@ -56,6 +57,8 @@ export const NavigationBar = () => {
                         <Icon n="chart" sm />
                     </Link>
                 )}
+                {/* Уведомления — видны и на телефоне: предложение набора иначе негде заметить */}
+                <NotificationsBell />
                 <button className="nav__theme hide-mobile" aria-label="theme"
                     title={theme === "dark" ? "Light" : "Dark"}
                     onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
