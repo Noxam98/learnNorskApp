@@ -614,8 +614,10 @@
     .tabbar__item span { overflow: hidden; text-overflow: ellipsis; max-width: 100%; white-space: nowrap; }
     .tabbar__item .ic { width: 22px; height: 22px; }
     .tabbar__item.is-active { color: var(--fjord-600); }
-    /* уведомления — кнопка, а не ссылка: обнуляем стили кнопки под общий вид вкладки */
-    .tabbar__item--btn { background: none; border: none; font: inherit; cursor: pointer; }
+    /* уведомления — кнопка, а не ссылка: снимаем стили кнопки, но НЕ трогаем шрифт.
+       (font: inherit тут перебивал font-size вкладки — подпись становилась крупнее соседних
+       и обрезалась многоточием.) */
+    .tabbar__item--btn { background: none; border: none; font-family: inherit; cursor: pointer; }
     .tabbar__ic { position: relative; display: inline-flex; }
     .tabbar__dot {
         position: absolute; top: -5px; right: -8px; min-width: 15px; height: 15px; padding: 0 3px;

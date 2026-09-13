@@ -64,7 +64,7 @@ export function NotificationsTabItem({ onTap }) {
                 <Icon n="bell" sm />
                 {unread > 0 && <span className="tabbar__dot">{unread > 9 ? "9+" : unread}</span>}
             </span>
-            <span>{t.bell}</span>
+            <span>{t.bellTab || t.bell}</span>
         </button>
     );
 }
