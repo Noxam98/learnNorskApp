@@ -15,6 +15,7 @@ import { L } from "./SetsTab.i18n.js";
 import { useIsMobile } from "../../hooks/useMediaQuery.js";
 import PoolSearchPanel from "../../components/learning/PoolSearchPanel.jsx";
 import GenerateSetModal from "../../components/sets/GenerateSetModal.jsx";
+import SetPoolPicker from "../../components/sets/SetPoolPicker.jsx";
 import PhotoImportModal from "../../components/sets/PhotoImportModal.jsx";
 import TextImportModal from "../../components/sets/TextImportModal.jsx";
 import SharedImageImport from "../../components/sets/SharedImageImport.jsx";
@@ -34,6 +35,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
     const [wLoading, setWLoading] = useState(false);
     const [prompt, setPrompt] = useState(null);   // { mode:'create'|'rename', value, id }
     const [genOpen, setGenOpen] = useState(false); // открыта модалка AI-генерации слов (см. GenerateSetModal)
+    const [pickerOpen, setPickerOpen] = useState(false); // открыт экран добора слов из Базы (SetPoolPicker)
     const [photoOpen, setPhotoOpen] = useState(false); // открыт импорт слов с фото/камеры (см. PhotoImportModal)
     const [textOpen, setTextOpen] = useState(false); // открыт импорт слов из произвольного текста (см. TextImportModal)
     const [shared, setShared] = useState(null); // { images } — картинка из системного «Поделиться» (Android, см. native/sharedImages.js)
@@ -156,6 +158,10 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     <span className="sets-pane__study-l">{ll.studyingShort}</span>
                 </label>
                 <span className="row" style={{ gap: "var(--sp-2)", alignItems: "center", justifyContent: "flex-end" }}>
+                    {/* добор слов из Базы: тот же экран Базы, но клик кладёт слово в ЭТОТ набор */}
+                    <button className="btn btn--sm" onClick={() => setPickerOpen(true)} title={ll.fromBase}>
+                        <Icon n="library" sm /> <span className="hide-mobile">{ll.fromBase}</span>
+                    </button>
                     {/* отдельная кнопка запуска сессии набора — слева от троеточия */}
                     {allLearned ? (
                         <button className="btn btn--sm btn--accent" onClick={() => setConfirmReset(true)} title={ll.resetRamp}>
@@ -196,11 +202,12 @@ export default function SetsTab({ lang, openSession, openWord }) {
         <div className="sets-pane__body">
             {words.length === 0 && !wLoading ? (
                 <div className="empty empty--mini">
-                    <div className="empty__ic"><Icon n="sparkles" lg /></div>
+                    <div className="empty__ic"><Icon n="library" lg /></div>
                     <div className="empty__t">{ll.noWords}</div>
                     <div className="empty__d">{ll.noWordsHint}</div>
-                    <button className="btn btn--sm btn--gen" style={{ marginTop: "var(--sp-3)" }} onClick={() => setGenOpen(true)}>
-                        <Icon n="sparkles" /> {ll.generate}
+                    {/* пустой набор наполняют прежде всего из Базы — ИИ-генерация осталась в «⋮» */}
+                    <button className="btn btn--sm btn--accent" style={{ marginTop: "var(--sp-3)" }} onClick={() => setPickerOpen(true)}>
+                        <Icon n="library" /> {ll.fromBase}
                     </button>
                 </div>
             ) : (
@@ -330,6 +337,15 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     {busy ? <BtnSpinner /> : <Icon n="check" sm />} {ll.save}
                 </button>
             </Modal>
+
+            {/* добор слов из Базы: полноэкранный экран Базы с действиями «в набор» */}
+            {pickerOpen && activeId != null && (
+                <SetPoolPicker setId={activeId} setName={active?.name || ""} count={words.length} lang={lang}
+                    onClose={(changed) => {
+                        setPickerOpen(false);
+                        if (changed) { loadWords(activeId); loadSets(activeId); }   // перечитать слова и счётчики
+                    }} />
+            )}
 
             {/* генерация слов в набор: тема + уровень + количество (5–20) */}
             <GenerateSetModal open={genOpen} setId={activeId} lang={lang} ll={ll} defaultTopic={active?.name}

@@ -9,9 +9,19 @@ import { posApiKey } from "../components/ui/pos.js";
 
 export const SEARCH_DEBOUNCE_MS = 550;
 
-export function usePoolSearch(currentLanguage, t) {
+/**
+ * @param {string} currentLanguage
+ * @param {object} t
+ * @param {{setId?:number|null, onSetChanged?:((delta:number)=>void)|null}} [opts]
+ *   setId — режим «добор слов в НАБОР»: клик по карточке кладёт/убирает слово в этот набор
+ *   (а не в «Учёбу»), отметка «добавлено» приходит с бэка флагом inSet, и появляется
+ *   дополнительный срез «(не) в наборе» (inSetFilter). Без setId всё как раньше.
+ *   onSetChanged(delta) — набор изменился: +1 слово добавлено, −1 убрано (для живого счётчика).
+ */
+export function usePoolSearch(currentLanguage, t, { setId = null, onSetChanged = null } = {}) {
     const addToLearning = useWordsStore((s) => s.addToLearning);
     const removeFromLearning = useWordsStore((s) => s.removeFromLearning);
+    const toSet = !!setId;
 
     const [q, setQ] = useState("");
     const [appliedQ, setAppliedQ] = useState("");
@@ -26,6 +36,7 @@ export function usePoolSearch(currentLanguage, t) {
     const [order, setOrder] = useState("asc");
     const [missing, setMissing] = useState(""); // админ: "" | embedding | description | tts | meta | forms
     const [pos, setPos] = useState("");          // фильтр по части речи (ключ pos.js: noun/verb/adj/...)
+    const [inSetFilter, setInSetFilter] = useState("");   // режим набора: "" | "out" (нет в наборе) | "in" (уже в наборе)
     const [loading, setLoading] = useState(true);
     const [searchPhase, setSearchPhase] = useState("idle"); // idle | counting | searching
     const [addingId, setAddingId] = useState(null);
@@ -71,15 +82,20 @@ export function usePoolSearch(currentLanguage, t) {
         let cancelled = false;
         setLoading(true);
         setSearchPhase((p) => (p === "counting" ? "searching" : p));
-        api.getPool({ q: appliedQ, limit: pageSize, offset: (page - 1) * pageSize, topics, level, sort, order, missing, pos: posApiKey(pos), lang: currentLanguage })
+        api.getPool({ q: appliedQ, limit: pageSize, offset: (page - 1) * pageSize, topics, level, sort, order, missing, pos: posApiKey(pos), lang: currentLanguage, setId, inSet: inSetFilter })
             .then((res) => {
                 if (cancelled) return;
                 setItems(res.words || []);
                 setTotal(res.total || 0);
-                // отметить уже добавленные в Учёбу слова (флаг inLearning с бэка), не теряя сессионные добавления
+                // отметить уже добавленные слова: в режиме набора — флаг inSet (в наборе ли слово),
+                // иначе inLearning (в Учёбе ли). Сессионные добавления не теряем: в режиме набора
+                // серверный ответ АВТОРИТЕТЕН (слово могли убрать в другом месте) — берём его как есть.
                 setAdded((prev) => {
                     const next = { ...prev };
-                    for (const w of (res.words || [])) if (w.inLearning) next[w.pool_id] = true;
+                    for (const w of (res.words || [])) {
+                        if (toSet ? w.inSet : w.inLearning) next[w.pool_id] = true;
+                        else if (toSet) delete next[w.pool_id];   // слово могли убрать из набора в другом месте
+                    }
                     return next;
                 });
                 if (res.facets) {
@@ -92,7 +108,7 @@ export function usePoolSearch(currentLanguage, t) {
             .catch(() => { if (!cancelled) setItems([]); })
             .finally(() => { if (!cancelled) { setLoading(false); setSearchPhase("idle"); } });
         return () => { cancelled = true; };
-    }, [appliedQ, page, pageSize, topics, level, sort, order, missing, pos, reloadTick, currentLanguage]);
+    }, [appliedQ, page, pageSize, topics, level, sort, order, missing, pos, inSetFilter, setId, toSet, reloadTick, currentLanguage]);
 
     // Умный добор «нет в базе»: слова из лексикона/похожие (inPool:false) под запрос — для AI-добавления.
     useEffect(() => {
@@ -126,17 +142,22 @@ export function usePoolSearch(currentLanguage, t) {
     const pickLevel = (lv) => { setPage(1); setLevel((cur) => (cur === lv ? "" : lv)); };
     const pickMissing = (val) => { setPage(1); setMissing((cur) => (cur === val ? "" : val)); };
     const pickPos = (key) => { setPage(1); setPos((cur) => (cur === key ? "" : key)); };
+    const pickInSet = (val) => { setPage(1); setInSetFilter((cur) => (cur === val ? "" : val)); };
     const onPageSize = (n) => { setPage(1); setPageSize(n); };
-    const clearFilters = () => { setPage(1); setTopics([]); setLevel(""); setMissing(""); setPos(""); };
+    const clearFilters = () => { setPage(1); setTopics([]); setLevel(""); setMissing(""); setPos(""); setInSetFilter(""); };
     const pickSort = (s, o) => { setPage(1); setSort(s); setOrder(o); };
     const reload = () => setReloadTick((k) => k + 1);
 
-    // Добавить слово из Базы прямо в «Учёбу» по pool_id (омонимы — разные записи; оптимистично).
+    // Добавить слово из Базы по pool_id (омонимы — разные записи; оптимистично).
+    // В режиме набора — в НАБОР (слово попадает в Учёбу через сам набор), иначе прямо в «Учёбу».
     const onAdd = async (w) => {
         const id = w.pool_id;
         setAddingId(id);
         setAdded((a) => ({ ...a, [id]: true }));
-        try { await addToLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${t.addedToLearning}`, "success"); }
+        try {
+            if (toSet) { await api.setAddWords(setId, [id]); onSetChanged?.(1); }
+            else { await addToLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${t.addedToLearning}`, "success"); }
+        }
         catch { setAdded((a) => { const n = { ...a }; delete n[id]; return n; }); }
         setAddingId(null);
     };
@@ -202,9 +223,11 @@ export function usePoolSearch(currentLanguage, t) {
             const res = await api.generateWord(w);   // создаст в пуле (или вернёт существующее)
             const name = res?.word || w;
             if (res?.pool_id) {
-                await addToLearning(res.pool_id);
+                // режим набора: созданное слово кладём в НАБОР (иначе оно уходило бы в Учёбу мимо него)
+                if (toSet) { await api.setAddWords(setId, [res.pool_id]); onSetChanged?.(1); }
+                else { await addToLearning(res.pool_id); }
                 setAdded((a) => ({ ...a, [res.pool_id]: true }));
-                useSystemStore.getState().showToast(`«${name}» ${t.addedToLearning}`, "success");
+                if (!toSet) useSystemStore.getState().showToast(`«${name}» ${t.addedToLearning}`, "success");
                 // закрепить созданное слово вверху списка — вдруг ИИ выдал другую форму/перевод и
                 // оно не попадает под текущий запрос (иначе кажется, что добавление не сработало).
                 try {
@@ -214,7 +237,7 @@ export function usePoolSearch(currentLanguage, t) {
                         translate: m?.translate || res.translate || {},
                         part_of_speech: m?.part_of_speech || "", level: m?.level || null,
                         topics: m?.topics || [], forms: m?.forms || null, hasTts: !!m?.hasTts,
-                        hasEmbedding: true, hasDescription: true, inLearning: true,
+                        hasEmbedding: true, hasDescription: true, inLearning: true, inSet: toSet || undefined,
                     };
                     setPinned((p) => [card, ...p.filter((x) => x.pool_id !== card.pool_id)]);
                 } catch { /* без меты просто не закрепим */ }
@@ -227,12 +250,16 @@ export function usePoolSearch(currentLanguage, t) {
         setSmartBusy("");
     };
 
-    // Убрать слово из «Учёбы» по pool_id (оптимистично, при ошибке возвращаем отметку).
+    // Убрать слово (из набора в режиме набора, иначе из «Учёбы») — оптимистично, при ошибке
+    // возвращаем отметку. Прогресс слова в SRS удаление из набора не трогает (набор — курация).
     const onRemove = async (w) => {
         const id = w.pool_id;
         setAdded((a) => { const n = { ...a }; delete n[id]; return n; });
         setAddingId(id);
-        try { await removeFromLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${t.removedFromLearning}`, "warning"); }
+        try {
+            if (toSet) { await api.setRemoveWord(setId, id); onSetChanged?.(-1); }
+            else { await removeFromLearning(id); useSystemStore.getState().showToast(`«${w.word}» ${t.removedFromLearning}`, "warning"); }
+        }
         catch { setAdded((a) => ({ ...a, [id]: true })); }
         setAddingId(null);
     };
@@ -246,7 +273,7 @@ export function usePoolSearch(currentLanguage, t) {
         } catch { /* ignore */ }
     };
 
-    const hasFilters = topics.length > 0 || !!level || !!missing || !!pos;
+    const hasFilters = topics.length > 0 || !!level || !!missing || !!pos || !!inSetFilter;
     const hasQuery = appliedQ.trim() !== "";
     // Кнопка-дополнение: есть точное слово/перевод → «Показать»; нет → «Создать» (генерация введённого).
     const showShow = hasQuery && !!poolExact;
@@ -260,9 +287,9 @@ export function usePoolSearch(currentLanguage, t) {
         // запрос/фаза
         q, setQ, appliedQ, searchPhase, total,
         // фильтры
-        topics, level, sort, order, missing, pos, pageSize, hasFilters,
+        topics, level, sort, order, missing, pos, pageSize, hasFilters, inSetFilter, toSet,
         facets, facetCounts,
-        toggleTopic, pickLevel, pickMissing, pickPos, onPageSize, clearFilters, pickSort,
+        toggleTopic, pickLevel, pickMissing, pickPos, pickInSet, onPageSize, clearFilters, pickSort,
         // данные/пагинация
         items, pinned, display, page, setPage, totalPages, loading,
         // умный добор

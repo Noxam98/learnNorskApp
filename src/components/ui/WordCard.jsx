@@ -2,6 +2,7 @@
 // тот же вид использовался и в Базе, и в «Наборах» (поиск слева + слова набора справа).
 // Логика (что делает «добавить»/«инфо»/«удалить») остаётся у вызывающего — карточка
 // презентационная: пробрасываем колбэки и флаги.
+import { useEffect, useRef } from "react";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { Icon } from "./Icon.jsx";
 import { BtnSpinner } from "./Spinner.jsx";
@@ -9,6 +10,8 @@ import { SpeakButton } from "./SpeakButton.jsx";
 import { posMeta, posLabel, chipPrefix } from "./pos.js";
 import { ttsLang } from "./tts.js";
 import { RampBar } from "../learning/StatusBits.jsx";
+
+const HOLD_MS = 420;   // порог удержания (long-press) — короче системного контекст-меню браузера
 
 /**
  * @param {{
@@ -26,17 +29,42 @@ import { RampBar } from "../learning/StatusBits.jsx";
  *   onHover — наведение/уход (для подсветки того же слова в другой колонке).
  *   selectable — слева рисуется чекбокс выбора (выделение слов набора под «Заучить»); клик по нему
  *     не задевает тело карточки (открытие/удаление), клик по телу выделение не меняет.
+ *   onHold — УДЕРЖАНИЕ карточки (long-press). Нужно там, где короткий тап уже занят действием
+ *     (добор слов в набор: тап = добавить/убрать, удержание = открыть карточку слова). После
+ *     срабатывания подавляем ближайший click, иначе палец сделал бы и то, и другое.
  */
-export function WordCard({ word, lang, t, added = false, busy = false, highlight = false, flat = false, isAdmin = false, status = null, ramp = null, onToggle, onCardClick, removeBtn = false, removeLabel, onInfo, onAdminDelete, onHover, selectable = false, selected = false, onSelect }) {
+export function WordCard({ word, lang, t, added = false, busy = false, highlight = false, flat = false, isAdmin = false, status = null, ramp = null, onToggle, onCardClick, removeBtn = false, removeLabel, onInfo, onAdminDelete, onHover, selectable = false, selected = false, onSelect, onHold }) {
     const showArticles = useSystemStore((s) => s.showArticles);
     const showVerbAa = useSystemStore((s) => s.showVerbAa);
+    const holdRef = useRef({ timer: null, fired: false });
+    const holdStart = (e) => {
+        if (!onHold || e.button > 0) return;
+        holdRef.current.fired = false;
+        clearTimeout(holdRef.current.timer);
+        holdRef.current.timer = setTimeout(() => {
+            holdRef.current.fired = true;
+            try { navigator.vibrate?.(12); } catch { /* нет вибро — ок */ }
+            onHold(word);
+        }, HOLD_MS);
+    };
+    const holdStop = () => { if (holdRef.current.timer) { clearTimeout(holdRef.current.timer); holdRef.current.timer = null; } };
+    useEffect(() => holdStop, []);
+    const onClick = (e) => {
+        if (holdRef.current.fired) { holdRef.current.fired = false; e.preventDefault(); return; }   // это было удержание
+        (onCardClick || onToggle)?.(e);
+    };
     const no = word.word ?? word.norwegian;
     const tr = word.translate?.[lang]?.join(", ");
     const { cls, key } = posMeta(word.part_of_speech);
     const prefix = chipPrefix(key, word.forms, { articles: showArticles, verbAa: showVerbAa });
     return (
         <div className={`wcard${selectable ? " wcard--sel" : ""}${selected ? " is-selected" : ""}${added && !flat ? " is-added" : ""}${highlight ? " is-highlight" : ""}`}
-            data-word={no} onClick={onCardClick || onToggle}
+            data-word={no} onClick={onClick}
+            onPointerDown={onHold ? holdStart : undefined}
+            onPointerUp={onHold ? holdStop : undefined}
+            onPointerCancel={onHold ? holdStop : undefined}
+            onPointerLeave={onHold ? holdStop : undefined}
+            onContextMenu={onHold ? (e) => e.preventDefault() : undefined}
             onMouseEnter={onHover ? () => onHover(word) : undefined}
             onMouseLeave={onHover ? () => onHover(null) : undefined}>
             {selectable && (

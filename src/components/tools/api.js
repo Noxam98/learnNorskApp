@@ -355,7 +355,9 @@ export class ApiService {
     }
     searchPool(q, lang) { return this._send('GET', `/pool/search?q=${encodeURIComponent(q)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`); }
     generateWord(word) { return this._send('POST', '/pool/generate', { word }); }
-    getPool({ q = "", limit = 60, offset = 0, topics = [], level = "", sort = "alpha", order = "asc", missing = "", pos = "", lang = "" } = {}) {
+    // setId + inSet ("in" | "out") — срез «(не) в моём наборе» для экрана добора слов в набор;
+    // при setId каждое слово несёт флаг inSet (карточка красится «уже добавлено»).
+    getPool({ q = "", limit = 60, offset = 0, topics = [], level = "", sort = "alpha", order = "asc", missing = "", pos = "", lang = "", setId = null, inSet = "" } = {}) {
         const qs = new URLSearchParams({ limit, offset, sort, order });
         if (q) qs.set("q", q);
         if (topics && topics.length) qs.set("topics", topics.join(","));
@@ -363,6 +365,8 @@ export class ApiService {
         if (missing) qs.set("missing", missing);
         if (pos) qs.set("pos", pos);
         if (lang) qs.set("lang", lang);   // поиск по норвежскому + языку интерфейса
+        if (setId) qs.set("set_id", setId);
+        if (setId && (inSet === "in" || inSet === "out")) qs.set("in_set", inSet === "in" ? "1" : "0");
         return this._send('GET', `/pool?${qs.toString()}`);
     }
     setUserTheme(theme) { return this._send('POST', '/me/theme', { theme }); }
