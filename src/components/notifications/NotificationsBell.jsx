@@ -1,7 +1,13 @@
-// Колокольчик в шапке + панель уведомлений. Место «на вырост»: панель рисует ЛЮБОЙ тип из
-// ленты, а конкретный тип знает только про свою карточку (сейчас единственный — set_share,
-// предложение забрать чужой набор: «Принять» создаёт свою копию, «Отклонить» закрывает).
-import { useEffect, useState } from "react";
+// Центр уведомлений. Место «на вырост»: панель рисует ЛЮБОЙ тип из ленты, а конкретный тип
+// знает только про свою карточку (сейчас единственный — set_share, предложение забрать чужой
+// набор: «Принять» создаёт свою копию, «Отклонить» закрывает).
+//
+// Точек входа ДВЕ, потому что на телефоне верхняя шапка скрыта целиком (навигация внизу):
+//   • NotificationsBell   — кнопка в шапке (десктоп);
+//   • NotificationsTabItem — пятый пункт нижней панели (мобилка).
+// Обе только открывают панель; её состояние живёт в сторе, а сама панель рендерится один раз
+// (NavigationBar) — иначе на мобилке она смонтировалась бы дважды.
+import { useEffect } from "react";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import { useNotifyStore } from "../../store/notifyStore.jsx";
 import { useAuth } from "../../hooks/useAuth.js";
@@ -12,16 +18,12 @@ import { BtnSpinner } from "../ui/Spinner.jsx";
 import { N } from "./Notifications.i18n.js";
 
 const fmt = (s, vars) => String(s || "").replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? ""));
+const useT = () => N[useSystemStore((s) => s.currentLanguage)] || N.ru;
 
-export default function NotificationsBell() {
-    const lang = useSystemStore((s) => s.currentLanguage);
-    const t = N[lang] || N.ru;
+/** Загрузка ленты: на входе и при возврате фокуса. Поллинга нет — это почтовый ящик, не чат. */
+export function useNotificationsSync() {
     const { user } = useAuth();
-    const [open, setOpen] = useState(false);
-    const [busyId, setBusyId] = useState(null);
-    const { items, unread, loading, load, markRead, accept, decline } = useNotifyStore();
-
-    // Подтягиваем при входе и при возврате фокуса — поллинга нет, это почтовый ящик, не чат.
+    const load = useNotifyStore((s) => s.load);
     useEffect(() => {
         if (!user) return;
         load();
@@ -33,47 +35,55 @@ export default function NotificationsBell() {
             document.removeEventListener("visibilitychange", onWake);
         };
     }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+}
 
-    const openPanel = () => { setOpen(true); load(true); markRead(); };
+/** Кнопка в шапке (десктоп). */
+export default function NotificationsBell() {
+    const t = useT();
+    const { user } = useAuth();
+    const unread = useNotifyStore((s) => s.unread);
+    const openPanel = useNotifyStore((s) => s.openPanel);
     if (!user) return null;
-
     return (
-        <>
-            <button className="nav__theme nav__bell" aria-label={t.bell} title={t.bell} onClick={openPanel}>
-                <Icon n="bell" sm />
-                {unread > 0 && <span className="nav__bell-dot">{unread > 9 ? "9+" : unread}</span>}
-            </button>
-            {open && (
-                <Panel t={t} lang={lang} items={items} loading={loading} busyId={busyId}
-                    onClose={() => setOpen(false)}
-                    onAccept={async (n) => {
-                        setBusyId(n.id);
-                        try {
-                            const r = await accept(n.id);
-                            if (r?.name) useSystemStore.getState().showToast(fmt(t.acceptedToast, { set: r.name }), "success");
-                        } catch { /* панель покажет актуальное состояние после load */ }
-                        finally { setBusyId(null); }
-                    }}
-                    onDecline={async (n) => {
-                        setBusyId(n.id);
-                        try { await decline(n.id); } catch { /* */ }
-                        finally { setBusyId(null); }
-                    }} />
-            )}
-        </>
+        <button className="nav__theme nav__bell" aria-label={t.bell} title={t.bell} onClick={openPanel}>
+            <Icon n="bell" sm />
+            {unread > 0 && <span className="nav__bell-dot">{unread > 9 ? "9+" : unread}</span>}
+        </button>
     );
 }
 
-function Panel({ t, lang, items, loading, busyId, onClose, onAccept, onDecline }) {
-    useHistoryClose(true, onClose);   // системная «Назад»/свайп закрывает панель, а не приложение
+/** Пункт нижней панели (мобилка): выглядит как вкладка, но открывает панель, а не маршрут. */
+export function NotificationsTabItem({ onTap }) {
+    const t = useT();
+    const unread = useNotifyStore((s) => s.unread);
+    const openPanel = useNotifyStore((s) => s.openPanel);
     return (
-        <div className="wn-backdrop" onClick={onClose}>
+        <button type="button" className="tabbar__item tabbar__item--btn" aria-label={t.bell}
+            onClick={() => { onTap?.(); openPanel(); }}>
+            <span className="tabbar__ic">
+                <Icon n="bell" sm />
+                {unread > 0 && <span className="tabbar__dot">{unread > 9 ? "9+" : unread}</span>}
+            </span>
+            <span>{t.bell}</span>
+        </button>
+    );
+}
+
+/** Сама панель. Рендерится один раз (NavigationBar), открытие — через стор. */
+export function NotificationsPanel() {
+    const t = useT();
+    const lang = useSystemStore((s) => s.currentLanguage);
+    const { items, loading, panelOpen, closePanel, accept, decline, busyId } = useNotifyStore();
+    useHistoryClose(panelOpen, closePanel);   // системная «Назад»/свайп закрывает панель, а не приложение
+    if (!panelOpen) return null;
+    return (
+        <div className="wn-backdrop" onClick={closePanel}>
             <section className="wn" role="dialog" aria-modal="true" aria-label={t.title} onClick={(e) => e.stopPropagation()}>
                 <span className="wn__halo" aria-hidden="true" />
                 <header className="wn__head">
                     <span className="wn__spark"><Icon n="bell" /></span>
                     <div className="wn__titles"><h2 className="wn__title">{t.title}</h2></div>
-                    <button className="wn__x" onClick={onClose} aria-label={t.close}><Icon n="x" sm /></button>
+                    <button className="wn__x" onClick={closePanel} aria-label={t.close}><Icon n="x" sm /></button>
                 </header>
                 <div className="wn__scroll">
                     {loading && !items.length ? (
@@ -86,10 +96,10 @@ function Panel({ t, lang, items, loading, busyId, onClose, onAccept, onDecline }
                         </div>
                     ) : items.map((n) => (
                         <NotifyRow key={n.id} n={n} t={t} lang={lang} busy={busyId === n.id}
-                            onAccept={() => onAccept(n)} onDecline={() => onDecline(n)} />
+                            onAccept={() => accept(n.id)} onDecline={() => decline(n.id)} />
                     ))}
                 </div>
-                <button className="wn__ok" onClick={onClose}>{t.close}</button>
+                <button className="wn__ok" onClick={closePanel}>{t.close}</button>
             </section>
         </div>
     );

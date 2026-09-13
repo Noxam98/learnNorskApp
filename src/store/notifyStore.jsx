@@ -6,6 +6,8 @@
 // useVersionCheck), без постоянного поллинга — уведомления тут не чат, а почтовый ящик.
 import { create } from "zustand";
 import api from "../components/tools/api.js";
+import { useSystemStore } from "./systemStore.jsx";
+import { N as NT } from "../components/notifications/Notifications.i18n.js";
 
 const REFRESH_MS = 60_000;   // не дёргаем бэк чаще (фокус может прилетать пачкой)
 
@@ -14,7 +16,17 @@ export const useNotifyStore = create((set, get) => ({
     unread: 0,
     loading: false,
     loadedAt: 0,
-    readTick: 0,   // растёт на каждом markRead — см. гонку в load ниже
+    readTick: 0,    // растёт на каждом markRead — см. гонку в load ниже
+    panelOpen: false,
+    busyId: null,   // по какому уведомлению сейчас идёт действие (кнопки блокируются)
+
+    /** Открыть панель: точек входа две (шапка и нижняя панель), поэтому состояние тут. */
+    openPanel: () => {
+        set({ panelOpen: true });
+        get().load(true);
+        get().markRead();
+    },
+    closePanel: () => set({ panelOpen: false }),
 
     /** Подтянуть ленту. force=true — игнорировать окно REFRESH_MS (после действия/открытия панели). */
     load: async (force = false) => {
@@ -43,17 +55,28 @@ export const useNotifyStore = create((set, get) => ({
         try { await api.readNotifications(); } catch { /* в следующий load подтянется правда */ }
     },
 
-    /** Принять предложение: у нас появляется своя копия набора. Возвращает ответ бэка. */
+    /** Принять предложение: у нас появляется своя копия набора (тост — с её именем). */
     accept: async (id) => {
-        const r = await api.acceptNotification(id);
-        set({ items: get().items.map((n) => (n.id === id ? { ...n, state: "accepted" } : n)) });
-        return r;
+        set({ busyId: id });
+        try {
+            const r = await api.acceptNotification(id);
+            set({ items: get().items.map((n) => (n.id === id ? { ...n, state: "accepted" } : n)) });
+            if (r?.name) {
+                const { showToast, currentLanguage } = useSystemStore.getState();
+                const tpl = (NT[currentLanguage] || NT.ru).acceptedToast;
+                showToast(String(tpl).replace("{set}", r.name), "success");
+            }
+            return r;
+        } finally { set({ busyId: null }); }
     },
 
     decline: async (id) => {
-        const r = await api.declineNotification(id);
-        set({ items: get().items.map((n) => (n.id === id ? { ...n, state: "declined" } : n)) });
-        return r;
+        set({ busyId: id });
+        try {
+            const r = await api.declineNotification(id);
+            set({ items: get().items.map((n) => (n.id === id ? { ...n, state: "declined" } : n)) });
+            return r;
+        } finally { set({ busyId: null }); }
     },
 
     /** Выход из аккаунта — чужие уведомления показывать нельзя. */

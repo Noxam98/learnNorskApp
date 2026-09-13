@@ -6,7 +6,7 @@ import LanguageChooser from "./languageChooser.jsx";
 import { BrandMark, BrandName } from "./ui/BrandMark.jsx";
 import { Icon } from "./ui/Icon.jsx";
 import { NavGrip } from "./ui/NavGrip.jsx";
-import NotificationsBell from "./notifications/NotificationsBell.jsx";
+import NotificationsBell, { NotificationsTabItem, NotificationsPanel, useNotificationsSync } from "./notifications/NotificationsBell.jsx";
 import { useAutoHideNav } from "../hooks/useAutoHideNav.js";
 
 export const NavigationBar = () => {
@@ -18,6 +18,7 @@ export const NavigationBar = () => {
     const tabbar = useAutoHideNav({ flag: "data-tabbar-off", active: onSets });
     const { user, setTheme } = useAuth();
     const theme = useSystemStore((s) => s.theme);
+    useNotificationsSync();   // лента уведомлений: подтягиваем на входе и по возврату фокуса
     const initial = (user?.username?.[0] || "").toUpperCase();
 
     const tabs = [
@@ -76,15 +77,19 @@ export const NavigationBar = () => {
             </div>
         </header>
 
-        {/* Нижний таб-бар — только на мобилках (CSS). Авто-скрытие: уезжает вниз, остаётся грип. */}
+        {/* Нижний таб-бар — только на мобилках (CSS). Авто-скрытие: уезжает вниз, остаётся грип.
+            Уведомления стоят ПЕРЕД профилем и открывают панель, а не маршрут: верхней шапки на
+            телефоне нет, и другого всегда видимого места у колокольчика не остаётся. */}
         <nav className={"tabbar" + (tabbar.hidden ? " is-hidden" : "")} aria-label="nav" onPointerDown={tabbar.ping}>
-            {tabs.map((x) => (
+            {tabs.flatMap((x) => [
+                ...(x.to === "/mypage" && user ? [<NotificationsTabItem key="notify" onTap={tabbar.ping} />] : []),
                 <Link key={x.to} to={x.to} className={`tabbar__item${x.on ? " is-active" : ""}`} onClick={tabbar.ping}>
                     <Icon n={x.icon} sm /> <span>{x.label}</span>
-                </Link>
-            ))}
+                </Link>,
+            ])}
         </nav>
         {tabbar.hidden && <NavGrip side="bottom" onShow={tabbar.show} />}
+        <NotificationsPanel />
         </>
     );
 };

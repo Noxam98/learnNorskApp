@@ -3,7 +3,7 @@
 // «Принять» создаёт копию набора (ответ бэка → тост), «Отклонить» закрывает предложение.
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
-import NotificationsBell from "./NotificationsBell.jsx";
+import NotificationsBell, { NotificationsPanel, useNotificationsSync } from "./NotificationsBell.jsx";
 import { useNotifyStore } from "../../store/notifyStore.jsx";
 import { useAuthStore } from "../../store/AuthStore.jsx";
 import { useSystemStore } from "../../store/systemStore.jsx";
@@ -27,13 +27,19 @@ const OFFER = {
 beforeEach(() => {
     useSystemStore.setState({ currentLanguage: "ru" });   // проверяем русские строки — фиксируем язык
     useAuthStore.setState({ user: { username: "t" } });
-    useNotifyStore.setState({ items: [], unread: 0, loading: false, loadedAt: 0 });
+    useNotifyStore.setState({ items: [], unread: 0, loading: false, loadedAt: 0, panelOpen: false, busyId: null });
     api.getNotifications.mockResolvedValue({ items: [OFFER], unread: 1 });
 });
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
+// Точек входа две (шапка и нижняя панель), панель рендерится отдельно — собираем как в приложении.
+function Harness() {
+    useNotificationsSync();
+    return (<><NotificationsBell /><NotificationsPanel /></>);
+}
+
 const openPanel = async () => {
-    render(<NotificationsBell />);
+    render(<Harness />);
     await waitFor(() => expect(screen.getByText("1")).toBeInTheDocument());   // бейдж
     fireEvent.click(screen.getByRole("button", { name: /Уведомления/ }));
     return screen.findByText(/Максим предлагает набор/);
@@ -71,7 +77,7 @@ describe("NotificationsBell", () => {
 
     it("без пользователя колокольчика нет (на экране логина)", () => {
         useAuthStore.setState({ user: null });
-        const { container } = render(<NotificationsBell />);
+        const { container } = render(<Harness />);
         expect(container).toBeEmptyDOMElement();
         expect(api.getNotifications).not.toHaveBeenCalled();
     });
