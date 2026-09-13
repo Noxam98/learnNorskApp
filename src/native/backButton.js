@@ -24,13 +24,26 @@ export function pathFromHash(hash) {
 /**
  * Решение по нажатию «назад»: выйти / вернуться по истории / уйти на домашний экран.
  * Выделено отдельной чистой функцией — её и покрываем тестами.
+ *
+ * hasOverlay — сверху открыт оверлей, положивший свою запись в историю (useHistoryClose:
+ * модалки, рейтинг, карточка слова, добор слов в набор). Тогда «назад» ЗАКРЫВАЕТ его, а не
+ * выходит из приложения: иначе на корневом маршруте (/learning и его вкладки) любая открытая
+ * поверх штука схлопывалась вместе со всем приложением.
  * @param {string} path текущий путь роутера
  * @param {boolean} canGoBack есть ли история в WebView (даёт сам плагин)
+ * @param {boolean} [hasOverlay] открыт оверлей с записью в истории
  * @returns {"exit"|"back"|"home"}
  */
-export function decideBack(path, canGoBack) {
+export function decideBack(path, canGoBack, hasOverlay = false) {
+    if (hasOverlay) return "back";
     if (ROOT_ROUTES.includes(path)) return "exit";
     return canGoBack ? "back" : "home";
+}
+
+/** Открыт ли оверлей, положивший запись в историю (см. hooks/useHistoryClose). */
+export function overlayOpen() {
+    try { return !!(window.history.state && window.history.state.__modal); }
+    catch { return false; }
 }
 
 /**
@@ -43,7 +56,7 @@ export async function registerBackButton() {
     try {
         const { App } = await import("@capacitor/app");
         const handle = await App.addListener("backButton", ({ canGoBack }) => {
-            switch (decideBack(pathFromHash(window.location.hash), canGoBack)) {
+            switch (decideBack(pathFromHash(window.location.hash), canGoBack, overlayOpen())) {
                 case "exit":
                     App.exitApp();
                     break;

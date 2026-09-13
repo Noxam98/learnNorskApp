@@ -16,7 +16,9 @@ import { PoolBrowser } from "../pool/PoolBrowser.jsx";
 import { usePoolSearch } from "../../pages/usePoolSearch.js";
 import { P } from "./SetPoolPicker.i18n.js";
 
-const STAGE = { position: "fixed", inset: 0, zIndex: 96, background: "var(--bg)", color: "var(--ink)", display: "flex", flexDirection: "column", overflow: "auto" };
+// Фон экрана — токен приложения (--canvas). Именно ОН, а не «--bg»: такого токена в проекте нет,
+// и с ним оверлей выходил прозрачным — сквозь него просвечивал набор.
+const STAGE = { position: "fixed", inset: 0, zIndex: 96, background: "var(--canvas)", color: "var(--ink)", display: "flex", flexDirection: "column", overflow: "auto" };
 
 export default function SetPoolPicker({ setId, setName = "", count = 0, lang = "ru", onClose }) {
     const t = interfaceTranslate[lang] || interfaceTranslate.ru;

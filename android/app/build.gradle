@@ -10,8 +10,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         // Поднимать на КАЖДУЮ раздаваемую сборку: при одинаковом versionCode установщик
         // считает APK «той же версией» и может тихо не заменить уже стоящий пакет.
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

@@ -24,4 +24,11 @@ describe("decideBack", () => {
     it("без истории — на домашний экран, а не выход", () => {
         expect(decideBack("/pool", false)).toBe("home");
     });
+    // Оверлей (модалка/рейтинг/добор слов в набор) кладёт свою запись в историю: «назад»
+    // обязан закрыть ЕГО. Раньше на /learning приложение схлопывалось вместе с оверлеем.
+    it("открытый оверлей закрывается, даже на корневом экране", () => {
+        expect(decideBack("/learning", true, true)).toBe("back");
+        expect(decideBack("/", false, true)).toBe("back");
+        expect(decideBack("/pool", true, true)).toBe("back");
+    });
 });
