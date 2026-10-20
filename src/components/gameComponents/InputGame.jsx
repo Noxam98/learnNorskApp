@@ -16,7 +16,7 @@ import { GameKeyboard, keysAdjacent } from "./GameKeyboard.jsx";
 import { useGameLoop } from "./useGameLoop.js";
 import { useSystemStore } from "../../store/systemStore.jsx";
 
-const TYPO_NEXT_MS = 250;   // хвост после окончания озвучки ответа (Да/Нет), затем авто-переход
+const TYPO_NEXT_MS = 250;   // хвост после окончания озвучки ответа («Да, опечатка»), затем авто-переход
 
 // Ожидаемая след. буква для «ассиста» клавиатуры (расширение зоны тапа). Среди принятых ответов
 // берём первый, чей префикс снисходительно (foldLoose: å≈a, ø≈o, æ≈ae) совпадает с уже введённым,
@@ -48,7 +48,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const useKbd = grammar || !isNo2Int;
     const [input, setInput] = useState("");
     const [typoAsk, setTypoAsk] = useState(/** @type {{typed:string, correct:string}|null} */(null)); // найден near-miss — спросить «опечатка?»
-    const [resolving, setResolving] = useState(false);   // после выбора Да/Нет — короткая пауза до авто-перехода (клавиатуру прячем)
+    const [resolving, setResolving] = useState(false);   // после «Да, опечатка» — короткая пауза до авто-перехода (клавиатуру прячем)
     const typoTmrRef = useRef(/** @type {any} */(null)); // таймер этого авто-перехода
     const [typoOk, setTypoOk] = useState(false);   // ответ принят с одной опечаткой (повтор)
     const [letterHint, setLetterHint] = useState(/** @type {string|null} */(null)); // зачтено, но ввели базу вместо å/ø/æ — показать написание
@@ -56,6 +56,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     const typoRef = useRef(false);                  // тот же флаг для onFinish (без гонок ререндера)
     const inputRef = useRef(/** @type {HTMLInputElement | null} */(null));
     const mountedRef = useRef(true);                // жив ли компонент — против поздних advance после выхода (Esc/×) в окне озвучки
+    const typoGenRef = useRef(0);                   // поколение перехода после «да, опечатка»: тап/новое слово гасят поздний advance
     const submitArmedRef = useRef(false);           // дебаунс: ~250мс после нового слова submit не принимается
     //                                                 (чтобы фантомный Enter с прошлого задания не сработал)
     // Очистить поле и (для штатного инпута) вернуть фокус — чтобы после ошибки сразу вводить заново.
@@ -70,7 +71,7 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         // со звуком пауза перед переходом = длина озвучки ответа + хвост (correctPrimary/aLang ниже).
         // При опечатке (held) переход по тапу — там озвучивает сама игра, см. эффект ниже.
         speakAnswer: () => (sound && correctPrimary && (!grammar || formWord)) ? speakTextEnd(correctPrimary, aLang) : null,
-        onAdvance: () => { setInput(""); setTypoOk(false); setTypoAsk(null); setResolving(false); setLetterHint(null); typoRef.current = false; },   // новое слово — чистое поле
+        onAdvance: () => { typoGenRef.current++; setInput(""); setTypoOk(false); setTypoAsk(null); setResolving(false); setLetterHint(null); typoRef.current = false; },   // новое слово — чистое поле
         onWrong: () => { resetInput(); setTypoOk(false); setTypoAsk(null); setLetterHint(null); typoRef.current = false; },     // после ошибки — сбросить (и сфокусировать штатный инпут)
     });
     const { t, currentLanguage, total, current, status, held, missedIds, knownFirstTry, score, qIndex, qTotal, segs, answer, advance, restart, backToSelection } = loop;
@@ -128,8 +129,8 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         if (question) speakText(question, qLang).catch(() => {});
         if (correctPrimary) prefetchTts(correctPrimary, aLang);
     }, [current, sound]); // eslint-disable-line
-    // Озвучка верного ответа: после ОШИБКИ или принятой опечатке (held), НО не в resolving — там
-    // confirm/deny сами озвучивают и ждут конца аудио (afterTypoAudio), чтобы не было двойной озвучки.
+    // Озвучка верного ответа: после ОШИБКИ (в т.ч. «нет, не опечатка») или принятой опечатке (held), НО
+    // не в resolving — там confirmTypo сам озвучивает и ждёт конца аудио (afterTypoAudio), без двойной озвучки.
     // После обычного ВЕРНОГО озвучкой+паузой управляет useGameLoop (speakAnswer).
     useEffect(() => {
         if (sound && correctPrimary && !resolving && (!grammar || formWord) && (status === "INCORRECT" || (status === "CORRECT" && held))) {
@@ -175,15 +176,18 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
         }
         setTypoOk(false); typoRef.current = false; answer(false);
     };
-    // После выбора Да/Нет — озвучиваем верное слово ДО КОНЦА, потом короткий хвост и дальше (без тапа).
+    // После «Да, опечатка» — озвучиваем верное слово ДО КОНЦА, потом короткий хвост и дальше (без тапа).
     // Пейсим по концу аудио (а не фикс. таймером), чтобы слово не обрезалось. Страховка по времени.
+    // Поколение (typoGenRef): если слово уже пролистали тапом, конец озвучки не должен листать ВТОРОЙ раз.
     const clearTypoTmr = () => { if (typoTmrRef.current) { clearTimeout(typoTmrRef.current); typoTmrRef.current = null; } };
     const afterTypoAudio = () => {
         clearTypoTmr();
+        const gen = ++typoGenRef.current;
         const go = () => {
-            if (!mountedRef.current) return;   // вышли из игры (Esc/×) между confirm/deny и концом озвучки — не трогаем мёртвый стейт
+            // вышли из игры (Esc/×) или слово уже пролистали — не трогаем мёртвый/чужой стейт
+            if (!mountedRef.current || gen !== typoGenRef.current) return;
             clearTypoTmr();
-            typoTmrRef.current = setTimeout(() => { typoTmrRef.current = null; if (mountedRef.current) advance(); }, TYPO_NEXT_MS);
+            typoTmrRef.current = setTimeout(() => { typoTmrRef.current = null; if (mountedRef.current && gen === typoGenRef.current) advance(); }, TYPO_NEXT_MS);
         };
         typoTmrRef.current = setTimeout(() => {   // пауза 300мс перед озвучкой ответа
             const p = (sound && correctPrimary) ? speakTextEnd(correctPrimary, aLang) : null;
@@ -195,9 +199,12 @@ export const InputGame = ({ setGameState, mode = "no2int", sound = false, words:
     };
     // «Да, опечатка» — засчитываем верно (тег «с опечаткой»).
     const confirmTypo = () => { setTypoAsk(null); setResolving(true); setTypoOk(true); typoRef.current = true; playSound("typo"); answer(true, { hold: true, silent: true }); afterTypoAudio(); };
-    // «Нет, ошибся» — обычная ошибка (ответ уже показан панелью, поэтому не заставляем перепечатывать — пауза и дальше).
-    const denyTypo = () => { setTypoAsk(null); setResolving(true); setTypoOk(false); typoRef.current = false; answer(false); afterTypoAudio(); };
-    useEffect(() => () => { mountedRef.current = false; clearTypoTmr(); }, []);   // размонтирование: пометить + снять таймер
+    // «Нет, ошибся» — ОБЫЧНАЯ ошибка: панель с верным ответом, поле очищено, дальше — только когда
+    // впишет верно (как при любом промахе). Озвучку верного даёт эффект на status INCORRECT.
+    const denyTypo = () => { setTypoAsk(null); setTypoOk(false); typoRef.current = false; answer(false); };
+    // mountedRef ставим и на монтировании: StrictMode (dev) прогоняет mount→unmount→mount, и без этого
+    // флаг навсегда оставался false — переход после «да, опечатка» молча не случался (игра «висла»).
+    useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; clearTypoTmr(); }; }, []);
     const dontKnow = () => { if (status === "ASKING") answer(false); };
     // принято с опечаткой: авто-перехода нет — продолжаем тапом по любому месту сцены.
     // «Взвод» (~400мс): иначе тот же тап, что отправил ответ, долетает «ghost click» по сцене

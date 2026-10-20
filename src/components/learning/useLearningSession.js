@@ -98,7 +98,9 @@ export function useLearningSession({ words = [], system = false, setId = null, l
     const auditResultsRef = useRef([]);                    // контрольные ответы пишем одним пакетом на финише
     const [before, setBefore] = useState(null);           // снимок статистики ДО сессии — «выучено» по бэк-дельте mastered (аудио-гейт)
     const mountedRef = useRef(true);                       // защита await→setState после размонтирования
-    useEffect(() => () => { mountedRef.current = false; }, []);
+    // true и на монтировании: StrictMode (dev) делает mount→unmount→mount — иначе флаг залипал в false
+    // и добор последней карточки молча обрывался (loadingNext навсегда).
+    useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; }; }, []);
 
     // Подтянуть системную программу с бэка.
     const loadProgram = async () => {

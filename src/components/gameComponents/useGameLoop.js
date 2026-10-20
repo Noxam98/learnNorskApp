@@ -86,9 +86,12 @@ export function useGameLoop({
 
     // Перейти к следующему слову (или к финишу). Длина ОЧЕРЕДИ, а не total: в режиме заучивания
     // очередь длиннее набора на промахи (без requeue order.length === total — поведение прежнее).
+    // held/picked сбрасываем БЕЗУСЛОВНО: advance зовут и из таймеров, взведённых до ререндера
+    // (переход после «да, опечатка»), — в их замыкании held ещё false, и проверка «if (held)» оставляла
+    // флаг висеть на следующем слове: верный ответ там уже не листал дальше (вечный CORRECT).
     const advance = () => {
-        if (held) setHeld(false);
-        if (picked != null) setPicked(null);
+        setHeld(false);
+        setPicked(null);
         if (pos + 1 >= order.length) { setStatus("FINISHED"); if (reveal) playWin(); return; }
         setPos(pos + 1); setStatus("ASKING"); onAdvance?.();
     };
