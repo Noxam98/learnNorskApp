@@ -230,17 +230,17 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     </div>
                     {/* Панель выделения — появляется с первым отмеченным словом. «Заучить N» тут же:
                         после выбора логичнее стартовать отсюда, чем лезть в троеточие. Стоит ПОСЛЕ списка
-                        и липнет к низу панели: сверху она при первом выделении сдвигала весь список. */}
+                        и липнет к низу панели: сверху она при первом выделении сдвигала весь список.
+                        В одну строку: счётчик уже в «Заучить N», остальное — иконки (подпись в title). */}
                     {selIds.length > 0 && (
                         <div className="bulkbar">
-                            <span className="bulkbar__count">{ll.selected} {selIds.length}</span>
                             <button className="bulk-btn bulk-btn--accent" onClick={cramSet}>
                                 <Icon n="target" /> {ll.cram} {selIds.length}
                             </button>
-                            <button className="bulk-btn" onClick={selectAll}><Icon n="check-square" /> {ll.selAll}</button>
-                            <button className="bulk-btn" onClick={invertSel}><Icon n="repeat" /> {ll.selInvert}</button>
                             <div className="grow" />
-                            <button className="bulk-btn" onClick={clearSel}><Icon n="x" /> {ll.selClear}</button>
+                            <button className="bulk-btn bulk-btn--icon" onClick={selectAll} aria-label={ll.selAll} title={ll.selAll}><Icon n="check-all" /></button>
+                            <button className="bulk-btn bulk-btn--icon" onClick={invertSel} aria-label={ll.selInvert} title={ll.selInvert}><Icon n="repeat" /></button>
+                            <button className="bulk-btn bulk-btn--icon" onClick={clearSel} aria-label={ll.selClear} title={ll.selClear}><Icon n="x" /></button>
                         </div>
                     )}
                 </>

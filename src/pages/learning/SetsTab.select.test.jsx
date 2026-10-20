@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// Выделение слов набора под «Заучить»: чекбокс на карточке, панель «Выделено N» с «Все /
+// Выделение слов набора под «Заучить»: чекбокс на карточке, панель «Заучить N» с иконками «Все /
 // Инвертировать / Снять», запуск заучивания только выделенными (ничего не выделено — весь набор).
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen, fireEvent, cleanup, waitFor, within } from "@testing-library/react";
@@ -29,6 +29,9 @@ vi.mock("../../components/sets/SetPoolPicker.jsx", () => ({
 }));
 
 const checkboxes = () => screen.getAllByRole("checkbox");
+// панель выделения: её нет без выделения; счётчик живёт в кнопке «Заучить N»
+const bar = () => document.querySelector(".bulkbar");
+const cramN = (n) => within(bar()).getByRole("button", { name: new RegExp(`Заучить ${n}$`) });
 const renderTab = (openSession = vi.fn()) => { render(<SetsTab lang="ru" openSession={openSession} />); return openSession; };
 
 // Реализации ставим ПЕРЕД каждым тестом: mockResolvedValue переживает clearAllMocks, и «пустой
@@ -43,9 +46,10 @@ describe("SetsTab: выделение слов набора", () => {
     it("панель выделения появляется только с первым отмеченным словом", async () => {
         renderTab();
         await waitFor(() => expect(checkboxes()).toHaveLength(3));
-        expect(screen.queryByText(/Выделено/)).toBeNull();
+        expect(bar()).toBeNull();
         fireEvent.click(checkboxes()[0]);
-        expect(await screen.findByText("Выделено 1")).toBeInTheDocument();
+        await waitFor(() => expect(bar()).toBeTruthy());
+        expect(cramN(1)).toBeInTheDocument();
     });
 
     it("«Все» / «Инвертировать» / «Снять» двигают выделение", async () => {
@@ -53,14 +57,14 @@ describe("SetsTab: выделение слов набора", () => {
         await waitFor(() => expect(checkboxes()).toHaveLength(3));
         fireEvent.click(checkboxes()[0]);
         fireEvent.click(screen.getByRole("button", { name: /Все/ }));
-        expect(screen.getByText("Выделено 3")).toBeInTheDocument();
+        expect(cramN(3)).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: /Инвертировать/ }));
-        expect(screen.queryByText(/Выделено/)).toBeNull();      // инверсия «всех» — пусто, панель ушла
+        expect(bar()).toBeNull();      // инверсия «всех» — пусто, панель ушла
         fireEvent.click(checkboxes()[1]);
         fireEvent.click(screen.getByRole("button", { name: /Инвертировать/ }));
-        expect(screen.getByText("Выделено 2")).toBeInTheDocument();
+        expect(cramN(2)).toBeInTheDocument();
         fireEvent.click(screen.getByRole("button", { name: /Снять/ }));
-        expect(screen.queryByText(/Выделено/)).toBeNull();
+        expect(bar()).toBeNull();
     });
 
     it("«Заучить N» стартует ТОЛЬКО выделенными словами", async () => {
@@ -68,7 +72,7 @@ describe("SetsTab: выделение слов набора", () => {
         await waitFor(() => expect(checkboxes()).toHaveLength(3));
         fireEvent.click(checkboxes()[0]);
         fireEvent.click(checkboxes()[2]);
-        fireEvent.click(within(screen.getByText("Выделено 2").parentElement).getByRole("button", { name: /Заучить/ }));
+        fireEvent.click(cramN(2));
         expect(openSession).toHaveBeenCalledWith(null, "input", expect.objectContaining({
             setId: 7, cram: true, poolIds: [1, 3],
         }));
@@ -116,9 +120,9 @@ describe("SetsTab: выделение слов набора", () => {
         fireEvent.click(card);
         expect(openWord).not.toHaveBeenCalled();
         expect(checkboxes()[1]).toHaveAttribute("aria-checked", "true");
-        expect(screen.getByText("Выделено 1")).toBeInTheDocument();
+        expect(cramN(1)).toBeInTheDocument();
         fireEvent.click(card);                                    // повторный тап снимает
-        expect(screen.queryByText(/Выделено/)).toBeNull();
+        expect(bar()).toBeNull();
         fireEvent.click(within(card).getByRole("button", { name: "Описание" }));
         expect(openWord).toHaveBeenCalledWith("hus", null, 2);
     });
@@ -127,7 +131,6 @@ describe("SetsTab: выделение слов набора", () => {
         renderTab();
         await waitFor(() => expect(checkboxes()).toHaveLength(3));
         fireEvent.click(checkboxes()[0]);
-        const bar = screen.getByText("Выделено 1").parentElement;
-        expect(bar.previousElementSibling).toHaveClass("wordlist");
+        expect(bar().previousElementSibling).toHaveClass("wordlist");
     });
 });

@@ -828,7 +828,10 @@
     align-items: flex-end; line-height: 1.2; text-align: end; font-size: var(--fs-11); white-space: nowrap; }
 .sets-pane__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: var(--sp-3) var(--sp-4); }
 /* панель выделения слов набора — после списка, прилипает к низу панели (не сдвигает список) */
-.study-root .sets-pane__body .bulkbar { position: sticky; bottom: 0; z-index: 2; margin: var(--sp-3) 0 0; }
+.study-root .sets-pane__body .bulkbar { position: sticky; bottom: 0; z-index: 2; margin: var(--sp-3) 0 0;
+    flex-wrap: nowrap; gap: var(--sp-2); padding: 8px 10px; }   /* строго одна строка: «Заучить N» + иконки */
+.study-root .bulk-btn--icon { padding: 9px; flex: none; }
+.study-root .bulk-btn--icon .ic { width: 18px; height: 18px; }
 
 /* импорт слов с фото: превью + редактируемый список распознанных слов */
 .ocr-preview { display: block; width: 100%; max-height: 200px; object-fit: contain;
