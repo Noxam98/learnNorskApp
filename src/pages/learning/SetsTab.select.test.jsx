@@ -107,4 +107,27 @@ describe("SetsTab: выделение слов набора", () => {
         fireEvent.click(checkboxes()[0]);
         expect(openWord).not.toHaveBeenCalled();
     });
+
+    it("тап по телу карточки выделяет слово, карточка слова — только по ⓘ", async () => {
+        const openWord = vi.fn();
+        render(<SetsTab lang="ru" openSession={vi.fn()} openWord={openWord} />);
+        await waitFor(() => expect(checkboxes()).toHaveLength(3));
+        const card = document.querySelector('.wcard[data-word="hus"]');
+        fireEvent.click(card);
+        expect(openWord).not.toHaveBeenCalled();
+        expect(checkboxes()[1]).toHaveAttribute("aria-checked", "true");
+        expect(screen.getByText("Выделено 1")).toBeInTheDocument();
+        fireEvent.click(card);                                    // повторный тап снимает
+        expect(screen.queryByText(/Выделено/)).toBeNull();
+        fireEvent.click(within(card).getByRole("button", { name: "Описание" }));
+        expect(openWord).toHaveBeenCalledWith("hus", null, 2);
+    });
+
+    it("панель выделения стоит ПОСЛЕ списка (не сдвигает слова при первом выделении)", async () => {
+        renderTab();
+        await waitFor(() => expect(checkboxes()).toHaveLength(3));
+        fireEvent.click(checkboxes()[0]);
+        const bar = screen.getByText("Выделено 1").parentElement;
+        expect(bar.previousElementSibling).toHaveClass("wordlist");
+    });
 });

@@ -49,7 +49,9 @@ export default function SetPoolPicker({ setId, setName = "", count = 0, lang = "
         <div style={STAGE}>
             {/* ширина как у Базы (.words-main.shell = 1280) — сетка карточек рассчитана на неё */}
             <div className="shell" style={{ maxWidth: 1280, paddingTop: "var(--sp-4)", paddingBottom: "var(--sp-8)" }}>
-                <div className="page-head" style={{ marginBottom: "var(--sp-3)", alignItems: "flex-start" }}>
+                {/* шапка липкая: «Готово» (назад в набор) под рукой и в глубине длинного списка */}
+                <div className="page-head" style={{ position: "sticky", top: 0, zIndex: 3, background: "var(--canvas)",
+                    margin: "calc(-1 * var(--sp-4)) 0 var(--sp-3)", padding: "var(--sp-3) 0", alignItems: "flex-start", flexWrap: "nowrap", gap: "var(--sp-3)" }}>
                     <div style={{ minWidth: 0 }}>
                         <span className="eyebrow"><Icon n="library" sm /> {ll.title}</span>
                         <h1 className="h1" style={{ margin: "var(--sp-1) 0 0", overflowWrap: "anywhere" }}>

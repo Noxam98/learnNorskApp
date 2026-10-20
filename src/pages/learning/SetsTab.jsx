@@ -215,8 +215,22 @@ export default function SetsTab({ lang, openSession, openWord }) {
                 </div>
             ) : (
                 <>
+                    {/* Тап по карточке = выделить (набираем «свой десяток» под «Заучить»), карточка слова —
+                        только по ⓘ: иначе выбор слов то и дело открывал карточку вместо галочки. */}
+                    <div className="wordlist" style={wLoading ? { opacity: .5 } : undefined}>
+                        {words.map((w) => (
+                            <WordCard key={w.pool_id} word={w} lang={lang} t={t} flat status={w.status} ramp={w.ramp}
+                                added highlight={hoverPid != null && w.pool_id === hoverPid}
+                                removeBtn removeLabel={ll.remove}
+                                selectable selected={sel.has(w.pool_id)} onSelect={() => toggleSel(w.pool_id)}
+                                onToggle={() => removeWord(w.pool_id)}
+                                onCardClick={() => toggleSel(w.pool_id)}
+                                onInfo={openWord ? (() => openWord(w.norwegian, null, w.pool_id)) : undefined} />
+                        ))}
+                    </div>
                     {/* Панель выделения — появляется с первым отмеченным словом. «Заучить N» тут же:
-                        после выбора логичнее стартовать отсюда, чем лезть в троеточие. */}
+                        после выбора логичнее стартовать отсюда, чем лезть в троеточие. Стоит ПОСЛЕ списка
+                        и липнет к низу панели: сверху она при первом выделении сдвигала весь список. */}
                     {selIds.length > 0 && (
                         <div className="bulkbar">
                             <span className="bulkbar__count">{ll.selected} {selIds.length}</span>
@@ -229,17 +243,6 @@ export default function SetsTab({ lang, openSession, openWord }) {
                             <button className="bulk-btn" onClick={clearSel}><Icon n="x" /> {ll.selClear}</button>
                         </div>
                     )}
-                    <div className="wordlist" style={wLoading ? { opacity: .5 } : undefined}>
-                        {words.map((w) => (
-                            <WordCard key={w.pool_id} word={w} lang={lang} t={t} flat status={w.status} ramp={w.ramp}
-                                added highlight={hoverPid != null && w.pool_id === hoverPid}
-                                removeBtn removeLabel={ll.remove}
-                                selectable selected={sel.has(w.pool_id)} onSelect={() => toggleSel(w.pool_id)}
-                                onToggle={() => removeWord(w.pool_id)}
-                                onCardClick={openWord ? (() => openWord(w.norwegian, null, w.pool_id)) : undefined}
-                                onInfo={openWord ? (() => openWord(w.norwegian, null, w.pool_id)) : undefined} />
-                        ))}
-                    </div>
                 </>
             )}
         </div>
