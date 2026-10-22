@@ -654,6 +654,9 @@
 }
 .update-banner__x:hover { background: var(--surface-3); color: var(--ink); }
 .update-banner__x .ic { width: 15px; height: 15px; }
+/* прогресс скачивания APK в модалке самообновления (ApkUpdateModal) */
+.apk-progress { height: 8px; border-radius: var(--r-full); background: var(--surface-3); overflow: hidden; }
+.apk-progress span { display: block; height: 100%; background: var(--ember-600); transition: width .2s var(--ease); }
 
 /* «Что нового» — таймлайн обновлений (WhatsNew.jsx). Тема-адаптивно, точки по типу записи. */
 .wn-backdrop {

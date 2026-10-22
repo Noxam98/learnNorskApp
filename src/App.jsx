@@ -14,6 +14,9 @@ import { interfaceTranslate } from "./interface/interfaceTranslation.jsx";
 import { BrandLoader } from "./components/ui/Spinner.jsx";
 import Toast from "./components/tools/error.jsx";
 import { UpdateBanner } from "./components/ui/UpdateBanner.jsx";
+import ApkUpdateModal from "./components/ui/ApkUpdateModal.jsx";
+import { initOta } from "./native/otaUpdate.js";
+import { initApkCheck } from "./native/apkUpdate.js";
 import WhatsNew from "./components/ui/WhatsNew.jsx";
 import NativeIntro from "./components/ui/NativeIntro.jsx";
 // Роуты — code-splitting: каждая страница в своём чанке (грузится по переходу). Тяжёлое
@@ -53,6 +56,11 @@ function App() {
 
     // Проверка сессии при старте.
     useEffect(() => { useAuthStore.getState().checkAuth(); }, []);
+
+    // Обновления APK (в вебе — no-op). Именно после первого рендера: initOta отмечает текущую
+    // веб-часть рабочей (notifyAppReady) — сборка, упавшая на рендере, до этого не дойдёт и
+    // плагин откатит её на прежнюю.
+    useEffect(() => { initOta(); initApkCheck(); }, []);
 
     // Тема оформления → атрибут на <html>, остальное делают CSS-токены.
     // На Android заодно согласуем значки системных панелей: под жестовой полосой рисует само
@@ -121,8 +129,9 @@ function App() {
 
     const isAuthScreen = path === "/authorization" || path === "/registration";
 
-    // Экраны входа/регистрации — полноэкранные.
-    if (isAuthScreen) return routes;
+    // Экраны входа/регистрации — полноэкранные. Предложение обновить APK — и тут: со старой
+    // версией могут как раз не пускать (например, сломанный вход).
+    if (isAuthScreen) return <>{routes}<ApkUpdateModal /></>;
 
     // Всё остальное требует авторизации.
     if (!isAuthed) return <Navigate to="/authorization" replace />;
@@ -137,6 +146,7 @@ function App() {
             {showFooter && <Footer />}
             <Toast text={toast} setText={showToast} type={toastType} url={toastUrl} action={toastAction} persist={toastPersist} />
             <UpdateBanner />
+            <ApkUpdateModal />
             <WhatsNew />
             {/* Онбординг нативных фич (A3/A4) — один раз на первом запуске APK; в вебе null */}
             <NativeIntro />

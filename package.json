@@ -6,9 +6,12 @@
   "engines": {
     "node": "24.x"
   },
+  "otaMinNative": 11,
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
+    "build:web": "vite build && node scripts/ota-bundle.mjs",
+    "release:apk": "bash scripts/release-apk.sh",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 50",
     "typecheck": "tsc -p jsconfig.json",
     "test": "vitest run",
@@ -24,6 +27,7 @@
     "@capacitor/preferences": "^8.0.1",
     "@capacitor/splash-screen": "^8.0.2",
     "@capgo/capacitor-social-login": "^8.3.40",
+    "@capgo/capacitor-updater": "8.52.1",
     "canvas-confetti": "^1.9.4",
     "export-from-json": "^1.7.4",
     "framer-motion": "^12.8.2",
@@ -49,6 +53,7 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "fflate": "0.8.2",
     "jsdom": "^29.1.1",
     "typescript": "^5.9.3",
     "vite": "^5.2.0",

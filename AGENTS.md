@@ -143,9 +143,20 @@ types.js               # JSDoc @typedef основных структур
 
 ## Деплой и коммиты
 
-- **Фронт**: коммит → push в `master` → авто-деплой **Vercel**. Коммить/пушить **только по явной
-  просьбе** пользователя.
-- **Бэк** (`laereNorskBackand`): `flyctl deploy --remote-only` + push github.
+- **Фронт**: коммит → push в `master` → авто-деплой **Vercel** (`npm run build:web`, прод —
+  `learnnorsk.vercel.app`). Зелёный GitHub Actions ≠ задеплоено: статус Vercel смотреть у коммита.
+  Коммить/пушить **только по явной просьбе** пользователя.
+- **Бэк** (`laereNorskBackand`): push в `master` → CI (pytest) → деплой на VPS.
+- **Приложение (APK)** обновляется двумя путями:
+  - **веб-часть — сама (OTA)**: каждый деплой Vercel кладёт `/ota/latest.json` + zip сборки
+    (`scripts/ota-bundle.mjs`), APK скачивает и ставит их (`src/native/otaUpdate.js`). Фикс
+    фронта до приложения доходит без нового APK;
+  - **нативная часть — новым APK**: поднять `versionCode`/`versionName` в `android/app/build.gradle`,
+    закоммитить, `npm run release:apk -- "что нового"` → GitHub Release (APK + `app.json`);
+    приложения предложат обновиться сами (`src/native/apkUpdate.js`, плагин `update/ApkUpdaterPlugin.kt`).
+    Сборка debug — все APK подписаны `~/.android/debug.keystore`, другой ключ сломает обновление.
+  - Меняешь нативку (плагин, манифест, Kotlin) — подними `otaMinNative` в `package.json` до нового
+    `versionCode`: иначе новый веб прилетит по OTA в старые APK без нужной нативной части.
 - **Формат**: conventional commits на русском — `feat(scope): …`, `fix(game): …`,
   `refactor(pool): …`, `chore: …`. Кратко и по делу.
 - **НЕ коммитить**: `.claude/settings.json`, `yarn.lock`, черновые `*.md` в корне (`today*.md`,

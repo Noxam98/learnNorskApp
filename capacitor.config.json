@@ -18,6 +18,11 @@
       "androidSplashResourceName": "splash",
       "showSpinner": false
     },
+    "CapacitorUpdater": {
+      "autoUpdate": false,
+      "statsUrl": "",
+      "appReadyTimeout": 15000
+    },
     "SocialLogin": {
       "providers": {
         "google": true,

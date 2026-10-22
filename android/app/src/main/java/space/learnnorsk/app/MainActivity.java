@@ -8,6 +8,7 @@ import com.getcapacitor.BridgeActivity;
 import space.learnnorsk.app.addword.QueueSync;
 import space.learnnorsk.app.share.SharedImages;
 import space.learnnorsk.app.share.SharedImagesPlugin;
+import space.learnnorsk.app.update.ApkUpdaterPlugin;
 
 public class MainActivity extends BridgeActivity {
 
@@ -16,13 +17,14 @@ public class MainActivity extends BridgeActivity {
      * создаётся мост и грузятся плагины, включая SystemBars со своей раскладкой инсетов —
      * её мы осознанно перекрываем (почему — в SystemInsets).
      *
-     * SharedImagesPlugin (A4), наоборот, регистрируем ДО super.onCreate(): мост поднимает
-     * плагины внутри него, после — поздно. Сам интент разбираем уже после, чтобы фоновое
-     * декодирование не гонялось с загрузкой WebView.
+     * SharedImagesPlugin (A4) и ApkUpdaterPlugin (самообновление), наоборот, регистрируем ДО
+     * super.onCreate(): мост поднимает плагины внутри него, после — поздно. Сам интент
+     * разбираем уже после, чтобы фоновое декодирование не гонялось с загрузкой WebView.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         registerPlugin(SharedImagesPlugin.class);
+        registerPlugin(ApkUpdaterPlugin.class);
         super.onCreate(savedInstanceState);
         SystemInsets.apply(getBridge());
         SharedImages.handle(this, getIntent());

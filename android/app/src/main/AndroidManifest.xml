@@ -65,4 +65,7 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Самообновление (update/ApkUpdaterPlugin): без него Android 8+ молча не откроет установщик
+         для скачанного APK. Сама установка всё равно идёт через системный диалог. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 </manifest>
