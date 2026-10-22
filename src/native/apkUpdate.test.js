@@ -7,7 +7,14 @@ const plugin = {
     openInstallSettings: vi.fn(),
     addListener: vi.fn(async (_ev, cb) => { plugin._progress = cb; return { remove: vi.fn() }; }),
 };
-vi.mock("@capacitor/core", () => ({ registerPlugin: () => plugin, Capacitor: { isNativePlatform: () => false } }));
+// Как настоящий Proxy из registerPlugin: на любое свойство отдаёт «метод плагина», и .then
+// тоже — поэтому await прокси (вернуть его из async-функции) падает. Ловит ту ошибку с эмулятора.
+const capacitorProxy = new Proxy(plugin, {
+    get: (t, k) => (k === "then"
+        ? () => { throw new Error('"ApkUpdater.then()" is not implemented on android'); }
+        : t[k]),
+});
+vi.mock("@capacitor/core", () => ({ registerPlugin: () => capacitorProxy, Capacitor: { isNativePlatform: () => false } }));
 
 const { checkApk, installApk, dismissApk } = await import("./apkUpdate.js");
 const { useAppUpdateStore } = await import("../store/appUpdateStore.jsx");

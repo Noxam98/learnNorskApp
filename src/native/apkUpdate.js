@@ -8,6 +8,7 @@
 //
 // Пара apk+app.json живёт в ОДНОМ релизе — манифест не может опередить сам файл. Отказ
 // («Позже») помним по versionCode: эту версию больше не предлагаем, следующую — предложим.
+import { registerPlugin } from "@capacitor/core";
 import { isNative } from "./platform.js";
 import { onAppResume } from "./appResume.js";
 import { fetchJson } from "./otaUpdate.js";
@@ -64,10 +65,10 @@ export async function initApkCheck() {
     onAppResume(run);
 }
 
-async function plugin() {
-    const { registerPlugin } = await import("@capacitor/core");
-    return registerPlugin("ApkUpdater");
-}
+// Нативный плагин (update/ApkUpdaterPlugin.kt). Регистрируем один раз на уровне модуля и НИКОГДА
+// не возвращаем из async-функции: registerPlugin отдаёт Proxy, и await полез бы в его .then() —
+// Capacitor на это бросает «ApkUpdater.then() is not implemented» (наступили на эмуляторе).
+const ApkUpdater = /** @type {any} */ (registerPlugin("ApkUpdater"));
 
 /**
  * Скачать и поставить APK. Без разрешения на установку — фаза permission (UI ведёт в настройки).
@@ -75,7 +76,7 @@ async function plugin() {
  */
 export async function installApk(m) {
     const st = useAppUpdateStore.getState();
-    const p = await plugin();
+    const p = ApkUpdater;
     try {
         const { allowed } = await p.canInstall();
         if (!allowed) { st.setApkPhase("permission"); return; }
@@ -93,6 +94,5 @@ export async function installApk(m) {
 
 /** Открыть системную настройку «Установка неизвестных приложений» для нас. */
 export async function openInstallSettings() {
-    const p = await plugin();
-    await p.openInstallSettings();
+    await ApkUpdater.openInstallSettings();
 }
