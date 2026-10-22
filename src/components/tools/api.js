@@ -293,10 +293,15 @@ export class ApiService {
     setName(name) { return this._send('POST', '/me/name', { name }); }
     setOnlinePrefs(prefs) { return this._send('POST', '/me/online_prefs', prefs); }
     setGameMode(mode) { return this._send('POST', '/me/game_mode', { mode }); }
-    // Правка слова в общем пуле (норвежское + переводы) — для всех, через ревью нейросети.
+    // Правка слова в пуле: translate — ПАТЧ (только изменённые языки/'no'; [] — убрать перевод),
+    // partOfSpeech — явная смена части речи (undefined — без изменений). Админ правит общую базу
+    // как есть, юзер — своё неодобренное слово через ревью нейросети (hint — подсказка ей).
     // poolId — ТОЧНАЯ запись омонима. Без него бэк берёт старшую по id: правка карточки сущ. `mot`
     // («мужество») переписывала бы предлог `mot` в общей Базе для всех.
-    editPoolWord(word, translate, lang, hint, poolId) { return this._send('POST', `/pool/${encodeURIComponent(word)}/edit${poolId ? `?pool_id=${poolId}` : ''}`, { translate, lang, hint }); }
+    editPoolWord(word, translate, lang, hint, poolId, partOfSpeech) {
+        return this._send('POST', `/pool/${encodeURIComponent(word)}/edit${poolId ? `?pool_id=${poolId}` : ''}`,
+            { translate, lang, hint, ...(partOfSpeech ? { part_of_speech: partOfSpeech } : {}) });
+    }
     // poolId — точная запись омонима: без него бэк снесёт ВСЕ записи этого написания
     adminDeletePoolWord(word, poolId) { return this._send('DELETE', `/admin/pool/${encodeURIComponent(word)}${poolId ? `?pool_id=${poolId}` : ''}`); }
     gamesAiWords(opts) { return this._send('POST', '/games/ai_words', opts); }
@@ -379,7 +384,6 @@ export class ApiService {
     adminReported() { return this._send('GET', '/admin/reported'); }                                 // жалобы «не учить»
     adminExcludeWord(poolId) { return this._send('POST', `/admin/reported/${poolId}/exclude`); }     // убрать из учёбы (всем)
     adminKeepWord(poolId) { return this._send('POST', `/admin/reported/${poolId}/keep`); }           // оставить (+гасить 5 жалоб)
-    adminDeleteWord(word) { return this._send('DELETE', `/admin/pool/${encodeURIComponent(word)}`); }
     adminDescribeAll() { return this._send('POST', '/admin/describe_all'); }
     getAdminControl() { return this._send('GET', '/admin/control'); }
     setAdminControl(key, paused) { return this._send('POST', `/admin/control/${key}?paused=${paused}`); }

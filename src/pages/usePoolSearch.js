@@ -264,11 +264,14 @@ export function usePoolSearch(currentLanguage, t, { setId = null, onSetChanged =
         setAddingId(null);
     };
 
-    const onAdminDelete = async (word) => {
-        if (!window.confirm(`Удалить «${word}» из базы слов? (у всех, без восстановления)`)) return;
+    // Админ: удалить карточку из Базы. Строго по pool_id: удаление по одному написанию сносило ВСЕ
+    // омонимы (кнопка на карточке сущ. `mot` удаляла и предлог `mot`), а список чистился по слову.
+    const onAdminDelete = async (w) => {
+        if (!window.confirm(`Удалить «${w.word}» из базы слов? (у всех, без восстановления)`)) return;
         try {
-            await api.adminDeleteWord(word);
-            setItems((prev) => prev.filter((w) => w.word !== word));
+            await api.adminDeletePoolWord(w.word, w.pool_id);
+            setItems((prev) => prev.filter((x) => x.pool_id !== w.pool_id));
+            setPinned((prev) => prev.filter((x) => x.pool_id !== w.pool_id));
             setTotal((tt) => Math.max(0, tt - 1));
         } catch { /* ignore */ }
     };

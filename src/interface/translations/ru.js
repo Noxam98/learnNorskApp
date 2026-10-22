@@ -24,6 +24,7 @@ export const ru = {
         editWord: "Изменить слово", norwegianWord: "Норвежское слово", more: "Дополнительно",
         reviewing: "Проверка…", reviewApproved: "Одобрено", reviewRejected: "Отклонено", reviewFailed: "Не удалось проверить правку, попробуйте позже", askWord: "Спросить о слове", revoice: "Переозвучить", askPlaceholder: "Ваш вопрос о слове…", askSend: "Спросить", asking: "Думаю…",
         editHintLabel: "Подсказка (необязательно)", editHintPlaceholder: "напр.: это глагол, не существительное",
+        editSaved: "Сохранено", wordExistsError: "Такое слово с этой частью речи уже есть в базе",
         dontLearn: "Не учить",
         alreadyKnow: "Уже знаю",
         deleteFromBase: "Удалить из базы", deleteFromBaseConfirm: "Удалить из базы для всех?",

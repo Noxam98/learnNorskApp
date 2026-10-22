@@ -155,7 +155,7 @@ export function PoolBrowser({ pool, lang, t, isAdmin = false, onCardClick, onCar
                                 onToggle={() => (added[w.pool_id] ? onRemove(w) : onAdd(w))}
                                 onCardClick={onCardClick ? () => onCardClick(w) : undefined}
                                 onHold={onCardHold ? () => onCardHold(w) : undefined}
-                                onAdminDelete={() => onAdminDelete(w.word)} />
+                                onAdminDelete={() => onAdminDelete(w)} />
                         ))}
                     </div>
                 ) : (

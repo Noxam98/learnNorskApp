@@ -22,9 +22,20 @@ import api from "../tools/api.js";
 // wordId — dict_word id (карточка из Учёбы): описание/синонимы по нему (/words/{id}/…).
 // poolId — id записи ПУЛА (карточка из Базы, dict_word нет): им дизамбигуируем ОМОНИМЫ
 // в /pool/…-эндпоинтах (напр. `ro` сущ./глаг.). Передаётся ровно один из двух.
+// onChanged — запись слова изменилась (правка/удаление из базы): родитель перечитывает свой список
+// (иначе в Базе после «Сохранено» висела старая карточка — будто правка не сработала).
 const CW_POP_W = 300;   // макс. ширина попапа части (в нём дерево разбора) — им же зажимаем left
 
-export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) => {
+// Мета записи пула (/pool/{word}/meta) → поля view карточки. Одна раскладка на загрузку карточки
+// и на перечитывание после правки (формы/разбор состава бэк мог сбросить под новое написание).
+const metaView = (m) => ({
+    topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, compound: m?.compound || null,
+    compoundChecked: !!m?.compoundChecked, hasTts: !!m?.hasTts, translate: m?.translate || null,
+    part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null,
+    inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null, canEdit: m?.canEdit,
+});
+
+export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose, onChanged }) => {
     const addToLearning = useWordsStore((s) => s.addToLearning);
     const removeFromLearning = useWordsStore((s) => s.removeFromLearning);
     const loadData = useWordsStore((s) => s.loadData);
@@ -111,15 +122,26 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
         try {
             await api.adminDeletePoolWord(view.no, view.pool_id);   // только показанный омоним
             loadData?.(true);
+            onChanged?.();
             onClose?.();
         } catch { /* не вышло — оставляем окно */ }
         setDelBusy(false);
     };
 
-    // одобренная правка слова из EditWordModal: обновить view (мерж переводов как раньше) + перезагрузить
-    const onWordSaved = ({ no, translate, edited }) => {
-        setView((v) => (v ? { ...v, no, translate: translate || { ...(v.translate || {}), ...edited } } : v));
+    // Сохранённая правка из EditWordModal (то, что реально легло в запись): сразу в view, затем
+    // перечитываем мету (формы/разбор состава бэк сбрасывает при смене написания/части речи) и
+    // зовём onChanged — родитель обновит свой список (Базу), store — «Учёбу».
+    const onWordSaved = ({ no, translate, part_of_speech }) => {
+        const pid = view?.pool_id;
+        curRef.current = { ...curRef.current, no };   // новое написание — текущая карточка стека
+        setView((v) => (v ? { ...v, no, translate: translate || v.translate, part_of_speech: part_of_speech || v.part_of_speech } : v));
+        if (pid) {
+            api.getPoolMeta(no, pid, lang)
+                .then((m) => setView((v) => (v && v.pool_id === pid && m?.pool_id === pid ? { ...v, ...metaView(m) } : v)))
+                .catch(() => {});
+        }
         loadData?.(true);
+        onChanged?.();
     };
 
 
@@ -144,7 +166,7 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
         synP.then((r) => setView((v) => fresh(v) ? { ...v, synonyms: r.synonyms || [] } : v))
             .catch(() => setView((v) => fresh(v) ? { ...v, synonyms: [] } : v));
         api.getPoolMeta(no, poolId, lang).then((m) => {
-            setView((v) => fresh(v) ? { ...v, topics: m?.topics || [], level: m?.level || null, forms: m?.forms || null, compound: m?.compound || null, compoundChecked: !!m?.compoundChecked, hasTts: !!m?.hasTts, translate: m?.translate || null, part_of_speech: m?.part_of_speech || null, freqBand: m?.freqBand || null, freq: m?.freq ?? null, inLearning: !!m?.inLearning, pool_id: m?.pool_id ?? null } : v);
+            setView((v) => fresh(v) ? { ...v, ...metaView(m) } : v);
             // карточки нет в базе (напр. часть композита) → генерируем слово и перезагружаем.
             // triedGen страхует от петли, если генерация так и не создала запись.
             if (!m?.pool_id && !triedGen) {
@@ -280,7 +302,11 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
         <ActionMenu label={t.actions || "Действия"} align="right" iconRight iconLg items={[
             { key: "dict", label: inDict ? (t.removeFromDict || "Из словаря") : (t.addToDict || "В словарь"),
               icon: inDict ? "trash" : "plus", danger: inDict, disabled: dictBusy, busy: dictBusy, onClick: toggleDict },
-            { key: "edit", label: t.editWord || "Изменить слово", icon: "edit", onClick: () => setEditOpen(true) },
+            // правка — только когда запись уже известна (pool_id из меты: без него бэк правил бы старшего
+            // омонима) и когда она разрешена (canEdit: админ / своё неодобренное, иначе заведомый 403)
+            (view.pool_id && view.canEdit !== false
+              ? { key: "edit", label: t.editWord || "Изменить слово", icon: "edit", onClick: () => setEditOpen(true) }
+              : null),
             { key: "ask", label: t.askWord || "Спросить о слове", icon: "info", onClick: () => { setAskOpen(true); setFixOpen(false); } },
             (view.pool_id && !view.compound && !view.compoundChecked
               ? { key: "compound", label: t.analyzeCompound || "Разобрать состав", icon: "layers", busy: compoundBusy, disabled: compoundBusy, onClick: analyzeCompound }
@@ -433,7 +459,7 @@ export const WordInfoModal = ({ open, word, wordId, poolId, lang, t, onClose }) 
             onClose={() => setAskOpen(false)} />
 
         {/* Отдельный модал правки слова и переводов (самодостаточный, AI-ревью внутри) */}
-        <EditWordModal open={editOpen} view={view} lang={lang} t={t} header={wordRefNode}
+        <EditWordModal open={editOpen} view={view} lang={lang} t={t} header={wordRefNode} isAdmin={!!isAdmin}
             onClose={() => setEditOpen(false)} onSaved={onWordSaved} />
         </>
     );

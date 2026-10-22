@@ -34,6 +34,7 @@ export const en = {
         editWord: "Edit word", norwegianWord: "Norwegian word", more: "More",
         reviewing: "Checking…", reviewApproved: "Approved", reviewRejected: "Rejected", reviewFailed: "Couldn't review the edit, try again later", askWord: "Ask about the word", revoice: "Re-record audio", askPlaceholder: "Your question about the word…", askSend: "Ask", asking: "Thinking…",
         editHintLabel: "Hint (optional)", editHintPlaceholder: "e.g.: it's a verb, not a noun",
+        editSaved: "Saved", wordExistsError: "This word with this part of speech is already in the base",
         dontLearn: "Don't learn",
         alreadyKnow: "Already know",
         deleteFromBase: "Delete from base", deleteFromBaseConfirm: "Delete from the base for everyone?",

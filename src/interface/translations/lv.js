@@ -34,6 +34,7 @@ export const lv = {
         editWord: "Rediģēt vārdu", norwegianWord: "Norvēģu vārds", more: "Vairāk",
         reviewing: "Pārbauda…", reviewApproved: "Apstiprināts", reviewRejected: "Noraidīts", reviewFailed: "Neizdevās pārbaudīt labojumu, mēģini vēlāk", askWord: "Pajautāt par vārdu", revoice: "Ierunāt no jauna", askPlaceholder: "Tavs jautājums par vārdu…", askSend: "Jautāt", asking: "Domāju…",
         editHintLabel: "Norāde (nav obligāta)", editHintPlaceholder: "piem.: tas ir darbības vārds, nevis lietvārds",
+        editSaved: "Saglabāts", wordExistsError: "Šāds vārds ar šo vārdšķiru jau ir bāzē",
         dontLearn: "Nemācīties",
         alreadyKnow: "Jau zinu",
         deleteFromBase: "Dzēst no bāzes", deleteFromBaseConfirm: "Dzēst no bāzes visiem?",

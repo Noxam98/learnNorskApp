@@ -34,6 +34,7 @@ export const ar = {
         editWord: "تعديل الكلمة", norwegianWord: "كلمة نرويجية", more: "المزيد",
         reviewing: "جارٍ التحقق…", reviewApproved: "تمت الموافقة", reviewRejected: "مرفوض", reviewFailed: "تعذّر مراجعة التعديل، حاول لاحقًا", askWord: "اسأل عن الكلمة", revoice: "إعادة تسجيل الصوت", askPlaceholder: "سؤالك عن الكلمة…", askSend: "اسأل", asking: "جارٍ التفكير…",
         editHintLabel: "تلميح (اختياري)", editHintPlaceholder: "مثال: إنه فعل، وليس اسمًا",
+        editSaved: "تم الحفظ", wordExistsError: "هذه الكلمة بهذا القسم من الكلام موجودة بالفعل في القاعدة",
         dontLearn: "لا تتعلّم",
         alreadyKnow: "أعرفها بالفعل",
         deleteFromBase: "حذف من القاعدة", deleteFromBaseConfirm: "حذف من القاعدة للجميع؟",

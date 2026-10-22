@@ -45,8 +45,9 @@ export const PoolPage = () => {
                 })}
             </Modal>
 
+            {/* onChanged: правка/удаление в карточке → перечитать список Базы (иначе висит старая карточка) */}
             <WordInfoModal open={!!descWord} word={descWord?.word} poolId={descWord?.pool_id}
-                lang={currentLanguage} t={t} onClose={() => setDescWord(null)} />
+                lang={currentLanguage} t={t} onClose={() => setDescWord(null)} onChanged={pool.reload} />
         </main>
     );
 };

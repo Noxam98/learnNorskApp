@@ -19,6 +19,7 @@ export const ukr = {
         editWord: "Змінити слово", norwegianWord: "Норвезьке слово", more: "Додатково",
         reviewing: "Перевірка…", reviewApproved: "Схвалено", reviewRejected: "Відхилено", reviewFailed: "Не вдалося перевірити правку, спробуйте пізніше", askWord: "Запитати про слово", revoice: "Переозвучити", askPlaceholder: "Ваше питання про слово…", askSend: "Запитати", asking: "Думаю…",
         editHintLabel: "Підказка (необов'язково)", editHintPlaceholder: "напр.: це дієслово, не іменник",
+        editSaved: "Збережено", wordExistsError: "Таке слово з цією частиною мови вже є в базі",
         dontLearn: "Не вчити",
         alreadyKnow: "Вже знаю",
         deleteFromBase: "Видалити з бази", deleteFromBaseConfirm: "Видалити з бази для всіх?",

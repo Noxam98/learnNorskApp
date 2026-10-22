@@ -20,6 +20,7 @@ export const pl = {
         editWord: "Edytuj słowo", norwegianWord: "Słowo norweskie", more: "Więcej",
         reviewing: "Sprawdzanie…", reviewApproved: "Zatwierdzono", reviewRejected: "Odrzucono", reviewFailed: "Nie udało się sprawdzić zmiany, spróbuj później", askWord: "Zapytaj o słowo", revoice: "Nagraj wymowę na nowo", askPlaceholder: "Twoje pytanie o słowo…", askSend: "Zapytaj", asking: "Myślę…",
         editHintLabel: "Wskazówka (opcjonalnie)", editHintPlaceholder: "np.: to czasownik, nie rzeczownik",
+        editSaved: "Zapisano", wordExistsError: "To słowo z tą częścią mowy już jest w bazie",
         dontLearn: "Nie ucz",
         alreadyKnow: "Już znam",
         deleteFromBase: "Usuń z bazy", deleteFromBaseConfirm: "Usunąć z bazy dla wszystkich?",

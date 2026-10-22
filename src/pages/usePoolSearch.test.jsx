@@ -13,7 +13,7 @@ vi.mock("../store/systemStore.jsx", () => ({ useSystemStore: Object.assign(() =>
 vi.mock("../components/tools/api.js", () => ({
     default: {
         getPool: vi.fn(), getPoolTopics: vi.fn(), searchPool: vi.fn(),
-        generateWord: vi.fn(), getPoolMeta: vi.fn(), adminDeleteWord: vi.fn(),
+        generateWord: vi.fn(), getPoolMeta: vi.fn(), adminDeletePoolWord: vi.fn(),
     },
 }));
 
@@ -59,5 +59,32 @@ describe("usePoolSearch", () => {
         await act(async () => { await result.current.onAdd({ pool_id: 7, word: "katt" }); });
         expect(addToLearning).toHaveBeenCalledWith(7);
         expect(result.current.added[7]).toBe(true);
+    });
+
+    it("админ-удаление карточки — только этот омоним (по pool_id), соседний остаётся", async () => {
+        api.getPoolTopics.mockResolvedValue({ topics: [], levels: [] });
+        api.getPool.mockResolvedValue({ words: [{ pool_id: 1, word: "mot" }, { pool_id: 2, word: "mot" }], total: 2 });
+        api.searchPool.mockResolvedValue({ results: [] });
+        api.adminDeletePoolWord.mockResolvedValue({ ok: true });
+        const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
+
+        const { result } = renderHook(() => usePoolSearch("ru", t));
+        await waitFor(() => expect(result.current.items).toHaveLength(2));
+        await act(async () => { await result.current.onAdminDelete({ pool_id: 2, word: "mot" }); });
+        expect(api.adminDeletePoolWord).toHaveBeenCalledWith("mot", 2);   // без pool_id бэк снёс бы ВСЕ «mot»
+        expect(result.current.items.map((w) => w.pool_id)).toEqual([1]);
+        expect(result.current.total).toBe(1);
+        confirm.mockRestore();
+    });
+
+    it("reload перечитывает список (после правки слова в карточке)", async () => {
+        api.getPoolTopics.mockResolvedValue({ topics: [], levels: [] });
+        api.getPool.mockResolvedValue({ words: [], total: 0 });
+        api.searchPool.mockResolvedValue({ results: [] });
+
+        const { result } = renderHook(() => usePoolSearch("ru", t));
+        await waitFor(() => expect(api.getPool).toHaveBeenCalledTimes(1));
+        act(() => result.current.reload());
+        await waitFor(() => expect(api.getPool).toHaveBeenCalledTimes(2));
     });
 });

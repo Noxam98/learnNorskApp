@@ -28,6 +28,7 @@ export const lt = {
         editWord: "Keisti žodį", norwegianWord: "Norvegiškas žodis", more: "Daugiau",
         reviewing: "Tikrinama…", reviewApproved: "Patvirtinta", reviewRejected: "Atmesta", reviewFailed: "Nepavyko patikrinti pakeitimo, bandykite vėliau", askWord: "Paklausti apie žodį", revoice: "Pergarsinti", askPlaceholder: "Jūsų klausimas apie žodį…", askSend: "Klausti", asking: "Galvoju…",
         editHintLabel: "Užuomina (nebūtina)", editHintPlaceholder: "pvz.: tai veiksmažodis, ne daiktavardis",
+        editSaved: "Išsaugota", wordExistsError: "Toks žodis su šia kalbos dalimi jau yra bazėje",
         dontLearn: "Nemokyti",
         alreadyKnow: "Jau moku",
         deleteFromBase: "Ištrinti iš bazės", deleteFromBaseConfirm: "Ištrinti iš bazės visiems?",
