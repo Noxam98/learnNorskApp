@@ -7,6 +7,7 @@ import { BrandMark, BrandName } from "./ui/BrandMark.jsx";
 import { Icon } from "./ui/Icon.jsx";
 import { NavGrip } from "./ui/NavGrip.jsx";
 import NotificationsBell, { NotificationsTabItem, NotificationsPanel, useNotificationsSync } from "./notifications/NotificationsBell.jsx";
+import ProfileModal from "./social/ProfileModal.jsx";
 import { useAutoHideNav } from "../hooks/useAutoHideNav.js";
 
 export const NavigationBar = () => {
@@ -90,6 +91,8 @@ export const NavigationBar = () => {
         </nav>
         {tabbar.hidden && <NavGrip side="bottom" onShow={tabbar.show} />}
         <NotificationsPanel />
+        {/* мини-профиль человека — один на всё приложение, открывается через useSocialStore */}
+        {user && <ProfileModal />}
         </>
     );
 };

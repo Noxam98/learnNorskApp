@@ -18,8 +18,9 @@ import * as PlacementScreen from "../components/learning/PlacementScreen.i18n.js
 import * as SetImport from "../components/sets/Import.i18n.js";
 import * as SetPoolPicker from "../components/sets/SetPoolPicker.i18n.js";
 import * as Notifications from "../components/notifications/Notifications.i18n.js";
+import * as Social from "../components/social/Social.i18n.js";
 
-const MODULES = { ExamTab, TodayTab, SetsTab, WordsTab, ProgressTab, MyPage, LearningSession, CramSession, PlacementScreen, SetImport, SetPoolPicker, Notifications };
+const MODULES = { ExamTab, TodayTab, SetsTab, WordsTab, ProgressTab, MyPage, LearningSession, CramSession, PlacementScreen, SetImport, SetPoolPicker, Notifications, Social };
 
 // Каждый экспорт-объект с языковым ключом `ru` считаем langGuard-картой переводов.
 const MAPS = [];

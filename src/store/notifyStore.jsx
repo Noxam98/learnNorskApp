@@ -1,12 +1,13 @@
-// Центр уведомлений: лента + бейдж непрочитанных. Общий на вырост — сейчас единственный тип
-// уведомления это предложение забрать чужой набор (accept → своя копия, decline → закрыто),
-// но лента, бейдж и «прочитано» уже не знают ничего про наборы.
+// Центр уведомлений: лента + бейдж непрочитанных + вкладка панели (лента / друзья). Типы
+// уведомлений (набор, заявка в друзья, приглашение в игру…) различает только карточка в
+// NotificationsBell; лента, бейдж и «прочитано» про них ничего не знают.
 //
 // Свежесть держим дёшево: подгружаем на входе в приложение и при возврате фокуса (как
 // useVersionCheck), без постоянного поллинга — уведомления тут не чат, а почтовый ящик.
 import { create } from "zustand";
 import api from "../components/tools/api.js";
 import { useSystemStore } from "./systemStore.jsx";
+import { useSocialStore } from "./socialStore.jsx";
 import { N as NT } from "../components/notifications/Notifications.i18n.js";
 
 const REFRESH_MS = 60_000;   // не дёргаем бэк чаще (фокус может прилетать пачкой)
@@ -18,15 +19,18 @@ export const useNotifyStore = create((set, get) => ({
     loadedAt: 0,
     readTick: 0,    // растёт на каждом markRead — см. гонку в load ниже
     panelOpen: false,
+    panelTab: "feed",   // feed | friends
     busyId: null,   // по какому уведомлению сейчас идёт действие (кнопки блокируются)
 
-    /** Открыть панель: точек входа две (шапка и нижняя панель), поэтому состояние тут. */
-    openPanel: () => {
-        set({ panelOpen: true });
+    /** Открыть панель: точек входа несколько (шапка, нижняя панель, «Найти друзей» в рейтинге),
+     *  поэтому состояние тут. tab — сразу на нужной вкладке. */
+    openPanel: (tab = "feed") => {
+        set({ panelOpen: true, panelTab: tab === "friends" ? "friends" : "feed" });
         get().load(true);
         get().markRead();
     },
     closePanel: () => set({ panelOpen: false }),
+    setPanelTab: (tab) => set({ panelTab: tab }),
 
     /** Подтянуть ленту. force=true — игнорировать окно REFRESH_MS (после действия/открытия панели). */
     load: async (force = false) => {
@@ -55,13 +59,16 @@ export const useNotifyStore = create((set, get) => ({
         try { await api.readNotifications(); } catch { /* в следующий load подтянется правда */ }
     },
 
-    /** Принять предложение: у нас появляется своя копия набора (тост — с её именем). */
+    /** Принять: набор → своя копия (тост с её именем); заявка → дружба (списки друзей
+     *  перечитываются); приглашение → ответ несёт room_id, в комнату ведёт панель. */
     accept: async (id) => {
         set({ busyId: id });
         try {
             const r = await api.acceptNotification(id);
             set({ items: get().items.map((n) => (n.id === id ? { ...n, state: "accepted" } : n)) });
-            if (r?.name) {
+            if (r?.type === "friend_request") useSocialStore.getState().bumpFriends();
+            else if (r?.set_id) useSocialStore.getState().bumpSets();
+            if (r?.set_id && r?.name) {
                 const { showToast, currentLanguage } = useSystemStore.getState();
                 const tpl = (NT[currentLanguage] || NT.ru).acceptedToast;
                 showToast(String(tpl).replace("{set}", r.name), "success");

@@ -33,7 +33,7 @@ export const lt = {
         alreadyKnow: "Jau moku",
         deleteFromBase: "Ištrinti iš bazės", deleteFromBaseConfirm: "Ištrinti iš bazės visiems?",
         showArticles: "Daiktavardžių artikeliai", showArticlesDesc: "en/ei/et prieš žodį ant chipų",
-        leaderboardSetting: "Dalyvauti reitinge", leaderboardSettingDesc: "Rodyti tave kitiems mokiniams reitinge",
+        leaderboardSetting: "Dalyvauti reitinge", leaderboardSettingDesc: "Rodyti tave kitiems mokiniams reitinge ir profilyje. Draugai tavo pažangą mato visada",
         listenTasks: "Garso užduotys", listenTasksDesc: "Žodžiai mokomi tekstu, o iš klausos patvirtinami atskira klausymo partija.",
         byEar: "iš klausos", listenBack: "Ši užduotis gali būti iš klausos. Grąžinti?", listenBackBtn: "Grąžinti",
         typeRightToGo: "Įvesk žodį teisingai, kad tęstum",

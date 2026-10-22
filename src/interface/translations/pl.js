@@ -25,7 +25,7 @@ export const pl = {
         alreadyKnow: "Już znam",
         deleteFromBase: "Usuń z bazy", deleteFromBaseConfirm: "Usunąć z bazy dla wszystkich?",
         showArticles: "Rodzajniki rzeczowników", showArticlesDesc: "en/ei/et przed słowem na chipach",
-        leaderboardSetting: "Udział w rankingu", leaderboardSettingDesc: "Pokazuj cię innym uczniom w rankingu",
+        leaderboardSetting: "Udział w rankingu", leaderboardSettingDesc: "Pokazuj cię innym uczniom w rankingu i profilu. Znajomi zawsze widzą twoje postępy",
         listenTasks: "Zadania audio", listenTasksDesc: "Słowa uczy się tekstem, a ze słuchu potwierdza osobną partią słuchową.",
         byEar: "ze słuchu", listenBack: "To zadanie może być ze słuchu. Przywrócić?", listenBackBtn: "Przywróć",
         typeRightToGo: "Wpisz słowo poprawnie, aby przejść dalej",

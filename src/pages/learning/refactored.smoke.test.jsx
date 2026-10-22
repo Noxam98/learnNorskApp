@@ -17,6 +17,12 @@ const MODULES = {
     SetPoolPicker: () => import("../../components/sets/SetPoolPicker.jsx"),
     ShareSetModal: () => import("../../components/sets/ShareSetModal.jsx"),
     NotificationsBell: () => import("../../components/notifications/NotificationsBell.jsx"),
+    FriendsTab: () => import("../../components/social/FriendsTab.jsx"),
+    FriendButton: () => import("../../components/social/FriendButton.jsx"),
+    ProfileModal: () => import("../../components/social/ProfileModal.jsx"),
+    CatalogModal: () => import("../../components/social/CatalogModal.jsx"),
+    InviteModal: () => import("../../components/social/InviteModal.jsx"),
+    usePeopleSearch: () => import("../../components/social/usePeopleSearch.js"),
     NavigationBar: () => import("../../components/navigationBar.jsx"),
     PoolBrowser: () => import("../../components/pool/PoolBrowser.jsx"),
     GenerateSetModal: () => import("../../components/sets/GenerateSetModal.jsx"),
@@ -44,10 +50,14 @@ const MODULES = {
     useToday: () => import("./useToday.js"),
 };
 
+// Первый импорт платит за холодную трансформацию почти всего графа модулей (SetsTab тянет
+// каталог/соц-модалки) — под нагрузкой полного прогона это упиралось в дефолтные 5с.
+const COLD_IMPORT_MS = 20000;
+
 describe("рефакторенные модули грузятся без ошибок", () => {
     it.each(Object.entries(MODULES))("%s импортируется и экспортирует компонент", async (_name, load) => {
         const mod = await load();
         const Comp = mod.default || Object.values(mod).find((v) => typeof v === "function");
         expect(typeof Comp).toBe("function");
-    });
+    }, COLD_IMPORT_MS);
 });

@@ -29,7 +29,7 @@ export const ru = {
         alreadyKnow: "Уже знаю",
         deleteFromBase: "Удалить из базы", deleteFromBaseConfirm: "Удалить из базы для всех?",
         showArticles: "Артикли у существительных", showArticlesDesc: "en/ei/et перед словом на чипах",
-        leaderboardSetting: "Участвовать в рейтинге", leaderboardSettingDesc: "Показывать тебя другим ученикам в рейтинге",
+        leaderboardSetting: "Участвовать в рейтинге", leaderboardSettingDesc: "Показывать тебя другим ученикам в рейтинге и профиле. Друзья видят твой прогресс всегда",
         listenTasks: "Аудиозадания", listenTasksDesc: "Слова учатся текстом, а на слух подтверждаются отдельной слуховой партией.",
         byEar: "на слух", listenBack: "Это задание — на слух. Вернуть?", listenBackBtn: "Вернуть",
         typeRightToGo: "Введи слово верно, чтобы продолжить",

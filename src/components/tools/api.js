@@ -417,7 +417,7 @@ export class ApiService {
     }
     learningStats() { return this._send('GET', '/learning/stats'); }
     getChangelog(limit = 30, offset = 0) { return this._send('GET', `/changelog?limit=${limit}&offset=${offset}`); } // «что нового»: {entries:[{id,day,kind,i18n}], total} — offset листает всю историю
-    leaderboard(period = 'week', limit = 50) { return this._send('GET', `/learning/leaderboard?period=${period}&limit=${limit}`); }
+    leaderboard(period = 'week', limit = 50, scope = 'all') { return this._send('GET', `/learning/leaderboard?period=${period}&limit=${limit}&scope=${scope}`); } // scope: all | friends
     learningDue(limit = 20) { return this._send('GET', `/learning/due?limit=${limit}`); }
     learningActivity(days = 119) { return this._send('GET', `/learning/activity?days=${days}`); }
     // Режим ЗАУЧИВАНИЯ: итог дрилла в дневной журнал (цель/стрик/точность) — SRS не трогаем.
@@ -456,12 +456,24 @@ export class ApiService {
     setRemoveWord(id, poolId) { return this._send('DELETE', `/sets/${id}/words/${poolId}`); }
     setsMembership(poolIds) { return this._send('POST', '/sets/membership', { pool_ids: poolIds }); } // pool_id → [set_id]
     setShare(id, userId) { return this._send('POST', `/sets/${id}/share`, { user_id: userId }); }   // предложить набор другому юзеру
-    // Люди и уведомления: поиск отдаёт только {id, name}; центр уведомлений — общий, на вырост.
+    setPublish(id, isPublic) { return this._send('POST', `/sets/${id}/publish`, { public: isPublic }); } // опубликовать/снять в каталоге
+    // Каталог наборов сообщества: только слова общей базы; копия — своя (как при передаче).
+    catalogList({ q = "", sort = "popular", limit = 30, offset = 0 } = {}) { return this._send('GET', `/catalog?q=${encodeURIComponent(q)}&sort=${sort}&limit=${limit}&offset=${offset}`); } // {items, total}
+    catalogSet(id) { return this._send('GET', `/catalog/${id}`); }                                  // превью: {…, words}
+    catalogClone(id) { return this._send('POST', `/catalog/${id}/clone`); }                         // {set_id, name, added}
+    adminCatalogUnpublish(id) { return this._send('POST', `/admin/catalog/${id}/unpublish`); }
+    // Люди и уведомления: поиск отдаёт {id, name, rel}; центр уведомлений — общий для всех типов.
     searchUsers(q) { return this._send('GET', `/users/search?q=${encodeURIComponent(q)}`); }
     getNotifications(limit = 50) { return this._send('GET', `/notifications?limit=${limit}`); }
     readNotifications() { return this._send('POST', '/notifications/read'); }
     acceptNotification(id) { return this._send('POST', `/notifications/${id}/accept`); }
     declineNotification(id) { return this._send('POST', `/notifications/${id}/decline`); }
+    // Друзья и профили
+    friendsList() { return this._send('GET', '/friends'); }                                          // {friends, outgoing, max}
+    friendRequest(userId) { return this._send('POST', '/friends/request', { user_id: userId }); }    // {state: pending|friends}
+    friendRemove(userId) { return this._send('DELETE', `/friends/${userId}`); }                      // убрать из друзей / отозвать заявку
+    userProfile(userId) { return this._send('GET', `/users/${userId}/profile`); }
+    onlineInvite(roomId, userId) { return this._send('POST', '/online/invite', { room_id: roomId, user_id: userId }); } // позвать в онлайн-комнату
     setSession(id, size = 20, lang = 'ru') { return this._send('GET', `/sets/${id}/session?size=${size}&lang=${encodeURIComponent(lang)}`); }
     setGenerate(id, { topic = "", level = "", count = 10, lang = 'ru' } = {}) { return this._send('POST', `/sets/${id}/generate`, { topic, level, count, lang }); } // ИИ-генерация слов в набор
     setReset(id) { return this._send('POST', `/sets/${id}/reset`); }   // сброс рампы выученных слов набора

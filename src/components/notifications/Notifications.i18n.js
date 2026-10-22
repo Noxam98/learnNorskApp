@@ -1,48 +1,69 @@
-// Строки центра уведомлений (колокольчик в шапке) и предложений набора.
+// Строки центра уведомлений (колокольчик в шапке): лента всех типов + предложения набора.
 import { langGuard } from "../../interface/i18nGuard.js";
 
 export const N = langGuard({
     ru: {
-        title: "Уведомления", empty: "Пока пусто", emptyHint: "Здесь будут предложения наборов и другие события",
+        title: "Уведомления", empty: "Пока пусто", emptyHint: "Здесь будут заявки в друзья, приглашения в игру и наборы",
         shareTitle: "{who} предлагает набор", shareSub: "«{set}» · {n}",
         accept: "Принять", decline: "Отклонить", accepted: "Принято", declined: "Отклонено",
         acceptedToast: "Набор «{set}» добавлен", close: "Закрыть", bell: "Уведомления", bellTab: "Входящие",
+        tabFeed: "Лента", tabFriends: "Друзья", friendReq: "{who} хочет добавить вас в друзья", friendAcc: "{who} теперь ваш друг",
+        roomTitle: "{who} зовёт в игру", roomSub: "Комната «{room}»", join: "Войти", roomGone: "Комната уже закрыта",
+        cloned: "{who} взял(а) ваш набор «{set}»", someone: "Кто-то", cancelled: "Отозвано",
     },
     en: {
-        title: "Notifications", empty: "Nothing yet", emptyHint: "Set offers and other events will show up here",
+        title: "Notifications", empty: "Nothing yet", emptyHint: "Friend requests, game invites and sets will show up here",
         shareTitle: "{who} shares a set", shareSub: "“{set}” · {n}",
         accept: "Accept", decline: "Decline", accepted: "Accepted", declined: "Declined",
         acceptedToast: "Set “{set}” added", close: "Close", bell: "Notifications", bellTab: "Inbox",
+        tabFeed: "Feed", tabFriends: "Friends", friendReq: "{who} wants to be your friend", friendAcc: "{who} is now your friend",
+        roomTitle: "{who} invites you to play", roomSub: "Room “{room}”", join: "Join", roomGone: "The room is closed",
+        cloned: "{who} took your set “{set}”", someone: "Someone", cancelled: "Cancelled",
     },
     ukr: {
-        title: "Сповіщення", empty: "Поки порожньо", emptyHint: "Тут будуть пропозиції наборів та інші події",
+        title: "Сповіщення", empty: "Поки порожньо", emptyHint: "Тут будуть заявки в друзі, запрошення в гру та набори",
         shareTitle: "{who} пропонує набір", shareSub: "«{set}» · {n}",
         accept: "Прийняти", decline: "Відхилити", accepted: "Прийнято", declined: "Відхилено",
         acceptedToast: "Набір «{set}» додано", close: "Закрити", bell: "Сповіщення", bellTab: "Вхідні",
+        tabFeed: "Стрічка", tabFriends: "Друзі", friendReq: "{who} хоче додати вас у друзі", friendAcc: "{who} тепер ваш друг",
+        roomTitle: "{who} кличе в гру", roomSub: "Кімната «{room}»", join: "Увійти", roomGone: "Кімнату вже закрито",
+        cloned: "{who} взяв(ла) ваш набір «{set}»", someone: "Хтось", cancelled: "Відкликано",
     },
     pl: {
-        title: "Powiadomienia", empty: "Na razie pusto", emptyHint: "Tu pojawią się propozycje zestawów i inne zdarzenia",
+        title: "Powiadomienia", empty: "Na razie pusto", emptyHint: "Tu pojawią się zaproszenia do znajomych, do gry i zestawy",
         shareTitle: "{who} udostępnia zestaw", shareSub: "„{set}” · {n}",
         accept: "Przyjmij", decline: "Odrzuć", accepted: "Przyjęto", declined: "Odrzucono",
         acceptedToast: "Zestaw „{set}” dodany", close: "Zamknij", bell: "Powiadomienia", bellTab: "Skrzynka",
+        tabFeed: "Aktualności", tabFriends: "Znajomi", friendReq: "{who} chce dodać cię do znajomych", friendAcc: "{who} jest teraz twoim znajomym",
+        roomTitle: "{who} zaprasza do gry", roomSub: "Pokój „{room}”", join: "Wejdź", roomGone: "Pokój jest już zamknięty",
+        cloned: "{who} wziął(ęła) twój zestaw „{set}”", someone: "Ktoś", cancelled: "Cofnięto",
     },
     lt: {
-        title: "Pranešimai", empty: "Kol kas tuščia", emptyHint: "Čia bus rinkinių pasiūlymai ir kiti įvykiai",
+        title: "Pranešimai", empty: "Kol kas tuščia", emptyHint: "Čia bus kvietimai į draugus, į žaidimą ir rinkiniai",
         shareTitle: "{who} siūlo rinkinį", shareSub: "„{set}“ · {n}",
         accept: "Priimti", decline: "Atmesti", accepted: "Priimta", declined: "Atmesta",
         acceptedToast: "Rinkinys „{set}“ pridėtas", close: "Uždaryti", bell: "Pranešimai", bellTab: "Gauta",
+        tabFeed: "Srautas", tabFriends: "Draugai", friendReq: "{who} nori tapti jūsų draugu", friendAcc: "{who} dabar jūsų draugas",
+        roomTitle: "{who} kviečia žaisti", roomSub: "Kambarys „{room}“", join: "Prisijungti", roomGone: "Kambarys jau uždarytas",
+        cloned: "{who} pasiėmė jūsų rinkinį „{set}“", someone: "Kažkas", cancelled: "Atšaukta",
     },
     lv: {
-        title: "Paziņojumi", empty: "Pagaidām tukšs", emptyHint: "Šeit būs kopu piedāvājumi un citi notikumi",
+        title: "Paziņojumi", empty: "Pagaidām tukšs", emptyHint: "Šeit būs draudzības uzaicinājumi, spēļu ielūgumi un kopas",
         shareTitle: "{who} piedāvā kopu", shareSub: "«{set}» · {n}",
         accept: "Pieņemt", decline: "Noraidīt", accepted: "Pieņemts", declined: "Noraidīts",
         acceptedToast: "Kopa «{set}» pievienota", close: "Aizvērt", bell: "Paziņojumi", bellTab: "Ienākošie",
+        tabFeed: "Plūsma", tabFriends: "Draugi", friendReq: "{who} vēlas kļūt par jūsu draugu", friendAcc: "{who} tagad ir jūsu draugs",
+        roomTitle: "{who} aicina spēlēt", roomSub: "Istaba «{room}»", join: "Pievienoties", roomGone: "Istaba jau ir slēgta",
+        cloned: "{who} paņēma jūsu kopu «{set}»", someone: "Kāds", cancelled: "Atsaukts",
     },
     ar: {
-        title: "الإشعارات", empty: "لا شيء بعد", emptyHint: "ستظهر هنا عروض المجموعات وأحداث أخرى",
+        title: "الإشعارات", empty: "لا شيء بعد", emptyHint: "ستظهر هنا طلبات الصداقة ودعوات اللعب والمجموعات",
         shareTitle: "{who} يشارك مجموعة", shareSub: "«{set}» · {n}",
         accept: "قبول", decline: "رفض", accepted: "مقبول", declined: "مرفوض",
         acceptedToast: "تمت إضافة المجموعة «{set}»", close: "إغلاق", bell: "الإشعارات", bellTab: "الوارد",
+        tabFeed: "الموجز", tabFriends: "الأصدقاء", friendReq: "{who} يريد إضافتك صديقًا", friendAcc: "{who} أصبح صديقك",
+        roomTitle: "{who} يدعوك للعب", roomSub: "الغرفة «{room}»", join: "انضمام", roomGone: "أُغلقت الغرفة",
+        cloned: "{who} أخذ مجموعتك «{set}»", someone: "شخص ما", cancelled: "أُلغي",
     },
 }, "Notifications.N");
 

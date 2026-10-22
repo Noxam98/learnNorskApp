@@ -17,6 +17,10 @@ import PoolSearchPanel from "../../components/learning/PoolSearchPanel.jsx";
 import GenerateSetModal from "../../components/sets/GenerateSetModal.jsx";
 import SetPoolPicker from "../../components/sets/SetPoolPicker.jsx";
 import ShareSetModal from "../../components/sets/ShareSetModal.jsx";
+import CatalogModal from "../../components/social/CatalogModal.jsx";
+import { C as CAT } from "../../components/social/Social.i18n.js";
+import { useSocialStore } from "../../store/socialStore.jsx";
+import { useSystemStore } from "../../store/systemStore.jsx";
 import PhotoImportModal from "../../components/sets/PhotoImportModal.jsx";
 import TextImportModal from "../../components/sets/TextImportModal.jsx";
 import SharedImageImport from "../../components/sets/SharedImageImport.jsx";
@@ -25,9 +29,11 @@ import { useMobileSetsLayout } from "./useMobileSetsLayout.js";
 
 
 const MIN_UNLEARNED = 5;   // «Учить набор» доступно, когда в наборе ≥5 НЕвыученных слов
+const MIN_PUBLIC_WORDS = 5; // зеркало MIN_PUBLIC_WORDS бэка (db/sets_catalog.py) — для текста ошибки публикации
 
 export default function SetsTab({ lang, openSession, openWord }) {
     const ll = L[lang] || L.ru;
+    const cat = CAT[lang] || CAT.ru;
     const t = interfaceTranslate[lang] || interfaceTranslate.en;
 
     const [sets, setSets] = useState([]);
@@ -38,6 +44,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
     const [genOpen, setGenOpen] = useState(false); // открыта модалка AI-генерации слов (см. GenerateSetModal)
     const [pickerOpen, setPickerOpen] = useState(false); // открыт экран добора слов из Базы (SetPoolPicker)
     const [shareOpen, setShareOpen] = useState(false); // открыта модалка «Поделиться набором»
+    const [catalogOpen, setCatalogOpen] = useState(false); // открыт каталог наборов сообщества (см. CatalogModal)
     const [photoOpen, setPhotoOpen] = useState(false); // открыт импорт слов с фото/камеры (см. PhotoImportModal)
     const [textOpen, setTextOpen] = useState(false); // открыт импорт слов из произвольного текста (см. TextImportModal)
     const [shared, setShared] = useState(null); // { images } — картинка из системного «Поделиться» (Android, см. native/sharedImages.js)
@@ -79,7 +86,9 @@ export default function SetsTab({ lang, openSession, openWord }) {
         finally { setWLoading(false); }
     }, []);
 
-    useEffect(() => { loadSets(); }, [loadSets]);
+    // setsTick растёт, когда набор появился в обход этой вкладки (взял из профиля, принял в ленте)
+    const setsTick = useSocialStore((s) => s.setsTick);
+    useEffect(() => { loadSets(); }, [loadSets, setsTick]);
     useEffect(() => { loadWords(activeId); }, [activeId, loadWords]);
     useEffect(() => { setSel(new Set()); }, [activeId]);   // сменили набор — выделение чужого набора не тащим
     // «Поделиться» картинкой в приложение (Android): сюда её уже привёл роутинг, забираем
@@ -105,6 +114,19 @@ export default function SetsTab({ lang, openSession, openWord }) {
     const toggleStudying = async (s) => {
         setSets((prev) => prev.map((x) => x.id === s.id ? { ...x, studying: !x.studying } : x)); // оптимистично
         await api.setStudying(s.id, !s.studying).catch(() => loadSets());
+    };
+
+    // Публикация в каталоге: бэк требует ≥N слов общей базы (личные неодобренные другим не видны)
+    // и говорит об этом ошибкой «too few» — её показываем с числом, прочее — общей фразой.
+    const togglePublish = async (s) => {
+        const toast = useSystemStore.getState().showToast;
+        try {
+            await api.setPublish(s.id, !s.public);
+            setSets((prev) => prev.map((x) => x.id === s.id ? { ...x, public: !s.public } : x));
+            toast(s.public ? cat.unpublishedToast : cat.publishedToast, "success");
+        } catch (e) {
+            toast(e?.message === "too few" ? cat.tooFew.replace("{n}", String(MIN_PUBLIC_WORDS)) : cat.errGeneric);
+        }
     };
 
     const addToSet = async (poolId) => { await api.setAddWords(activeId, [poolId]); await loadWords(activeId); await loadSets(activeId); };
@@ -179,6 +201,7 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     <ActionMenu icon="more" align="right" items={[
                         { key: "cram", label: selIds.length ? `${ll.cram} ${selIds.length}` : ll.cram, icon: "target", disabled: !words.length, onClick: cramSet },
                         { key: "share", label: ll.share, icon: "share", disabled: !words.length, onClick: () => setShareOpen(true) },
+                        { key: "publish", label: active.public ? cat.unpublish : cat.publish, icon: active.public ? "eye-off" : "globe", disabled: !active.public && !words.length, onClick: () => togglePublish(active) },
                         { key: "gen", label: ll.generate, icon: "sparkles", onClick: () => setGenOpen(true) },
                         { key: "text", label: ll.importText, icon: "list", onClick: () => setTextOpen(true) },
                         { key: "photo", label: ll.importPhoto, icon: "camera", onClick: () => setPhotoOpen(true) },
@@ -193,10 +216,15 @@ export default function SetsTab({ lang, openSession, openWord }) {
                 {active.count > 0 && (
                     <span className="sets-pane__fill" style={{ width: Math.round(learned / active.count * 100) + "%" }} />
                 )}
-                <b className="sets-pane__name">{active.name}</b>
+                <b className="sets-pane__name">
+                    {active.public && <span title={cat.published.replace("{n}", String(active.clones || 0))}><Icon n="globe" sm /> </span>}
+                    {active.name}
+                </b>
                 <span className="sets-pane__stat">
                     <span>{active.count} {pl(lang, active.count, "word")}</span>
-                    <span className="muted">{ll.learned}: {learned}</span>
+                    <span className="muted">
+                        {active.public ? `${cat.tookLabel}: ${active.clones || 0} · ` : ""}{ll.learned}: {learned}
+                    </span>
                 </span>
             </div>
         </>
@@ -284,6 +312,11 @@ export default function SetsTab({ lang, openSession, openWord }) {
                         onClick={() => setPrompt({ mode: "create", value: "" })}>
                         <Icon n="plus" sm />
                     </button>
+                    {/* каталог наборов сообщества — рядом с «+»: «создать свой» и «взять готовый» */}
+                    <button className="fchip fchip--add" aria-label={cat.title} title={cat.title}
+                        onClick={() => setCatalogOpen(true)}>
+                        <Icon n="globe" sm />
+                    </button>
                 </div>
             )}
 
@@ -293,9 +326,14 @@ export default function SetsTab({ lang, openSession, openWord }) {
                     <div className="empty__ic"><Icon n="layers" lg /></div>
                     <div className="empty__t">{ll.noSets}</div>
                     <div className="empty__d">{ll.noSetsHint}</div>
-                    <button className="btn btn--accent" style={{ marginTop: "var(--sp-4)" }} onClick={() => setPrompt({ mode: "create", value: "" })}>
-                        <Icon n="plus" sm /> {ll.newSet}
-                    </button>
+                    <div className="row" style={{ gap: "var(--sp-2)", marginTop: "var(--sp-4)", justifyContent: "center", flexWrap: "wrap" }}>
+                        <button className="btn btn--accent" onClick={() => setPrompt({ mode: "create", value: "" })}>
+                            <Icon n="plus" sm /> {ll.newSet}
+                        </button>
+                        <button className="btn" onClick={() => setCatalogOpen(true)}>
+                            <Icon n="globe" sm /> {cat.title}
+                        </button>
+                    </div>
                 </div>
             ) : active && (
                 isMobile ? (
@@ -352,6 +390,10 @@ export default function SetsTab({ lang, openSession, openWord }) {
                         if (changed) { loadWords(activeId); loadSets(activeId); }   // перечитать слова и счётчики
                     }} />
             )}
+
+            {/* каталог наборов: взял копию → она появляется среди своих и сразу выбрана */}
+            <CatalogModal open={catalogOpen} lang={lang} onClose={() => setCatalogOpen(false)}
+                onTaken={(id) => loadSets(id)} />
 
             {/* поделиться набором: поиск человека → предложение (у него появится своя копия) */}
             <ShareSetModal open={shareOpen} setId={activeId} setName={active?.name || ""} lang={lang}

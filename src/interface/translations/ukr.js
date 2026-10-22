@@ -24,7 +24,7 @@ export const ukr = {
         alreadyKnow: "Вже знаю",
         deleteFromBase: "Видалити з бази", deleteFromBaseConfirm: "Видалити з бази для всіх?",
         showArticles: "Артиклі іменників", showArticlesDesc: "en/ei/et перед словом на чипах",
-        leaderboardSetting: "Брати участь у рейтингу", leaderboardSettingDesc: "Показувати тебе іншим учням у рейтингу",
+        leaderboardSetting: "Брати участь у рейтингу", leaderboardSettingDesc: "Показувати тебе іншим учням у рейтингу та профілі. Друзі бачать твій прогрес завжди",
         listenTasks: "Аудіозавдання", listenTasksDesc: "Слова вчаться текстом, а на слух підтверджуються окремою слуховою партією.",
         byEar: "на слух", listenBack: "Це завдання — на слух. Повернути?", listenBackBtn: "Повернути",
         typeRightToGo: "Введи слово правильно, щоб продовжити",

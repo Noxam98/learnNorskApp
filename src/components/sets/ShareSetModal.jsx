@@ -1,45 +1,27 @@
 // «Поделиться набором»: поиск человека по имени/логину → отправка предложения.
 // Получателю прилетает уведомление (колокольчик в шапке) и пуш; по «Принять» у него создаётся
 // СВОЯ копия набора — оригинал у отправителя живёт своей жизнью.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "../ui/Modal.jsx";
 import { Icon } from "../ui/Icon.jsx";
 import { BtnSpinner } from "../ui/Spinner.jsx";
 import { useSystemStore } from "../../store/systemStore.jsx";
 import api from "../tools/api.js";
+import { usePeopleSearch } from "../social/usePeopleSearch.js";
 import { S } from "../notifications/Notifications.i18n.js";
-
-const DEBOUNCE_MS = 350;
-const MIN_Q = 2;
 
 const ERR = { self: "errSelf", empty: "errEmpty", "too many": "errMany" };
 
 export default function ShareSetModal({ open, setId, setName = "", lang = "ru", onClose }) {
     const t = S[lang] || S.ru;
     const [q, setQ] = useState("");
-    const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [sendingId, setSendingId] = useState(null);
     const [sentId, setSentId] = useState(null);
     const [err, setErr] = useState("");
-    const reqRef = useRef(0);
+    // поиск с дебаунсом — общий с «Найти друзей» и «Позвать в комнату»
+    const { users, loading, short, searched } = usePeopleSearch(q, open);
 
-    useEffect(() => { if (!open) { setQ(""); setUsers([]); setErr(""); setSentId(null); } }, [open]);
-
-    // Поиск с дебаунсом; ответы нумеруем — поздний ответ на старый запрос не перетирает свежий.
-    useEffect(() => {
-        const term = q.trim();
-        if (!open || term.length < MIN_Q) { setUsers([]); setLoading(false); return; }
-        setLoading(true);
-        const id = ++reqRef.current;
-        const tm = setTimeout(() => {
-            api.searchUsers(term)
-                .then((r) => { if (id === reqRef.current) setUsers(r?.users || []); })
-                .catch(() => { if (id === reqRef.current) setUsers([]); })
-                .finally(() => { if (id === reqRef.current) setLoading(false); });
-        }, DEBOUNCE_MS);
-        return () => clearTimeout(tm);
-    }, [q, open]);
+    useEffect(() => { if (!open) { setQ(""); setErr(""); setSentId(null); } }, [open]);
 
     const send = async (u) => {
         setSendingId(u.id); setErr("");
@@ -54,7 +36,6 @@ export default function ShareSetModal({ open, setId, setName = "", lang = "ru", 
     };
 
     if (!open) return null;
-    const short = q.trim().length > 0 && q.trim().length < MIN_Q;
     return (
         <Modal open={open} onClose={onClose} title={`${t.title}${setName ? ` · ${setName}` : ""}`} maxWidth={440}>
             <p className="muted" style={{ margin: "0 0 var(--sp-3)", fontSize: "var(--fs-13)" }}>{t.hint}</p>
@@ -66,7 +47,7 @@ export default function ShareSetModal({ open, setId, setName = "", lang = "ru", 
                     <span className="muted">{t.short}</span>
                 ) : loading ? (
                     <span className="muted"><BtnSpinner /></span>
-                ) : q.trim().length >= MIN_Q && !users.length ? (
+                ) : searched && !users.length ? (
                     <span className="muted">{t.empty}</span>
                 ) : users.map((u) => (
                     <div key={u.id} className="setrow" style={{ alignItems: "center" }}>

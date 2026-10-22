@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence, LayoutGroup, MotionConfig, useReducedMotion } from "framer-motion";
 import { interfaceTranslate } from "../interface/interfaceTranslation.jsx";
 import { useSystemStore } from "../store/systemStore.jsx";
@@ -10,6 +11,8 @@ import { PlayerTag } from "../components/online/PlayerTag.jsx";
 import RaceScreen, { RacePodium } from "../components/online/RaceScreen.jsx";
 import { RaceRunner, ANIMAL_LIST, ANIMAL_COLORS, animalLabel } from "../components/online/RaceRunner.jsx";
 import { RoomForm } from "../components/online/RoomForm.jsx";
+import InviteModal from "../components/social/InviteModal.jsx";
+import { I as INV } from "../components/social/Social.i18n.js";
 import api from "../components/tools/api.js";
 import { playWin, preloadSounds } from "../components/tools/sound.js";
 import { hyphenate, hyLang } from "../components/ui/hyphenate.js";
@@ -105,8 +108,20 @@ export const OnlinePage = () => {
     const reduce = useReducedMotion();   // prefers-reduced-motion → гасим салют/крупные анимации
     const [createOpen, setCreateOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
+    const [inviteOpen, setInviteOpen] = useState(false);
 
     const myReady = room?.players?.find((p) => p.isYou)?.ready;
+
+    // Вход по приглашению: «Войти» в уведомлении / ссылка из пуша ведут на /online?join=<id>.
+    // Как только сокет поднялся — обычный join (все проверки лобби/места — на сервере), а
+    // параметр убираем, чтобы возврат на страницу не тащил в ту же комнату снова.
+    const [params, setParams] = useSearchParams();
+    const joinId = params.get("join");
+    useEffect(() => {
+        if (!joinId || status !== "online") return;
+        if (room?.id !== joinId) send({ type: "join", roomId: joinId });
+        setParams({}, { replace: true });
+    }, [joinId, status]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Аудио предзагружаем при входе в комнату — к старту игры всё закешировано.
     useEffect(() => { if (room) preloadSounds(); }, [room?.id]); // eslint-disable-line
@@ -320,8 +335,18 @@ export const OnlinePage = () => {
                     saveOnlinePrefs(settings);
                     setEditOpen(false);
                 }} />
+            <InviteModal open={inviteOpen} roomId={room.id} lang={lang} inRoom={roster.map((p) => p.name)}
+                onClose={() => setInviteOpen(false)} />
             <div className="panel">
-                <div className="panel__head"><span className="panel__title">{to.players || "Игроки"} {roster.length}/{s.maxPlayers}</span></div>
+                <div className="panel__head">
+                    <span className="panel__title">{to.players || "Игроки"} {roster.length}/{s.maxPlayers}</span>
+                    {/* позвать друга или любого человека: уведомление + пуш со ссылкой в эту комнату */}
+                    {roster.length < s.maxPlayers && (
+                        <button className="btn btn--sm btn--accent" onClick={() => setInviteOpen(true)}>
+                            <Icon n="plus" sm /> {(INV[lang] || INV.ru).btn}
+                        </button>
+                    )}
+                </div>
                 <div className="panel__body">
                     {roster.map((p) => (
                         <div className="setrow" key={p.name + (p.isYou ? "_you" : "")}>

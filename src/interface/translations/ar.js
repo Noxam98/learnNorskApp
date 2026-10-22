@@ -39,7 +39,7 @@ export const ar = {
         alreadyKnow: "أعرفها بالفعل",
         deleteFromBase: "حذف من القاعدة", deleteFromBaseConfirm: "حذف من القاعدة للجميع؟",
         showArticles: "أدوات الأسماء", showArticlesDesc: "en/ei/et قبل الكلمة على البطاقات",
-        leaderboardSetting: "الانضمام إلى لوحة المتصدرين", leaderboardSettingDesc: "إظهارك للمتعلمين الآخرين في لوحة المتصدرين",
+        leaderboardSetting: "الانضمام إلى لوحة المتصدرين", leaderboardSettingDesc: "إظهارك للمتعلمين الآخرين في لوحة المتصدرين والملف الشخصي. يرى أصدقاؤك تقدّمك دائمًا",
         listenTasks: "مهام صوتية", listenTasksDesc: "تُتعلَّم الكلمات بالنص، ثم تُؤكَّد سماعيًا في دفعة استماع منفصلة.",
         byEar: "بالسمع", listenBack: "يمكن أن تكون هذه المهمة بالسمع. هل تعيدها؟", listenBackBtn: "أعد",
         typeRightToGo: "اكتب الكلمة بشكل صحيح للمتابعة",

@@ -1,49 +1,60 @@
 // @ts-check
 // Рейтинг учеников. Метрика недели — очки = верные ответы за текущую неделю (Пн, UTC);
-// «за всё время» — число выученных слов. Компактная карточка (главная «Сегодня») + модалка
-// с полным списком и тумблером периода. Логин/email не показываем; имя = display_name или «Аноним».
+// «за всё время» — число выученных слов; «друзья» — неделя среди меня и моих друзей.
+// Компактная карточка (главная «Сегодня») + модалка с полным списком и тумблером.
+// Логин/email в общем рейтинге не показываем (имя = display_name или «Аноним»); тап по
+// строке — мини-профиль человека.
 import { useEffect, useState } from "react";
 import { Icon } from "../ui/Icon.jsx";
 import api from "../tools/api.js";
 import { useHistoryClose } from "../../hooks/useHistoryClose.js";
 import { langGuard } from "../../interface/i18nGuard.js";
+import { useSocialStore } from "../../store/socialStore.jsx";
+import { useNotifyStore } from "../../store/notifyStore.jsx";
 
 const T = langGuard({
     ru:  { title: "Рейтинг", weekTitle: "Рейтинг недели", week: "Неделя", all: "За всё время",
            you: "ты", of: "из", pts: "очк.", words: "слов", anon: "Аноним", seeAll: "Все",
            empty: "Пока пусто. Позанимайся — и попадёшь в рейтинг.",
            notYet: "Занимайся, чтобы попасть в рейтинг недели",
-           hidden: "Ты скрыт из рейтинга — включить можно в Профиле.", loading: "Загрузка…" },
+           hidden: "Ты скрыт из рейтинга — включить можно в Профиле.", loading: "Загрузка…",
+           friends: "Друзья", noFriends: "Добавь друзей — и здесь будет ваш рейтинг недели", findFriends: "Найти друзей" },
     ukr: { title: "Рейтинг", weekTitle: "Рейтинг тижня", week: "Тиждень", all: "За весь час",
            you: "ти", of: "з", pts: "очок", words: "слів", anon: "Анонім", seeAll: "Усі",
            empty: "Поки порожньо. Позаймайся — і потрапиш у рейтинг.",
            notYet: "Займайся, щоб потрапити в рейтинг тижня",
-           hidden: "Тебе приховано з рейтингу — увімкнути можна в Профілі.", loading: "Завантаження…" },
+           hidden: "Тебе приховано з рейтингу — увімкнути можна в Профілі.", loading: "Завантаження…",
+           friends: "Друзі", noFriends: "Додай друзів — і тут буде ваш рейтинг тижня", findFriends: "Знайти друзів" },
     en:  { title: "Leaderboard", weekTitle: "Weekly leaderboard", week: "Week", all: "All time",
            you: "you", of: "of", pts: "pts", words: "words", anon: "Anonymous", seeAll: "All",
            empty: "Empty for now. Practice to join the leaderboard.",
            notYet: "Practice to join this week's leaderboard",
-           hidden: "You're hidden from the leaderboard — enable it in Profile.", loading: "Loading…" },
+           hidden: "You're hidden from the leaderboard — enable it in Profile.", loading: "Loading…",
+           friends: "Friends", noFriends: "Add friends — and your weekly leaderboard will be here", findFriends: "Find friends" },
     pl:  { title: "Ranking", weekTitle: "Ranking tygodnia", week: "Tydzień", all: "Cały czas",
            you: "ty", of: "z", pts: "pkt", words: "słów", anon: "Anonim", seeAll: "Wszyscy",
            empty: "Na razie pusto. Poćwicz — i trafisz do rankingu.",
            notYet: "Ćwicz, aby trafić do rankingu tygodnia",
-           hidden: "Jesteś ukryty w rankingu — włącz w Profilu.", loading: "Ładowanie…" },
+           hidden: "Jesteś ukryty w rankingu — włącz w Profilu.", loading: "Ładowanie…",
+           friends: "Znajomi", noFriends: "Dodaj znajomych — i tu będzie wasz ranking tygodnia", findFriends: "Znajdź znajomych" },
     lt:  { title: "Reitingas", weekTitle: "Savaitės reitingas", week: "Savaitė", all: "Visą laiką",
            you: "tu", of: "iš", pts: "tšk.", words: "žodž.", anon: "Anonimas", seeAll: "Visi",
            empty: "Kol kas tuščia. Pasimokyk — ir pateksi į reitingą.",
            notYet: "Mokykis, kad patektum į savaitės reitingą",
-           hidden: "Tu paslėptas reitinge — įjunk Profilyje.", loading: "Kraunama…" },
+           hidden: "Tu paslėptas reitinge — įjunk Profilyje.", loading: "Kraunama…",
+           friends: "Draugai", noFriends: "Pridėk draugų — ir čia bus jūsų savaitės reitingas", findFriends: "Rasti draugų" },
     lv:  { title: "Reitings", weekTitle: "Nedēļas reitings", week: "Nedēļa", all: "Visu laiku",
            you: "tu", of: "no", pts: "p.", words: "vārdi", anon: "Anonīms", seeAll: "Visi",
            empty: "Pagaidām tukšs. Patrenējies — un nokļūsi reitingā.",
            notYet: "Trenējies, lai nokļūtu šīs nedēļas reitingā",
-           hidden: "Tu esi paslēpts no reitinga — ieslēdz to Profilā.", loading: "Ielāde…" },
+           hidden: "Tu esi paslēpts no reitinga — ieslēdz to Profilā.", loading: "Ielāde…",
+           friends: "Draugi", noFriends: "Pievieno draugus — un šeit būs jūsu nedēļas reitings", findFriends: "Atrast draugus" },
     ar:  { title: "لوحة المتصدرين", weekTitle: "لوحة الأسبوع", week: "الأسبوع", all: "كل الأوقات",
            you: "أنت", of: "من", pts: "نقطة", words: "كلمات", anon: "مجهول", seeAll: "الكل",
            empty: "فارغة الآن. تدرّب لتنضمّ إلى لوحة المتصدرين.",
            notYet: "تدرّب لتنضمّ إلى لوحة هذا الأسبوع",
-           hidden: "أنت مخفيّ من اللوحة — فعّلها من الملف الشخصي.", loading: "جارٍ التحميل…" },
+           hidden: "أنت مخفيّ من اللوحة — فعّلها من الملف الشخصي.", loading: "جارٍ التحميل…",
+           friends: "الأصدقاء", noFriends: "أضف أصدقاء — وستظهر هنا لوحتكم الأسبوعية", findFriends: "ابحث عن أصدقاء" },
 }, "Leaderboard.T");
 
 const MEDAL_CLS = { 1: "lb-medal--gold", 2: "lb-medal--silver", 3: "lb-medal--bronze" };
@@ -54,30 +65,43 @@ const Rank = ({ rank, lg }) => (rank >= 1 && rank <= 3)
     : <span className="lb-rankn">#{rank}</span>;
 
 /** @param {{ e: any, t: any, period: string }} p */
-const Row = ({ e, t, period }) => (
-    <div className={"lb-row" + (e.me ? " lb-row--me" : "")}>
-        <span className="lb-row__rank"><Rank rank={e.rank} /></span>
-        <span className="lb-row__name">{e.name || t.anon}{e.me ? <span className="lb-row__you"> · {t.you}</span> : null}</span>
-        {e.level ? <span className="lb-row__lvl">{e.level}</span> : null}
-        <span className="lb-row__pts">{e.points} <i>{period === "all" ? t.words : t.pts}</i></span>
-    </div>
-);
+const Row = ({ e, t, period }) => {
+    const openProfile = useSocialStore((s) => s.openProfile);
+    const open = () => { if (e.id) openProfile(e.id); };
+    return (
+        <div className={"lb-row lb-row--tap" + (e.me ? " lb-row--me" : "")} role="button" tabIndex={0} onClick={open}
+            onKeyDown={(ev) => { if (ev.key === "Enter" || ev.key === " ") open(); }}>
+            <span className="lb-row__rank"><Rank rank={e.rank} /></span>
+            <span className="lb-row__name">{e.name || t.anon}{e.me ? <span className="lb-row__you"> · {t.you}</span> : null}</span>
+            {e.level ? <span className="lb-row__lvl">{e.level}</span> : null}
+            <span className="lb-row__pts">{e.points} <i>{period === "all" ? t.words : t.pts}</i></span>
+        </div>
+    );
+};
 
-/** Полная модалка рейтинга (тумблер неделя/всё время). @param {{ lang?: string, onClose: () => void }} p */
+// Вкладки модалки → параметры запроса: «Друзья» — та же неделя, но среди меня и друзей.
+const TABS = { week: ["week", "all"], friends: ["week", "friends"], all: ["all", "all"] };
+
+/** Полная модалка рейтинга (неделя / друзья / всё время). @param {{ lang?: string, onClose: () => void }} p */
 export function LeaderboardModal({ lang = "ru", onClose }) {
     const t = T[lang] || T.en;
-    const [period, setPeriod] = useState("week");
+    const [tab, setTab] = useState(/** @type {"week"|"friends"|"all"} */("week"));
     const [data, setData] = useState(/** @type {any} */(null));
     const [loading, setLoading] = useState(true);
+    const friendsTick = useSocialStore((s) => s.friendsTick);
     useHistoryClose(true, onClose); // монтируется только при открытии → системная «Назад»/свайп закрывает рейтинг
+    const [period, scope] = TABS[tab];
     useEffect(() => {
         let on = true; setLoading(true);
-        api.leaderboard(period, 100).then((d) => { if (on) { setData(d); setLoading(false); } }).catch(() => { if (on) setLoading(false); });
+        api.leaderboard(period, 100, scope).then((d) => { if (on) { setData(d); setLoading(false); } }).catch(() => { if (on) setLoading(false); });
         return () => { on = false; };
-    }, [period]);
+    }, [period, scope, friendsTick]);
     const top = data?.top || [];
     const me = data?.me;
     const meInTop = !!(me && top.some((/** @type {any} */ e) => e.me));
+    // в рейтинге друзей я есть всегда — «пусто» значит, что кроме меня никого
+    const noFriends = scope === "friends" && !loading && top.length <= 1;
+    const findFriends = () => { onClose(); useNotifyStore.getState().openPanel("friends"); };
     return (
         <div className="lb-overlay" onClick={onClose}>
             <div className="lb-panel" onClick={(e) => e.stopPropagation()}>
@@ -86,13 +110,20 @@ export function LeaderboardModal({ lang = "ru", onClose }) {
                     <button className="lb-x" onClick={onClose} aria-label="close"><Icon n="x" sm /></button>
                 </div>
                 <div className="lb-seg">
-                    <button className={"lb-seg__b" + (period === "week" ? " is-on" : "")} onClick={() => setPeriod("week")}>{t.week}</button>
-                    <button className={"lb-seg__b" + (period === "all" ? " is-on" : "")} onClick={() => setPeriod("all")}>{t.all}</button>
+                    <button className={"lb-seg__b" + (tab === "week" ? " is-on" : "")} onClick={() => setTab("week")}>{t.week}</button>
+                    <button className={"lb-seg__b" + (tab === "friends" ? " is-on" : "")} onClick={() => setTab("friends")}>{t.friends}</button>
+                    <button className={"lb-seg__b" + (tab === "all" ? " is-on" : "")} onClick={() => setTab("all")}>{t.all}</button>
                 </div>
                 <div className="lb-list">
                     {loading ? <div className="lb-empty">{t.loading}</div>
-                        : top.length === 0 ? <div className="lb-empty">{t.empty}</div>
-                            : top.map((/** @type {any} */ e) => <Row key={e.rank} e={e} t={t} period={period} />)}
+                        : noFriends ? (
+                            <div className="lb-empty">
+                                <p style={{ margin: "0 0 var(--sp-3)" }}>{t.noFriends}</p>
+                                <button className="btn btn--accent btn--sm" onClick={findFriends}><Icon n="user" sm /> {t.findFriends}</button>
+                            </div>
+                        )
+                            : top.length === 0 ? <div className="lb-empty">{t.empty}</div>
+                                : top.map((/** @type {any} */ e) => <Row key={e.rank} e={e} t={t} period={period} />)}
                 </div>
                 {data?.optedOut
                     ? <div className="lb-foot lb-foot--note">{t.hidden}</div>

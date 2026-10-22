@@ -39,7 +39,7 @@ export const lv = {
         alreadyKnow: "Jau zinu",
         deleteFromBase: "Dzēst no bāzes", deleteFromBaseConfirm: "Dzēst no bāzes visiem?",
         showArticles: "Lietvārdu artikuli", showArticlesDesc: "en/ei/et pirms vārda uz čipiem",
-        leaderboardSetting: "Piedalīties reitingā", leaderboardSettingDesc: "Rādīt tevi citiem mācekļiem reitingā",
+        leaderboardSetting: "Piedalīties reitingā", leaderboardSettingDesc: "Rādīt tevi citiem mācekļiem reitingā un profilā. Draugi tavu progresu redz vienmēr",
         listenTasks: "Audio uzdevumi", listenTasksDesc: "Vārdus mācās ar tekstu, bet pēc dzirdes apstiprina atsevišķā klausīšanās partijā.",
         byEar: "pēc dzirdes", listenBack: "Šis uzdevums var būt pēc dzirdes. Atgriezt?", listenBackBtn: "Atgriezt",
         typeRightToGo: "Ievadi vārdu pareizi, lai turpinātu",

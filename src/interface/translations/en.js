@@ -39,7 +39,7 @@ export const en = {
         alreadyKnow: "Already know",
         deleteFromBase: "Delete from base", deleteFromBaseConfirm: "Delete from the base for everyone?",
         showArticles: "Noun articles", showArticlesDesc: "en/ei/et before the word on chips",
-        leaderboardSetting: "Join the leaderboard", leaderboardSettingDesc: "Show you to other learners on the leaderboard",
+        leaderboardSetting: "Join the leaderboard", leaderboardSettingDesc: "Show you to other learners on the leaderboard and profile. Friends always see your progress",
         listenTasks: "Audio tasks", listenTasksDesc: "Words are learned by text, then confirmed by ear in a separate listening batch.",
         byEar: "by ear", listenBack: "This task can be by ear. Bring it back?", listenBackBtn: "Bring back",
         typeRightToGo: "Type the word correctly to continue",
